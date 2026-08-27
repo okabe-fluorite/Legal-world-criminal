@@ -1,0 +1,476 @@
+{
+  "schema_version": "product-evidence-audit-v1",
+  "generated_at": "2026-08-27T15:02:53.549392+00:00",
+  "git_commit": "1f4436a19420d9055d0e1a51e8403092c9d0ced6",
+  "protocol": {
+    "seed": 20260827,
+    "network_calls": 0,
+    "llm_calls": 0,
+    "classroom_records": 0,
+    "scope": "deterministic software-mechanism audit"
+  },
+  "inputs": {
+    "audit_script_sha256": "1359477147b17fc7e39755a20a9fa18bbe3b257840a3057acf6e13f0154e11a1",
+    "content_manifest_sha256": "fc1e43cfb646d0d24d0c34d748758cbeb536a64cdee2b9a604673c8e3561094f",
+    "law_manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7",
+    "real_e2e_audit_sha256": "52daa45886cf0811ca0ba4da1639c75907974905b9106044a730c03e1bc403c2"
+  },
+  "retrieval_and_citation": {
+    "query_count": 10,
+    "bm25_expected_hit_rate_at_5": 0.9,
+    "governed_expected_hit_rate_at_5": 1.0,
+    "coverage_status_boundary_passed": true,
+    "citation_catalog_count": 22,
+    "citation_valid_count": 22,
+    "exact_quote_count": 22,
+    "semantic_entailment_evaluated": false,
+    "cases": [
+      {
+        "knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "knowledge_name": "罪刑法定原则",
+        "expected_article_refs": [
+          "第三条",
+          "第十二条"
+        ],
+        "bm25_top5_refs": [
+          "第三十条",
+          "第三条",
+          "第二百九十六条",
+          "第十三条",
+          "第四百二十条"
+        ],
+        "governed_top5_plus_standard_refs": [
+          "第三十条",
+          "第三条",
+          "第二百九十六条",
+          "第十三条",
+          "第十二条",
+          "第四百二十条"
+        ],
+        "bm25_expected_hit": true,
+        "governed_expected_hit": true,
+        "coverage_statuses": [
+          "candidate_requires_semantic_audit"
+        ]
+      },
+      {
+        "knowledge_id": "CRIM_KP_BC82753EB8088C13",
+        "knowledge_name": "犯罪概念与但书",
+        "expected_article_refs": [
+          "第十三条"
+        ],
+        "bm25_top5_refs": [
+          "第一百六十二条之一",
+          "第十三条",
+          "第十条",
+          "第四百二十条",
+          "第四百零二条"
+        ],
+        "governed_top5_plus_standard_refs": [
+          "第一百六十二条之一",
+          "第十三条",
+          "第十条",
+          "第四百二十条",
+          "第四百零二条"
+        ],
+        "bm25_expected_hit": true,
+        "governed_expected_hit": true,
+        "coverage_statuses": [
+          "candidate_requires_semantic_audit"
+        ]
+      },
+      {
+        "knowledge_id": "CRIM_KP_2DD5C021746121C3",
+        "knowledge_name": "故意、过失与意外事件",
+        "expected_article_refs": [
+          "第十五条",
+          "第十六条",
+          "第十四条"
+        ],
+        "bm25_top5_refs": [
+          "第五十三条",
+          "第六十五条",
+          "第十七条之一",
+          "第十五条",
+          "第十六条"
+        ],
+        "governed_top5_plus_standard_refs": [
+          "第五十三条",
+          "第六十五条",
+          "第十七条之一",
+          "第十五条",
+          "第十六条",
+          "第十四条"
+        ],
+        "bm25_expected_hit": true,
+        "governed_expected_hit": true,
+        "coverage_statuses": [
+          "candidate_requires_semantic_audit"
+        ]
+      },
+      {
+        "knowledge_id": "CRIM_KP_B81F51ACC84055A4",
+        "knowledge_name": "刑事责任年龄",
+        "expected_article_refs": [
+          "第十七条"
+        ],
+        "bm25_top5_refs": [
+          "第三百四十七条",
+          "第二十条",
+          "第二百六十二条",
+          "第十七条",
+          "第十八条"
+        ],
+        "governed_top5_plus_standard_refs": [
+          "第三百四十七条",
+          "第二十条",
+          "第二百六十二条",
+          "第十七条",
+          "第十八条"
+        ],
+        "bm25_expected_hit": true,
+        "governed_expected_hit": true,
+        "coverage_statuses": [
+          "candidate_requires_semantic_audit"
+        ]
+      },
+      {
+        "knowledge_id": "CRIM_KP_7B01D1EBC00BC8ED",
+        "knowledge_name": "正当防卫与防卫过当",
+        "expected_article_refs": [
+          "第二十条"
+        ],
+        "bm25_top5_refs": [
+          "第三百零五条",
+          "第二十条",
+          "第二百四十五条",
+          "第六十二条",
+          "第四百零八条之一"
+        ],
+        "governed_top5_plus_standard_refs": [
+          "第三百零五条",
+          "第二十条",
+          "第二百四十五条",
+          "第六十二条",
+          "第四百零八条之一"
+        ],
+        "bm25_expected_hit": true,
+        "governed_expected_hit": true,
+        "coverage_statuses": [
+          "candidate_requires_semantic_audit"
+        ]
+      },
+      {
+        "knowledge_id": "CRIM_KP_85BF396EA13741B5",
+        "knowledge_name": "紧急避险",
+        "expected_article_refs": [
+          "第二十一条"
+        ],
+        "bm25_top5_refs": [
+          "第一百三十四条之一",
+          "第二十一条",
+          "第二十条",
+          "第八十一条",
+          "第四百四十九条"
+        ],
+        "governed_top5_plus_standard_refs": [
+          "第一百三十四条之一",
+          "第二十一条",
+          "第二十条",
+          "第八十一条",
+          "第四百四十九条"
+        ],
+        "bm25_expected_hit": true,
+        "governed_expected_hit": true,
+        "coverage_statuses": [
+          "candidate_requires_semantic_audit"
+        ]
+      },
+      {
+        "knowledge_id": "CRIM_KP_8AABCC5F5D5822AD",
+        "knowledge_name": "犯罪预备、未遂与中止",
+        "expected_article_refs": [
+          "第二十三条",
+          "第二十二条",
+          "第二十四条"
+        ],
+        "bm25_top5_refs": [
+          "第二十三条",
+          "第二十二条",
+          "第二十四条",
+          "第十五条",
+          "第四百一十三条"
+        ],
+        "governed_top5_plus_standard_refs": [
+          "第二十三条",
+          "第二十二条",
+          "第二十四条",
+          "第十五条",
+          "第四百一十三条"
+        ],
+        "bm25_expected_hit": true,
+        "governed_expected_hit": true,
+        "coverage_statuses": [
+          "candidate_requires_semantic_audit"
+        ]
+      },
+      {
+        "knowledge_id": "CRIM_KP_07D38E1BC70F5155",
+        "knowledge_name": "共同犯罪与主从犯",
+        "expected_article_refs": [
+          "第二十七条",
+          "第二十九条",
+          "第二十五条",
+          "第二十八条",
+          "第二十六条"
+        ],
+        "bm25_top5_refs": [
+          "第三百一十条",
+          "第二十七条",
+          "第二十九条",
+          "第二十五条",
+          "第二十六条"
+        ],
+        "governed_top5_plus_standard_refs": [
+          "第三百一十条",
+          "第二十七条",
+          "第二十九条",
+          "第二十五条",
+          "第二十八条",
+          "第二十六条"
+        ],
+        "bm25_expected_hit": true,
+        "governed_expected_hit": true,
+        "coverage_statuses": [
+          "candidate_requires_semantic_audit"
+        ]
+      },
+      {
+        "knowledge_id": "CRIM_KP_A9EE556B77025221",
+        "knowledge_name": "刑罚种类",
+        "expected_article_refs": [
+          "第三十三条",
+          "第三十二条",
+          "第三十五条",
+          "第三十四条"
+        ],
+        "bm25_top5_refs": [
+          "第三十二条",
+          "第三十五条",
+          "第三十四条",
+          "第六十九条",
+          "第十一条"
+        ],
+        "governed_top5_plus_standard_refs": [
+          "第三十三条",
+          "第三十二条",
+          "第三十五条",
+          "第三十四条",
+          "第六十九条",
+          "第十一条"
+        ],
+        "bm25_expected_hit": true,
+        "governed_expected_hit": true,
+        "coverage_statuses": [
+          "candidate_requires_semantic_audit"
+        ]
+      },
+      {
+        "knowledge_id": "CRIM_KP_DB1E1940114B4C0F",
+        "knowledge_name": "抢劫罪的基本构成",
+        "expected_article_refs": [
+          "第二百六十三条"
+        ],
+        "bm25_top5_refs": [
+          "第一百九十三条",
+          "第一百九十二条",
+          "第一百二十条之五",
+          "第三百八十二条",
+          "第三百零七条之一"
+        ],
+        "governed_top5_plus_standard_refs": [
+          "第一百九十三条",
+          "第一百九十二条",
+          "第一百二十条之五",
+          "第三百八十二条",
+          "第三百零七条之一",
+          "第二百六十三条"
+        ],
+        "bm25_expected_hit": false,
+        "governed_expected_hit": true,
+        "coverage_statuses": [
+          "candidate_requires_semantic_audit"
+        ]
+      }
+    ]
+  },
+  "adaptive_mechanism": {
+    "knowledge_count": 10,
+    "missing_signal_mean_rank_improvement": 4.5,
+    "missing_signal_rank1_count": 10,
+    "confusion_signal_mean_rank_improvement": 4.5,
+    "confusion_signal_rank1_count": 10,
+    "completed_task_exclusion_passed": true,
+    "recommendation_private_field_leaks": [],
+    "missing_rank_pairs": [
+      {
+        "knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "cold_rank": 1,
+        "after_missing_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_BC82753EB8088C13",
+        "cold_rank": 2,
+        "after_missing_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_2DD5C021746121C3",
+        "cold_rank": 3,
+        "after_missing_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_B81F51ACC84055A4",
+        "cold_rank": 4,
+        "after_missing_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_7B01D1EBC00BC8ED",
+        "cold_rank": 5,
+        "after_missing_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_85BF396EA13741B5",
+        "cold_rank": 6,
+        "after_missing_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_8AABCC5F5D5822AD",
+        "cold_rank": 7,
+        "after_missing_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_07D38E1BC70F5155",
+        "cold_rank": 8,
+        "after_missing_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_A9EE556B77025221",
+        "cold_rank": 9,
+        "after_missing_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_DB1E1940114B4C0F",
+        "cold_rank": 10,
+        "after_missing_rank": 1
+      }
+    ],
+    "confusion_rank_pairs": [
+      {
+        "knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "cold_rank": 1,
+        "after_confusion_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_BC82753EB8088C13",
+        "cold_rank": 2,
+        "after_confusion_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_2DD5C021746121C3",
+        "cold_rank": 3,
+        "after_confusion_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_B81F51ACC84055A4",
+        "cold_rank": 4,
+        "after_confusion_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_7B01D1EBC00BC8ED",
+        "cold_rank": 5,
+        "after_confusion_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_85BF396EA13741B5",
+        "cold_rank": 6,
+        "after_confusion_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_8AABCC5F5D5822AD",
+        "cold_rank": 7,
+        "after_confusion_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_07D38E1BC70F5155",
+        "cold_rank": 8,
+        "after_confusion_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_A9EE556B77025221",
+        "cold_rank": 9,
+        "after_confusion_rank": 1
+      },
+      {
+        "knowledge_id": "CRIM_KP_DB1E1940114B4C0F",
+        "cold_rank": 10,
+        "after_confusion_rank": 1
+      }
+    ],
+    "learning_gain_evaluated": false,
+    "path_effect_evaluated": false
+  },
+  "public_projection": {
+    "knowledge_cards": 10,
+    "public_tasks": 30,
+    "private_field_leaks": [],
+    "answer_included_false_count": 30
+  },
+  "model_routing": {
+    "registered_tasks": [
+      "agent",
+      "teaching_judge",
+      "citation_alignment",
+      "response_assist",
+      "document_assist",
+      "closing_summary",
+      "eval"
+    ],
+    "safe_catalog_api_key_absent": true,
+    "safe_catalog_url_path_absent": true,
+    "failover_behavior_test_file_sha256": "581b4490bcc17f85ab14bc7c360b354d0449f6838650b6a4f3bb89a0cd439d61",
+    "live_model_called": false
+  },
+  "agent_pipeline": {
+    "current_evidence": "real six-stage E2E documented separately",
+    "real_e2e_document": "docs/REAL_E2E_AUDIT.md",
+    "agent_ablation_run_in_this_audit": false,
+    "learning_gain_evaluated": false
+  },
+  "evidence_boundary": {
+    "proves": [
+      "governed statute retrieval returns expected course-law candidates",
+      "citation existence and exact quote checks are deterministic",
+      "missing/confusion signals change recommendation rank as implemented",
+      "completed tasks are excluded and public projections omit private fields",
+      "model route catalog redacts keys and URL paths"
+    ],
+    "does_not_prove": [
+      "legal semantic entailment",
+      "criminal-law mastery calibration",
+      "student learning gain",
+      "adaptive path causal effect",
+      "LLM scoring validity or formal-grade suitability"
+    ]
+  },
+  "checks": {
+    "retrieval_governed_all_hit": true,
+    "citations_all_valid": true,
+    "coverage_boundary": true,
+    "missing_signals_rank_first": true,
+    "confusion_signals_rank_first": true,
+    "completed_task_excluded": true,
+    "answer_isolation": true,
+    "model_catalog_redaction": true
+  },
+  "status": "pass"
+}

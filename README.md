@@ -105,6 +105,19 @@ EvidencePack中的检索相关性和coverage只是待语义审核候选，不等
 
 显式授予teacher/admin角色后，顶部会出现“教师驾驶舱”：教师可建立自己的班级、加入已注册学生、查看匿名形成性学情，并对10个KnowledgeCard和30个TaskItem写不可变复核事件。普通注册不能自报教师；班级聚合不含学生邮箱、困惑原文或排行榜，少于默认3人时抑制知识/能力/错误细分，内容审核也不会绕过冻结源文件。角色授权、API和本地教师冒烟见[`docs/TEACHER_MINIMUM_LOOP.md`](docs/TEACHER_MINIMUM_LOOP.md)。
 
+## 产品机制审计与课堂试点
+
+不调用网络、LLM或课堂数据即可复跑产品机制审计：
+
+```powershell
+uv run --isolated --with-requirements requirements.lock.txt -- python -X utf8 `
+  backend\scripts\run_product_evidence_audit.py
+```
+
+当前结果：10个课程查询纯BM25 expected-hit@5为90%，绑定KnowledgeCard标准Evidence后为100%；22条Evidence条号/逐字片段22/22；missing/困惑信号均使10/10目标知识点排到第1，平均前移4.5位；已答排除、答案隔离、模型目录脱敏通过。完整JSON/摘要见[`docs/PRODUCT_EVIDENCE_AUDIT.md`](docs/PRODUCT_EVIDENCE_AUDIT.md)。这些是软件机制证据，不是法律蕴含、掌握校准、学习增益或路径因果效果。
+
+证据分级与后续Agent/真实模型消融条件见[`docs/ABLATION_PROTOCOL.md`](docs/ABLATION_PROTOCOL.md)；8—12人只做可行性试点，方案见[`docs/CLASSROOM_PILOT_PROTOCOL.md`](docs/CLASSROOM_PILOT_PROTOCOL.md)。50人试用必须等待院校授权、有效法复核、隐私/伦理流程和预注册实验设计。
+
 ## 案例发布边界
 
 产品默认只读取`dataset/released_case_dataset.json`，旧124案保留为污染数据修复池，

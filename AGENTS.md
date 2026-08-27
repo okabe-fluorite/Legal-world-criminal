@@ -216,6 +216,13 @@ teaching/
 - `content_review_events`保存绑定内容哈希的不可变审核覆盖记录；教师页面不直接改写冻结JSON，也不返回TaskItem私有答案
 - `TeacherDashboard.vue`提供班级学情与内容复核两页；`smoke-teacher-dashboard.mjs`真实验证学生作答/困惑→教师建班/选课→聚合→复核与隐私/网络门禁
 
+### 产品证据与消融
+
+- `backend/scripts/run_product_evidence_audit.py`固定10个课程查询和10知识点反事实软件账号，审计BM25/标准Evidence、引用片段、自适应排序、已答排除、答案隔离和模型目录脱敏；网络/LLM/课堂记录调用均为0
+- 当前机制结果写入`docs/PRODUCT_EVIDENCE_AUDIT.{json,md}`；它只能证明L1软件行为，不能外推法律蕴含、掌握概率、学习增益或路径因果效果
+- `docs/ABLATION_PROTOCOL.md`冻结RAG、自适应、Agent和模型路由的同条件消融；Agent与真实模型同金标准消融尚未执行，必须显式为未完成
+- `docs/CLASSROOM_PILOT_PROTOCOL.md`把8—12人限定为可行性试点；50人试用必须等待授权、法源复核、隐私/伦理、预注册与功效分析
+
 ### NLI 模型层
 
 - 首选 IDEA-CCNL/Erlangshen-Roberta-330M-NLI（机构背书的中文 NLI）；英文模型不得兜底（中文输入下是噪声源），加载失败直接走 LLM-only
