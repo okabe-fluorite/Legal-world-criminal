@@ -6,16 +6,16 @@ SHA-256：`0A467BF0AE46587062E97524B37EE6EDA749C7F0DB91A4F8D8E165F976ED466E`
 
 ## 总结
 
-当前仓库已经超过说明书的MVP纵向切片：3个发布案例、可信法条检索、六阶段精学、结构化评分、LearningEvent、长期画像、下一题推荐、正式Web前端和真实六阶段E2E均可运行。但它尚不是说明书定义的Beta完整产品，主要缺口是统一EvidencePack、预习/复习可执行任务、教师端最小闭环和可复现消融/用户试点。
+当前仓库已经超过说明书的MVP纵向切片：3个发布案例、可信法条检索、六阶段精学、结构化评分、LearningEvent、长期画像、下一题推荐、正式Web前端和真实六阶段E2E均可运行。切片A又补齐了KnowledgeCard、TaskItem和EvidencePack的冻结契约与API。但它尚不是说明书定义的Beta完整产品，主要缺口已转为预习/复习可执行TaskAttempt、学生端连续旅程、教师端最小闭环和可复现消融/用户试点。
 
 ## 七个冻结对象
 
 | 对象 | 当前状态 | 当前证据 | 缺口与判定 |
 |---|---|---|---|
-| KnowledgeCard | 部分实现 | `adaptive_service/data/knowledge_nodes.jsonl`有10个稳定ID、目标和审核状态 | 缺课程章节、先修关系、法条/司法解释、易错点、理论口径、审核人与版本；尚不能支撑说明书预习地图 |
+| KnowledgeCard | 已冻结核心契约 | `knowledge_cards.jsonl`有10个稳定ID、章节、目标、法条证据、先修、易错点、理论口径、审核版本和内容哈希；API可读 | 尚缺前端知识地图、司法解释/案例分层证据和每学期教师复核操作界面 |
 | CaseBundle | 部分实现 | `dataset/released_case_dataset.json`有3案、来源路径/SHA、阶段材料和知识点 | 尚未冻结“可见事实、EvidencePack、Rubric、典型错误、案件版本”的独立CaseBundle Schema |
-| TaskItem | 部分实现且有P0风险 | 30道教师批准题、每知识点3题、Q边、答案隔离和冷启动推荐 | `legal_basis.source_path/source_sha256`仍指向已隔离的第三方“2024最新版”；缺统一证据ID、能力目标、版本和评分规则契约 |
-| EvidencePack | 缺失 | 全仓库没有`EvidencePack`对象，也没有`POST /knowledge/search` | 当前Agent分别调用BM25/元典/案例工具，违反“统一证据包”边界，是下一切片P0 |
+| TaskItem | 已冻结核心契约 | 30道教师批准题已重绑受治理法源，包含统一证据ID、目标能力、阶段、评分规则、审核和哈希；公开API与推荐隔离答案 | 尚缺TaskAttempt提交、主观任务和真实课堂题目参数 |
+| EvidencePack | 已实现核心 | `POST /api/knowledge/search`返回法源、效力、快照、哈希、风险和coverage；引用审计可核验条号与逐字片段 | coverage仍是待语义审核候选；尚缺司法解释/案例证据、claim-level教师结论和前端证据板 |
 | LearningEvent | 基本实现 | 不可变事件表、稳定ID、AI辅助资格、能力/知识/错误、六阶段E2E 6/6事件 | 案件事件对耗时、置信度、证据使用率和Prompt/知识库/案件版本绑定仍不完整 |
 | LearnerProfile | 基本实现 | 独立adaptive服务、幂等账本、知识/能力/错误状态、数据库快照 | V0尚无时间衰减、难度和提示惩罚；当前是保守证据画像，不是校准ORCDF概率 |
 | Recommendation | 基本实现 | 冷启动/弱项排序、策略版本、原因码、30道无答案任务、前端展示 | 只有诊断题；缺目标能力、教学化解释、变式/角色互换/间隔复习和推荐完成回写 |
@@ -24,7 +24,7 @@ SHA-256：`0A467BF0AE46587062E97524B37EE6EDA749C7F0DB91A4F8D8E165F976ED466E`
 
 | 说明书要求 | 状态 | 证据/缺口 |
 |---|---|---|
-| 预习：知识地图 | 缺失 | 前端无预习/地图组件，后端无KnowledgeCard API |
+| 预习：知识地图 | 后端契约已实现、前端缺失 | `GET /api/knowledge/catalog`可返回10个KnowledgeCard；前端无预习/地图组件 |
 | 预习：强制困惑标注 | 缺失 | 无困惑事件、聚合或教师消费接口 |
 | 预习：AI分层解惑 | 缺失 | 有通用模型路由，但无“先追问→规范/课堂/争议”工作流 |
 | 预习测验 | 后端内容存在、产品闭环缺失 | 30道题可推荐，但没有答题/判分/LearningEvent API与学生UI |
@@ -40,9 +40,9 @@ SHA-256：`0A467BF0AE46587062E97524B37EE6EDA749C7F0DB91A4F8D8E165F976ED466E`
 
 | P0能力 | 状态 | 下一验收证据 |
 |---|---|---|
-| 课程级知识库 | 部分实现 | 冻结KnowledgeCard并能从API返回法源、先修、易错点和审核版本 |
-| 可信RAG/EvidencePack | 缺失统一层 | `POST /api/knowledge/search`返回治理版本、证据片段、效力、风险与coverage；TaskItem引用同一证据ID |
-| 引用审查 | 基本实现 | 现有条号/NLI核验升级为EvidencePack引用审查API和可复现实验 |
+| 课程级知识库 | 已实现核心契约 | 10个KnowledgeCard可从API返回法源、先修、易错点、审核版本和内容哈希；待接学生地图 |
+| 可信RAG/EvidencePack | 已实现核心 | 搜索API与TaskItem共用证据ID并返回治理版本、证据片段、效力、风险与coverage；待扩多类法源和语义审核 |
+| 引用审查 | 已实现确定性核心 | API可验证法律名称、条号、逐字片段并标记词法候选；NLI/教师语义结论仍与确定性结果分层 |
 | 案件状态机 | 已实现 | 六阶段E2E已证明 |
 | 调查/辩论/反馈 | 基本实现 | 增加证据选择/论证链可视化后达到说明书形态 |
 | LearningEvent | 已实现核心 | 补齐版本、耗时、置信度、证据使用字段 |
@@ -51,7 +51,7 @@ SHA-256：`0A467BF0AE46587062E97524B37EE6EDA749C7F0DB91A4F8D8E165F976ED466E`
 
 ## 实施顺序（本地优先）
 
-1. **切片A：受治理TaskItem + EvidencePack。**从813条受治理法源重绑30道题，冻结KnowledgeCard/TaskItem/EvidencePack Schema，实现搜索与引用审查API；不得继续传播第三方源路径。
+1. **切片A：受治理TaskItem + EvidencePack（已完成）。**已从813条受治理法源重绑30道题，冻结KnowledgeCard/TaskItem/EvidencePack Schema，实现搜索与引用审查API，并停止传播第三方源路径。
 2. **切片B：预习/复习共用TaskAttempt。**学生完成推荐题，服务端判分并生成不可变LearningEvent，更新画像并返回下一任务；加入困惑标注事件。
 3. **切片C：学生端连续旅程。**知识地图、困惑标注、预习测验、精学入口、复习任务与完成反馈共用现有Vue外壳。
 4. **切片D：教师端最小形态。**增加角色/班级/选课，匿名聚合困惑、知识、能力、错误和案例轨迹；内容审核操作写审计日志。

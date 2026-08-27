@@ -186,6 +186,13 @@ teaching/
 - Dify 法条 API（`DifyCitationSource`）为可插拔设计，接口修通后启用
 - 元典 MCP 工具已注册常驻，依赖外网，失败降级不阻断
 
+### 课程知识与EvidencePack
+
+- `schemas/knowledge-card-v1.schema.json`、`task-item-v1.schema.json`和`evidence-pack-v1.schema.json`冻结课程内容契约；生成数据位于`adaptive_service/data/`
+- `GET /api/knowledge/catalog`和`GET /api/knowledge/tasks/{task_id}`提供知识卡与公开任务；任务响应不含答案、解析和误概念私有字段
+- `POST /api/knowledge/search`返回受治理EvidencePack，`POST /api/knowledge/audit-citations`验证条号与逐字片段
+- BM25相关性与词法重叠不是法律蕴含；coverage必须保持`candidate_requires_semantic_audit`或`insufficient_evidence`
+
 ### NLI 模型层
 
 - 首选 IDEA-CCNL/Erlangshen-Roberta-330M-NLI（机构背书的中文 NLI）；英文模型不得兜底（中文输入下是噪声源），加载失败直接走 LLM-only

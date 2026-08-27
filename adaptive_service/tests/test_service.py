@@ -125,6 +125,7 @@ class AdaptiveApiTests(unittest.TestCase):
         self.assertEqual(health.status_code, 200)
         self.assertEqual(health.json()["items"], 30)
         self.assertEqual(health.json()["knowledge_points"], 10)
+        self.assertTrue(health.json()["governed_contracts"])
         self.assertEqual(self.client.post("/events", json=self.event()).status_code, 401)
 
     def test_event_and_recommendation_http_contract(self) -> None:
@@ -143,6 +144,19 @@ class AdaptiveApiTests(unittest.TestCase):
         self.assertEqual(len(body["recommendations"]), 3)
         self.assertEqual(body["recommendations"][0]["reason_code"], "case_evidence_indicates_weakness")
         self.assertTrue(all(row["answer_included"] is False for row in body["recommendations"]))
+        self.assertTrue(all(row["standard_evidence_ids"] for row in body["recommendations"]))
+        def keys(value):
+            if isinstance(value, dict):
+                for key, child in value.items():
+                    yield key
+                    yield from keys(child)
+            elif isinstance(value, list):
+                for child in value:
+                    yield from keys(child)
+
+        self.assertTrue(
+            {"answer", "answer_private", "rationale_private"}.isdisjoint(set(keys(body)))
+        )
 
 
 if __name__ == "__main__":

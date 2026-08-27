@@ -49,6 +49,7 @@ def health() -> dict[str, Any]:
         "status": "ok",
         "items": len(service.approved),
         "knowledge_points": len(service.nodes),
+        "governed_contracts": service.uses_governed_contracts,
         "database": str(DB_PATH),
     }
 
@@ -79,4 +80,3 @@ def recommend(payload: RecommendRequest) -> dict[str, Any]:
 @app.get("/profiles/{student_id}", dependencies=[Depends(require_api_key)])
 def profile(student_id: str) -> dict[str, Any]:
     return get_service().profile(student_id)
-

@@ -21,10 +21,20 @@ class AdaptiveService:
     def __init__(self, *, data_dir: Path, store: AdaptiveStore) -> None:
         self.data_dir = Path(data_dir)
         self.store = store
-        self.approved = read_jsonl(self.data_dir / "approved_items.jsonl")
+        task_path = self.data_dir / "task_items.jsonl"
+        card_path = self.data_dir / "knowledge_cards.jsonl"
+        self.uses_governed_contracts = task_path.is_file() and card_path.is_file()
+        self.approved = read_jsonl(
+            task_path if self.uses_governed_contracts else self.data_dir / "approved_items.jsonl"
+        )
         self.q_edges = read_jsonl(self.data_dir / "q_matrix.jsonl")
-        self.nodes = read_jsonl(self.data_dir / "knowledge_nodes.jsonl")
-        self.item_records = {row["candidate_id"]: row for row in self.approved}
+        self.nodes = read_jsonl(
+            card_path if self.uses_governed_contracts else self.data_dir / "knowledge_nodes.jsonl"
+        )
+        self.item_records = {
+            str(row.get("task_id") or row.get("candidate_id")): row
+            for row in self.approved
+        }
         self.item_to_knowledge = {
             str(row["item_id"]): str(row["knowledge_id"]) for row in self.q_edges
         }
@@ -80,7 +90,8 @@ class AdaptiveService:
             score, _order, item_id, knowledge_id, reason = max(scored)
             candidates.remove(item_id)
             selected_by_knowledge[knowledge_id] += 1
-            item = self.item_records[item_id]["item"]
+            record = self.item_records[item_id]
+            item = record if self.uses_governed_contracts else record["item"]
             selected.append(
                 {
                     "rank": len(selected) + 1,
@@ -96,6 +107,8 @@ class AdaptiveService:
                     "reason_code": reason,
                     "score": round(score, 4),
                     "answer_included": False,
+                    "content_version": str(item.get("content_sha256") or ""),
+                    "standard_evidence_ids": list(item.get("standard_evidence_ids") or []),
                 }
             )
         return selected
@@ -114,4 +127,3 @@ class AdaptiveService:
             "recommendations": recommendations,
             "policy_version": "hybrid-case-evidence-cold-start-v1",
         }
-

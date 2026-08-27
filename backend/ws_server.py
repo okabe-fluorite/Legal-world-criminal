@@ -475,6 +475,11 @@ def _teaching_storage_for_request(request: Request) -> tuple[Path, str]:
 _set_teaching_storage_provider(_teaching_storage_for_request)
 app.include_router(_teaching_router)
 
+# ── Governed KnowledgeCard / TaskItem / EvidencePack API ──
+from src.knowledge.routes import router as _knowledge_router
+
+app.include_router(_knowledge_router)
+
 # Per-sandbox gateway instances, keyed by sandbox_id
 _player_gateways: dict[str, _PlayerInputGateway] = {}
 

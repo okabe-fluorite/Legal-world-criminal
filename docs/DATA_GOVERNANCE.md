@@ -7,6 +7,9 @@
 - `dataset/released_case_dataset.json`：正式产品只读取的案例发布集。
 - `dataset/released_case_quality_audit.json`：发布集逐案门禁结果。
 - `dataset/knowledge_catalog.json`：教师批准试用的稳定知识点ID。
+- `adaptive_service/data/knowledge_cards.jsonl`：从稳定知识点扩展出的受治理课程知识卡。
+- `adaptive_service/data/task_items.jsonl`：从教师批准试用题重绑官方法源后的受治理任务；含服务端私有判分字段。
+- `adaptive_service/data/evidence_catalog.jsonl`：TaskItem与KnowledgeCard共用的受治理法条证据目录。
 
 当前发布集为3案：指导性案例268号严某聪案、指导案例144号张那木拉案、指导案例14号董某某/宋某某案；机器门禁3/3通过，但仍不等于正式教师金标。
 
@@ -63,3 +66,9 @@ uv run --isolated --with-requirements requirements.lock.txt -- python -X utf8 `
 
 下载件未保存法规详情页URL，因此当前`source_url`诚实记录官方门户
 `https://flk.npc.gov.cn/`，并在manifest中标记`not_preserved_in_download_artifacts`；不得伪造详情URL。
+
+## 课程内容发布
+
+`backend/scripts/build_governed_learning_content.py`负责把教师批准题库、Q矩阵和稳定知识点重绑到受治理法源，并生成KnowledgeCard、TaskItem和Evidence目录。构建器会拒绝法条引用片段不匹配、绝对本地路径、Schema错误或哈希漂移。
+
+TaskItem中的`answer_private`、`rationale_private`和`misconceptions_private`只用于服务端判分；知识API和adaptive推荐必须使用公开投影。检索coverage与词法重叠只能标为待语义审核候选，不得作为法律蕴含结论或教师金标。详细契约见[`KNOWLEDGE_CONTRACTS.md`](KNOWLEDGE_CONTRACTS.md)。

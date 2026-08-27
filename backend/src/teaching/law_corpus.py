@@ -277,6 +277,14 @@ def search_law(query: str, top_k: int = 5, title: str | None = None) -> list[dic
                 "content": record.get("_content") or "",
                 "category": record.get("category") or "",
                 "score": round(score, 4),
+                "document_id": record.get("document_id") or "",
+                "effective_date": record.get("effective_date") or "",
+                "version_as_of": record.get("version_as_of") or "",
+                "effective_status": record.get("effective_status") or "",
+                "source_url": record.get("source_url") or "",
+                "source_url_scope": record.get("source_url_scope") or "",
+                "source_snapshot_id": record.get("source_snapshot_id") or "",
+                "source_bundle_sha256": record.get("source_bundle_sha256") or "",
             }
         )
     return results
@@ -308,6 +316,14 @@ def resolve_article(title: str, article_ref: str) -> dict[str, Any] | None:
                 "article_ref": record.get("_article_ref") or "",
                 "content": record.get("_content") or "",
                 "category": record.get("category") or "",
+                "document_id": record.get("document_id") or "",
+                "effective_date": record.get("effective_date") or "",
+                "version_as_of": record.get("version_as_of") or "",
+                "effective_status": record.get("effective_status") or "",
+                "source_url": record.get("source_url") or "",
+                "source_url_scope": record.get("source_url_scope") or "",
+                "source_snapshot_id": record.get("source_snapshot_id") or "",
+                "source_bundle_sha256": record.get("source_bundle_sha256") or "",
             }
     return None
 

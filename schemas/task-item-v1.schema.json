@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simlaw.local/schemas/task-item-v1.schema.json",
+  "title": "CriminalLawTaskItemV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "task_id", "domain", "status", "task_type",
+    "phase_eligibility", "knowledge_ids", "knowledge_name", "target_abilities",
+    "difficulty", "cognitive_dimension", "stem", "options", "answer_private",
+    "rationale_private", "misconceptions_private", "standard_evidence_ids",
+    "standard_evidence_quotes", "scoring_rule", "review", "source_item_sha256",
+    "content_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "criminal-law-task-item-v1"},
+    "task_id": {"type": "string", "pattern": "^GEN_[A-F0-9]{20}$"},
+    "domain": {"const": "刑法"},
+    "status": {"const": "pilot_teacher_approved"},
+    "task_type": {"const": "diagnostic_item"},
+    "phase_eligibility": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["prestudy", "review"]}},
+    "knowledge_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^CRIM_KP_[A-F0-9]{16}$"}},
+    "knowledge_name": {"type": "string", "minLength": 2},
+    "target_abilities": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "difficulty": {"type": "integer", "minimum": 1, "maximum": 3},
+    "cognitive_dimension": {"enum": ["理解", "应用"]},
+    "stem": {"type": "string", "minLength": 10},
+    "options": {"type": "object", "minProperties": 2, "additionalProperties": {"type": "string", "minLength": 1}},
+    "answer_private": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "rationale_private": {"type": "string", "minLength": 10},
+    "misconceptions_private": {"type": "array", "items": {"type": "object"}},
+    "standard_evidence_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^EVID_[A-F0-9]{20}$"}},
+    "standard_evidence_quotes": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string", "minLength": 2}},
+    "scoring_rule": {"type": "object", "required": ["type", "max_score"], "properties": {"type": {"const": "exact_option_set"}, "max_score": {"const": 1.0}}, "additionalProperties": false},
+    "review": {"type": "object"},
+    "source_item_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}
