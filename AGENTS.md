@@ -208,6 +208,14 @@ teaching/
 - `frontend/scripts/smoke-learning-journey.mjs`使用`playwright-core`复用本机Edge/Chrome，验证桌面和指定视口的真实登录、作答、反馈、困惑、私有字段与控制台/网络错误
 - 该页面只完成形成性选择任务闭环；主观题、AI分层解惑、正式考试控制和教师聚合仍属后续切片
 
+### 教师端最小闭环
+
+- 普通注册默认`student`；teacher/admin只能通过`SIMLAW_TEACHER_EMAILS`/`SIMLAW_ADMIN_EMAILS`或本地`backend/scripts/grant_user_role.py`显式授予，浏览器不能自报角色
+- `course_classes`与`class_enrollments`记录教师自有班级和已注册学生；teacher不能查询其他教师班级，admin才可跨班查看
+- `/api/teacher/classes/{id}/analytics`只返回班级匿名聚合，不含学生邮箱、困惑原文、学生名单或排行榜；默认少于3人时抑制知识/能力/错误细分，所有指标均标为形成性证据
+- `content_review_events`保存绑定内容哈希的不可变审核覆盖记录；教师页面不直接改写冻结JSON，也不返回TaskItem私有答案
+- `TeacherDashboard.vue`提供班级学情与内容复核两页；`smoke-teacher-dashboard.mjs`真实验证学生作答/困惑→教师建班/选课→聚合→复核与隐私/网络门禁
+
 ### NLI 模型层
 
 - 首选 IDEA-CCNL/Erlangshen-Roberta-330M-NLI（机构背书的中文 NLI）；英文模型不得兜底（中文输入下是噪声源），加载失败直接走 LLM-only

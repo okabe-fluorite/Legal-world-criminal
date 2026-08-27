@@ -218,3 +218,84 @@ class RecommendationRecord(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
     )
+
+
+class UserRoleRecord(Base):
+    """Explicit role grant kept outside the legacy users table."""
+
+    __tablename__ = "user_roles"
+
+    user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), primary_key=True)
+    role: Mapped[str] = mapped_column(String(32), nullable=False, default="student")
+    granted_by: Mapped[str] = mapped_column(String(128), nullable=False, default="system")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+    )
+
+
+class CourseClassRecord(Base):
+    __tablename__ = "course_classes"
+    __table_args__ = (
+        UniqueConstraint(
+            "teacher_user_id", "course_id", "term", "name", name="uq_teacher_course_term_name"
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid_string)
+    teacher_user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=False, index=True
+    )
+    course_id: Mapped[str] = mapped_column(
+        String(128), nullable=False, default="undergraduate-criminal-law"
+    )
+    name: Mapped[str] = mapped_column(String(128), nullable=False)
+    term: Mapped[str] = mapped_column(String(64), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="active")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+    )
+
+
+class ClassEnrollmentRecord(Base):
+    __tablename__ = "class_enrollments"
+    __table_args__ = (
+        UniqueConstraint("class_id", "student_user_id", name="uq_class_student"),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid_string)
+    class_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("course_classes.id"), nullable=False, index=True
+    )
+    student_user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=False, index=True
+    )
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="active")
+    enrolled_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+
+class ContentReviewRecord(Base):
+    """Immutable teacher decision overlay for frozen course content."""
+
+    __tablename__ = "content_review_events"
+
+    review_id: Mapped[str] = mapped_column(String(96), primary_key=True)
+    teacher_user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=False, index=True
+    )
+    object_type: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
+    object_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    object_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    decision: Mapped[str] = mapped_column(String(32), nullable=False)
+    note: Mapped[str] = mapped_column(String(2000), nullable=False, default="")
+    payload_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )

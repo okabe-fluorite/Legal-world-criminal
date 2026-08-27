@@ -97,7 +97,88 @@ export interface AuthResponse {
   user?: {
     id: string | number;
     email: string;
+    role?: "student" | "teacher" | "admin" | string;
   };
+}
+
+export interface TeacherClassroom {
+  class_id: string;
+  course_id: string;
+  name: string;
+  term: string;
+  status: string;
+  student_count: number;
+  created_at?: string | null;
+}
+
+export interface TeacherOverviewResponse {
+  schema_version: string;
+  role: "teacher" | "admin" | string;
+  classes: TeacherClassroom[];
+}
+
+export interface TeacherAnalyticsResponse {
+  schema_version: string;
+  classroom: TeacherClassroom;
+  summary: {
+    student_count: number;
+    active_student_count: number;
+    learning_event_count: number;
+    task_attempt_count: number;
+    case_stage_event_count: number;
+    confusion_event_count: number;
+    provisional_knowledge_states: number;
+  };
+  event_type_counts: Record<string, number>;
+  knowledge: Array<{
+    knowledge_id: string;
+    knowledge_name: string;
+    mastered_students: number;
+    partial_students: number;
+    missing_students: number;
+    provisional_students: number;
+    confusion_count: number;
+  }>;
+  capabilities: Array<{ code: string; mean: number; student_count: number }>;
+  top_error_tags: Array<{ tag: string; count: number }>;
+  privacy: {
+    aggregation: string;
+    student_emails_included: false;
+    raw_confusion_notes_included: false;
+    small_group_detail_suppressed: boolean;
+    minimum_aggregate_size: number;
+  };
+  warnings: string[];
+  generated_at: string;
+}
+
+export interface TeacherReviewObject {
+  object_type: "knowledge_card" | "task_item";
+  object_id: string;
+  object_version: string;
+  title: string;
+  subtitle: string;
+  review_status: string;
+  difficulty?: number;
+  cognitive_dimension?: string;
+  standard_evidence_ids: string[];
+  latest_teacher_review?: {
+    review_id: string;
+    decision: "approve" | "request_revision" | "reject";
+    note: string;
+    created_at?: string | null;
+  } | null;
+}
+
+export interface TeacherReviewCatalogResponse {
+  schema_version: string;
+  counts: {
+    knowledge_cards: number;
+    task_items: number;
+    teacher_review_events: number;
+  };
+  objects: TeacherReviewObject[];
+  boundary: string;
 }
 
 export interface SandboxState {

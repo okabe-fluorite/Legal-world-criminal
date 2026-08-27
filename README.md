@@ -103,6 +103,8 @@ EvidencePack中的检索相关性和coverage只是待语义审核候选，不等
 
 登录后点击顶部“自主学习”即可进入学生连续旅程：10个知识卷宗、课程目标与法源索引、个性化任务、作答把握、服务端判分、误概念反馈、证据账本、困惑便笺和下一任务在同一页面闭环。桌面为三栏卷宗，窄屏改为单列并保留困惑入口。页面形态与可复现浏览器冒烟见[`docs/STUDENT_LEARNING_JOURNEY.md`](docs/STUDENT_LEARNING_JOURNEY.md)。
 
+显式授予teacher/admin角色后，顶部会出现“教师驾驶舱”：教师可建立自己的班级、加入已注册学生、查看匿名形成性学情，并对10个KnowledgeCard和30个TaskItem写不可变复核事件。普通注册不能自报教师；班级聚合不含学生邮箱、困惑原文或排行榜，少于默认3人时抑制知识/能力/错误细分，内容审核也不会绕过冻结源文件。角色授权、API和本地教师冒烟见[`docs/TEACHER_MINIMUM_LOOP.md`](docs/TEACHER_MINIMUM_LOOP.md)。
+
 ## 案例发布边界
 
 产品默认只读取`dataset/released_case_dataset.json`，旧124案保留为污染数据修复池，

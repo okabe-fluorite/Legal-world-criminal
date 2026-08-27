@@ -48,6 +48,7 @@ from src.core.checkpoint_manager import CheckpointManager
 from src.core.auth import AuthError, create_access_token, decode_access_token, get_access_token_expires_at
 from src.core.database import Base, create_database_engine, create_session_factory, get_db_session
 from src.core.models import Sandbox, User
+from src.core.role_service import resolve_user_role
 from src.core.sandbox_manager import SandboxManager, SandboxRuntimeContext
 from src.core.sandbox_service import SandboxService
 from src.core.user_service import (
@@ -60,6 +61,7 @@ from src.core.user_service import (
     register_user,
 )
 from src.human_eval.routes import create_human_eval_router
+from src.teacher.routes import create_teacher_router
 from src.orchestration.case_fsm import CaseStateMachine
 from src.orchestration.agent_registry import AgentRegistry
 from src.orchestration.scenario_orchestrator import ScenarioOrchestrator
@@ -732,18 +734,19 @@ def _get_session_factory():
     return _session_factory
 
 
-def _serialize_user(user: User) -> dict:
+def _serialize_user(user: User, *, role: str = "student") -> dict:
     return {
         "id": user.id,
         "email": user.email,
         "status": user.status,
         "token_version": user.token_version,
+        "role": role,
     }
 
 
-def _build_auth_response(user: User) -> dict:
+def _build_auth_response(user: User, *, role: str = "student") -> dict:
     return {
-        "user": _serialize_user(user),
+        "user": _serialize_user(user, role=role),
         "access_token": create_access_token(user_id=user.id, token_version=user.token_version),
         "token_type": "bearer",
         "expires_at": get_access_token_expires_at().isoformat(),
@@ -933,6 +936,12 @@ def _get_optional_current_user(
 
 app.include_router(
     create_human_eval_router(
+        current_user_dependency=_get_current_user,
+        session_dependency=_db_session_dependency,
+    )
+)
+app.include_router(
+    create_teacher_router(
         current_user_dependency=_get_current_user,
         session_dependency=_db_session_dependency,
     )
@@ -2926,7 +2935,7 @@ async def register_auth(payload: AuthRequest, session=Depends(_db_session_depend
     except UserAlreadyExistsError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
 
-    return _build_auth_response(user)
+    return _build_auth_response(user, role=resolve_user_role(session=session, user=user))
 
 
 @app.post("/api/auth/login")
@@ -2938,17 +2947,27 @@ async def login_auth(payload: AuthRequest, session=Depends(_db_session_dependenc
     except InvalidCredentialsError as exc:
         raise HTTPException(status_code=401, detail=str(exc)) from exc
 
-    return _build_auth_response(user)
+    return _build_auth_response(user, role=resolve_user_role(session=session, user=user))
 
 
 @app.post("/api/auth/refresh")
-async def refresh_auth(current_user: User = Depends(_get_current_user)):
-    return _build_auth_response(current_user)
+async def refresh_auth(
+    current_user: User = Depends(_get_current_user),
+    session=Depends(_db_session_dependency),
+):
+    return _build_auth_response(
+        current_user, role=resolve_user_role(session=session, user=current_user)
+    )
 
 
 @app.get("/api/auth/me")
-async def auth_me(current_user: User = Depends(_get_current_user)):
-    return _serialize_user(current_user)
+async def auth_me(
+    current_user: User = Depends(_get_current_user),
+    session=Depends(_db_session_dependency),
+):
+    return _serialize_user(
+        current_user, role=resolve_user_role(session=session, user=current_user)
+    )
 
 
 @app.get("/api/model/catalog")

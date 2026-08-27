@@ -16,6 +16,9 @@ import type {
   TaskAttemptPayload,
   TaskAttemptResponse,
   TeachingReport,
+  TeacherAnalyticsResponse,
+  TeacherOverviewResponse,
+  TeacherReviewCatalogResponse,
 } from "./types";
 
 const API_BASE = "/api";
@@ -74,7 +77,7 @@ export const api = {
     });
   },
 
-  async me(): Promise<{ id: string; email: string }> {
+  async me(): Promise<{ id: string; email: string; role?: string }> {
     return request("/auth/me");
   },
 
@@ -205,6 +208,55 @@ export const api = {
     payload: ConfusionAnnotationPayload,
   ): Promise<ConfusionAnnotationResponse> {
     return request<ConfusionAnnotationResponse>("/adaptive/confusions", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async teacherOverview(): Promise<TeacherOverviewResponse> {
+    return request<TeacherOverviewResponse>("/teacher/overview");
+  },
+
+  async createTeacherClass(payload: {
+    name: string;
+    term: string;
+    course_id?: string;
+  }): Promise<{ class_status: string; classroom: import("./types").TeacherClassroom }> {
+    return request("/teacher/classes", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async enrollTeacherStudent(
+    classId: string,
+    studentEmail: string,
+  ): Promise<{ enrollment_status: string; class_id: string; student_ref: string }> {
+    return request(`/teacher/classes/${encodeURIComponent(classId)}/enrollments`, {
+      method: "POST",
+      body: JSON.stringify({ student_email: studentEmail }),
+    });
+  },
+
+  async teacherClassAnalytics(classId: string): Promise<TeacherAnalyticsResponse> {
+    return request<TeacherAnalyticsResponse>(
+      `/teacher/classes/${encodeURIComponent(classId)}/analytics`,
+    );
+  },
+
+  async teacherReviewCatalog(): Promise<TeacherReviewCatalogResponse> {
+    return request<TeacherReviewCatalogResponse>("/teacher/reviews/catalog");
+  },
+
+  async submitTeacherReview(payload: {
+    review_id: string;
+    object_type: "knowledge_card" | "task_item";
+    object_id: string;
+    object_version: string;
+    decision: "approve" | "request_revision" | "reject";
+    note: string;
+  }): Promise<{ review_status: string }> {
+    return request("/teacher/reviews", {
       method: "POST",
       body: JSON.stringify(payload),
     });

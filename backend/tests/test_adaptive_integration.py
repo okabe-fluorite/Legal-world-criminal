@@ -124,7 +124,9 @@ class AdaptiveIntegrationTests(unittest.TestCase):
         self.assertEqual(inserted["status"], "inserted")
         self.assertEqual(duplicate["status"], "duplicate")
         self.assertEqual(conflict["status"], "conflict")
-        self.assertEqual(len(Base.metadata.tables), 9)
+        self.assertIn("learning_events", Base.metadata.tables)
+        self.assertIn("learner_profiles", Base.metadata.tables)
+        self.assertIn("recommendations", Base.metadata.tables)
 
     def test_sqlite_engine_creates_missing_parent_for_local_first_start(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

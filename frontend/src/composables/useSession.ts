@@ -58,6 +58,7 @@ interface GateInfo {
 interface SessionState {
   initialized: boolean;
   email: string | null;
+  role: "student" | "teacher" | "admin" | string;
   wsStatus: WSStatus;
   wsError: string | null;
   caseState: string;
@@ -84,6 +85,7 @@ interface SessionState {
 const state = reactive<SessionState>({
   initialized: false,
   email: null,
+  role: "student",
   wsStatus: "idle",
   wsError: null,
   caseState: "",
@@ -450,6 +452,7 @@ export function useSession() {
     const res = await api.login(email, password);
     setToken(res.access_token);
     state.email = email;
+    state.role = res.user?.role ?? "student";
     await postAuth();
   }
 
@@ -457,6 +460,7 @@ export function useSession() {
     const res = await api.register(email, password);
     setToken(res.access_token);
     state.email = email;
+    state.role = res.user?.role ?? "student";
     await postAuth();
   }
 
@@ -651,6 +655,7 @@ export function useSession() {
     wsClient = null;
     setToken(null);
     state.email = null;
+    state.role = "student";
     state.agents = {};
     state.dialogue = [];
     state.events = [];

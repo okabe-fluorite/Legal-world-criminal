@@ -4,11 +4,14 @@ import { useSession } from "../composables/useSession";
 import { stageAccent } from "../lib/caseState";
 import LearningDossier from "./LearningDossier.vue";
 import LearningJourney from "./LearningJourney.vue";
+import TeacherDashboard from "./TeacherDashboard.vue";
 
 const session = useSession();
 
 const showDossier = ref(false);
 const showJourney = ref(false);
+const showTeacher = ref(false);
+const isTeacher = computed(() => ["teacher", "admin"].includes(session.state.role));
 
 const wsDotClass = computed(() => {
   switch (session.state.wsStatus) {
@@ -94,10 +97,14 @@ const accent = computed(() => stageAccent(session.state.caseState));
         <button class="btn hdr__journey" @click="showJourney = true">
           自主学习
         </button>
+        <button v-if="isTeacher" class="btn hdr__teacher" @click="showTeacher = true">
+          教师驾驶舱
+        </button>
       </div>
 
       <LearningDossier v-if="showDossier" @close="showDossier = false" />
       <LearningJourney v-if="showJourney" @close="showJourney = false" />
+      <TeacherDashboard v-if="showTeacher" @close="showTeacher = false" />
 
       <div class="hdr__user">
         <span class="mono">{{ session.state.email }}</span>
@@ -239,6 +246,16 @@ const accent = computed(() => stageAccent(session.state.caseState));
   color: #e4eedf;
   border-color: var(--accent-success);
   background: rgba(122, 153, 98, 0.1);
+}
+.hdr__teacher {
+  color: #b9ced6;
+  border-color: rgba(92, 122, 138, 0.58);
+  background: rgba(92, 122, 138, 0.05);
+}
+.hdr__teacher:hover {
+  color: #e0ebef;
+  border-color: var(--accent-cool);
+  background: rgba(92, 122, 138, 0.12);
 }
 
 .hdr__user {
