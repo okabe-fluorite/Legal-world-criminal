@@ -185,17 +185,45 @@ def _load_corpus_records() -> list[dict[str, Any]]:
 def clear_corpus_cache() -> None:
     _load_corpus_records.cache_clear()
     _build_bm25_index.cache_clear()
+    _load_corpus_manifest.cache_clear()
+
+
+@lru_cache(maxsize=1)
+def _load_corpus_manifest() -> dict[str, Any] | None:
+    path = LEGAL_CORPUS_DIR / "law_corpus_manifest.json"
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        return payload if isinstance(payload, dict) else None
+    except Exception as exc:
+        logger.warning("[LawCorpus] failed to load governance manifest %s: %s", path, exc)
+        return None
 
 
 def corpus_stats() -> dict[str, Any]:
     records = _load_corpus_records()
     counts: Counter = Counter(record.get("_source_title") or "" for record in records)
+    manifest = _load_corpus_manifest() or {}
+    documents = manifest.get("documents") or {}
     return {
         "available": bool(records),
         "corpus_dir": str(LEGAL_CORPUS_DIR),
         "total_articles": len(records),
         "by_title": dict(counts),
         "ranker": f"bm25(k1={BM25_K1}, b={BM25_B})",
+        "governance_manifest_available": bool(manifest),
+        "download_snapshot_date": manifest.get("download_snapshot_date"),
+        "source_portal_url": manifest.get("source_portal_url"),
+        "versions": {
+            document_id: {
+                "article_count": entry.get("article_count"),
+                "version_as_of": entry.get("version_as_of"),
+                "source_bundle_sha256": entry.get("source_bundle_sha256"),
+            }
+            for document_id, entry in documents.items()
+            if isinstance(entry, dict)
+        },
     }
 
 

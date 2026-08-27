@@ -116,6 +116,8 @@ class PlayerRunLedger:
         polished_message: str,
         final_message: str,
         hint_ids: list[str] | None = None,
+        skill_card_ids: list[str] | None = None,
+        assist_mode: str = "none",
         used_ai_polish: bool = False,
         submitted_at: str = "",
     ) -> dict[str, Any]:
@@ -132,6 +134,8 @@ class PlayerRunLedger:
             "final_message": str(final_message or ""),
             "used_ai_polish": bool(used_ai_polish),
             "hint_ids": _string_list(hint_ids or []),
+            "skill_card_ids": _string_list(skill_card_ids or []),
+            "assist_mode": _string(assist_mode) or "none",
             "submitted_at": _string(submitted_at) or _now(),
         }
         payload["submissions"] = [

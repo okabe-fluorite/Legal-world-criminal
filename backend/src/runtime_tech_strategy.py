@@ -116,6 +116,7 @@ class RuntimeTechStrategy:
         skill_names: list[str] | tuple[str, ...] | None = None,
         message: str = "运行能力已调用",
         detail: str = "",
+        status: str = "demo",
     ) -> None:
         await self._broadcast(
             case_id=case_id,
@@ -124,7 +125,7 @@ class RuntimeTechStrategy:
             skill_names=_dedupe(list(skill_names or [])),
             message=message,
             detail=detail,
-            status="completed",
+            status=status,
         )
 
     async def emit_real_event(
@@ -187,8 +188,9 @@ class RuntimeTechStrategy:
                 case_id=case_id,
                 stage_code=stage_code,
                 tool_names=[normalized_tool],
-                message=message,
-                detail=detail or "运行能力已纳入本阶段分析。",
+                message=f"{message}（未执行）",
+                detail=_clip(str(exc), 240) or detail or "真实工具调用失败。",
+                status="failed",
             )
             return RuntimeTechCallResult(
                 tool_name=normalized_tool,
@@ -207,6 +209,7 @@ class RuntimeTechStrategy:
             tool_names=tools,
             message="读取案件与记忆材料",
             detail="同步案件材料、当事人记忆与律师记忆。",
+            status="demo",
         )
 
     async def emit_stage_research(
@@ -339,8 +342,9 @@ class RuntimeTechStrategy:
             case_id=case_id,
             stage_code=normalized_stage,
             tool_names=["run_case_benchmark_evaluation"],
-            message="单案评测指标已更新",
-            detail="记录本阶段产物供评测面板使用。",
+            message="单案评测待执行",
+            detail="仅记录本阶段产物；尚未运行正式benchmark。",
+            status="demo",
         )
 
     async def _broadcast(

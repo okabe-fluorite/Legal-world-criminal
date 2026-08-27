@@ -251,7 +251,12 @@ def _output_schema_example(stage: str) -> dict[str, Any]:
              "conclusion": "符合/不符合/存疑", "comment": "理由"}
         ],
         "knowledge_verdicts": [
-            {"kp": "知识点名称", "status": "mastered/partial/missing", "reason": "理由"}
+            {
+                "knowledge_id": "金标准中给出的knowledge_id；没有则留空",
+                "knowledge_name": "知识点名称",
+                "status": "mastered/partial/missing",
+                "reason": "理由",
+            }
         ],
         "error_tags": ["错误标签，如：法条引用错误-264与266混淆"],
         "knowledge_gaps": ["知识缺口列表"],
@@ -274,6 +279,12 @@ def build_judge_eval_prompt(
         lines.append("【参考答案（金标准，仅供内部校准，勿要求学生复述）】")
         lines.append(json.dumps(gold_json, ensure_ascii=False, indent=2))
         lines.append("")
+        if gold_json.get("knowledge_points"):
+            lines.append(
+                "knowledge_verdicts必须优先使用上方knowledge_points中的knowledge_id和名称；"
+                "禁止自行改写ID或把相近概念冒充为同一知识点。"
+            )
+            lines.append("")
     else:
         lines.append("【参考答案（金标准）】无（该案未标注金标准，凭刑法学理评分）")
         lines.append("")

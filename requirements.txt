@@ -1,7 +1,10 @@
 
 
 # 核心 AI 框架 
-camel-ai>=0.1.5.4
+camel-ai>=0.2.90,<0.3
+# CAMEL 0.2.x imports FastMCP from the 1.x MCP package.  MCP 2.x moved the
+# symbol and breaks clean installations before the backend can start.
+mcp>=1.20,<2
 openai>=1.0.0
 
 # 文书生成
@@ -20,11 +23,11 @@ pydantic>=2.0.0
 # 系统工具
 python-dotenv>=1.0.1
 pyyaml>=6.0
-pathlib>=1.0.1
 tqdm>=4.66.0
 numpy>=1.26.0
 requests>=2.31.0
 pymupdf>=1.24.0  # 法条 PDF → legal_corpus/processed JSONL（教学法条库构建）
+tzdata>=2025.2  # Windows zoneinfo support for Asia/Shanghai
 
 # 数据库与认证
 SQLAlchemy>=2.0.0

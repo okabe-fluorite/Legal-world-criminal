@@ -13,6 +13,7 @@ from .base_scenario import BaseScenario
 from ..tools.legal import (
     get_document_drafting_tool_name,
     render_document_drafting_payload,
+    render_document_drafting_payload_for_output_dir,
 )
 from ..tools.legal.document_drafting_support import extract_document_body
 from ..utils.prompt_profile import resolve_prompt_profile_max_turns
@@ -215,14 +216,23 @@ class DefenseDraftingScenario(BaseScenario):
         return bool(str(self._drafted_document_payload.get("document_text", "") or "").strip())
 
     def _ensure_pdf_output(self, lawyer: Any) -> None:
-        if self._drafted_document_payload.get("pdf_path") or not self.defense_statement.strip():
+        if not self.defense_statement.strip():
             return
         try:
-            self._drafted_document_payload = render_document_drafting_payload(
-                lawyer,
-                document_type=self.scenario_type,
-                document_text=self.defense_statement,
-            )
+            if self.output_path:
+                self._drafted_document_payload = (
+                    render_document_drafting_payload_for_output_dir(
+                        document_type=self.scenario_type,
+                        document_text=self.defense_statement,
+                        case_output_dir=Path(self.output_path).resolve().parent,
+                    )
+                )
+            elif not self._drafted_document_payload.get("pdf_path"):
+                self._drafted_document_payload = render_document_drafting_payload(
+                    lawyer,
+                    document_type=self.scenario_type,
+                    document_text=self.defense_statement,
+                )
         except Exception as exc:
             logger.warning("Failed to backfill defense PDF output: %s", exc)
 

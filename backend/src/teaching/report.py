@@ -41,7 +41,16 @@ def build_report(student_id: str) -> dict[str, Any]:
             {
                 "code": code,
                 "name": spec["name"],
-                "score": round(float(profile.get("capability_means", {}).get(code, 0.0)), 3),
+                "score": (
+                    round(float(profile["capability_means"][code]), 3)
+                    if code in (profile.get("capability_means") or {})
+                    else None
+                ),
+                "evidence_status": (
+                    "observed"
+                    if code in (profile.get("capability_means") or {})
+                    else "insufficient_evidence"
+                ),
             }
         )
 

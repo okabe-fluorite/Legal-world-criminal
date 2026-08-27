@@ -27,6 +27,7 @@ interface ToolCallEntry {
   tools: string[];
   skills: string[];
   retrieval: RetrievalEvent[];
+  status: "completed" | "failed" | "demo" | string;
   occurred_at: number;
 }
 
@@ -40,6 +41,7 @@ const toolCalls = computed<ToolCallEntry[]>(() => {
     const tools = Array.isArray(raw.tool_names) ? raw.tool_names.map(String) : [];
     const skills = Array.isArray(raw.skill_names) ? raw.skill_names.map(String) : [];
     const retrievalRaw = Array.isArray(raw.retrieval_events) ? raw.retrieval_events : [];
+    const status = String(raw.tech_event_status ?? "completed");
     const retrieval: RetrievalEvent[] = retrievalRaw
       .filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null)
       .map((item) => ({
@@ -66,6 +68,7 @@ const toolCalls = computed<ToolCallEntry[]>(() => {
       tools,
       skills,
       retrieval,
+      status,
       occurred_at: evt.occurred_at,
     });
   }
@@ -137,11 +140,18 @@ function toggleExpand(id: string): void {
         v-for="call in [...displayCalls].reverse()"
         :key="call.id"
         class="call"
-        :class="{ 'call--retrieval': call.retrieval.length }"
+        :class="{
+          'call--retrieval': call.retrieval.length,
+          'call--failed': call.status === 'failed',
+          'call--demo': call.status === 'demo',
+        }"
       >
         <header class="call__head">
           <span class="call__agent">{{ call.agentName }}</span>
           <span v-if="call.stage" class="tag tag--amber">{{ call.stage }}</span>
+          <span v-if="call.status === 'failed'" class="tag tag--failed">未执行</span>
+          <span v-else-if="call.status === 'demo'" class="tag tag--demo">流程提示</span>
+          <span v-else class="tag tag--ok">真实完成</span>
           <span class="call__time mono">{{ stamp(call.occurred_at) }}</span>
         </header>
         <div class="call__items">
@@ -248,6 +258,11 @@ function toggleExpand(id: string): void {
   border: 1px solid var(--line);
   border-radius: var(--radius);
 }
+.call--failed { border-color: rgba(196, 74, 74, 0.65); }
+.call--demo { border-style: dashed; opacity: 0.82; }
+.tag--failed { color: #ffb4b4; border-color: rgba(196, 74, 74, 0.65); }
+.tag--demo { color: var(--parchment-dim); border-color: var(--line-strong); }
+.tag--ok { color: #9ed7b5; border-color: rgba(68, 150, 105, 0.55); }
 
 .call__head {
   display: flex;

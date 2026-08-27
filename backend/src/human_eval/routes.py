@@ -74,7 +74,7 @@ def create_human_eval_router(
         current_user: User = Depends(current_user_dependency),
         session: Session = Depends(session_dependency),
     ):
-        csv_body = runtime_service.export_csv(session=session)
+        csv_body = runtime_service.export_csv(session=session, user=current_user)
         return Response(
             content=csv_body,
             media_type="text/csv; charset=utf-8",

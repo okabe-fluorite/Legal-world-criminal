@@ -9,11 +9,17 @@ Run:  cd backend && .venv\\Scripts\\python.exe -X utf8 scripts\\test_teaching.py
 from __future__ import annotations
 
 import json
+import os
 import sys
 import tempfile
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
+
+# This script validates deterministic/local teaching behavior only. Never let
+# a deployment shell's database or adaptive endpoint turn it into a write test.
+os.environ.pop("DATABASE_URL", None)
+os.environ.pop("SIMLAW_ADAPTIVE_API_BASE_URL", None)
 
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 if str(BACKEND_ROOT) not in sys.path:

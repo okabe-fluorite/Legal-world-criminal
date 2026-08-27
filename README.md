@@ -2,7 +2,7 @@
 
 此项目是 [LEGALWORLD](https://github.com/chidaic/Legal-world.git) 的**纯刑事适配版本**——刑事公诉案件全流程 AI 仿真教学环境（委托洽谈 → 侦查 → 审查起诉 → 辩护词 → 一审 → 上诉 → 二审 → 终审）。
 
-学生在 124 件真实刑事案件中扮演辩护律师，AI 扮演检察官/法官/当事人对抗；每次发言即时核验法条引用，阶段结束后按 8 能力框架自动批阅，跨案件累计学习者画像并沉淀补弱技能卡。
+学生在通过发布门禁的刑事案件中扮演辩护律师，AI 扮演检察官/法官/当事人对抗；每次发言即时核验法条引用，阶段结束后按 8 能力框架提供形成性反馈，跨案件累计证据画像并沉淀补弱技能卡。当前发布集有3个机器门禁通过的低风险试用案例，仍要求法学教师每学期上线前复核；旧124案仅保留为污染修复池，不是教师金标，也不会默认展示给学生。
 
 本项目已移除全部民事流程（起诉状/答辩状/民事一审二审/民事上诉等），仅保留刑事公诉流程与通用基础设施（法条检索、记忆工具、前台接待、地图编排等）。
 
@@ -17,6 +17,82 @@
 - **辩护效果真实反馈**：审查起诉阶段辩护意见成立可促成不起诉提前结案；服判案件判决生效即结案
 
 详见 `AGENTS.md`。
+
+## 本机安装与验证
+
+推荐直接本地启动完整效果，不需要Docker：
+
+```powershell
+uv run --isolated --with-requirements requirements.lock.txt -- `
+  python start.py --model-config E:\guabangjieshuai\EduBrain\.env.example
+```
+
+该命令使用本地SQLite，自动启动backend、adaptive与Vite前端；能识别三组重复的`api_key/baseurl/model`配置，正常优先OpenCode，429/用量窗口/服务暂不可用时自动回退DeepSeek官方API。密钥仅进入子进程环境，不打印、不写入仓库。访问`http://127.0.0.1:5173`，按`Ctrl+C`停止。
+
+首次运行会自动执行一次`npm ci`。也可增加`--no-frontend`或`--no-adaptive`只启动部分服务。
+
+本地测试：
+
+```powershell
+Copy-Item .env.example .env
+uv venv .venv --python 3.11
+uv pip install --python .venv\Scripts\python.exe -r requirements.lock.txt
+$env:PYTHONPATH="$PWD\backend"
+.venv\Scripts\python.exe backend\scripts\verify_criminal.py
+.venv\Scripts\python.exe -m unittest discover -s backend\tests -v
+```
+
+`requirements.lock.txt`是跨Windows/Linux生成的冻结依赖。修改
+`requirements.txt`后应重新执行：
+
+```powershell
+uv pip compile requirements.txt --universal --python-version 3.11 `
+  --output-file requirements.lock.txt
+```
+
+不要提交`.env`。API Key只通过环境变量或部署密钥管理注入。
+
+## Docker Compose生产运行（可选）
+
+```powershell
+Copy-Item .env.example .env
+# 修改.env中的数据库密码、DATABASE_URL、至少32字节JWT_SECRET和模型配置
+docker compose -f backend\docker-compose.yml config --quiet
+docker compose -f backend\docker-compose.yml up --build
+```
+
+Compose包含PostgreSQL、后端、自适应服务和Nginx前端。前端容器代理`/api`与`/ws`，默认访问`http://127.0.0.1:5173`。`.env`只作为容器环境变量来源，不挂载进容器文件系统；不要提交该文件。
+
+## 主模型、微调小模型与自适应服务
+
+- 主模型继续使用`OPENAI_*`配置。
+- 主模型可配置为OpenCode，`SIMLAW_FALLBACK_MODEL_*`配置DeepSeek官方API；仅瞬态错误自动回退并共享熔断。
+- 微调/本地小模型通过统一Model Adapter按任务灰度接入，不需要修改Agent业务代码。
+- `GET /api/model/catalog`可查看脱敏路由状态。
+- 精学模块产出`learning-event-v2`，先幂等写入数据库，再可选推送EduBrain自适应服务。
+- `POST /api/adaptive/recommend`优先调用外部自适应服务；未配置时明确返回
+  `local_evidence_heuristic`降级结果，不冒充ORCDF。
+
+模型配置和验收边界见[`docs/MODEL_ADAPTER.md`](docs/MODEL_ADAPTER.md)。
+真实六阶段链路证据见[`docs/REAL_E2E_AUDIT.md`](docs/REAL_E2E_AUDIT.md)。
+
+## 受治理法条库
+
+离线法条库共813条：刑法505条（2020官方正文精确合并修正案十二）与刑诉法308条（2018第三次修正）。来源批次、原件SHA、输出SHA、版本和隔离源记录在`backend/legal_corpus/processed/law_corpus_manifest.json`。旧PDF语料漏掉刑法第二百条，含第三方署名的“2024最新版”也已隔离，均不得覆盖生产语料。重建与每学期复核要求见[`docs/DATA_GOVERNANCE.md`](docs/DATA_GOVERNANCE.md)。
+
+## 案例发布边界
+
+产品默认只读取`dataset/released_case_dataset.json`，旧124案保留为污染数据修复池，
+不会直接展示给学生。重新生成seed前必须通过：
+
+```powershell
+uv run --no-project --python 3.11 --with-requirements requirements.lock.txt `
+  python backend\scripts\audit_case_dataset.py `
+  --dataset dataset\released_case_dataset.json `
+  --require-all-releasable
+```
+
+治理规则见[`docs/DATA_GOVERNANCE.md`](docs/DATA_GOVERNANCE.md)。
 
 ## 刑事流程
 

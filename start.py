@@ -1,33 +1,49 @@
-"""Launch the LEGALWORLD backend for local development.
+"""Start the complete LegalWorld stack locally (no Docker required).
 
-Usage:
-    python start.py
+Example:
+    uv run --isolated --with-requirements requirements.lock.txt -- \
+      python start.py --model-config E:\\path\\to\\model-groups.env.example
+
+The optional model file may contain repeated ``api_key/baseurl/model`` groups.
+The OpenCode group is mapped to the preferred OPENAI_* endpoint; the official
+DeepSeek group is mapped to the transient-error fallback. Keys are never
+printed or copied into this repository.
 """
 
 from __future__ import annotations
 
+import argparse
 import os
+import secrets
+import shutil
 import signal
 import subprocess
 import sys
 import time
 from pathlib import Path
+from typing import Any
+from urllib.parse import urlsplit
 
-ROOT = Path(__file__).parent
+
+ROOT = Path(__file__).resolve().parent
 BACKEND_DIR = ROOT / "backend"
+FRONTEND_DIR = ROOT / "frontend"
+ADAPTIVE_DIR = ROOT / "adaptive_service"
+RUNTIME_DIR = BACKEND_DIR / "runtime"
 ROOT_ENV_PATH = ROOT / ".env"
 DEFAULT_BACKEND_HOST = "127.0.0.1"
 DEFAULT_BACKEND_PORT = "8000"
+DEFAULT_ADAPTIVE_PORT = "8010"
+DEFAULT_FRONTEND_PORT = "5173"
 
-process: subprocess.Popen | None = None
+processes: list[subprocess.Popen[Any]] = []
 
 
-def read_root_env() -> dict[str, str]:
-    if not ROOT_ENV_PATH.exists():
+def read_env_file(path: Path) -> dict[str, str]:
+    if not path.is_file():
         return {}
-
     values: dict[str, str] = {}
-    for raw_line in ROOT_ENV_PATH.read_text(encoding="utf-8").splitlines():
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
         line = raw_line.strip()
         if not line or line.startswith("#") or "=" not in line:
             continue
@@ -38,69 +54,227 @@ def read_root_env() -> dict[str, str]:
     return values
 
 
-def build_backend_env() -> dict[str, str]:
-    env = {**read_root_env(), **os.environ}
+def read_repeated_model_groups(path: Path) -> list[dict[str, str]]:
+    """Read repeated generic api_key/baseurl/model groups in file order."""
+
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    groups: list[dict[str, str]] = []
+    current: dict[str, str] = {}
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        normalized_key = key.strip().lower()
+        normalized_value = value.strip().strip('"').strip("'")
+        if normalized_key == "api_key" and current:
+            groups.append(current)
+            current = {}
+        current[normalized_key] = normalized_value
+    if current:
+        groups.append(current)
+    return groups
+
+
+def apply_grouped_model_config(env: dict[str, str], path: Path) -> dict[str, str]:
+    groups = read_repeated_model_groups(path)
+    primary = next(
+        (group for group in groups if "opencode.ai" in group.get("baseurl", "")),
+        None,
+    )
+    fallback = next(
+        (
+            group
+            for group in groups
+            if urlsplit(group.get("baseurl", "")).netloc == "api.deepseek.com"
+        ),
+        None,
+    )
+    def set_if_empty(key: str, value: str) -> None:
+        if not str(env.get(key) or "").strip():
+            env[key] = value
+
+    if primary:
+        set_if_empty("OPENAI_API_KEY", primary.get("api_key", ""))
+        set_if_empty("OPENAI_API_BASE_URL", primary.get("baseurl", ""))
+        set_if_empty("OPENAI_MODEL_NAME", primary.get("model", ""))
+    if fallback:
+        set_if_empty("SIMLAW_FALLBACK_MODEL_API_KEY", fallback.get("api_key", ""))
+        set_if_empty(
+            "SIMLAW_FALLBACK_MODEL_API_BASE_URL", fallback.get("baseurl", "")
+        )
+        set_if_empty("SIMLAW_FALLBACK_MODEL_NAME", fallback.get("model", ""))
+        env.setdefault("SIMLAW_FALLBACK_MODEL_TIMEOUT_SECONDS", "180")
+        env.setdefault("SIMLAW_FALLBACK_CIRCUIT_SECONDS", "900")
+    return env
+
+
+def build_backend_env(model_config: Path | None = None) -> dict[str, str]:
+    # Explicit process environment wins over repository .env and grouped file.
+    env = {**read_env_file(ROOT_ENV_PATH), **os.environ}
+    if model_config is not None:
+        apply_grouped_model_config(env, model_config)
+
+    RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
+    database_path = (RUNTIME_DIR / "legalworld-local.db").resolve().as_posix()
+    env.setdefault("DATABASE_URL", f"sqlite+pysqlite:///{database_path}")
+    env.setdefault("JWT_SECRET", secrets.token_urlsafe(48))
+    env.setdefault("SIMLAW_PLAYER_LAWYER_MODE", "defendant")
+    env.setdefault("SIMLAW_SANDBOX_DATA_DIR", str((RUNTIME_DIR / "sandboxes").resolve()))
+    env.setdefault("SIMLAW_SANDBOX_SEED_DIR", str((BACKEND_DIR / "sandbox_seed_data").resolve()))
+    env.setdefault("SIMLAW_ENABLE_DEBUG_UI", "false")
+    env.setdefault("SIMLAW_ENABLE_LEGACY_SIMULATION_API", "false")
+    env.setdefault("SIMLAW_ALLOW_WS_QUERY_TOKEN", "false")
     env["PYTHONUNBUFFERED"] = "1"
     return env
 
 
+def _safe_endpoint_label(url: str) -> str:
+    parsed = urlsplit(str(url or ""))
+    return f"{parsed.scheme}://{parsed.netloc}" if parsed.scheme and parsed.netloc else "not configured"
+
+
+def _spawn(command: list[str], *, cwd: Path, env: dict[str, str]) -> subprocess.Popen[Any]:
+    process = subprocess.Popen(command, cwd=str(cwd), env=env)
+    processes.append(process)
+    return process
+
+
 def cleanup(*_: object) -> None:
-    global process
-    if process and process.poll() is None:
-        process.terminate()
-    sys.exit(0)
+    for process in reversed(processes):
+        if process.poll() is None:
+            process.terminate()
+    deadline = time.monotonic() + 5
+    for process in reversed(processes):
+        if process.poll() is None:
+            try:
+                process.wait(timeout=max(0.1, deadline - time.monotonic()))
+            except subprocess.TimeoutExpired:
+                process.kill()
 
 
-def main() -> None:
-    global process
+def _ensure_frontend_dependencies() -> str:
+    npm = shutil.which("npm.cmd" if sys.platform == "win32" else "npm")
+    if not npm:
+        raise RuntimeError("npm is not available; install Node.js or use the bundled runtime")
+    vite = FRONTEND_DIR / "node_modules" / ".bin" / (
+        "vite.cmd" if sys.platform == "win32" else "vite"
+    )
+    if not vite.exists():
+        print("Installing frontend dependencies once (npm ci)...")
+        subprocess.run([npm, "ci"], cwd=str(FRONTEND_DIR), check=True)
+    return npm
 
-    signal.signal(signal.SIGINT, cleanup)
-    signal.signal(signal.SIGTERM, cleanup)
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--model-config", type=Path)
+    parser.add_argument("--no-adaptive", action="store_true")
+    parser.add_argument("--no-frontend", action="store_true")
+    args = parser.parse_args()
+
+    signal.signal(signal.SIGINT, lambda *_: cleanup())
+    signal.signal(signal.SIGTERM, lambda *_: cleanup())
     if sys.platform == "win32":
-        signal.signal(signal.SIGBREAK, cleanup)
+        signal.signal(signal.SIGBREAK, lambda *_: cleanup())
 
-    env = build_backend_env()
-    host = env.get("BACKEND_HOST", DEFAULT_BACKEND_HOST)
-    port = env.get("BACKEND_PORT", DEFAULT_BACKEND_PORT)
+    env = build_backend_env(args.model_config.resolve() if args.model_config else None)
+    backend_host = env.get("BACKEND_HOST", DEFAULT_BACKEND_HOST)
+    backend_port = env.get("BACKEND_PORT", DEFAULT_BACKEND_PORT)
+    adaptive_port = env.get("ADAPTIVE_PORT", DEFAULT_ADAPTIVE_PORT)
+    frontend_port = env.get("FRONTEND_PORT", DEFAULT_FRONTEND_PORT)
+    npm = _ensure_frontend_dependencies() if not args.no_frontend else ""
 
-    print("=" * 56)
-    print("  LEGALWORLD Core Backend")
-    print("=" * 56)
-    print("Starting FastAPI backend...")
+    if not args.no_adaptive:
+        adaptive_env = dict(env)
+        adaptive_env["PYTHONPATH"] = str((ADAPTIVE_DIR / "src").resolve())
+        adaptive_env.setdefault(
+            "SIMLAW_ADAPTIVE_DB_PATH", str((RUNTIME_DIR / "adaptive.db").resolve())
+        )
+        adaptive_env.setdefault(
+            "SIMLAW_ADAPTIVE_DATA_DIR", str((ADAPTIVE_DIR / "data").resolve())
+        )
+        shared_key = adaptive_env.setdefault(
+            "SIMLAW_ADAPTIVE_API_KEY", secrets.token_urlsafe(32)
+        )
+        env["SIMLAW_ADAPTIVE_API_KEY"] = shared_key
+        env["SIMLAW_ADAPTIVE_API_BASE_URL"] = f"http://127.0.0.1:{adaptive_port}"
+        _spawn(
+            [
+                sys.executable,
+                "-m",
+                "uvicorn",
+                "edubrain_adaptive.api:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                adaptive_port,
+            ],
+            cwd=ADAPTIVE_DIR,
+            env=adaptive_env,
+        )
 
-    process = subprocess.Popen(
+    _spawn(
         [
             sys.executable,
             "-m",
             "uvicorn",
             "ws_server:app",
             "--host",
-            host,
+            backend_host,
             "--port",
-            str(port),
+            backend_port,
         ],
-        cwd=str(BACKEND_DIR),
+        cwd=BACKEND_DIR,
         env=env,
     )
 
-    print()
-    print("=" * 56)
-    print(f"  Backend API: http://{host}:{port}")
-    print(f"  Status:      http://{host}:{port}/api/status")
-    print(f"  WebSocket:   ws://{host}:{port}/ws")
-    print("=" * 56)
-    print("Press Ctrl+C to stop.\n")
+    if not args.no_frontend:
+        frontend_env = dict(env)
+        frontend_env["BACKEND_URL"] = f"http://{backend_host}:{backend_port}"
+        _spawn(
+            [npm, "run", "dev", "--", "--host", "127.0.0.1", "--port", frontend_port],
+            cwd=FRONTEND_DIR,
+            env=frontend_env,
+        )
+
+    print("=" * 64)
+    print("LegalWorld local stack started")
+    print(f"Frontend:  http://127.0.0.1:{frontend_port}" if not args.no_frontend else "Frontend:  disabled")
+    print(f"Backend:   http://{backend_host}:{backend_port}")
+    print(
+        f"Adaptive:  http://127.0.0.1:{adaptive_port}"
+        if not args.no_adaptive
+        else "Adaptive:  disabled"
+    )
+    print(
+        "Primary:   "
+        f"{env.get('OPENAI_MODEL_NAME') or 'not configured'} @ "
+        f"{_safe_endpoint_label(env.get('OPENAI_API_BASE_URL', ''))}"
+    )
+    print(
+        "Fallback:  "
+        f"{env.get('SIMLAW_FALLBACK_MODEL_NAME') or 'not configured'} @ "
+        f"{_safe_endpoint_label(env.get('SIMLAW_FALLBACK_MODEL_API_BASE_URL', ''))}"
+    )
+    print("Local SQLite/runtime data:", RUNTIME_DIR)
+    print("Press Ctrl+C to stop. No API keys are printed or written.")
+    print("=" * 64)
 
     try:
         while True:
-            ret = process.poll()
-            if ret is not None:
-                print(f"\nBackend exited with code {ret}.")
-                sys.exit(ret)
+            for process in processes:
+                code = process.poll()
+                if code is not None:
+                    print(f"A local service exited with code {code}; stopping the stack.")
+                    cleanup()
+                    return int(code)
             time.sleep(0.5)
     except KeyboardInterrupt:
         cleanup()
+        return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

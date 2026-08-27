@@ -223,8 +223,13 @@ class HumanEvalService:
             "submitted_at": rating.submitted_at.isoformat() if rating.submitted_at else None,
         }
 
-    def export_csv(self, session: Session) -> str:
-        ratings = session.scalars(select(HumanEvalRating).order_by(HumanEvalRating.case_id, HumanEvalRating.rater_id)).all()
+    def export_csv(self, session: Session, user: User | None = None) -> str:
+        query = select(HumanEvalRating)
+        if user is not None:
+            query = query.where(HumanEvalRating.user_id == user.id)
+        ratings = session.scalars(
+            query.order_by(HumanEvalRating.case_id, HumanEvalRating.rater_id)
+        ).all()
         fieldnames = self._csv_fieldnames()
         output = StringIO()
         writer = csv.DictWriter(output, fieldnames=fieldnames)

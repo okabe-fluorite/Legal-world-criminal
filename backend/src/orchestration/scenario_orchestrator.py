@@ -2658,6 +2658,7 @@ class ScenarioOrchestrator:
                 scenario_prompt=PromptAssembler.build_scenario_prompt("client", "INV", scenario_data),
             )
 
+            lawyer.scenario_data = scenario_data
             lawyer.activate(lawyer_prompt)
             client.scenario_data = scenario_data
             client.activate(client_prompt)
@@ -3366,6 +3367,7 @@ class ScenarioOrchestrator:
             fi = info.get("first_instance", {}) or {}
 
             trial_data = self._build_criminal_scenario_data(case, "trial_stage")
+            trial_data["case_output_dir"] = str(case_output_dir.resolve())
 
             judge_scenario_data = {
                 **trial_data,
@@ -3396,6 +3398,9 @@ class ScenarioOrchestrator:
                 scenario_prompt=PromptAssembler.build_scenario_prompt("client", "CR", trial_data, template_key="CR-defendant"),
             )
 
+            judge.scenario_data = dict(judge_scenario_data)
+            prosecutor.scenario_data = dict(prosecutor_scenario_data)
+            lawyer.scenario_data = dict(trial_data)
             judge.activate(judge_prompt)
             prosecutor.activate(prosecutor_prompt)
             lawyer.activate(defense_prompt)
@@ -3714,6 +3719,7 @@ class ScenarioOrchestrator:
             fi = info.get("first_instance", {}) or {}
 
             appeal_data = self._build_criminal_scenario_data(case, "appeal_stage")
+            appeal_data["case_output_dir"] = str(case_output_dir.resolve())
 
             judge_prompt = PromptAssembler.build(
                 profile=self._build_judge_profile(judge),
@@ -3739,6 +3745,9 @@ class ScenarioOrchestrator:
                 scenario_prompt=PromptAssembler.build_scenario_prompt("client", "CRA", appeal_data, template_key="CRA-appellant"),
             )
 
+            judge.scenario_data = dict(appeal_data)
+            prosecutor.scenario_data = dict(appeal_data)
+            lawyer.scenario_data = dict(appeal_data)
             judge.activate(judge_prompt)
             prosecutor.activate(prosecutor_prompt)
             lawyer.activate(defense_prompt)
@@ -3880,4 +3889,3 @@ class ScenarioOrchestrator:
         await self._start_consultation_immediately(
             client, lawyer, case_id, firm_id, party_role, payload
         )
-

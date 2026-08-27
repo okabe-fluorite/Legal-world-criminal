@@ -116,6 +116,8 @@ class ResponseAssist:
     ai_polished_message: str = ""
     final_submitted_message: str = ""
     used_ai_polish: bool = False
+    assist_mode: str = "none"
+    skill_card_ids: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     updated_at: Optional[str] = None
 
@@ -134,6 +136,8 @@ class ResponseAssist:
             "ai_polished_message": self.ai_polished_message,
             "final_submitted_message": self.final_submitted_message,
             "used_ai_polish": self.used_ai_polish,
+            "assist_mode": self.assist_mode,
+            "skill_card_ids": list(self.skill_card_ids),
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }

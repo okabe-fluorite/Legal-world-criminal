@@ -375,9 +375,11 @@ function scheduleReviewPolling(fromState: string) {
 }
 
 function meanScore(event: LearningEvent): string {
-  const scores = Object.values(event.capability_scores ?? {});
+  const scores = Object.values(event.capability_scores ?? {}).filter(
+    (entry) => typeof entry.score === "number",
+  );
   if (!scores.length) return "—";
-  const mean = scores.reduce((acc, s) => acc + (Number(s.score) || 0), 0) / scores.length;
+  const mean = scores.reduce((acc, s) => acc + Number(s.score), 0) / scores.length;
   return (mean * 10).toFixed(1);
 }
 

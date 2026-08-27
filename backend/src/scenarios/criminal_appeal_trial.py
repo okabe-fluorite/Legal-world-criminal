@@ -19,6 +19,7 @@ from ..tools.legal import (
     extract_judgment_document_tool_payload,
     get_judgment_document_type_for_scenario,
     render_judgment_document_payload,
+    render_judgment_document_payload_for_output_dir,
 )
 
 logger = logging.getLogger(__name__)
@@ -158,14 +159,23 @@ class CriminalAppealTrialScenario(CriminalTrialScenario):
             self._drafted_document_payload = payload
 
     def _ensure_pdf_output(self, judge_agent: Any) -> None:
-        if self._drafted_document_payload.get("pdf_path") or not str(self.final_judgment or "").strip():
+        if not str(self.final_judgment or "").strip():
             return
         try:
-            self._drafted_document_payload = render_judgment_document_payload(
-                judge_agent,
-                document_type="CRA",
-                document_text=str(self.final_judgment or ""),
-            )
+            if self.output_path:
+                self._drafted_document_payload = (
+                    render_judgment_document_payload_for_output_dir(
+                        document_type="CRA",
+                        document_text=str(self.final_judgment or ""),
+                        case_output_dir=Path(self.output_path).resolve().parent,
+                    )
+                )
+            elif not self._drafted_document_payload.get("pdf_path"):
+                self._drafted_document_payload = render_judgment_document_payload(
+                    judge_agent,
+                    document_type="CRA",
+                    document_text=str(self.final_judgment or ""),
+                )
         except Exception as exc:
             logger.warning("[CRA] Failed to backfill second-instance criminal judgment PDF: %s", exc)
 

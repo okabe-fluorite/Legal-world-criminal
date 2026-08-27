@@ -126,6 +126,7 @@ def build_for_pdf(
     source_title: str,
     category: str,
     effective_date: str,
+    source_url: str,
     output_dir: Path,
 ) -> int:
     raw_text = extract_pdf_text(pdf_path)
@@ -137,14 +138,14 @@ def build_for_pdf(
         "title": source_title,
         "category": category,
         "effective_date": effective_date,
-        "source_url": "",
+        "source_url": source_url,
     }
     articles = build_documents_from_plaintext(
         source_document_id=document_id,
         source_title=source_title,
         category=category,
         effective_date=effective_date,
-        source_url="",
+        source_url=source_url,
         text=body_text,
     )
 
@@ -181,6 +182,11 @@ def main() -> int:
         default=str(BACKEND_ROOT / "legal_corpus" / "processed"),
         help="Directory to write processed JSONL",
     )
+    parser.add_argument(
+        "--source-base-url",
+        default="",
+        help="Optional official source URL recorded on every article",
+    )
     args = parser.parse_args()
 
     pdf_dir = Path(args.pdf_dir)
@@ -198,6 +204,7 @@ def main() -> int:
             source_title=source["source_title"],
             category=source["category"],
             effective_date=source["effective_date"],
+            source_url=str(args.source_base_url or ""),
             output_dir=output_dir,
         )
 

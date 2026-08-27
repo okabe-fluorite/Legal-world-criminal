@@ -1,0 +1,17 @@
+{
+  "schema_version": "criminal-law-knowledge-catalog-v1",
+  "status": "pilot_teacher_approved",
+  "knowledge_points": [
+    {"knowledge_id": "CRIM_KP_07D38E1BC70F5155", "canonical_name": "共同犯罪与主从犯"},
+    {"knowledge_id": "CRIM_KP_2DD5C021746121C3", "canonical_name": "故意、过失与意外事件"},
+    {"knowledge_id": "CRIM_KP_467B1D9FCFABDA50", "canonical_name": "罪刑法定原则"},
+    {"knowledge_id": "CRIM_KP_7B01D1EBC00BC8ED", "canonical_name": "正当防卫与防卫过当"},
+    {"knowledge_id": "CRIM_KP_85BF396EA13741B5", "canonical_name": "紧急避险"},
+    {"knowledge_id": "CRIM_KP_8AABCC5F5D5822AD", "canonical_name": "犯罪预备、未遂与中止"},
+    {"knowledge_id": "CRIM_KP_A9EE556B77025221", "canonical_name": "刑罚种类"},
+    {"knowledge_id": "CRIM_KP_B81F51ACC84055A4", "canonical_name": "刑事责任年龄"},
+    {"knowledge_id": "CRIM_KP_BC82753EB8088C13", "canonical_name": "犯罪概念与但书"},
+    {"knowledge_id": "CRIM_KP_DB1E1940114B4C0F", "canonical_name": "抢劫罪的基本构成"}
+  ]
+}
+

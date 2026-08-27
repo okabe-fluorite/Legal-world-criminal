@@ -2,20 +2,43 @@
 import { computed, onMounted, ref } from "vue";
 import { api } from "../lib/api";
 import { useSession } from "../composables/useSession";
-import type { TeachingReport } from "../lib/types";
+import type {
+  AdaptiveRecommendationItem,
+  AdaptiveRecommendationResponse,
+  TeachingReport,
+} from "../lib/types";
 
 const session = useSession();
 const report = ref<TeachingReport | null>(null);
+const adaptive = ref<AdaptiveRecommendationResponse | null>(null);
 const loading = ref(true);
 const loadError = ref<string | null>(null);
+const adaptiveLoadError = ref<string | null>(null);
 
 async function load() {
   loading.value = true;
   loadError.value = null;
+  adaptiveLoadError.value = null;
   try {
     const me = await api.me();
     const sid = String(me.id ?? "").trim() || "anonymous";
-    report.value = await api.teachingReport(sid);
+    const [reportResult, adaptiveResult] = await Promise.allSettled([
+      api.teachingReport(sid),
+      api.adaptiveRecommendations(),
+    ]);
+    report.value = reportResult.status === "fulfilled" ? reportResult.value : null;
+    adaptive.value = adaptiveResult.status === "fulfilled" ? adaptiveResult.value : null;
+    if (adaptiveResult.status === "rejected") {
+      adaptiveLoadError.value = adaptiveResult.reason instanceof Error
+        ? adaptiveResult.reason.message
+        : String(adaptiveResult.reason);
+    }
+    if (reportResult.status === "rejected" && adaptiveResult.status === "rejected") {
+      const reportError = reportResult.reason instanceof Error
+        ? reportResult.reason.message
+        : String(reportResult.reason);
+      throw new Error(`教学报告：${reportError}；自适应推荐：${adaptiveLoadError.value}`);
+    }
   } catch (err) {
     loadError.value = err instanceof Error ? err.message : String(err);
   } finally {
@@ -50,7 +73,7 @@ const ringPolygons = RINGS.map((ring) =>
 
 const radarPoints = computed(() => {
   const caps = report.value?.capability_radar ?? [];
-  return caps.map((c, i) => ({ ...axisPoint(i, c.score), cap: c }));
+  return caps.map((c, i) => ({ ...axisPoint(i, c.score ?? 0), cap: c }));
 });
 
 const radarShape = computed(() =>
@@ -58,7 +81,7 @@ const radarShape = computed(() =>
 );
 
 const radarEmpty = computed(() =>
-  (report.value?.capability_radar ?? []).every((c) => c.score <= 0),
+  (report.value?.capability_radar ?? []).every((c) => c.score === null),
 );
 
 const labelAnchor = (i: number) => {
@@ -115,8 +138,46 @@ const STAGE_SHORT: Record<string, string> = {
 
 const hasData = computed(() =>
   (report.value?.growth_curve?.length ?? 0) > 0 ||
-  (report.value?.capability_radar ?? []).some((c) => c.score > 0),
+  (report.value?.capability_radar ?? []).some((c) => typeof c.score === "number") ||
+  (recommendations.value.length > 0),
 );
+
+const recommendations = computed<AdaptiveRecommendationItem[]>(() => {
+  if (adaptive.value?.recommendations?.length) return adaptive.value.recommendations;
+  return (report.value?.recommendations ?? []).map((row) => ({ ...row }));
+});
+
+const REASON_LABELS: Record<string, string> = {
+  case_evidence_indicates_weakness: "案件表现提示薄弱，优先补强",
+  case_evidence_requires_reinforcement: "案件表现尚不稳定，安排巩固",
+  provisional_mastery_spaced_review: "临时掌握证据较高，安排间隔复习",
+  insufficient_repeated_evidence: "证据次数不足，继续采集",
+  no_evidence_collect_diagnostic: "尚无证据，先做覆盖性诊断",
+};
+
+function recommendationQuestion(row: AdaptiveRecommendationItem): string {
+  return String(row.stem ?? row.question ?? "待完成的诊断任务");
+}
+
+function recommendationKnowledge(row: AdaptiveRecommendationItem): string {
+  return String(
+    row.knowledge_name ?? row.knowledge_points?.join(" / ") ?? row.chapter ?? "综合能力",
+  );
+}
+
+function recommendationEvidence(row: AdaptiveRecommendationItem): string {
+  if (adaptive.value?.status === "fallback") return "本地规则·降级";
+  const status = row.knowledge_id
+    ? adaptive.value?.profile?.knowledge?.[row.knowledge_id]?.evidence_status
+    : undefined;
+  if (status === "provisional") return "临时证据";
+  if (status === "observed") return "已观察";
+  return "证据不足";
+}
+
+function recommendationReason(row: AdaptiveRecommendationItem): string {
+  return REASON_LABELS[String(row.reason_code ?? "")] ?? "根据当前学习证据排序";
+}
 </script>
 
 <template>
@@ -143,6 +204,9 @@ const hasData = computed(() =>
 
       <div v-else-if="!hasData" class="dos__state">
         尚无批阅记录——完成一个案件阶段后，这里会呈现你的八维能力画像。
+        <span v-if="adaptiveLoadError" class="dos__inlineWarn">
+          自适应推荐暂不可用：{{ adaptiveLoadError }}
+        </span>
       </div>
 
       <div v-else class="dos__body">
@@ -209,7 +273,7 @@ const hasData = computed(() =>
                 :dx="labelDx(i)"
                 class="radar__score"
               >
-                {{ (p.cap.score * 10).toFixed(1) }}
+                {{ p.cap.score === null ? "证据不足" : (p.cap.score * 10).toFixed(1) }}
               </text>
             </svg>
           </section>
@@ -260,25 +324,47 @@ const hasData = computed(() =>
             </ul>
           </section>
 
-          <section v-if="report?.recommendations?.length" class="dos__blk">
-            <p class="dos__label mono">RECOMMENDED · 补强练习</p>
+          <section v-if="recommendations.length" class="dos__blk">
+            <div class="recmeta">
+              <p class="dos__label mono">ADAPTIVE NEXT · 个性化下一步</p>
+              <div v-if="adaptive" class="recmeta__line mono">
+                <span :class="['recmeta__source', { 'recmeta__source--fallback': adaptive.status === 'fallback' }]">
+                  {{ adaptive.source === 'edubrain_adaptive_service' ? '自适应服务' : '本地规则·降级' }}
+                </span>
+                <span v-if="adaptive.policy_version">策略 {{ adaptive.policy_version }}</span>
+                <span>事件证据 {{ adaptive.profile?.eligible_event_count ?? 0 }} 条</span>
+              </div>
+              <p v-if="adaptive?.warning" class="recmeta__warning">{{ adaptive.warning }}</p>
+              <p v-else-if="adaptiveLoadError" class="recmeta__warning">
+                自适应服务不可用，当前显示本地报告建议：{{ adaptiveLoadError }}
+              </p>
+            </div>
             <ol class="recs">
-              <li v-for="(r, i) in report.recommendations" :key="i" class="recs__item">
+              <li v-for="(r, i) in recommendations" :key="r.task_id ?? r.item_id ?? i" class="recs__item">
                 <div class="recs__head">
                   <span class="recs__no mono">{{ String(i + 1).padStart(2, "0") }}</span>
-                  <span class="recs__chapter">{{ r.chapter }}</span>
-                  <span v-if="r.question_type" class="recs__type mono">{{ r.question_type }}</span>
+                  <span class="recs__chapter">{{ recommendationKnowledge(r) }}</span>
+                  <span class="recs__evidence mono">{{ recommendationEvidence(r) }}</span>
+                  <span v-if="r.cognitive_dimension ?? r.question_type" class="recs__type mono">
+                    {{ r.cognitive_dimension ?? r.question_type }}
+                  </span>
                 </div>
-                <p class="recs__q">{{ r.question }}</p>
-                <div class="recs__kps">
-                  <span v-for="kp in r.knowledge_points" :key="kp" class="recs__kp">{{ kp }}</span>
+                <p class="recs__q">{{ recommendationQuestion(r) }}</p>
+                <div v-if="r.options" class="recs__options">
+                  <span v-for="(option, key) in r.options" :key="key">
+                    <b class="mono">{{ key }}</b> {{ option }}
+                  </span>
+                </div>
+                <div class="recs__why">
+                  <span>{{ recommendationReason(r) }}</span>
+                  <span v-if="r.difficulty" class="mono">难度 {{ r.difficulty }}/3</span>
                 </div>
               </li>
             </ol>
           </section>
 
           <section
-            v-if="!report?.top_errors?.length && !report?.knowledge_gaps?.length && !report?.recommendations?.length"
+            v-if="!report?.top_errors?.length && !report?.knowledge_gaps?.length && !recommendations.length"
             class="dos__blk"
           >
             <p class="dos__label mono">REMARKS</p>
@@ -379,6 +465,11 @@ export default { name: "LearningDossier" };
   align-items: center;
 }
 .dos__state--err { color: #e8a08b; }
+.dos__inlineWarn {
+  max-width: 620px;
+  color: var(--accent-amber);
+  font-size: 0.78rem;
+}
 
 /* ── 体 ── */
 .dos__body {
@@ -496,6 +587,35 @@ export default { name: "LearningDossier" };
 .gaps__n { font-size: 0.68rem; color: var(--parchment-faint); flex-shrink: 0; }
 
 /* 推荐练习 */
+.recmeta { margin-bottom: 10px; }
+.recmeta__line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+  margin-top: -3px;
+  color: var(--parchment-faint);
+  font-size: 0.62rem;
+}
+.recmeta__source {
+  padding: 2px 6px;
+  color: #9fc8b5;
+  border: 1px solid rgba(92, 151, 123, 0.5);
+  border-radius: 2px;
+}
+.recmeta__source--fallback {
+  color: var(--accent-amber);
+  border-color: rgba(176, 138, 62, 0.55);
+}
+.recmeta__warning {
+  margin: 7px 0 0;
+  padding: 6px 8px;
+  color: var(--accent-amber);
+  background: rgba(176, 138, 62, 0.08);
+  border-left: 2px solid var(--accent-amber);
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
 .recs {
   list-style: none;
   margin: 0;
@@ -538,6 +658,14 @@ export default { name: "LearningDossier" };
   color: var(--accent-amber);
   flex-shrink: 0;
 }
+.recs__evidence {
+  flex-shrink: 0;
+  padding: 1px 5px;
+  color: var(--accent-amber);
+  border: 1px dashed rgba(176, 138, 62, 0.5);
+  border-radius: 2px;
+  font-size: 0.6rem;
+}
 .recs__q {
   margin: 0 0 6px;
   font-family: "Noto Serif SC", var(--font-body);
@@ -548,6 +676,29 @@ export default { name: "LearningDossier" };
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+.recs__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px 8px;
+  margin: 0 0 7px;
+  color: var(--parchment-dim);
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+.recs__options span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.recs__options b { color: var(--accent-cool); font-weight: 500; }
+.recs__why {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--parchment-faint);
+  font-size: 0.65rem;
 }
 .recs__kps { display: flex; flex-wrap: wrap; gap: 5px; }
 .recs__kp {
@@ -580,5 +731,6 @@ export default { name: "LearningDossier" };
 
 @media (max-width: 860px) {
   .dos__body { grid-template-columns: 1fr; }
+  .recs__options { grid-template-columns: 1fr; }
 }
 </style>

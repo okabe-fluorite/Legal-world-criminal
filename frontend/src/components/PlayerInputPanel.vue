@@ -9,6 +9,7 @@ const session = useSession();
 const draft = ref("");
 const polished = ref<string | null>(null);
 const submittedOriginal = ref<string>("");
+const assistMode = ref<"none" | "polish" | "draft">("none");
 const busy = ref<"idle" | "drafting" | "polishing" | "submitting">("idle");
 const error = ref<string | null>(null);
 const skillCardPanel = ref<InstanceType<typeof SkillCardPanel> | null>(null);
@@ -23,6 +24,7 @@ watch(
       draft.value = "";
       polished.value = null;
       submittedOriginal.value = "";
+      assistMode.value = "none";
       error.value = null;
       busy.value = "idle";
     }
@@ -48,6 +50,7 @@ async function handleDraft() {
     if (res.success && text) {
       polished.value = null;
       draft.value = text;
+      assistMode.value = "draft";
     }
   } catch (err) {
     error.value = err instanceof Error ? err.message : String(err);
@@ -66,6 +69,7 @@ async function handlePolish() {
     const text = res.assist?.ai_polished_message ?? "";
     if (res.success && text) {
       polished.value = text;
+      assistMode.value = "polish";
     }
   } catch (err) {
     error.value = err instanceof Error ? err.message : String(err);
@@ -76,21 +80,22 @@ async function handlePolish() {
 
 function revertPolish() {
   polished.value = null;
+  assistMode.value = "none";
 }
 
 async function handleSubmit() {
   if (!request.value || !canSubmit.value) return;
   busy.value = "submitting";
   error.value = null;
-  const skillInjection = skillCardPanel.value?.injectionText || "";
-  const message = skillInjection
-    ? `${finalMessage.value}\n\n${skillInjection}`
-    : finalMessage.value;
+  const message = finalMessage.value;
+  const skillCardIds = skillCardPanel.value?.selectedSlugs ?? [];
   try {
     const res = await api.playerRespond(request.value.request_id, message, {
       original_message: submittedOriginal.value || undefined,
       polished_message: polished.value || undefined,
-      used_ai_polish: !!polished.value,
+      skill_card_ids: skillCardIds,
+      assist_mode: assistMode.value,
+      used_ai_polish: assistMode.value === "polish",
     });
     const fb = res?.citation_feedback;
     if (fb && Array.isArray(fb.messages) && fb.messages.length > 0) {

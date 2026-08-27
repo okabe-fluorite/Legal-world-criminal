@@ -71,6 +71,11 @@ from src.tools.common.skill_loader_tool import _FlatSkillToolkit
 from src.utils.case_progress import infer_case_state_from_artifacts, normalize_case_state
 from src.utils.runtime_flags import player_lawyer_mode_for_frontend, scenario_verbose_enabled
 from src.utils.memory_initializer import initialize_client_memory, initialize_lawyer_memory
+from src.utils.model_config import build_model_catalog
+from src.integration.adaptive_client import (
+    get_adaptive_catalog,
+    request_recommendations,
+)
 from src.version import BACKEND_VERSION, BACKEND_VERSION_LABEL, BACKEND_VERSION_TIME
 
 logging.basicConfig(
@@ -148,6 +153,12 @@ _RUNTIME_STAGE_LABELS = {
     "CRA": "刑事二审庭审",
 }
 _MODEL_UNAVAILABLE_HINTS = (
+    "429",
+    "rate limit",
+    "usage limit",
+    "5-hour",
+    "5 hour",
+    "too many requests",
     "503",
     "model_not_found",
     "no available channel for model",
@@ -365,8 +376,12 @@ def _read_non_negative_int_env(name: str, default: int = 0) -> int:
         logger.warning("Invalid %s=%r, fallback to %d", name, raw, default)
         return default
 
-SANDBOX_DATA_DIR = _backend_dir / "sandbox_data"
-SANDBOX_SEED_DIR = _backend_dir / "sandbox_seed_data"
+SANDBOX_DATA_DIR = Path(
+    os.getenv("SIMLAW_SANDBOX_DATA_DIR") or (_backend_dir / "sandbox_data")
+).expanduser().resolve()
+SANDBOX_SEED_DIR = Path(
+    os.getenv("SIMLAW_SANDBOX_SEED_DIR") or (_backend_dir / "sandbox_seed_data")
+).expanduser().resolve()
 CASE_PICKER_METADATA_PATH = SANDBOX_SEED_DIR / "case_picker_metadata.yaml"
 DEBUG_UI_DIR = _backend_dir / "debug_ui"
 RUNTIME_CONFIG_KEYS = (
@@ -398,9 +413,19 @@ CHARACTER_POOL = [
 ]
 
 app = FastAPI(title="SimLaw Town WebSocket Server")
+_cors_origins = [
+    value.strip()
+    for value in str(
+        os.getenv(
+            "SIMLAW_CORS_ORIGINS",
+            "http://127.0.0.1:5173,http://localhost:5173",
+        )
+    ).split(",")
+    if value.strip()
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -739,6 +764,20 @@ def _normalize_runtime_config(payload: RuntimeConfigRequest) -> dict[str, str]:
     }
 
 
+def _debug_ui_enabled() -> bool:
+    return str(os.getenv("SIMLAW_ENABLE_DEBUG_UI", "false")).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
+def _require_debug_ui() -> None:
+    if not _debug_ui_enabled():
+        raise HTTPException(status_code=404, detail="debug UI is disabled")
+
+
 def _mask_runtime_secret(value: str) -> str:
     raw = str(value or "").strip()
     if not raw:
@@ -813,6 +852,31 @@ def _extract_bearer_token(authorization: str | None) -> str:
     if not token:
         raise HTTPException(status_code=401, detail="Missing bearer token")
     return token
+
+
+def _extract_websocket_token(websocket: WebSocket) -> tuple[str, str | None]:
+    """Read a WebSocket credential without putting it in access-log URLs."""
+
+    auth_header = str(websocket.headers.get("authorization") or "").strip()
+    if auth_header.startswith("Bearer "):
+        return auth_header[7:].strip(), None
+
+    offered = [
+        value.strip()
+        for value in str(websocket.headers.get("sec-websocket-protocol") or "").split(",")
+        if value.strip()
+    ]
+    if "simlaw-auth" in offered:
+        index = offered.index("simlaw-auth")
+        if index + 1 < len(offered):
+            return offered[index + 1], "simlaw-auth"
+
+    allow_query = str(
+        os.getenv("SIMLAW_ALLOW_WS_QUERY_TOKEN", "false")
+    ).strip().lower() in {"1", "true", "yes", "on"}
+    if allow_query:
+        return str(websocket.query_params.get("token") or "").strip(), None
+    return "", None
 
 
 def _db_session_dependency():
@@ -2743,11 +2807,7 @@ async def _start_or_resume_simulation() -> dict:
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    token = str(websocket.query_params.get("token") or "").strip()
-    if not token:
-        auth_header = str(websocket.headers.get("authorization") or "").strip()
-        if auth_header.startswith("Bearer "):
-            token = auth_header[7:].strip()
+    token, accepted_subprotocol = _extract_websocket_token(websocket)
     if not token:
         await websocket.close(code=4401)
         return
@@ -2763,7 +2823,7 @@ async def websocket_endpoint(websocket: WebSocket):
     context = _get_sandbox_manager().get_or_create_context(sandbox)
     runtime_engine = getattr(context, "engine", None)
 
-    await websocket.accept()
+    await websocket.accept(subprotocol=accepted_subprotocol)
     context.connected_clients.add(websocket)
     add_client = getattr(runtime_engine, "add_client", None)
     if callable(add_client):
@@ -2881,6 +2941,53 @@ async def refresh_auth(current_user: User = Depends(_get_current_user)):
 @app.get("/api/auth/me")
 async def auth_me(current_user: User = Depends(_get_current_user)):
     return _serialize_user(current_user)
+
+
+@app.get("/api/model/catalog")
+async def model_catalog(current_user: User = Depends(_get_current_user)):
+    """Return secret-free task routing for primary and fine-tuned models."""
+    _ = current_user
+    return build_model_catalog()
+
+
+@app.get("/api/adaptive/catalog")
+async def adaptive_catalog(current_user: User = Depends(_get_current_user)):
+    _ = current_user
+    return get_adaptive_catalog()
+
+
+@app.post("/api/adaptive/recommend")
+async def adaptive_recommend(
+    payload: dict[str, Any] | None = None,
+    current_user: User = Depends(_get_current_user),
+):
+    result = request_recommendations(
+        str(current_user.id),
+        context=dict(payload or {}),
+    )
+    if result["status"] == "sent":
+        return {
+            "status": "ok",
+            "source": "edubrain_adaptive_service",
+            **dict(result.get("response") or {}),
+        }
+    if result["status"] == "error":
+        raise HTTPException(
+            status_code=502,
+            detail=f"adaptive service unavailable: {result.get('error') or 'unknown error'}",
+        )
+
+    # Explicitly labeled fallback: useful for an offline demo, never presented
+    # as ORCDF or validated path efficacy.
+    from src.teaching.report import build_report
+
+    report = build_report(str(current_user.id))
+    return {
+        "status": "fallback",
+        "source": "local_evidence_heuristic",
+        "recommendations": report.get("recommendations") or [],
+        "warning": "external adaptive service is not configured",
+    }
 
 
 @app.get("/api/sandbox")
@@ -3429,7 +3536,9 @@ async def runtime_tech_catalog():
 
 
 @app.get("/api/debug/runtime-issues")
-async def debug_runtime_issues():
+async def debug_runtime_issues(current_user: User = Depends(_get_current_user)):
+    _ = current_user
+    _require_debug_ui()
     latest = _runtime_issues[0] if _runtime_issues else None
     return {
         "issues": list(_runtime_issues),
@@ -3441,6 +3550,7 @@ async def debug_runtime_issues():
 @app.get("/api/debug/runtime-config")
 async def debug_runtime_config(current_user: User = Depends(_get_current_user)):
     _ = current_user
+    _require_debug_ui()
     return {
         "success": True,
         "config": _read_runtime_config(),
@@ -3455,6 +3565,7 @@ async def update_debug_runtime_config(
     current_user: User = Depends(_get_current_user),
 ):
     _ = current_user
+    _require_debug_ui()
     config = _normalize_runtime_config(payload)
     _apply_runtime_config(config)
     return {
@@ -3471,6 +3582,7 @@ async def update_debug_runtime_config_and_restart(
     current_user: User = Depends(_get_current_user),
 ):
     _ = current_user
+    _require_debug_ui()
     config = _normalize_runtime_config(payload)
     _apply_runtime_config(config)
     _schedule_backend_restart()
@@ -3485,25 +3597,39 @@ async def update_debug_runtime_config_and_restart(
 
 @app.get("/debug")
 async def debug_console_page():
+    _require_debug_ui()
     return FileResponse(DEBUG_UI_DIR / "index.html")
 
 
+def _require_legacy_simulation_api() -> None:
+    if str(
+        os.getenv("SIMLAW_ENABLE_LEGACY_SIMULATION_API", "false")
+    ).strip().lower() not in {"1", "true", "yes", "on"}:
+        raise HTTPException(status_code=404, detail="legacy simulation API is disabled")
+
+
 @app.get("/api/simulation/status")
-async def simulation_status():
+async def simulation_status(current_user: User = Depends(_get_current_user)):
     """模拟状态。"""
+    _ = current_user
+    _require_legacy_simulation_api()
     return _build_simulation_status()
 
 
 @app.post("/api/simulation/start")
-async def start_simulation():
+async def start_simulation(current_user: User = Depends(_get_current_user)):
     """开始或恢复模拟。"""
+    _ = current_user
+    _require_legacy_simulation_api()
     status = await _start_or_resume_simulation()
     return {"success": True, "simulation": status}
 
 
 @app.post("/api/simulation/pause")
-async def pause_simulation():
+async def pause_simulation(current_user: User = Depends(_get_current_user)):
     """暂停模拟。"""
+    _ = current_user
+    _require_legacy_simulation_api()
     if checkpoint_mgr is None:
         raise HTTPException(status_code=503, detail="Simulation engine not ready")
 
@@ -3513,8 +3639,10 @@ async def pause_simulation():
 
 
 @app.post("/api/simulation/restart")
-async def restart_simulation():
+async def restart_simulation(current_user: User = Depends(_get_current_user)):
     """重置模拟进度并回到待启动状态。"""
+    _ = current_user
+    _require_legacy_simulation_api()
     global event_bus, registry, checkpoint_mgr, storage_manager, case_fsm
 
     if storage_manager is None or checkpoint_mgr is None:

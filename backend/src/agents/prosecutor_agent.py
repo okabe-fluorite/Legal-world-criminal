@@ -53,6 +53,8 @@ class ProsecutorAgent:
         self.scenario_data = scenario_data or {}
         self.tools = list(tools or [])
         self.model_type = model_type
+        self.api_base_url = str(kwargs.get("api_base_url", "") or "").strip()
+        self.api_key = str(kwargs.get("api_key", "") or "").strip()
 
         # 协议表面字段（兼容 BaseAgent 访问模式）
         self.config_path: Optional[str] = kwargs.get("config_path")
@@ -89,37 +91,24 @@ class ProsecutorAgent:
             self.model_type = model_type
 
         from ..utils.model_config import (
-            DEFAULT_RUNTIME_OPENAI_MODEL,
-            build_runtime_openai_chat_config,
-            resolve_openai_chat_model,
+            build_camel_model,
         )
-        from ..agents.base_agent import _resolve_agent_model_type, _resolve_agent_api_base_url, _resolve_agent_api_key
-
         platform = model_platform
         if platform is None:
             from camel.types import ModelPlatformType
             platform = ModelPlatformType.OPENAI
 
-        resolved_model = _resolve_agent_model_type(self, self.model_type)
-        api_base_url = _resolve_agent_api_base_url(self)
-        api_key = _resolve_agent_api_key(self)
-        model_factory_kwargs: dict[str, Any] = {}
-        if api_key:
-            model_factory_kwargs["api_key"] = api_key
-        if api_base_url:
-            model_factory_kwargs["url"] = api_base_url
-
+        resolved_model = self.model_type
         from camel.agents import ChatAgent
-        from camel.models import ModelFactory
-
-        model_config = ModelFactory.create(
+        model_config, endpoint = build_camel_model(
+            "agent",
+            explicit_model=resolved_model,
+            explicit_api_base_url=self.api_base_url,
+            explicit_api_key=self.api_key,
             model_platform=platform,
-            model_type=resolved_model,
-            model_config_dict=build_runtime_openai_chat_config(
-                model_name=resolved_model,
-                temperature=0.5,
-            ),
+            temperature=0.5,
         )
+        self._simlaw_model_route = endpoint.safe_dict()
         self.chat_agent = ChatAgent(
             system_message=self.system_prompt,
             model=model_config,

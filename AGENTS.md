@@ -22,7 +22,7 @@
 | 前端 | Vue 3 + Vite + TypeScript（除 vue 外零运行时依赖） |
 | LLM | DeepSeek（camel-ai 框架驱动，兼容 OpenAI 协议端点） |
 | NLI | 本地中文 cross-encoder（IDEA-CCNL/Erlangshen-Roberta-330M-NLI，CPU 可跑） |
-| 数据 | 124 件真实刑事案例（含全量金标准）+ 刑法 504 条/刑诉法 308 条本地法条库 |
+| 数据 | 3件机器门禁通过但仍待法学教师每学期复核的发布案例；旧124案隔离为修复池；刑法505条/刑诉法308条受治理本地快照 |
 | 玩家模式 | `SIMLAW_PLAYER_LAWYER_MODE=defendant` |
 
 **启动**：
@@ -104,7 +104,7 @@ cd backend && ../.venv/Scripts/python.exe scripts/verify_criminal.py
 
 阶段 × 能力矩阵见 `STAGE_CAPABILITY_MATRIX`（primary 权重 1.0 / secondary 0.5）。
 
-### LearningEvent 输出（`learning-event-v1`）
+### LearningEvent 输出（`learning-event-v2`）
 
 ```json
 {
@@ -147,7 +147,7 @@ teaching/
 
 1. **即时校验**：玩家每次提交发言，`submit_response` 同步返回 `citation_feedback`（琥珀警示/绿色通过条）
 2. **阶段自动评分**：阶段结束异步触发（daemon 线程，不阻塞流程），仅玩家模式
-3. **画像与技能卡**：评分落盘后自动累计 `sandbox_data/teaching/profiles/` 与 `skill_cards/{student_id}/`
+3. **画像与技能卡**：评分落盘后更新本地形成性画像，并把幂等LearningEvent写入数据库；配置外部自适应服务时同步画像快照与版本化推荐。AI完整起草的回答不进入长期画像
 4. **技能卡闭环**：下局开局面板可查看/勾选历史技能卡（最多 3 张），提交发言时附提醒块——AI 陪练可见并据此回应
 
 ### API
@@ -165,7 +165,7 @@ teaching/
 
 - 学生发言：`case_output_dir/_player_lawyer/player_run_ledger.json`
 - 对话上下文：`case_output_dir/{stage}_result.json` 的 dialog_history
-- 金标准：`dataset/criminal_case_dataset.json`（124 案全覆盖：五阶段字段 + guiding_points + defense_hint）
+- 案例参考材料：生产默认使用`dataset/released_case_dataset.json`；旧`dataset/criminal_case_dataset.json`的124案未满足发布审核与质量门禁，只能作为修复池，不得称为教师金标准
 
 ---
 
@@ -181,7 +181,7 @@ teaching/
 
 ### 法条检索
 
-- 本地法条库 `backend/legal_corpus/processed/*.jsonl`（《刑法》《刑诉法》PDF 经 PyMuPDF 构建），**BM25(k1=1.5, b=0.75) + BM25F 字段加权**（content 1.0 / article_ref 4.0 / 条号精确命中 ×3），纯 stdlib，离线可用
+- 本地法条库 `backend/legal_corpus/processed/*.jsonl`由国家法律法规数据库DOCX构建：2020刑法正文精确合并修正案十二（505条）+ 2018刑诉法（308条）；manifest保存源/输出SHA与隔离源。检索使用**BM25(k1=1.5, b=0.75) + BM25F 字段加权**（content 1.0 / article_ref 4.0 / 条号精确命中 ×3），纯stdlib离线可用
 - 不接 Qdrant/远程向量库：词法检索已满足条号+语义兜底需求，语义检索留作增强
 - Dify 法条 API（`DifyCitationSource`）为可插拔设计，接口修通后启用
 - 元典 MCP 工具已注册常驻，依赖外网，失败降级不阻断
@@ -194,7 +194,7 @@ teaching/
 
 ### 微调定位
 
-现阶段不需要。事实知识靠 RAG 与规则层，评分先用 prompt 工程 + 确定性公式；积累 50+ 评分数据后再考虑 LoRA 对比实验。
+已预留OpenAI兼容Model Adapter，可按`teaching_judge`、`citation_alignment`、`response_assist`等任务灰度路由微调小模型。事实知识仍依靠现行法RAG与规则层；小模型只有通过独立金标准集、引用忠实度、专家评分和低置信度回退验收后才能进入正式路由，不能用参数记忆替代法源更新。
 
 ---
 

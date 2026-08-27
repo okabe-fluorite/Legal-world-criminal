@@ -41,6 +41,7 @@ from .judgment_drafting_registry import (
     normalize_judgment_document_payload,
     normalize_judgment_document_type,
     render_judgment_document_payload,
+    render_judgment_document_payload_for_output_dir,
 )
 from .save_lawyer_memory_tool import create_save_lawyer_memory_tool, normalize_lawyer_memory
 from .load_lawyer_memory_tool import create_load_lawyer_memory_tool
@@ -132,6 +133,7 @@ __all__ = [
     "render_document_drafting_payload",
     "render_document_drafting_payload_for_output_dir",
     "render_judgment_document_payload",
+    "render_judgment_document_payload_for_output_dir",
     # 元典法条/案例检索
     "YUANDIAN_CASE_TOOL_NAME",
     "YUANDIAN_LAW_DETAIL_TOOL_NAME",

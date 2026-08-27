@@ -103,20 +103,12 @@ def build_response_draft_prompt(
 def _default_generator(prompt: str) -> str:
     from camel.agents import ChatAgent
     from camel.messages import BaseMessage
-    from camel.models import ModelFactory
-    from camel.types import ModelPlatformType
+    from ..utils.model_config import build_camel_model
 
-    from ..utils.model_config import build_runtime_openai_chat_config, resolve_openai_chat_model
-
-    model_name = resolve_openai_chat_model()
-    model = ModelFactory.create(
-        model_platform=ModelPlatformType.OPENAI,
-        model_type=model_name,
-        model_config_dict=build_runtime_openai_chat_config(
-            model_name=model_name,
-            temperature=0.2,
-            max_tokens=800,
-        ),
+    model, _endpoint = build_camel_model(
+        "response_assist",
+        temperature=0.2,
+        max_tokens=800,
     )
     agent = ChatAgent(
         system_message="你只输出润色后的当前角色回复，不输出解释或工具调用。",
@@ -180,6 +172,7 @@ class PlayerResponseAssistService:
         assist.user_original_message = original
         assist.ai_polished_message = polished
         assist.used_ai_polish = False
+        assist.assist_mode = "polish"
         assist.updated_at = datetime.utcnow().isoformat()
         self._save(assist)
         return assist
@@ -223,6 +216,7 @@ class PlayerResponseAssistService:
         assist.user_original_message = ""
         assist.ai_polished_message = drafted
         assist.used_ai_polish = False
+        assist.assist_mode = "draft"
         assist.updated_at = datetime.utcnow().isoformat()
         self._save(assist)
         return assist
@@ -242,6 +236,8 @@ class PlayerResponseAssistService:
         polished_message: str = "",
         final_message: str,
         hint_ids: list[str] | None = None,
+        skill_card_ids: list[str] | None = None,
+        assist_mode: str = "none",
         used_ai_polish: bool = False,
     ) -> ResponseAssist:
         final_text = str(final_message or "").strip()
@@ -268,6 +264,8 @@ class PlayerResponseAssistService:
             assist.ai_polished_message = str(polished_message or "").strip()
         assist.final_submitted_message = final_text
         assist.used_ai_polish = bool(used_ai_polish)
+        assist.assist_mode = str(assist_mode or "none").strip().lower()
+        assist.skill_card_ids = _normalize_hint_ids(skill_card_ids)
         assist.updated_at = datetime.utcnow().isoformat()
         self._save(assist)
         return assist
@@ -337,6 +335,8 @@ def response_assist_from_dict(payload: dict[str, Any]) -> ResponseAssist:
         ai_polished_message=str(payload.get("ai_polished_message", "") or ""),
         final_submitted_message=str(payload.get("final_submitted_message", "") or ""),
         used_ai_polish=bool(payload.get("used_ai_polish")),
+        assist_mode=str(payload.get("assist_mode", "none") or "none"),
+        skill_card_ids=_normalize_hint_ids(payload.get("skill_card_ids") or []),
         created_at=str(payload.get("created_at", "") or datetime.utcnow().isoformat()),
         updated_at=payload.get("updated_at"),
     )

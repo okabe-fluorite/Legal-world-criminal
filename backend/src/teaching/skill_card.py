@@ -63,8 +63,10 @@ def _weak_capabilities(event: dict[str, Any], ceiling: float = 0.6) -> list[dict
     for code, entry in (event.get("capability_scores") or {}).items():
         if not isinstance(entry, dict):
             continue
+        if entry.get("score") is None:
+            continue
         try:
-            score = float(entry.get("score") or 0.0)
+            score = float(entry["score"])
         except (TypeError, ValueError):
             continue
         if score <= ceiling:
@@ -162,8 +164,32 @@ def update_skill_cards(student_id: str, event: dict[str, Any]) -> list[Path]:
     feedback = str(event.get("overall_feedback") or "").strip()
     error_tags = [str(t) for t in (event.get("error_tags") or [])]
 
-    verdicts = {str(v.get("kp") or "").strip(): v for v in (event.get("knowledge_verdicts") or []) if isinstance(v, dict)}
-    gaps = [str(g).strip() for g in (event.get("knowledge_gaps") or []) if str(g).strip()]
+    verdict_rows = [
+        value
+        for value in (event.get("knowledge_verdicts") or [])
+        if isinstance(value, dict)
+    ]
+    verdicts = {
+        str(
+            v.get("knowledge_id")
+            or v.get("knowledge_name")
+            or v.get("kp")
+            or ""
+        ).strip(): v
+        for v in verdict_rows
+    }
+    name_to_id = {
+        str(v.get("knowledge_name") or v.get("kp") or "").strip(): str(
+            v.get("knowledge_id") or ""
+        ).strip()
+        for v in verdict_rows
+        if str(v.get("knowledge_id") or "").strip()
+    }
+    gaps = [
+        name_to_id.get(str(g).strip(), str(g).strip())
+        for g in (event.get("knowledge_gaps") or [])
+        if str(g).strip()
+    ]
 
     # 卡片目标：所有缺口 + 判定为 partial/missing 的知识点
     targets: dict[str, dict[str, Any]] = {}

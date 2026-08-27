@@ -10,15 +10,17 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app/backend
 
-COPY requirements.txt /app/requirements.txt
+COPY requirements.lock.txt /app/requirements.lock.txt
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl gcc python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN uv pip install --system -r /app/requirements.txt
+RUN uv pip install --system -r /app/requirements.lock.txt
 
 COPY backend /app/backend
+COPY assets /app/assets
+COPY dataset /app/dataset
 
 EXPOSE 8000
 

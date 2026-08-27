@@ -41,20 +41,12 @@ def _read_json(path: Path) -> dict[str, Any]:
 def _default_generator(prompt: str) -> str:
     from camel.agents import ChatAgent
     from camel.messages import BaseMessage
-    from camel.models import ModelFactory
-    from camel.types import ModelPlatformType
+    from ..utils.model_config import build_camel_model
 
-    from ..utils.model_config import build_runtime_openai_chat_config, resolve_openai_chat_model
-
-    model_name = resolve_openai_chat_model()
-    model = ModelFactory.create(
-        model_platform=ModelPlatformType.OPENAI,
-        model_type=model_name,
-        model_config_dict=build_runtime_openai_chat_config(
-            model_name=model_name,
-            temperature=0.2,
-            max_tokens=1000,
-        ),
+    model, _endpoint = build_camel_model(
+        "closing_summary",
+        temperature=0.2,
+        max_tokens=1000,
     )
     agent = ChatAgent(
         system_message="你是法律实训系统的玩家表现评价教练，只输出 JSON，不输出解释。",

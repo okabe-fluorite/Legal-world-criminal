@@ -1,5 +1,6 @@
 import type {
   AuthResponse,
+  AdaptiveRecommendationResponse,
   CaseListResponse,
   CitationFeedback,
   LearningEvent,
@@ -116,6 +117,8 @@ export const api = {
       original_message?: string;
       polished_message?: string;
       hint_ids?: string[];
+      skill_card_ids?: string[];
+      assist_mode?: "none" | "polish" | "draft";
       used_ai_polish?: boolean;
     } = {},
   ): Promise<{
@@ -171,6 +174,15 @@ export const api = {
     return request<TeachingReport>(
       `/teaching/report/${encodeURIComponent(studentId)}`,
     );
+  },
+
+  async adaptiveRecommendations(
+    context: Record<string, unknown> = {},
+  ): Promise<AdaptiveRecommendationResponse> {
+    return request<AdaptiveRecommendationResponse>("/adaptive/recommend", {
+      method: "POST",
+      body: JSON.stringify(context),
+    });
   },
 
   async skillCards(studentId: string): Promise<SkillCardSummary[]> {

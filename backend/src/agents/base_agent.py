@@ -21,14 +21,13 @@ from datetime import datetime
 
 from camel.agents import ChatAgent
 from camel.messages import BaseMessage
-from camel.models import ModelFactory
 from camel.toolkits import FunctionTool
 from camel.types import ModelPlatformType, ModelType
 from pydantic import BaseModel
 
 from ..utils.model_config import (
     DEFAULT_RUNTIME_OPENAI_MODEL,
-    build_runtime_openai_chat_config,
+    build_camel_model,
     resolve_openai_chat_model,
 )
 from ..utils.model_config import (
@@ -355,6 +354,8 @@ class BaseAgent(ABC):
         self.config_path = config_path
         self.model_platform = model_platform
         self.model_type = model_type
+        self.api_base_url = str(kwargs.pop("api_base_url", "") or "").strip()
+        self.api_key = str(kwargs.pop("api_key", "") or "").strip()
         self.step_timeout_seconds = int(
             kwargs.pop("step_timeout_seconds", DEFAULT_STEP_TIMEOUT_SECONDS)
             or DEFAULT_STEP_TIMEOUT_SECONDS
@@ -438,22 +439,15 @@ class BaseAgent(ABC):
         if debug_output_dir:
             self._save_debug_info(debug_output_dir)
 
-        resolved_model = _resolve_agent_model_type(self, self.model_type)
-        api_base_url = _resolve_agent_api_base_url(self)
-        api_key = _resolve_agent_api_key(self)
-        model_factory_kwargs: dict[str, Any] = {}
-        if api_key:
-            model_factory_kwargs["api_key"] = api_key
-        if api_base_url:
-            model_factory_kwargs["url"] = api_base_url
-        model_config = ModelFactory.create(
+        model_config, endpoint = build_camel_model(
+            "agent",
+            explicit_model=self.model_type,
+            explicit_api_base_url=self.api_base_url,
+            explicit_api_key=self.api_key,
             model_platform=self.model_platform,
-            model_type=resolved_model,
-            model_config_dict=build_runtime_openai_chat_config(
-                model_name=resolved_model,
-                temperature=0.5,
-            ),
+            temperature=0.5,
         )
+        self._simlaw_model_route = endpoint.safe_dict()
         self.chat_agent = ChatAgent(
             system_message=self.system_prompt,
             model=model_config,
@@ -979,6 +973,7 @@ class BaseAgent(ABC):
             "agent_name": self.name,
             "agent_class": self.__class__.__name__,
             "system_prompt": self.system_prompt,
+            "model_route": dict(getattr(self, "_simlaw_model_route", {}) or {}),
         }
 
     # ── Work Memory ──

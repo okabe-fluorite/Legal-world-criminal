@@ -22,13 +22,11 @@ load_dotenv(env_path)
 
 from camel.agents import ChatAgent
 from camel.messages import BaseMessage
-from camel.models import ModelFactory
-from camel.types import ModelPlatformType, ModelType
+from camel.types import ModelType
 
 from data.data_loader import DataLoader
 from utils.model_config import (
-    build_runtime_openai_chat_config,
-    resolve_openai_chat_model,
+    build_camel_model,
 )
 from utils.drafted_document_sections import resolve_stage_document_text
 from utils.prompt_profile import use_lightweight_eval_judge_prompt
@@ -323,7 +321,7 @@ class EvalPipeline:
         if self.end_stage and self.end_stage not in self.VALID_STAGES:
             raise ValueError(f"非法 end_stage: {end_stage}")
 
-        self.judge_model_type = resolve_openai_chat_model(explicit_model=judge_model_type)
+        self.judge_model_type = str(judge_model_type or "").strip() or None
         self.progress_callback = progress_callback
         self.eval_results: Dict[str, Any] = {}
         self._reached_start = self.start_stage is None
@@ -386,14 +384,13 @@ class EvalPipeline:
         )
 
     def _create_judge_agent(self, system_prompt: str) -> ChatAgent:
-        model = ModelFactory.create(
-            model_platform=ModelPlatformType.OPENAI,
-            model_type=self.judge_model_type,
-            model_config_dict=build_runtime_openai_chat_config(
-                model_name=self.judge_model_type
-            ),
+        model, endpoint = build_camel_model(
+            "eval",
+            explicit_model=self.judge_model_type,
         )
-        return ChatAgent(system_message=system_prompt, model=model)
+        agent = ChatAgent(system_message=system_prompt, model=model)
+        setattr(agent, "_simlaw_model_route", endpoint.safe_dict())
+        return agent
 
     def _judge_call(self, agent: ChatAgent, prompt: str) -> str:
         user_message = BaseMessage.make_user_message(role_name="user", content=prompt)

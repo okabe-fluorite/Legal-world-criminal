@@ -153,7 +153,9 @@ export interface PlayerAssist {
   ai_polished_message?: string;
   final_submitted_message?: string;
   used_ai_polish?: boolean;
+  assist_mode?: "none" | "polish" | "draft";
   hint_ids?: string[];
+  skill_card_ids?: string[];
 }
 
 export interface PlayerAssistResponse {
@@ -196,7 +198,7 @@ export interface CitationNotice {
 }
 
 export interface CapabilityScore {
-  score: number;
+  score: number | null;
   raw?: number;
   weight?: number;
   rationale?: string;
@@ -252,6 +254,20 @@ export interface LearningEvent {
   case_id: string;
   charge?: string;
   stage: string;
+  task_id?: string;
+  source_response_sha256?: string;
+  assist?: {
+    modes?: string[];
+    ai_drafted?: boolean;
+    ai_polished?: boolean;
+    hint_count?: number;
+    skill_card_ids?: string[];
+  };
+  evidence_eligibility?: {
+    formative_feedback?: boolean;
+    long_term_profile?: boolean;
+    reason?: string;
+  };
   gold_incomplete?: boolean;
   capability_scores: Record<string, CapabilityScore>;
   subsumption_table?: SubsumptionRow[];
@@ -287,9 +303,58 @@ export interface RecommendationItem {
   source?: string;
 }
 
+export interface AdaptiveKnowledgeEvidence {
+  knowledge_name?: string;
+  latest?: string;
+  event_count?: number;
+  evidence_status?: "observed" | "provisional" | "insufficient_evidence" | string;
+}
+
+export interface AdaptiveRecommendationItem {
+  rank?: number;
+  task_id?: string;
+  item_id?: string;
+  task_type?: string;
+  knowledge_id?: string;
+  knowledge_name?: string;
+  stem?: string;
+  options?: Record<string, string>;
+  difficulty?: number;
+  cognitive_dimension?: string;
+  reason_code?: string;
+  score?: number;
+  answer_included?: false;
+  // The explicitly labelled local fallback uses TeachingReport rows.
+  chapter?: string;
+  question?: string;
+  knowledge_points?: string[];
+  question_type?: string;
+}
+
+export interface AdaptiveRecommendationResponse {
+  status: "ok" | "fallback" | string;
+  source: "edubrain_adaptive_service" | "local_evidence_heuristic" | string;
+  schema_version?: string;
+  policy_version?: string;
+  warning?: string;
+  profile?: {
+    schema_version?: string;
+    event_count?: number;
+    eligible_event_count?: number;
+    knowledge?: Record<string, AdaptiveKnowledgeEvidence>;
+    warnings?: string[];
+  };
+  recommendations: AdaptiveRecommendationItem[];
+}
+
 export interface TeachingReport {
   student_id: string;
-  capability_radar: Array<{ code: string; name: string; score: number }>;
+  capability_radar: Array<{
+    code: string;
+    name: string;
+    score: number | null;
+    evidence_status?: string;
+  }>;
   knowledge_gaps: KnowledgeGapEntry[];
   top_errors: Array<{ tag: string; count: number }>;
   growth_curve: GrowthPoint[];

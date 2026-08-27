@@ -1,0 +1,43 @@
+{
+  "schema_version": "criminal-case-quality-audit-v1",
+  "generated_at": "2026-08-26T17:15:21.437818+00:00",
+  "dataset": "D:\\Code\\Legal-world-criminal\\dataset\\released_case_dataset.json",
+  "dataset_sha256": "b7788b91164b0d88943460457535672025953bca05bc807b6a0330a341e783c0",
+  "source_root": "E:\\guabangjieshuai\\EduBrain\\laws",
+  "counts": {
+    "records": 3,
+    "releasable": 3,
+    "blocked": 0,
+    "critical_flags": 0,
+    "high_flags": 0
+  },
+  "cases": [
+    {
+      "original_id": 1,
+      "source_title": "指导性案例268号：严某聪以危险方法危害公共安全案",
+      "defendant": "严某聪",
+      "charge": "以危险方法危害公共安全罪",
+      "releasable": true,
+      "severity_counts": {},
+      "flags": []
+    },
+    {
+      "original_id": 2,
+      "source_title": "指导案例144号：张那木拉正当防卫案",
+      "defendant": "张那木拉",
+      "charge": "故意伤害罪",
+      "releasable": true,
+      "severity_counts": {},
+      "flags": []
+    },
+    {
+      "original_id": 3,
+      "source_title": "指导案例14号：董某某、宋某某抢劫案",
+      "defendant": "董某某",
+      "charge": "抢劫罪",
+      "releasable": true,
+      "severity_counts": {},
+      "flags": []
+    }
+  ]
+}

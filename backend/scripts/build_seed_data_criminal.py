@@ -32,7 +32,7 @@ if sys.platform == "win32":
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DATASET = REPO_ROOT / "dataset" / "criminal_case_dataset.json"
+DEFAULT_DATASET = REPO_ROOT / "dataset" / "released_case_dataset.json"
 SEED_DIR = REPO_ROOT / "backend" / "sandbox_seed_data"
 EXTRACTED_FILENAME = "case_data_extracted.json"
 
@@ -260,6 +260,23 @@ def main() -> int:
         cases = json.load(handle)
     if not isinstance(cases, list):
         print("[ERROR] expected a list of cases at top level", file=sys.stderr)
+        return 1
+
+    from audit_case_dataset import audit_case
+
+    blocked = [
+        (case, audit_case(case))
+        for case in cases
+        if not audit_case(case)["releasable"]
+    ]
+    if blocked:
+        for case, audit in blocked[:10]:
+            print(
+                f"[BLOCKED] case {case.get('original_id')}: "
+                f"{[flag['code'] for flag in audit['flags']]}",
+                file=sys.stderr,
+            )
+        print("[ERROR] dataset contains unreleasable cases", file=sys.stderr)
         return 1
 
     if args.prefer_complete:

@@ -15,6 +15,8 @@ import logging
 import os
 import re
 import threading
+import time
+import hashlib
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable
@@ -34,7 +36,9 @@ from .rubrics import (  # noqa: E402
 JUDGE_MAX_ATTEMPTS = 3
 JUDGE_TEMPERATURE = 0.2
 JUDGE_MAX_TOKENS = 4096
-LEARNING_EVENT_SCHEMA = "learning-event-v1"
+LEARNING_EVENT_SCHEMA = "learning-event-v2"
+ASYNC_STAGE_MAX_ATTEMPTS = 3
+ASYNC_STAGE_RETRY_DELAYS = (30, 120)
 
 
 class TeachingScorer:
@@ -44,29 +48,30 @@ class TeachingScorer:
         self._judge_model_type = judge_model_type
         self._judge_factory = judge_factory
         self._judge_agent_cache: dict[str, Any] = {}
+        self._retryable_stage_failure = False
 
     # ── judge plumbing (mirrors eval_pipeline) ──────────────────────
-    def _create_judge_agent(self, system_prompt: str) -> Any:
+    def _create_judge_agent(
+        self,
+        system_prompt: str,
+        *,
+        task: str = "teaching_judge",
+    ) -> Any:
         if self._judge_factory is not None:
             return self._judge_factory(system_prompt)
 
         from camel.agents import ChatAgent
-        from camel.models import ModelFactory
-        from camel.types import ModelPlatformType
+        from ..utils.model_config import build_camel_model
 
-        from ..utils.model_config import build_runtime_openai_chat_config, resolve_openai_chat_model
-
-        judge_model = resolve_openai_chat_model(explicit_model=self._judge_model_type)
-        model = ModelFactory.create(
-            model_platform=ModelPlatformType.OPENAI,
-            model_type=judge_model,
-            model_config_dict=build_runtime_openai_chat_config(
-                model_name=judge_model,
-                temperature=JUDGE_TEMPERATURE,
-                max_tokens=JUDGE_MAX_TOKENS,
-            ),
+        model, endpoint = build_camel_model(
+            task,
+            explicit_model=self._judge_model_type,
+            temperature=JUDGE_TEMPERATURE,
+            max_tokens=JUDGE_MAX_TOKENS,
         )
-        return ChatAgent(system_message=system_prompt, model=model)
+        agent = ChatAgent(system_message=system_prompt, model=model)
+        setattr(agent, "_simlaw_model_route", endpoint.safe_dict())
+        return agent
 
     def _judge_call(self, agent: Any, prompt: str) -> str:
         from camel.messages import BaseMessage
@@ -150,7 +155,7 @@ class TeachingScorer:
         """Score one stage; returns the LearningEvent dict (or None on failure)."""
         if run_async:
             thread = threading.Thread(
-                target=self._score_stage_safe,
+                target=self._score_stage_async_with_retry,
                 kwargs={
                     "case_id": case_id,
                     "stage": stage,
@@ -168,10 +173,58 @@ class TeachingScorer:
             student_id=student_id,
         )
 
+    @staticmethod
+    def _async_stage_attempts() -> int:
+        try:
+            value = int(os.environ.get("SIMLAW_TEACHING_ASYNC_STAGE_ATTEMPTS", ""))
+        except ValueError:
+            value = ASYNC_STAGE_MAX_ATTEMPTS
+        return max(1, min(value or ASYNC_STAGE_MAX_ATTEMPTS, 5))
+
+    @staticmethod
+    def _async_stage_retry_delays() -> list[int]:
+        raw = str(os.environ.get("SIMLAW_TEACHING_ASYNC_RETRY_SECONDS") or "").strip()
+        if not raw:
+            return list(ASYNC_STAGE_RETRY_DELAYS)
+        delays: list[int] = []
+        for item in raw.split(","):
+            try:
+                delays.append(max(0, int(item.strip())))
+            except ValueError:
+                continue
+        return delays or list(ASYNC_STAGE_RETRY_DELAYS)
+
+    def _score_stage_async_with_retry(self, **kwargs: Any) -> dict[str, Any] | None:
+        attempts = self._async_stage_attempts()
+        delays = self._async_stage_retry_delays()
+        case_output_dir = Path(kwargs["case_output_dir"])
+        stage = str(kwargs.get("stage") or "").upper()
+        event_path = case_output_dir / "teaching" / f"{stage}_learning_event.json"
+        for attempt in range(attempts):
+            if event_path.is_file():
+                try:
+                    return json.loads(event_path.read_text(encoding="utf-8"))
+                except Exception:
+                    pass
+            event = self._score_stage_safe(**kwargs)
+            if event is not None or not self._retryable_stage_failure:
+                return event
+            if attempt + 1 >= attempts:
+                break
+            delay = delays[min(attempt, len(delays) - 1)]
+            logger.warning(
+                "[TeachingScorer] stage-level retry scheduled: case=%s stage=%s "
+                "next_attempt=%s/%s delay=%ss",
+                kwargs.get("case_id"), stage, attempt + 2, attempts, delay,
+            )
+            time.sleep(delay)
+        return None
+
     def _score_stage_safe(self, **kwargs: Any) -> dict[str, Any] | None:
         try:
             return self._score_stage_impl(**kwargs)
         except Exception as exc:
+            self._retryable_stage_failure = True
             logger.exception("[TeachingScorer] scoring failed for %s/%s: %s",
                              kwargs.get("case_id"), kwargs.get("stage"), exc)
             return None
@@ -186,6 +239,7 @@ class TeachingScorer:
     ) -> dict[str, Any] | None:
         stage = str(stage or "").strip().upper()
         case_output_dir = Path(case_output_dir)
+        self._retryable_stage_failure = False
 
         scoring_input = transcript.build_scoring_input(case_id, stage, case_output_dir)
         utterances = scoring_input.get("utterances") or []
@@ -212,7 +266,8 @@ class TeachingScorer:
             alignment_result = citation_alignment.verify_alignment(
                 utterance_texts,
                 judge_client=self._create_judge_agent(
-                    citation_alignment.JUDGE_SYSTEM_PROMPT
+                    citation_alignment.JUDGE_SYSTEM_PROMPT,
+                    task="citation_alignment",
                 ),
             )
         except Exception as exc:
@@ -248,6 +303,7 @@ class TeachingScorer:
                 logger.warning("[TeachingScorer] judge call failed: %s", last_error)
 
         if payload is None:
+            self._retryable_stage_failure = True
             logger.error("[TeachingScorer] judge failed for %s/%s: %s", case_id, stage, last_error)
             return None
 
@@ -261,8 +317,28 @@ class TeachingScorer:
             gold_incomplete=bool(scoring_input.get("gold_incomplete")),
             alignment_result=alignment_result,
             utterance_texts=utterance_texts,
+            utterances=utterances,
         )
         self._persist(case_id, stage, case_output_dir, event)
+
+        try:
+            from ..integration.event_delivery import deliver_learning_event
+
+            delivery = deliver_learning_event(event)
+            logger.info(
+                "[TeachingScorer] event delivery %s/%s: store=%s adaptive=%s",
+                case_id,
+                stage,
+                (delivery.get("store") or {}).get("status"),
+                (delivery.get("adaptive") or {}).get("status"),
+            )
+        except Exception as exc:
+            logger.warning(
+                "[TeachingScorer] LearningEvent delivery failed for %s/%s: %s",
+                case_id,
+                stage,
+                exc,
+            )
 
         # 画像累计 + 技能卡沉淀（失败不影响已落盘的 LearningEvent）
         try:
@@ -292,6 +368,7 @@ class TeachingScorer:
         gold_incomplete: bool,
         alignment_result: dict[str, Any] | None = None,
         utterance_texts: list[str] | None = None,
+        utterances: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
         capability_scores = self._normalize_capability_scores(
             payload.get("capability_scores") or {}, stage
@@ -314,13 +391,68 @@ class TeachingScorer:
         alignment_items = (alignment_result or {}).get("items") or []
         alignment_summary = (alignment_result or {}).get("summary") or {}
 
+        utterance_records = list(utterances or [])
+        source_payload = [
+            {
+                "request_id": str(item.get("request_id") or ""),
+                "text": str(item.get("text") or ""),
+                "timestamp": str(item.get("timestamp") or ""),
+            }
+            for item in utterance_records
+        ]
+        source_digest = hashlib.sha256(
+            json.dumps(
+                source_payload,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        event_digest = hashlib.sha256(
+            f"{student_id}|{case_id}|{stage}|{source_digest}".encode("utf-8")
+        ).hexdigest()[:24]
+        assist_modes = [
+            str(item.get("assist_mode") or "none").strip().lower()
+            for item in utterance_records
+        ]
+        has_ai_draft = "draft" in assist_modes
+        has_ai_polish = "polish" in assist_modes
+        hint_count = sum(len(item.get("hint_ids") or []) for item in utterance_records)
+        skill_card_ids = sorted(
+            {
+                str(value)
+                for item in utterance_records
+                for value in (item.get("skill_card_ids") or [])
+                if str(value).strip()
+            }
+        )
+
         return {
-            "event_id": f"evt_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{case_id}_{stage}",
+            "event_id": f"evt_{event_digest}",
             "schema_version": LEARNING_EVENT_SCHEMA,
+            "event_type": "case_stage_assessment",
             "student_id": student_id or "anonymous",
             "case_id": case_id,
+            "task_id": f"case:{case_id}:{stage}",
             "charge": charge,
             "stage": stage,
+            "source_response_sha256": source_digest,
+            "assist": {
+                "modes": sorted(set(assist_modes or ["none"])),
+                "ai_drafted": has_ai_draft,
+                "ai_polished": has_ai_polish,
+                "hint_count": hint_count,
+                "skill_card_ids": skill_card_ids,
+            },
+            "evidence_eligibility": {
+                "formative_feedback": True,
+                "long_term_profile": not has_ai_draft,
+                "reason": (
+                    "ai_drafted_response_excluded_from_mastery"
+                    if has_ai_draft
+                    else "student_reasoning_available"
+                ),
+            },
             "gold_incomplete": gold_incomplete,
             "capability_scores": capability_scores,
             "subsumption_table": payload.get("subsumption_table") or [],

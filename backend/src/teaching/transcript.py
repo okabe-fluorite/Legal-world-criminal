@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -18,7 +19,17 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DATASET_PATH = PROJECT_ROOT / "dataset" / "criminal_case_dataset.json"
+RELEASED_DATASET_PATH = PROJECT_ROOT / "dataset" / "released_case_dataset.json"
+LEGACY_DATASET_PATH = PROJECT_ROOT / "dataset" / "criminal_case_dataset.json"
+
+
+def _dataset_path() -> Path:
+    configured = str(os.environ.get("SIMLAW_TEACHING_DATASET_PATH") or "").strip()
+    if configured:
+        return Path(configured).expanduser().resolve()
+    if RELEASED_DATASET_PATH.exists():
+        return RELEASED_DATASET_PATH
+    return LEGACY_DATASET_PATH
 
 # stage → dataset field used as gold reference
 GOLD_STAGE_FIELDS: dict[str, list[str]] = {
@@ -63,6 +74,12 @@ class StudentUtterance:
     role: str
     speaker_label: str
     text: str
+    final_text: str = ""
+    original_text: str = ""
+    assist_mode: str = "none"
+    hint_ids: list[str] = field(default_factory=list)
+    skill_card_ids: list[str] = field(default_factory=list)
+    request_id: str = ""
     timestamp: str = ""
     context: list[DialogTurn] = field(default_factory=list)
 
@@ -72,6 +89,12 @@ class StudentUtterance:
             "role": self.role,
             "speaker_label": self.speaker_label,
             "text": self.text,
+            "final_text": self.final_text or self.text,
+            "original_text": self.original_text,
+            "assist_mode": self.assist_mode,
+            "hint_ids": list(self.hint_ids),
+            "skill_card_ids": list(self.skill_card_ids),
+            "request_id": self.request_id,
             "timestamp": self.timestamp,
             "context": [
                 {"role": turn.role, "content": turn.content[:500]}
@@ -100,10 +123,11 @@ def _normalize_case_id(case_id: str) -> str:
 
 
 def load_dataset_cases() -> list[dict[str, Any]]:
-    if not DATASET_PATH.exists():
+    dataset_path = _dataset_path()
+    if not dataset_path.exists():
         return []
     try:
-        payload = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
+        payload = json.loads(dataset_path.read_text(encoding="utf-8"))
     except Exception as exc:
         logger.warning("[TeachingTranscript] failed to load dataset: %s", exc)
         return []
@@ -174,11 +198,19 @@ def extract_student_utterances(
 
     utterances: list[StudentUtterance] = []
     for item in submissions:
-        text = str(item.get("final_message") or "").strip()
-        if not text:
+        final_text = str(item.get("final_message") or "").strip()
+        original_text = str(item.get("original_message") or "").strip()
+        assist_mode = str(item.get("assist_mode") or "none").strip().lower()
+        if assist_mode not in {"none", "polish", "draft"}:
+            assist_mode = "none"
+        # For language polishing, assess the student's original reasoning rather
+        # than the model-rewritten prose. Fully drafted responses remain visible
+        # for feedback but are excluded from long-term profile updates later.
+        text = original_text if assist_mode == "polish" and original_text else final_text
+        if not final_text:
             continue
         # match context: find this utterance in dialog history, take preceding turns
-        matched_index = _match_utterance_index(dialog_turns, text)
+        matched_index = _match_utterance_index(dialog_turns, final_text)
         context = []
         if matched_index is not None:
             for prior in dialog_turns[max(0, matched_index - 2) : matched_index]:
@@ -189,6 +221,14 @@ def extract_student_utterances(
                 role=str(item.get("role") or "defendant_lawyer"),
                 speaker_label=str(item.get("speaker_label") or "辩护律师"),
                 text=text,
+                final_text=final_text,
+                original_text=original_text,
+                assist_mode=assist_mode,
+                hint_ids=[str(value) for value in (item.get("hint_ids") or [])],
+                skill_card_ids=[
+                    str(value) for value in (item.get("skill_card_ids") or [])
+                ],
+                request_id=str(item.get("request_id") or ""),
                 timestamp=str(item.get("submitted_at") or "").strip(),
                 context=context,
             )
@@ -243,6 +283,11 @@ def load_gold(case_id: str, stage: str) -> dict[str, Any]:
 
     gold["case_cause"] = str(info.get("case_cause") or info.get("charge") or "")
     gold["charge"] = str(info.get("charge") or info.get("case_cause") or "")
+    gold["knowledge_points"] = [
+        item
+        for item in (info.get("knowledge_points") or [])
+        if isinstance(item, dict) and str(item.get("knowledge_id") or "").strip()
+    ]
     gold["gold_incomplete"] = bool(missing)
     gold["missing_fields"] = missing
     return gold

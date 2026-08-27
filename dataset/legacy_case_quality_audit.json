@@ -1,0 +1,3458 @@
+{
+  "schema_version": "criminal-case-quality-audit-v1",
+  "generated_at": "2026-08-26T11:26:26.156346+00:00",
+  "dataset": "D:\\Code\\Legal-world-criminal\\dataset\\criminal_case_dataset.json",
+  "dataset_sha256": "3d22a545b92764bbc949e007e4ec7644f68ef8dc886193cb881193a0f81b0380",
+  "counts": {
+    "records": 124,
+    "releasable": 0,
+    "blocked": 124,
+    "critical_flags": 102,
+    "high_flags": 275
+  },
+  "cases": [
+    {
+      "original_id": 1,
+      "source_title": "指导性案例268号：严某聪以危险方法危害公共安全案",
+      "defendant": "严某聪",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "defendant_finding_mismatch",
+          "message": "defendant is absent from court finding"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 2,
+      "source_title": "闫从芳投放危险物质一案",
+      "defendant": "闫某某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 3,
+      "source_title": "黄某某失火一案",
+      "defendant": "黄某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 4,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_case_background",
+          "message": "case background is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "defendant_background_mismatch",
+          "message": "defendant is absent from case background"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "defendant_finding_mismatch",
+          "message": "defendant is absent from court finding"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 4,
+      "source_title": "祁某失火一案",
+      "defendant": "祁某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_court_findings",
+          "message": "multiple cases may have been concatenated"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 5,
+      "source_title": "曹九成破坏交通设施一案",
+      "defendant": "曹某某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 4
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_court_opinion",
+          "message": "court opinion is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 6,
+      "source_title": "姚某乙提供的割护栏照片，证明2025年2月19日被告人在案发地点盗割护栏的事实。",
+      "defendant": "姚某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 2,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_case_background",
+          "message": "case background is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 7,
+      "source_title": "王某,刘某破坏交通设施一案",
+      "defendant": "王某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 8,
+      "source_title": "徐钦朋非法买卖爆炸物案",
+      "defendant": "徐钦朋",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 9,
+      "source_title": "奚某甲非法制造、买卖、运输、邮寄、储存枪支、弹药、爆炸物一案",
+      "defendant": "奚某甲",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 2,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "defendant_finding_mismatch",
+          "message": "defendant is absent from court finding"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 10,
+      "source_title": "陈某非法制造枪支一案",
+      "defendant": "陈某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "defendant_background_mismatch",
+          "message": "defendant is absent from case background"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 11,
+      "source_title": "周林非法持有、私藏枪支、弹药一案",
+      "defendant": "周某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 12,
+      "source_title": "英某非法持有、私藏枪支、弹药一案",
+      "defendant": "英某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 13,
+      "source_title": "牟某甲非法持有枪支一案",
+      "defendant": "牟某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 14,
+      "source_title": "指导性案例269号：刘某江交通肇事宣告无罪案",
+      "defendant": "刘某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 15,
+      "source_title": "郑某交通肇事案——醉酒交通肇事逃逸行为人“明知发生交通事故”的认定",
+      "defendant": "郑某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 16,
+      "source_title": "周某刚交通肇事案——行人、机动车等多种因素引起交通事故的处理",
+      "defendant": "周某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 17,
+      "source_title": "指导性案例271号：王某群危险驾驶案",
+      "defendant": "王某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 18,
+      "source_title": "汪某秋危险驾驶案——“五年内曾因饮酒后驾驶”以实施上一次酒驾行为之日起计算",
+      "defendant": "汪某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 19,
+      "source_title": "孙某迪危险驾驶案——醉酒后启用汽车驾驶辅助功能在道路上行驶的，仍构成危险驾驶罪",
+      "defendant": "李某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_court_findings",
+          "message": "multiple cases may have been concatenated"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 20,
+      "source_title": "张某妨害安全驾驶一案",
+      "defendant": "张某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 21,
+      "source_title": "孙某,马某重大责任事故一案",
+      "defendant": "马某",
+      "charge": "危害公共安全罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_court_findings",
+          "message": "multiple cases may have been concatenated"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 22,
+      "source_title": "李某钦生产、销售伪劣产品案——生产、销售不符合安全标准的食品罪与生产、销售伪劣产品罪的转化适用",
+      "defendant": "李某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 4
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 23,
+      "source_title": "褚某甲等销售伪劣产品案",
+      "defendant": "褚某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 24,
+      "source_title": "叶某生产、销售伪劣产品案",
+      "defendant": "叶某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 5
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_court_opinion",
+          "message": "court opinion is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 27,
+      "source_title": "扣押决定书及扣押清单，证实2021年6月30日，尼勒克县公安局依法扣押与案件有关记录本、生产投料记录等相关记录本。",
+      "defendant": "扣押",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 3,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "invalid_defendant_name",
+          "message": "invalid defendant name: '扣押'"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_case_background",
+          "message": "case background is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 28,
+      "source_title": "杨某甲,张某,徐某生产、销售、提供假药一案",
+      "defendant": "张某甲",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_court_findings",
+          "message": "multiple cases may have been concatenated"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 31,
+      "source_title": "情况说明证实：因报案人服用产品后误认为脸红脸涨、头晕恶心等为副作用，所以当时并没有在意，也没有就医；",
+      "defendant": "情况",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 3,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "invalid_defendant_name",
+          "message": "invalid defendant name: '情况'"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_case_background",
+          "message": "case background is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 32,
+      "source_title": "柯某妨害药品管理一案",
+      "defendant": "柯某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 33,
+      "source_title": "李某妨害药品管理一案",
+      "defendant": "李某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 2,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "defendant_background_mismatch",
+          "message": "defendant is absent from case background"
+        },
+        {
+          "severity": "critical",
+          "code": "multiple_court_findings",
+          "message": "multiple cases may have been concatenated"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 34,
+      "source_title": "蒋某生产、销售不符合安全标准的食品一案",
+      "defendant": "蒋某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 35,
+      "source_title": "参考性案例34号：辛某、马某等人销售有毒、有害食品案‘",
+      "defendant": "参考",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 3,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "invalid_defendant_name",
+          "message": "invalid defendant name: '参考'"
+        },
+        {
+          "severity": "critical",
+          "code": "defendant_background_mismatch",
+          "message": "defendant is absent from case background"
+        },
+        {
+          "severity": "critical",
+          "code": "defendant_finding_mismatch",
+          "message": "defendant is absent from court finding"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 36,
+      "source_title": "班某等销售有毒有害食品案",
+      "defendant": "崔某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 37,
+      "source_title": "熊某某生产、销售有毒、有害食品案",
+      "defendant": "熊某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 38,
+      "source_title": "赖某走私国家禁止进出口的货物、物品一案",
+      "defendant": "赖某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 2,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "defendant_background_mismatch",
+          "message": "defendant is absent from case background"
+        },
+        {
+          "severity": "critical",
+          "code": "multiple_court_findings",
+          "message": "multiple cases may have been concatenated"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 39,
+      "source_title": "田某走私普通货物一案",
+      "defendant": "田某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 40,
+      "source_title": "于某走私普通货物一案",
+      "defendant": "于某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_court_findings",
+          "message": "multiple cases may have been concatenated"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 41,
+      "source_title": "秦某楠非国家工作人员受贿、受贿案——对经历非国家工作人员和国家工作人员身份转换的受贿者受贿行为的定性",
+      "defendant": "秦某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 4
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 42,
+      "source_title": "陈某等非国家工作人员受贿案——业主委员会成员利用职务便利收受财物行为的定性",
+      "defendant": "陈某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 4
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 43,
+      "source_title": "赵伟受贿案——村干部审批宅基地中收受财物构成非国家工作人员受贿罪",
+      "defendant": "赵伟",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 3,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "defendant_background_mismatch",
+          "message": "defendant is absent from case background"
+        },
+        {
+          "severity": "critical",
+          "code": "defendant_finding_mismatch",
+          "message": "defendant is absent from court finding"
+        },
+        {
+          "severity": "critical",
+          "code": "multiple_court_findings",
+          "message": "multiple cases may have been concatenated"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 44,
+      "source_title": "苏某非法吸收公众存款一案",
+      "defendant": "苏某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 45,
+      "source_title": "龚某非法吸收公众存款一案",
+      "defendant": "龚某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 2,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "defendant_background_mismatch",
+          "message": "defendant is absent from case background"
+        },
+        {
+          "severity": "critical",
+          "code": "defendant_finding_mismatch",
+          "message": "defendant is absent from court finding"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 46,
+      "source_title": "韩某伪造、变造金融票证一案",
+      "defendant": "韩某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "defendant_background_mismatch",
+          "message": "defendant is absent from case background"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 47,
+      "source_title": "刘某伪造、变造金融票证一案",
+      "defendant": "刘某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "defendant_finding_mismatch",
+          "message": "defendant is absent from court finding"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 48,
+      "source_title": "温某甲集资诈骗案",
+      "defendant": "温某甲",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 49,
+      "source_title": "公安机关出具的案发经过证实，本案案发经过。",
+      "defendant": "公安",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 3,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "invalid_defendant_name",
+          "message": "invalid defendant name: '公安'"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_case_background",
+          "message": "case background is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 50,
+      "source_title": "邱某付信用卡诈骗一案",
+      "defendant": "邱某付",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 52,
+      "source_title": "营业执照。证明某支行经营主体身份，及案件发生地点；",
+      "defendant": "营业",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 3,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "invalid_defendant_name",
+          "message": "invalid defendant name: '营业'"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_case_background",
+          "message": "case background is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 53,
+      "source_title": "赵某江信用卡诈骗一案",
+      "defendant": "赵某江",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 54,
+      "source_title": "陶某阳合同诈骗案——通过“职业闭店”模式非法占有消费者预付款行为的定性",
+      "defendant": "林某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 55,
+      "source_title": "朱某,张某,金某等组织、领导传销活动一案",
+      "defendant": "朱某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 56,
+      "source_title": "李某组织、领导传销活动一案",
+      "defendant": "李某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 5
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_court_opinion",
+          "message": "court opinion is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 57,
+      "source_title": "同案犯的供述与辩解",
+      "defendant": "同案",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 3,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "invalid_defendant_name",
+          "message": "invalid defendant name: '同案'"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_case_background",
+          "message": "case background is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 58,
+      "source_title": "万某园等非法经营案",
+      "defendant": "万某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 4
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 59,
+      "source_title": "颜某康等非法经营案——协助他人将他人以外币购买的虚拟货币兑换成人民币行为的定性",
+      "defendant": "颜某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 4
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 60,
+      "source_title": "冀某菲等非法经营案——网络水军有偿提供批量转赞评服务的性质认定",
+      "defendant": "冀某",
+      "charge": "破坏社会主义市场经济秩序2罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 2,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_case_background",
+          "message": "case background is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "invalid_charge",
+          "message": "charge is not normalized: '破坏社会主义市场经济秩序2罪'"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 61,
+      "source_title": "张某某、李某故意杀人案——低龄未成年人严重暴力犯罪案件的处理",
+      "defendant": "张某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 62,
+      "source_title": "刘某故意杀人案——作案后打电话报警同时企图自杀的，依法不认定为自首",
+      "defendant": "刘某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 63,
+      "source_title": "张某岭故意杀人案——因不堪忍受长期家庭暴力而故意杀害施暴人案件的刑罚裁量",
+      "defendant": "张某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 64,
+      "source_title": "马某兵故意杀人案——因婚姻家庭矛盾引发的故意杀人案，被害人过错对量刑的影响应予充分体现",
+      "defendant": "马某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 65,
+      "source_title": "甲过失致人死亡案",
+      "defendant": "因本案",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 3,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "invalid_defendant_name",
+          "message": "invalid defendant name: '因本案'"
+        },
+        {
+          "severity": "critical",
+          "code": "defendant_background_mismatch",
+          "message": "defendant is absent from case background"
+        },
+        {
+          "severity": "critical",
+          "code": "defendant_finding_mismatch",
+          "message": "defendant is absent from court finding"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 66,
+      "source_title": "杨某过失致人死亡案",
+      "defendant": "杨某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 67,
+      "source_title": "孙某过失致人死亡一案",
+      "defendant": "孙某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_court_opinion",
+          "message": "court opinion is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 68,
+      "source_title": "张某甲故意伤害案——对被害人家属送医治疗行为是否导致伤害行为与死亡结果之间因果关系中断的审查认定",
+      "defendant": "张某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 69,
+      "source_title": "王某民故意伤害案——防卫不适时的认定",
+      "defendant": "王某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 70,
+      "source_title": "张某故意伤害案——二审期间附带民事诉讼被告人死亡的程序适用",
+      "defendant": "张某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 71,
+      "source_title": "李某甲过失致人重伤一案",
+      "defendant": "李某甲",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 72,
+      "source_title": "张某过失致人重伤一案",
+      "defendant": "张某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_court_findings",
+          "message": "multiple cases may have been concatenated"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 76,
+      "source_title": "向某对本案的发生是否具有过错，象州县石龙镇某龙纸业是否应当承担责任",
+      "defendant": "向某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 2,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_case_background",
+          "message": "case background is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 77,
+      "source_title": "席某某强奸案——订婚不影响强奸罪的认定",
+      "defendant": "席某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 78,
+      "source_title": "杜某强奸案——负有教育职责人员与精神发育迟滞的未成年女性发生性关系的定性",
+      "defendant": "杜某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 79,
+      "source_title": "杨某某强奸案——因被害人反抗而停止性侵害时犯罪中止的认定",
+      "defendant": "杨某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 80,
+      "source_title": "刘某业强奸案——着手实施犯罪后因被他人通过监控发现、喝止而停止犯罪的，构成犯罪未遂",
+      "defendant": "刘某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 81,
+      "source_title": "张某猥亵儿童案——性侵害未成年人刑事案件中证据审查判断标准的把握",
+      "defendant": "张某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 82,
+      "source_title": "张某猥亵儿童案——猥亵儿童治安违法行为与猥亵儿童犯罪的区分",
+      "defendant": "闵某甲",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 83,
+      "source_title": "陈桃非法拘禁一案",
+      "defendant": "陈某某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_court_findings",
+          "message": "multiple cases may have been concatenated"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 84,
+      "source_title": "马某非法侵入住宅一案",
+      "defendant": "马某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 85,
+      "source_title": "宗某非法侵入住宅一案",
+      "defendant": "宗某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 2,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "defendant_finding_mismatch",
+          "message": "defendant is absent from court finding"
+        },
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 86,
+      "source_title": "苏某,方某侵犯公民个人信息一案",
+      "defendant": "苏某",
+      "charge": "侵犯公民人身权利、民主权利罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 87,
+      "source_title": "马某林抢劫案——如何把握手机轨迹信息作为电子数据在“零口供”案件中的补强证明作用",
+      "defendant": "马某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 88,
+      "source_title": "赵某荣抢劫案",
+      "defendant": "赵某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 89,
+      "source_title": "王某抢劫一案",
+      "defendant": "王某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 90,
+      "source_title": "欧阳某甲等盗窃案——植入代码远程控制手机，在机主不知情的情况下恶意扣费行为的定性",
+      "defendant": "欧阳",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 91,
+      "source_title": "廖某武等盗窃案——涉虚拟货币侵财犯罪的犯罪数额认定与处置",
+      "defendant": "、唐某星、李某鸿",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 2,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_case_background",
+          "message": "case background is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 92,
+      "source_title": "刘某盗窃案",
+      "defendant": "刘某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 4
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_court_opinion",
+          "message": "court opinion is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 96,
+      "source_title": "某股份有限公司与某公司签订的运输管理协议书，证明某段系案涉铁路线路的代管、维修单位。",
+      "defendant": "某股",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 2,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_case_background",
+          "message": "case background is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 97,
+      "source_title": "廖某春等诈骗案——“套路运”诈骗案件中罪名的审查认定",
+      "defendant": "廖某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 98,
+      "source_title": "丁某义诈骗案—刑罚执行完毕以前发现漏罪，判决作出时原判刑罚已执行完毕的，仍应当数罪并罚",
+      "defendant": "丁某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 99,
+      "source_title": "黄某华诈骗案——请托型诈骗犯罪违法所得的处置",
+      "defendant": "黄某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 100,
+      "source_title": "欧某抢夺案",
+      "defendant": "欧某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 4
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_court_opinion",
+          "message": "court opinion is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 101,
+      "source_title": "同案犯供述",
+      "defendant": "宋某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_court_findings",
+          "message": "multiple cases may have been concatenated"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 102,
+      "source_title": "黄某洪、吕某婷敲诈勒索案——在自媒体平台发布、转载企业负面信息，假借商务合作索要“合作费”“公关费”行为的定性",
+      "defendant": "黄某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 104,
+      "source_title": "何某故意毁坏财物案——法定量刑幅度的最低刑为单处罚金刑时减轻处罚的适用",
+      "defendant": "何某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 105,
+      "source_title": "王某故意毁坏财物案",
+      "defendant": "王某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 106,
+      "source_title": "江西某光电有限公司拒不支付劳动报酬案——“有能力支付而不支付劳动者的劳动报酬”的认定",
+      "defendant": "江西",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 107,
+      "source_title": "隋某拒不支付劳动报酬案——拒不支付劳动报酬犯罪从宽处罚的适用",
+      "defendant": "隋某",
+      "charge": "侵犯财产罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 108,
+      "source_title": "李某龙妨害公务案——驾车碰撞、剐蹭配合人民警察执法的辅警行为的定性",
+      "defendant": "李某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 109,
+      "source_title": "吉林长春九台法院判决李某龙妨害公务案——强行闯卡造成辅警受伤构成妨害公务罪",
+      "defendant": "吉林",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 3,
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "invalid_defendant_name",
+          "message": "invalid defendant name: '吉林'"
+        },
+        {
+          "severity": "critical",
+          "code": "defendant_background_mismatch",
+          "message": "defendant is absent from case background"
+        },
+        {
+          "severity": "critical",
+          "code": "defendant_finding_mismatch",
+          "message": "defendant is absent from court finding"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 110,
+      "source_title": "孙某强、韩某平等伪造国家机关证件、印章案——伪造国家机关证件、印章链条式犯罪中刑事责任的认定",
+      "defendant": "孙某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 111,
+      "source_title": "黄某聪伪造国家机关印章案——伪造村（居）民委员会的印章是否属于国家机关印章及伪造国家机关印章罪的量刑考虑",
+      "defendant": "黄某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 112,
+      "source_title": "王某某等伪造、买卖国家机关证件、印章案",
+      "defendant": "王某某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 114,
+      "source_title": "翟某可帮助信息网络犯罪活动案——为电信网络诈骗引流行为的定性",
+      "defendant": "翟某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 115,
+      "source_title": "杨某磊帮助信息网络犯罪活动案——帮信罪主观明知的认定",
+      "defendant": "刘某甲",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "defendant_finding_mismatch",
+          "message": "defendant is absent from court finding"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 116,
+      "source_title": "彭某聚众斗殴一案",
+      "defendant": "彭某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 117,
+      "source_title": "任某甲聚众斗殴一案",
+      "defendant": "任某甲",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "defendant_finding_mismatch",
+          "message": "defendant is absent from court finding"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 118,
+      "source_title": "尹某杰寻衅滋事案——网络谣言型寻衅滋事罪的准确认定",
+      "defendant": "尹某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 119,
+      "source_title": "白某红、徐某寻衅滋事案——网络谣言型寻衅滋事罪中“造成公共秩序严重混乱”的认定标准",
+      "defendant": "白某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 120,
+      "source_title": "万某寻衅滋事案——自动投案的审查及缓刑判决宣告后、生效前又犯新罪的处理",
+      "defendant": "万某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 121,
+      "source_title": "陈某龙、范某飞开设赌场案——假借“盲盒销售”之名吸引玩家下注抽取价值差距过大的游戏道具行为的定性",
+      "defendant": "陈某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 122,
+      "source_title": "陈某开设赌场案——规劝并陪同同案犯投案，且同案犯涉嫌其他犯罪的处理",
+      "defendant": "陈某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 124,
+      "source_title": "杨某窝藏案——为逃往境外犯罪分子提供生产经营所需资金帮助其逃匿行为的认定",
+      "defendant": "赵某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 125,
+      "source_title": "王某飞掩饰、隐瞒犯罪所得案——“上诉不加刑”原则的适用",
+      "defendant": "王某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 126,
+      "source_title": "许某龙掩饰、隐瞒犯罪所得案——经侦查机关通知到案行为的定性",
+      "defendant": "许某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 127,
+      "source_title": "孙某某等掩饰、隐瞒犯罪所得案",
+      "defendant": "孙某某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 4
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_court_opinion",
+          "message": "court opinion is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 131,
+      "source_title": "户籍信息18份、常住人口信息查询结果单1份、无犯罪记录1份。证实：鲁某、郭某等本案涉案证人、见证人的身份信息。",
+      "defendant": "户籍",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 2,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_case_background",
+          "message": "case background is missing or too short"
+        },
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 132,
+      "source_title": "4.6抢夺窃取国有档案罪&擅自出卖、转让国有档案罪",
+      "defendant": "张某海",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "missing_court_finding",
+          "message": "court finding is missing or too short"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 133,
+      "source_title": "黄某非法行医一案",
+      "defendant": "黄某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 134,
+      "source_title": "贾某贩卖毒品案——被告人一审认罪认罚获得从宽处罚后，又以量刑过重为由提出上诉，检察机关据此提出抗诉的，二审法院应如何处理",
+      "defendant": "贾某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 135,
+      "source_title": "邓某等贩卖毒品案",
+      "defendant": "邓某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 136,
+      "source_title": "赵某海非法持有毒品案",
+      "defendant": "赵某海",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 2
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_court_opinion",
+          "message": "court opinion is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 137,
+      "source_title": "丁某组织卖淫案——通过网络管理或者控制他人卖淫的，依法认定为组织卖淫罪",
+      "defendant": "丁某",
+      "charge": "妨害社会管理秩序罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 138,
+      "source_title": "刘某元贪污案——在国有公司中从事公务的劳务派遣人员可认定为国家工作人员",
+      "defendant": "刘某",
+      "charge": "贪污贿赂罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 139,
+      "source_title": "陈某某乙贪污、受贿案",
+      "defendant": "陈某某乙",
+      "charge": "贪污贿赂罪",
+      "releasable": false,
+      "severity_counts": {
+        "high": 1
+      },
+      "flags": [
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 140,
+      "source_title": "殷某富贪污、受贿案——公办学校管理人员利用职务上的便利非法套取学生伙食费行为的定性",
+      "defendant": "殷某",
+      "charge": "贪污贿赂罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    },
+    {
+      "original_id": 141,
+      "source_title": "刘某坚挪用公款案——“私户公用”情形下挪用公款购买理财产品行为的定性",
+      "defendant": "刘某",
+      "charge": "贪污贿赂罪",
+      "releasable": false,
+      "severity_counts": {
+        "critical": 1,
+        "high": 3
+      },
+      "flags": [
+        {
+          "severity": "critical",
+          "code": "multiple_case_numbers_in_finding",
+          "message": "court finding contains multiple case numbers"
+        },
+        {
+          "severity": "high",
+          "code": "missing_judgment",
+          "message": "judgment result is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_legal_basis",
+          "message": "legal basis is empty"
+        },
+        {
+          "severity": "high",
+          "code": "missing_release_review",
+          "message": "case has no explicit release status or review boundary"
+        }
+      ]
+    }
+  ]
+}

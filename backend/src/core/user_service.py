@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -31,6 +33,10 @@ def _validate_auth_input(*, email: str, password: str) -> str:
     normalized_email = _normalize_email(email)
     if not normalized_email or not str(password or "").strip():
         raise InvalidAuthInputError("email and password are required")
+    if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", normalized_email):
+        raise InvalidAuthInputError("email format is invalid")
+    if len(str(password)) < 8:
+        raise InvalidAuthInputError("password must contain at least 8 characters")
     return normalized_email
 
 

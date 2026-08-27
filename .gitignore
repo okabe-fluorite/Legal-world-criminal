@@ -14,6 +14,7 @@ node_modules/
 backend/batch_runs/
 backend/case_runs/
 backend/sandbox_data/
+backend/runtime/
 backend/single_case_debug_runs/
 backend/debug_runs/
 backend/shared/
@@ -95,3 +96,4 @@ backend_image_v3_amd64.tar.gz
 frontend/tsconfig.tsbuildinfo
 frontend/.tsbuild-node/
 frontend/*.log.err
+Legalworld_stage17_tests/

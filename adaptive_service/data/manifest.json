@@ -1,0 +1,52 @@
+{
+  "schema_version": "law-criminal-core-item-bank-v2.0",
+  "counts": {
+    "approved": 30,
+    "revision": 1,
+    "rejected": 5,
+    "knowledge_nodes": 10,
+    "q_edges": 30,
+    "knowledge_below_target": 0,
+    "items_still_needed": 0
+  },
+  "target_per_knowledge": 3,
+  "target_satisfied": true,
+  "source_release_manifests": {
+    "D:\\EduBrain_kt_artifacts\\content_pipeline\\stage12\\pilot_release": "f4cac3c1865e82fb3d447e01ba2528efd44492d4a2c2b2a5f031e38ed62828f7",
+    "D:\\EduBrain_kt_artifacts\\content_pipeline\\stage13\\pilot_release_round2": "39c897bc33b0d66a5134798ddf6e2051ea41298240d1487ec97e0679dfaf8aaa",
+    "D:\\EduBrain_kt_artifacts\\content_pipeline\\stage13\\round3\\pilot_release": "6d790e0ab5ca5dbfd70407d7dccc156b051358c1682aff60ec781950c5f78384",
+    "D:\\EduBrain_kt_artifacts\\content_pipeline\\stage13\\round4\\pilot_release": "abff3d99edec25446e3544a5e5824b0175814cd9c64fc804ffdcc3edfa18a5cb",
+    "D:\\EduBrain_kt_artifacts\\content_pipeline\\stage13\\round5\\pilot_release": "a26d18e61cd1cbeb0bc55caada8f24e89575fb59b82c8e3945f3f7d0c4baf41c"
+  },
+  "limits": [
+    "synthetic pilot items require empirical item analysis",
+    "2024-labelled legal source must be revalidated before classroom use",
+    "not a high-stakes examination bank"
+  ],
+  "files": {
+    "approved_items.jsonl": {
+      "bytes": 113829,
+      "sha256": "5d6b79c857cf1604ae33ea7854839809b1813720ce15ed84cd162a9df773bb35"
+    },
+    "revision_queue.jsonl": {
+      "bytes": 2780,
+      "sha256": "2e842778a7dc8f265dc67303dcd0798b3a7fdbc8281833371e750e61e7a267b5"
+    },
+    "rejected_items.jsonl": {
+      "bytes": 17066,
+      "sha256": "ac1c5e2db8bc197a9a3a6f4987d175bc6a65156aeddc3be43633c09a688eb3e7"
+    },
+    "q_matrix.jsonl": {
+      "bytes": 5958,
+      "sha256": "8db247bd46eb91dfaf8d8efcd512ff5ee0028797b199b03318e3738fb9f9f657"
+    },
+    "knowledge_nodes.jsonl": {
+      "bytes": 2379,
+      "sha256": "8ce6d41efbe9af13d1fd4af7558b819b3af159c64a8d5e60eed18cfb4650dfdb"
+    },
+    "coverage_gaps.jsonl": {
+      "bytes": 1296,
+      "sha256": "0378304c23d479e954fa8510e89bfc0bf5aae7817ad6c823bbaaaba62c84403e"
+    }
+  }
+}

@@ -59,7 +59,9 @@ export class WSClient {
   private open() {
     this.emitStatus("connecting");
     const url = this.explicitUrl ?? this.buildUrl();
-    const socket = new WebSocket(url);
+    // Keep JWTs out of URLs and reverse-proxy access logs. The backend selects
+    // the public marker protocol while reading the following offered token.
+    const socket = new WebSocket(url, ["simlaw-auth", this.token]);
     this.socket = socket;
 
     socket.onopen = () => {
@@ -97,7 +99,7 @@ export class WSClient {
 
   private buildUrl(): string {
     const proto = location.protocol === "https:" ? "wss" : "ws";
-    return `${proto}://${location.host}/ws?token=${encodeURIComponent(this.token)}`;
+    return `${proto}://${location.host}/ws`;
   }
 
   send(payload: object): void {

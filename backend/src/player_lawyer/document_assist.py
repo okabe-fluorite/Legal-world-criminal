@@ -198,20 +198,12 @@ def build_complaint_assist_prompt(
 def _default_generator(prompt: str) -> str:
     from camel.agents import ChatAgent
     from camel.messages import BaseMessage
-    from camel.models import ModelFactory
-    from camel.types import ModelPlatformType
+    from ..utils.model_config import build_camel_model
 
-    from ..utils.model_config import build_runtime_openai_chat_config, resolve_openai_chat_model
-
-    model_name = resolve_openai_chat_model()
-    model = ModelFactory.create(
-        model_platform=ModelPlatformType.OPENAI,
-        model_type=model_name,
-        model_config_dict=build_runtime_openai_chat_config(
-            model_name=model_name,
-            temperature=0.2,
-            max_tokens=4096,
-        ),
+    model, _endpoint = build_camel_model(
+        "document_assist",
+        temperature=0.2,
+        max_tokens=4096,
     )
     agent = ChatAgent(
         system_message="你只输出可编辑的法律文书正文，不输出解释或工具调用。",

@@ -13,16 +13,7 @@ const detailCache = ref<Record<string, SkillCardDetail>>({});
 const selected = ref<string[]>([]);
 const studentId = ref<string>("");
 
-const selectedCards = computed(() =>
-  cards.value.filter((c) => selected.value.includes(c.slug)),
-);
-
-/** 给 submit 用的注入文本：勾选卡片的知识点+要点，拼成简短提示块 */
-const injectionText = computed(() => {
-  if (!selectedCards.value.length) return "";
-  const lines = selectedCards.value.map((c) => `· ${c.knowledge_point}：${c.description}`);
-  return `【我的技能卡提醒】\n${lines.join("\n")}\n（办理本案时注意以上补弱要点）`;
-});
+const selectedSlugs = computed(() => [...selected.value]);
 
 function toggle(slug: string) {
   const idx = selected.value.indexOf(slug);
@@ -72,7 +63,7 @@ onMounted(async () => {
   }
 });
 
-defineExpose({ injectionText });
+defineExpose({ selectedSlugs });
 </script>
 
 <template>

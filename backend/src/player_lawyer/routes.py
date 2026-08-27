@@ -23,7 +23,7 @@ lazily attached to ``SandboxRuntimeContext`` when
 from __future__ import annotations
 
 import logging
-from typing import Any, Callable
+from typing import Any, Callable, Literal
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
@@ -42,6 +42,8 @@ class SubmitResponseBody(BaseModel):
     polished_message: str = ""
     final_message: str = ""
     hint_ids: list[str] = Field(default_factory=list)
+    skill_card_ids: list[str] = Field(default_factory=list)
+    assist_mode: Literal["none", "polish", "draft"] = "none"
     used_ai_polish: bool = False
 
 
@@ -190,6 +192,8 @@ async def submit_response(request: Request, body: SubmitResponseBody):
                 polished_message=body.polished_message,
                 final_message=final_message,
                 hint_ids=body.hint_ids,
+                skill_card_ids=body.skill_card_ids,
+                assist_mode=body.assist_mode,
                 used_ai_polish=body.used_ai_polish,
             )
             assist_payload = assist.to_dict()
@@ -207,6 +211,8 @@ async def submit_response(request: Request, body: SubmitResponseBody):
                 polished_message=body.polished_message,
                 final_message=final_message,
                 hint_ids=body.hint_ids,
+                skill_card_ids=body.skill_card_ids,
+                assist_mode=body.assist_mode,
                 used_ai_polish=body.used_ai_polish,
                 submitted_at=req.resolved_at or "",
             )

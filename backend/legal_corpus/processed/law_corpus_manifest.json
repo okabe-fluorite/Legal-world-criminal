@@ -1,0 +1,67 @@
+{
+  "schema_version": "simlaw-law-corpus-manifest-v2",
+  "generated_at": "2026-08-26T17:05:47.127848+00:00",
+  "builder": "build_law_corpus_from_official_docx.py",
+  "source_portal_url": "https://flk.npc.gov.cn/",
+  "source_item_url_status": "not_preserved_in_download_artifacts",
+  "download_snapshot_date": "2026-02-26",
+  "documents": {
+    "xingfa": {
+      "article_count": 505,
+      "version_as_of": "2024-03-01",
+      "amended_article_refs": [
+        "第一百六十五条",
+        "第一百六十六条",
+        "第一百六十九条",
+        "第三百八十七条",
+        "第三百九十条",
+        "第三百九十一条",
+        "第三百九十三条"
+      ],
+      "source_bundle_sha256": "42ab93f764e3dd0c0f2479db94f5e6e4b73455317cc5dfc2ad47e003fc005875",
+      "source_artifacts": [
+        {
+          "role": "official_consolidated_base",
+          "path": "raw_data/法律/国家法律法规数据库_批量下载_20260226_141154/中华人民共和国刑法_20201226.docx",
+          "sha256": "282fee49f12b6420a1a5ecde4ea2aa58b0e496e566cf959378bd1f8edb53f5e6",
+          "promulgated_date": "2020-12-26"
+        },
+        {
+          "role": "official_amendment",
+          "path": "raw_data/法律/国家法律法规数据库_批量下载_20260226_141135/中华人民共和国刑法修正案（十二）_20231229.docx",
+          "sha256": "ee51fc72c880c8ed4456ec50196498da6b16bab2430ad63229d408b247ce20c4",
+          "promulgated_date": "2023-12-29",
+          "effective_date": "2024-03-01"
+        }
+      ]
+    },
+    "xingsufa": {
+      "article_count": 308,
+      "version_as_of": "2018-10-26",
+      "source_bundle_sha256": "739b1f4665a502c17e8c6842b830efcaa87ae3864b4f269dfca04328b63f750b",
+      "source_artifacts": [
+        {
+          "role": "official_consolidated_text",
+          "path": "raw_data/法律/国家法律法规数据库_批量下载_20260226_141154/中华人民共和国刑事诉讼法_20181026.docx",
+          "sha256": "6810ffec97e23afcf5e5e0605f6f15c38299e0acb70c55d77c3c5a1882d954a7",
+          "promulgated_date": "2018-10-26"
+        }
+      ]
+    }
+  },
+  "quarantined_sources": [
+    {
+      "path": "raw_data/法律/中华人民共和国刑法（2024年最新版）.docx",
+      "sha256": "0233a79ebedd779a5593dc04808c040e5eec6678fc6b128f45561e6130f0043f",
+      "reason": "contains third-party publisher contamination; not used as legal authority"
+    }
+  ],
+  "outputs": {
+    "xingfa.jsonl": "a718b37c6c9d97347018c72e44c0b1b886cd0599bf2ac0bf3c4b45e6ebe37b43",
+    "xingsufa.jsonl": "bf2826df2ead8039eddd8193feb5047a62b391949f3c8c0726e8857c0b77fa50"
+  },
+  "warnings": [
+    "portal URL identifies the official source system; exact item URLs were not preserved",
+    "validity must be rechecked against the official portal before each real classroom term"
+  ]
+}

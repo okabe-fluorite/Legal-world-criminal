@@ -21,6 +21,8 @@ def get_jwt_secret() -> str:
     secret = os.getenv("JWT_SECRET", "").strip()
     if not secret:
         raise AuthError("JWT_SECRET environment variable is required")
+    if len(secret.encode("utf-8")) < 32:
+        raise AuthError("JWT_SECRET must contain at least 32 bytes")
     return secret
 
 

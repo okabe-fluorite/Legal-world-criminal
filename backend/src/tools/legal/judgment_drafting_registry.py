@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Dict
 
 from .document_drafting_support import extract_json_payload
@@ -142,6 +143,25 @@ def render_judgment_document_payload(
     )
 
 
+def render_judgment_document_payload_for_output_dir(
+    *,
+    document_type: str,
+    document_text: str,
+    case_output_dir: str | Path,
+) -> Dict[str, str]:
+    """Render a judgment into an explicit per-user case output directory."""
+
+    class _RenderAgent:
+        def __init__(self, output_dir: str | Path) -> None:
+            self.scenario_data = {"case_output_dir": str(Path(output_dir).resolve())}
+
+    return render_judgment_document_payload(
+        _RenderAgent(case_output_dir),
+        document_type=document_type,
+        document_text=document_text,
+    )
+
+
 __all__ = [
     "JUDGMENT_DOCUMENT_TYPE_TO_TOOL_NAME",
     "SCENARIO_TO_JUDGMENT_DOCUMENT_TYPE",
@@ -152,4 +172,5 @@ __all__ = [
     "normalize_judgment_document_payload",
     "normalize_judgment_document_type",
     "render_judgment_document_payload",
+    "render_judgment_document_payload_for_output_dir",
 ]

@@ -70,7 +70,10 @@ async def score_case(body: ScoreBody, request: Request) -> dict[str, Any]:
     if not case_output_dir.exists() or not _case_has_player_data(case_output_dir):
         raise HTTPException(status_code=404, detail="case output not found for scoring")
 
-    student_id = (body.student_id or default_student_id or "anonymous").strip() or "anonymous"
+    requested_student_id = str(body.student_id or "").strip()
+    if requested_student_id and requested_student_id != default_student_id:
+        raise HTTPException(status_code=403, detail="cannot score another student's profile")
+    student_id = str(default_student_id or "anonymous").strip() or "anonymous"
     event = TeachingScorer().score_stage(
         case_id=body.case_id,
         stage=body.stage,
@@ -80,9 +83,6 @@ async def score_case(body: ScoreBody, request: Request) -> dict[str, Any]:
     if event is None:
         raise HTTPException(status_code=400, detail="评分失败或该阶段没有学生发言")
 
-    from . import learner
-
-    learner.update_profile(student_id, event)
     return {"success": True, "event": event, "student_id": student_id}
 
 
@@ -97,17 +97,26 @@ async def get_event(case_id: str, stage: str, request: Request) -> dict[str, Any
     return json.loads(event_path.read_text(encoding="utf-8"))
 
 
+def _require_own_student(request: Request, student_id: str) -> str:
+    _, current_student_id = _require_storage(request)
+    requested = str(student_id or "").strip()
+    if requested != current_student_id:
+        raise HTTPException(status_code=403, detail="cannot access another student's teaching data")
+    return requested
+
+
 @router.get("/profile/{student_id}")
-async def get_profile(student_id: str) -> dict[str, Any]:
+async def get_profile(student_id: str, request: Request) -> dict[str, Any]:
     from . import learner
 
-    return learner.get_profile(student_id)
+    return learner.get_profile(_require_own_student(request, student_id))
 
 
 @router.get("/report/{student_id}")
-async def get_report(student_id: str) -> dict[str, Any]:
+async def get_report(student_id: str, request: Request) -> dict[str, Any]:
     from .report import build_report
 
+    student_id = _require_own_student(request, student_id)
     report = build_report(student_id)
     try:
         from .skill_card import list_skill_cards
@@ -119,16 +128,18 @@ async def get_report(student_id: str) -> dict[str, Any]:
 
 
 @router.get("/skill-cards/{student_id}")
-async def get_skill_cards(student_id: str) -> dict[str, Any]:
+async def get_skill_cards(student_id: str, request: Request) -> dict[str, Any]:
     from .skill_card import list_skill_cards
 
+    student_id = _require_own_student(request, student_id)
     return {"student_id": student_id, "cards": list_skill_cards(student_id)}
 
 
 @router.get("/skill-cards/{student_id}/{slug}")
-async def get_skill_card_detail(student_id: str, slug: str) -> dict[str, Any]:
+async def get_skill_card_detail(student_id: str, slug: str, request: Request) -> dict[str, Any]:
     from .skill_card import read_skill_card
 
+    student_id = _require_own_student(request, student_id)
     card = read_skill_card(student_id, slug)
     if card is None:
         raise HTTPException(status_code=404, detail="skill card not found")
