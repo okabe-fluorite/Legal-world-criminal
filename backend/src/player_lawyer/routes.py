@@ -145,8 +145,11 @@ async def player_lawyer_runtime(
     case_id: str | None = None,
 ):
     """Return player-lawyer mode status and pending requests in one request."""
+    status = _player_lawyer_status_payload(request)
+    if not status.get("enabled"):
+        return {**status, "pending": [], "count": 0}
     return {
-        **_player_lawyer_status_payload(request),
+        **status,
         **_pending_payload(request, case_id=case_id),
     }
 

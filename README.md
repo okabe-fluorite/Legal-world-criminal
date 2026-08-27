@@ -31,6 +31,8 @@ uv run --isolated --with-requirements requirements.lock.txt -- `
 
 首次运行会自动执行一次`npm ci`。也可增加`--no-frontend`或`--no-adaptive`只启动部分服务。
 
+前端与可复现浏览器冒烟建议使用Node.js 20或更高版本；`playwright-core`只复用本机Edge/Chrome，不下载浏览器。
+
 本地测试：
 
 ```powershell
@@ -98,6 +100,8 @@ EvidencePack中的检索相关性和coverage只是待语义审核候选，不等
 登录学生现在可以通过`POST /api/adaptive/attempts`完成推荐TaskItem：adaptive服务私有判分，生成不可变`task_attempt_assessment`，backend持久化事件、画像与推荐，然后返回形成性反馈和下一任务。相同`attempt_id`重试幂等，同ID改payload返回409；旧`content_version`被拒绝，已完成任务默认从后续推荐排除。
 
 `POST /api/adaptive/confusions`生成独立`confusion_annotation`。困惑是学生自报与教师聚合信号，不会冒充答错证据或直接降低掌握状态。推荐/题目接口始终无答案，正确选项和解析只在服务端判分后返回给当前登录学生。契约、示例、三次证据/两道任务门槛和正式考试边界见[`docs/TASK_ATTEMPT_CONTRACTS.md`](docs/TASK_ATTEMPT_CONTRACTS.md)。
+
+登录后点击顶部“自主学习”即可进入学生连续旅程：10个知识卷宗、课程目标与法源索引、个性化任务、作答把握、服务端判分、误概念反馈、证据账本、困惑便笺和下一任务在同一页面闭环。桌面为三栏卷宗，窄屏改为单列并保留困惑入口。页面形态与可复现浏览器冒烟见[`docs/STUDENT_LEARNING_JOURNEY.md`](docs/STUDENT_LEARNING_JOURNEY.md)。
 
 ## 案例发布边界
 

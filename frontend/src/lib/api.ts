@@ -3,6 +3,9 @@ import type {
   AdaptiveRecommendationResponse,
   CaseListResponse,
   CitationFeedback,
+  ConfusionAnnotationPayload,
+  ConfusionAnnotationResponse,
+  KnowledgeCatalogResponse,
   LearningEvent,
   PlayerAssistResponse,
   PlayerRequest,
@@ -10,6 +13,8 @@ import type {
   SkillCardDetail,
   SkillCardSummary,
   StatusResponse,
+  TaskAttemptPayload,
+  TaskAttemptResponse,
   TeachingReport,
 } from "./types";
 
@@ -182,6 +187,26 @@ export const api = {
     return request<AdaptiveRecommendationResponse>("/adaptive/recommend", {
       method: "POST",
       body: JSON.stringify(context),
+    });
+  },
+
+  async knowledgeCatalog(): Promise<KnowledgeCatalogResponse> {
+    return request<KnowledgeCatalogResponse>("/knowledge/catalog");
+  },
+
+  async submitTaskAttempt(payload: TaskAttemptPayload): Promise<TaskAttemptResponse> {
+    return request<TaskAttemptResponse>("/adaptive/attempts", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async submitConfusion(
+    payload: ConfusionAnnotationPayload,
+  ): Promise<ConfusionAnnotationResponse> {
+    return request<ConfusionAnnotationResponse>("/adaptive/confusions", {
+      method: "POST",
+      body: JSON.stringify(payload),
     });
   },
 

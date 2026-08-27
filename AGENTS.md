@@ -201,6 +201,13 @@ teaching/
 - 困惑是`confusion_annotation`自报事件，不作为负掌握证据；`provisional`至少需要3个合格事件、覆盖2道任务，且仍不是校准掌握概率
 - backend数据库不持久化判分反馈中的正确选项和解析；公开任务与推荐继续保持答案隔离
 
+### 学生连续旅程
+
+- 顶部“自主学习”打开`frontend/src/components/LearningJourney.vue`，串联知识卷宗、目标/法源、推荐题、把握度、判分反馈、画像门槛、困惑便笺和下一任务
+- 桌面使用知识索引/任务卷页/证据账本三栏；1040px以下使用单列滚动并把账本下沉，不能为适配窄屏而隐藏困惑入口
+- `frontend/scripts/smoke-learning-journey.mjs`使用`playwright-core`复用本机Edge/Chrome，验证桌面和指定视口的真实登录、作答、反馈、困惑、私有字段与控制台/网络错误
+- 该页面只完成形成性选择任务闭环；主观题、AI分层解惑、正式考试控制和教师聚合仍属后续切片
+
 ### NLI 模型层
 
 - 首选 IDEA-CCNL/Erlangshen-Roberta-330M-NLI（机构背书的中文 NLI）；英文模型不得兜底（中文输入下是噪声源），加载失败直接走 LLM-only

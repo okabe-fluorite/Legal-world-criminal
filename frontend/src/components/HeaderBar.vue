@@ -3,10 +3,12 @@ import { computed, ref } from "vue";
 import { useSession } from "../composables/useSession";
 import { stageAccent } from "../lib/caseState";
 import LearningDossier from "./LearningDossier.vue";
+import LearningJourney from "./LearningJourney.vue";
 
 const session = useSession();
 
 const showDossier = ref(false);
+const showJourney = ref(false);
 
 const wsDotClass = computed(() => {
   switch (session.state.wsStatus) {
@@ -89,9 +91,13 @@ const accent = computed(() => stageAccent(session.state.caseState));
         <button class="btn hdr__dossier" @click="showDossier = true">
           学习档案
         </button>
+        <button class="btn hdr__journey" @click="showJourney = true">
+          自主学习
+        </button>
       </div>
 
       <LearningDossier v-if="showDossier" @close="showDossier = false" />
+      <LearningJourney v-if="showJourney" @close="showJourney = false" />
 
       <div class="hdr__user">
         <span class="mono">{{ session.state.email }}</span>
@@ -222,6 +228,17 @@ const accent = computed(() => stageAccent(session.state.caseState));
 .hdr__dossier:hover {
   border-color: var(--accent-amber);
   background: rgba(176, 138, 62, 0.08);
+}
+
+.hdr__journey {
+  color: #bfd2b2;
+  border-color: rgba(122, 153, 98, 0.52);
+  background: rgba(122, 153, 98, 0.045);
+}
+.hdr__journey:hover {
+  color: #e4eedf;
+  border-color: var(--accent-success);
+  background: rgba(122, 153, 98, 0.1);
 }
 
 .hdr__user {

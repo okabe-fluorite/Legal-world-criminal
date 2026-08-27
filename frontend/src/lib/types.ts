@@ -307,7 +307,27 @@ export interface AdaptiveKnowledgeEvidence {
   knowledge_name?: string;
   latest?: string;
   event_count?: number;
+  task_count?: number;
   evidence_status?: "observed" | "provisional" | "insufficient_evidence" | string;
+  history?: Array<{
+    status?: string;
+    event_id?: string;
+    task_id?: string;
+    evidence_weight?: number;
+  }>;
+}
+
+export interface AdaptiveConfusionEvidence {
+  knowledge_name?: string;
+  count?: number;
+  latest?: {
+    event_id?: string;
+    task_id?: string;
+    phase?: string;
+    confusion_type?: string;
+    note?: string;
+    submitted_at?: string;
+  };
 }
 
 export interface AdaptiveRecommendationItem {
@@ -324,6 +344,8 @@ export interface AdaptiveRecommendationItem {
   reason_code?: string;
   score?: number;
   answer_included?: false;
+  content_version?: string;
+  standard_evidence_ids?: string[];
   // The explicitly labelled local fallback uses TeachingReport rows.
   chapter?: string;
   question?: string;
@@ -341,10 +363,131 @@ export interface AdaptiveRecommendationResponse {
     schema_version?: string;
     event_count?: number;
     eligible_event_count?: number;
+    excluded_event_count?: number;
+    self_report_event_count?: number;
     knowledge?: Record<string, AdaptiveKnowledgeEvidence>;
+    confusions?: Record<string, AdaptiveConfusionEvidence>;
     warnings?: string[];
   };
   recommendations: AdaptiveRecommendationItem[];
+}
+
+export interface KnowledgeCard {
+  schema_version: "criminal-law-knowledge-card-v1" | string;
+  knowledge_id: string;
+  canonical_name: string;
+  domain: string;
+  chapter: string;
+  knowledge_type: string;
+  learning_objective: string;
+  summary: string;
+  law_article_refs: string[];
+  standard_evidence_ids: string[];
+  prerequisite_ids: string[];
+  common_errors: string[];
+  theory_scope: string;
+  review_status: string;
+  reviewer_role: string;
+  version: string;
+  law_corpus_snapshot: string;
+  content_sha256: string;
+}
+
+export interface KnowledgeCatalogResponse {
+  schema_version: string;
+  domain: string;
+  review_status: string;
+  knowledge_cards: KnowledgeCard[];
+  counts: {
+    knowledge_cards: number;
+    task_items: number;
+    evidence_items: number;
+  };
+  content_manifest_sha256: string;
+  law_corpus_manifest_sha256: string;
+  limits: string[];
+}
+
+export interface TaskAttemptPayload {
+  schema_version: "criminal-law-task-attempt-v1";
+  attempt_id: string;
+  task_id: string;
+  content_version: string;
+  phase: "prestudy" | "review";
+  selected_options: string[];
+  submitted_at: string;
+  response_time_ms: number;
+  confidence: number | null;
+  hint_count: number;
+  answer_revealed_before_submit: boolean;
+}
+
+export interface TaskAttemptFeedback {
+  correct: boolean;
+  score: number;
+  max_score: number;
+  correct_options: string[];
+  rationale: string;
+  triggered_misconceptions: string[];
+  knowledge_status: "mastered" | "partial" | "missing" | string;
+  standard_evidence_ids: string[];
+}
+
+export interface TaskAttemptResponse extends AdaptiveRecommendationResponse {
+  schema_version: "edubrain-task-attempt-response-v1" | string;
+  attempt_status: "inserted" | "duplicate" | string;
+  attempt_id: string;
+  persistence: {
+    status: "inserted" | "duplicate" | string;
+    payload_sha256?: string;
+    snapshot_status?: string;
+  };
+  learning_event: {
+    event_id: string;
+    event_type: "task_attempt_assessment" | string;
+    task_id: string;
+    phase: "prestudy" | "review";
+    task_version: string;
+    grading: {
+      score: number;
+      max_score: number;
+      correct: boolean;
+      knowledge_status: string;
+    };
+  };
+  feedback: TaskAttemptFeedback;
+}
+
+export interface ConfusionAnnotationPayload {
+  schema_version: "criminal-law-confusion-annotation-v1";
+  annotation_id: string;
+  phase: "prestudy" | "review";
+  task_id?: string;
+  knowledge_id?: string;
+  confusion_type:
+    | "concept_boundary"
+    | "rule_understanding"
+    | "fact_application"
+    | "evidence_use"
+    | "other";
+  note: string;
+  request_help: boolean;
+  submitted_at: string;
+}
+
+export interface ConfusionAnnotationResponse extends AdaptiveRecommendationResponse {
+  schema_version: "edubrain-confusion-response-v1" | string;
+  annotation_status: "inserted" | "duplicate" | string;
+  annotation_id: string;
+  persistence: {
+    status: "inserted" | "duplicate" | string;
+    payload_sha256?: string;
+    snapshot_status?: string;
+  };
+  learning_event: {
+    event_id: string;
+    event_type: "confusion_annotation" | string;
+  };
 }
 
 export interface TeachingReport {

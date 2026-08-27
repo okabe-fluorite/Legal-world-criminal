@@ -1,0 +1,117 @@
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
+import { chromium } from "playwright-core";
+
+const baseUrl = process.env.JOURNEY_BASE_URL || "http://127.0.0.1:5173";
+const screenshotPath = path.resolve(
+  process.env.JOURNEY_SCREENSHOT || "../.codex-artifacts/learning-journey.png",
+);
+const viewport = {
+  width: Number(process.env.JOURNEY_VIEWPORT_WIDTH || 1500),
+  height: Number(process.env.JOURNEY_VIEWPORT_HEIGHT || 980),
+};
+const executableCandidates = [
+  process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
+  "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+].filter(Boolean);
+const executablePath = executableCandidates.find((candidate) => fs.existsSync(candidate));
+
+if (!executablePath) {
+  throw new Error("No installed Chromium browser found; set PLAYWRIGHT_CHROMIUM_EXECUTABLE");
+}
+
+fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
+const browser = await chromium.launch({ executablePath, headless: true });
+const page = await browser.newPage({ viewport });
+const consoleErrors = [];
+const pageErrors = [];
+const httpErrors = [];
+const requestFailures = [];
+page.on("console", (message) => {
+  if (message.type() === "error") {
+    consoleErrors.push({ text: message.text(), location: message.location() });
+  }
+});
+page.on("pageerror", (error) => pageErrors.push(error.message));
+page.on("response", (response) => {
+  if (response.status() >= 400) {
+    httpErrors.push({ status: response.status(), url: response.url() });
+  }
+});
+page.on("requestfailed", (request) => {
+  requestFailures.push({ url: request.url(), error: request.failure()?.errorText || "unknown" });
+});
+
+try {
+  await page.goto(baseUrl, { waitUntil: "networkidle" });
+  const email = `journey-${Date.now()}@example.com`;
+  await page.getByPlaceholder("you@court.edu").fill(email);
+  await page.getByPlaceholder("至少 6 位").fill("Journey-Smoke-2026!");
+  await page.getByRole("button", { name: "注册并进入" }).click();
+  await page.getByRole("button", { name: "自主学习" }).waitFor({ state: "visible" });
+  await page.getByRole("button", { name: "自主学习" }).click();
+  await page.getByRole("dialog", { name: "刑法自主学习卷宗" }).waitFor({ state: "visible" });
+  await page.getByText("知识卷宗", { exact: true }).waitFor();
+
+  const knowledgeCount = await page.locator(".knowledge-tab").count();
+  const optionCount = await page.locator(".option-row").count();
+  if (knowledgeCount !== 10) throw new Error(`Expected 10 knowledge cards, received ${knowledgeCount}`);
+  if (optionCount < 2) throw new Error(`Expected executable task options, received ${optionCount}`);
+
+  await page.locator(".option-row").first().click();
+  await page.getByRole("button", { name: "提交取证" }).click();
+  await page.locator(".feedback-sheet").waitFor({ state: "visible" });
+  const feedbackVisible = await page.locator(".feedback-sheet__rationale").isVisible();
+  const nextTaskVisible = await page.getByRole("button", { name: /进入下一任务/ }).isVisible();
+
+  await page.getByRole("button", { name: "填写" }).click();
+  await page.getByPlaceholder("具体写下你卡住的条件、事实或证据……").fill(
+    "我不确定规范条件如何适用于题目中的具体事实。",
+  );
+  await page.getByRole("button", { name: "归入证据账本" }).click();
+  await page.getByText("困惑已进入证据账本，后续任务会优先回应。").waitFor();
+
+  const profileMetrics = await page.locator(".ledger-metrics b").allTextContents();
+  const privateFieldLeaks = await page.locator("body").evaluate((body) => {
+    const text = body.textContent || "";
+    return ["answer_private", "rationale_private", "misconceptions_private"].filter((key) =>
+      text.includes(key),
+    );
+  });
+  await page.screenshot({ path: screenshotPath, fullPage: false });
+
+  const result = {
+    url: page.url(),
+    viewport: `${viewport.width}x${viewport.height}`,
+    knowledge_cards: knowledgeCount,
+    option_count: optionCount,
+    feedback_visible: feedbackVisible,
+    next_task_visible: nextTaskVisible,
+    profile_metrics: profileMetrics,
+    private_field_leaks: privateFieldLeaks,
+    console_errors: consoleErrors,
+    page_errors: pageErrors,
+    http_errors: httpErrors,
+    request_failures: requestFailures,
+    screenshot: screenshotPath,
+  };
+  console.log(JSON.stringify(result));
+  const unexpectedRequestFailures = requestFailures.filter(
+    (failure) => !failure.url.startsWith("ws://") && !failure.url.startsWith("wss://"),
+  );
+  if (
+    privateFieldLeaks.length ||
+    consoleErrors.length ||
+    pageErrors.length ||
+    httpErrors.length ||
+    unexpectedRequestFailures.length
+  ) {
+    process.exitCode = 1;
+  }
+} finally {
+  await browser.close();
+}

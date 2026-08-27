@@ -99,7 +99,8 @@ TaskAttempt会生成`task_attempt_assessment`事件，包含学生选项、耗�
 
 ## 当前未覆盖范围
 
-- 学生端知识地图、答题组件和连续页面旅程；
 - 主观题、案例短答与教师复核队列；
 - 困惑聚合的教师端页面与AI分层解惑；
 - 间隔重复调度、真实题目参数、校准知识追踪和路径干预实验。
+
+学生端知识卷宗、答题组件与连续页面旅程已在切片C实现，见[`STUDENT_LEARNING_JOURNEY.md`](STUDENT_LEARNING_JOURNEY.md)。
