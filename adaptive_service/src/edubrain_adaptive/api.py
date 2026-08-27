@@ -3,10 +3,10 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import Depends, FastAPI, Header, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from .service import AdaptiveService
 from .store import AdaptiveStore
@@ -26,6 +26,51 @@ class RecommendRequest(BaseModel):
     course_id: str = "undergraduate-criminal-law"
     context: dict[str, Any] = Field(default_factory=dict)
     limit: int = Field(default=10, ge=1, le=30)
+
+
+class TaskAttemptRequest(BaseModel):
+    schema_version: Literal["criminal-law-task-attempt-v1"] = "criminal-law-task-attempt-v1"
+    attempt_id: str = Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
+    student_pseudonym: str = Field(min_length=1, max_length=128)
+    course_id: str = Field(default="undergraduate-criminal-law", min_length=1, max_length=128)
+    task_id: str = Field(min_length=1, max_length=128)
+    content_version: str = Field(pattern=r"^[a-f0-9]{64}$")
+    phase: Literal["prestudy", "review"]
+    selected_options: list[str] = Field(min_length=1, max_length=10)
+    submitted_at: str = Field(min_length=10, max_length=64)
+    response_time_ms: int = Field(default=0, ge=0, le=86_400_000)
+    confidence: int | None = Field(default=None, ge=1, le=5)
+    hint_count: int = Field(default=0, ge=0, le=20)
+    answer_revealed_before_submit: bool = False
+
+    @model_validator(mode="after")
+    def require_unique_options(self) -> "TaskAttemptRequest":
+        normalized = [str(value).strip().upper() for value in self.selected_options]
+        if len(normalized) != len(set(normalized)):
+            raise ValueError("selected_options must be unique")
+        return self
+
+
+class ConfusionRequest(BaseModel):
+    schema_version: Literal["criminal-law-confusion-annotation-v1"] = "criminal-law-confusion-annotation-v1"
+    annotation_id: str = Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
+    student_pseudonym: str = Field(min_length=1, max_length=128)
+    course_id: str = Field(default="undergraduate-criminal-law", min_length=1, max_length=128)
+    phase: Literal["prestudy", "review"]
+    task_id: str = Field(default="", max_length=128)
+    knowledge_id: str = Field(default="", max_length=128)
+    confusion_type: Literal[
+        "concept_boundary", "rule_understanding", "fact_application", "evidence_use", "other"
+    ] = "other"
+    note: str = Field(min_length=1, max_length=2000)
+    request_help: bool = True
+    submitted_at: str = Field(min_length=10, max_length=64)
+
+    @model_validator(mode="after")
+    def require_task_or_knowledge(self) -> "ConfusionRequest":
+        if not self.task_id.strip() and not self.knowledge_id.strip():
+            raise ValueError("task_id or knowledge_id is required")
+        return self
 
 
 def require_api_key(authorization: str | None = Header(default=None)) -> None:
@@ -60,6 +105,28 @@ def ingest_event(event: dict[str, Any]) -> dict[str, Any]:
         return get_service().ingest(event)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.post("/attempts", dependencies=[Depends(require_api_key)])
+def submit_attempt(payload: TaskAttemptRequest) -> dict[str, Any]:
+    try:
+        result = get_service().submit_attempt(payload.model_dump())
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    if result.get("attempt_status") == "conflict":
+        raise HTTPException(status_code=409, detail=result)
+    return result
+
+
+@app.post("/confusions", dependencies=[Depends(require_api_key)])
+def annotate_confusion(payload: ConfusionRequest) -> dict[str, Any]:
+    try:
+        result = get_service().annotate_confusion(payload.model_dump())
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    if result.get("annotation_status") == "conflict":
+        raise HTTPException(status_code=409, detail=result)
+    return result
 
 
 @app.post("/recommend", dependencies=[Depends(require_api_key)])

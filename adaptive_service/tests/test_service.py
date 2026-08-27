@@ -4,16 +4,19 @@ import json
 import os
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
+from jsonschema import Draft202012Validator
 
 from edubrain_adaptive.service import AdaptiveService
 from edubrain_adaptive.store import AdaptiveStore
 
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+SCHEMA_DIR = Path(__file__).resolve().parents[2] / "schemas"
 
 
 class AdaptiveServiceTests(unittest.TestCase):
@@ -26,6 +29,26 @@ class AdaptiveServiceTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.temp.cleanup()
+
+    def attempt(self, **overrides) -> dict:
+        task = self.service.approved[0]
+        payload = {
+            "schema_version": "criminal-law-task-attempt-v1",
+            "attempt_id": "attempt-1",
+            "student_pseudonym": "student-attempt",
+            "course_id": "undergraduate-criminal-law",
+            "task_id": task["task_id"],
+            "content_version": task["content_sha256"],
+            "phase": "prestudy",
+            "selected_options": list(task["answer_private"]),
+            "submitted_at": datetime(2026, 8, 27, 8, 0, tzinfo=timezone.utc).isoformat(),
+            "response_time_ms": 12000,
+            "confidence": 4,
+            "hint_count": 0,
+            "answer_revealed_before_submit": False,
+        }
+        payload.update(overrides)
+        return payload
 
     @staticmethod
     def event(status: str = "missing") -> dict:
@@ -85,6 +108,146 @@ class AdaptiveServiceTests(unittest.TestCase):
         self.assertEqual(self.service.store.insert(self.event()), "inserted")
         changed = self.event(status="mastered")
         self.assertEqual(self.service.store.insert(changed), "conflict")
+
+    def test_task_attempt_is_privately_graded_idempotent_and_excludes_attempted_task(self) -> None:
+        payload = self.attempt()
+        schema = json.loads((SCHEMA_DIR / "task-attempt-v1.schema.json").read_text(encoding="utf-8"))
+        Draft202012Validator(schema).validate(payload)
+        first = self.service.submit_attempt(payload)
+        duplicate = self.service.submit_attempt(payload)
+        self.assertEqual(first["attempt_status"], "inserted")
+        self.assertEqual(duplicate["attempt_status"], "duplicate")
+        self.assertTrue(first["feedback"]["correct"])
+        self.assertEqual(first["learning_event"]["grading"]["score"], 1.0)
+        self.assertNotIn(payload["task_id"], {row["task_id"] for row in first["recommendations"]})
+        knowledge_id = self.service.approved[0]["knowledge_ids"][0]
+        knowledge = first["profile"]["knowledge"][knowledge_id]
+        self.assertEqual(knowledge["latest"], "mastered")
+        self.assertEqual(knowledge["task_count"], 1)
+        self.assertEqual(knowledge["evidence_status"], "insufficient_evidence")
+
+        def keys(value):
+            if isinstance(value, dict):
+                for key, child in value.items():
+                    yield key
+                    yield from keys(child)
+            elif isinstance(value, list):
+                for child in value:
+                    yield from keys(child)
+
+        self.assertTrue(
+            {"answer_private", "rationale_private", "misconceptions_private"}.isdisjoint(
+                set(keys(first))
+            )
+        )
+
+        wrong = next(
+            option
+            for option in self.service.approved[0]["options"]
+            if option not in self.service.approved[0]["answer_private"]
+        )
+        conflict = self.service.submit_attempt(
+            self.attempt(selected_options=[wrong])
+        )
+        self.assertEqual(conflict["attempt_status"], "conflict")
+        self.assertEqual(self.service.profile("student-attempt")["event_count"], 1)
+
+    def test_answer_revealed_attempt_is_feedback_only(self) -> None:
+        result = self.service.submit_attempt(
+            self.attempt(
+                attempt_id="attempt-revealed",
+                student_pseudonym="student-revealed",
+                answer_revealed_before_submit=True,
+            )
+        )
+        self.assertEqual(result["profile"]["eligible_event_count"], 0)
+        self.assertEqual(result["profile"]["excluded_event_count"], 1)
+        self.assertEqual(result["profile"]["knowledge"], {})
+
+    def test_provisional_knowledge_requires_three_events_and_two_distinct_tasks(self) -> None:
+        knowledge_id = self.service.approved[0]["knowledge_ids"][0]
+        tasks = [
+            task for task in self.service.approved if task["knowledge_ids"] == [knowledge_id]
+        ]
+        self.assertEqual(len(tasks), 3)
+        first_task = tasks[0]
+        first = self.service.submit_attempt(
+            self.attempt(
+                attempt_id="evidence-1",
+                student_pseudonym="student-threshold",
+                task_id=first_task["task_id"],
+                content_version=first_task["content_sha256"],
+                selected_options=first_task["answer_private"],
+            )
+        )
+        self.assertEqual(
+            first["profile"]["knowledge"][knowledge_id]["evidence_status"],
+            "insufficient_evidence",
+        )
+        second_task = tasks[1]
+        second = self.service.submit_attempt(
+            self.attempt(
+                attempt_id="evidence-2",
+                student_pseudonym="student-threshold",
+                task_id=second_task["task_id"],
+                content_version=second_task["content_sha256"],
+                selected_options=second_task["answer_private"],
+            )
+        )
+        self.assertEqual(
+            second["profile"]["knowledge"][knowledge_id]["evidence_status"],
+            "insufficient_evidence",
+        )
+        third_task = tasks[0]
+        third = self.service.submit_attempt(
+            self.attempt(
+                attempt_id="evidence-3",
+                student_pseudonym="student-threshold",
+                task_id=third_task["task_id"],
+                content_version=third_task["content_sha256"],
+                selected_options=third_task["answer_private"],
+            )
+        )
+        state = third["profile"]["knowledge"][knowledge_id]
+        self.assertEqual(state["event_count"], 3)
+        self.assertEqual(state["task_count"], 2)
+        self.assertEqual(state["evidence_status"], "provisional")
+
+    def test_confusion_is_a_self_report_not_negative_mastery_evidence(self) -> None:
+        task = self.service.approved[0]
+        payload = {
+            "schema_version": "criminal-law-confusion-annotation-v1",
+            "annotation_id": "confusion-1",
+            "student_pseudonym": "student-confused",
+            "course_id": "undergraduate-criminal-law",
+            "phase": "prestudy",
+            "task_id": task["task_id"],
+            "knowledge_id": task["knowledge_ids"][0],
+            "confusion_type": "fact_application",
+            "note": "我不能区分当场胁迫与事后要挟。",
+            "request_help": True,
+            "submitted_at": datetime(2026, 8, 27, 8, 5, tzinfo=timezone.utc).isoformat(),
+        }
+        schema = json.loads(
+            (SCHEMA_DIR / "confusion-annotation-v1.schema.json").read_text(encoding="utf-8")
+        )
+        Draft202012Validator(schema).validate(payload)
+        first = self.service.annotate_confusion(payload)
+        duplicate = self.service.annotate_confusion(payload)
+        self.assertEqual(first["annotation_status"], "inserted")
+        self.assertEqual(duplicate["annotation_status"], "duplicate")
+        profile = first["profile"]
+        self.assertEqual(profile["self_report_event_count"], 1)
+        self.assertEqual(profile["knowledge"], {})
+        self.assertEqual(profile["confusions"][task["knowledge_ids"][0]]["count"], 1)
+        self.assertEqual(first["recommendations"][0]["knowledge_id"], task["knowledge_ids"][0])
+        self.assertEqual(first["recommendations"][0]["reason_code"], "learner_reported_confusion")
+        changed = dict(payload)
+        changed["note"] = "同一个ID但内容发生变化。"
+        self.assertEqual(
+            self.service.annotate_confusion(changed)["annotation_status"],
+            "conflict",
+        )
 
 
 class AdaptiveApiTests(unittest.TestCase):
@@ -157,6 +320,43 @@ class AdaptiveApiTests(unittest.TestCase):
         self.assertTrue(
             {"answer", "answer_private", "rationale_private"}.isdisjoint(set(keys(body)))
         )
+
+    def test_attempt_and_confusion_http_contracts(self) -> None:
+        task = self.api.get_service().approved[0]
+        attempt = {
+            "attempt_id": "api-attempt-1",
+            "student_pseudonym": "api-student",
+            "task_id": task["task_id"],
+            "content_version": task["content_sha256"],
+            "phase": "review",
+            "selected_options": task["answer_private"],
+            "submitted_at": "2026-08-27T08:00:00+00:00",
+        }
+        first = self.client.post("/attempts", json=attempt, headers=self.auth)
+        duplicate = self.client.post("/attempts", json=attempt, headers=self.auth)
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(first.json()["attempt_status"], "inserted")
+        self.assertEqual(duplicate.json()["attempt_status"], "duplicate")
+        wrong = next(value for value in task["options"] if value not in task["answer_private"])
+        changed = {**attempt, "selected_options": [wrong]}
+        self.assertEqual(
+            self.client.post("/attempts", json=changed, headers=self.auth).status_code,
+            409,
+        )
+
+        confusion = {
+            "annotation_id": "api-confusion-1",
+            "student_pseudonym": "api-student",
+            "phase": "review",
+            "task_id": task["task_id"],
+            "confusion_type": "rule_understanding",
+            "note": "我不确定规范条件如何适用。",
+            "submitted_at": "2026-08-27T08:05:00+00:00",
+        }
+        response = self.client.post("/confusions", json=confusion, headers=self.auth)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["annotation_status"], "inserted")
+        self.assertEqual(response.json()["profile"]["self_report_event_count"], 1)
 
 
 if __name__ == "__main__":

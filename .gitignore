@@ -15,6 +15,7 @@ backend/batch_runs/
 backend/case_runs/
 backend/sandbox_data/
 backend/runtime/
+runtime/
 backend/single_case_debug_runs/
 backend/debug_runs/
 backend/shared/

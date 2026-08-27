@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simlaw.local/schemas/task-attempt-v1.schema.json",
+  "title": "CriminalLawTaskAttemptV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "attempt_id", "student_pseudonym", "course_id",
+    "task_id", "content_version", "phase", "selected_options", "submitted_at",
+    "response_time_ms", "confidence", "hint_count", "answer_revealed_before_submit"
+  ],
+  "properties": {
+    "schema_version": {"const": "criminal-law-task-attempt-v1"},
+    "attempt_id": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "student_pseudonym": {"type": "string", "minLength": 1, "maxLength": 128},
+    "course_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "task_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "content_version": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "phase": {"enum": ["prestudy", "review"]},
+    "selected_options": {"type": "array", "minItems": 1, "maxItems": 10, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 8}},
+    "submitted_at": {"type": "string", "format": "date-time"},
+    "response_time_ms": {"type": "integer", "minimum": 0, "maximum": 86400000},
+    "confidence": {"type": ["integer", "null"], "minimum": 1, "maximum": 5},
+    "hint_count": {"type": "integer", "minimum": 0, "maximum": 20},
+    "answer_revealed_before_submit": {"type": "boolean"}
+  }
+}

@@ -93,6 +93,12 @@ Compose包含PostgreSQL、后端、自适应服务和Nginx前端。前端容器�
 
 EvidencePack中的检索相关性和coverage只是待语义审核候选，不等于法条支持某个法律论断。三个Schema、答案隔离和构建规则见[`docs/KNOWLEDGE_CONTRACTS.md`](docs/KNOWLEDGE_CONTRACTS.md)。
 
+## 预习与复习服务端闭环
+
+登录学生现在可以通过`POST /api/adaptive/attempts`完成推荐TaskItem：adaptive服务私有判分，生成不可变`task_attempt_assessment`，backend持久化事件、画像与推荐，然后返回形成性反馈和下一任务。相同`attempt_id`重试幂等，同ID改payload返回409；旧`content_version`被拒绝，已完成任务默认从后续推荐排除。
+
+`POST /api/adaptive/confusions`生成独立`confusion_annotation`。困惑是学生自报与教师聚合信号，不会冒充答错证据或直接降低掌握状态。推荐/题目接口始终无答案，正确选项和解析只在服务端判分后返回给当前登录学生。契约、示例、三次证据/两道任务门槛和正式考试边界见[`docs/TASK_ATTEMPT_CONTRACTS.md`](docs/TASK_ATTEMPT_CONTRACTS.md)。
+
 ## 案例发布边界
 
 产品默认只读取`dataset/released_case_dataset.json`，旧124案保留为污染数据修复池，

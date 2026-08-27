@@ -1,24 +1,34 @@
 from __future__ import annotations
 
 import os
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 from sqlalchemy import func, select
 from src.core.database import Base, create_database_engine, create_session_factory, get_db_session
-from src.core.models import LearnerProfileRecord, RecommendationRecord, User
+from src.core.models import (
+    LearnerProfileRecord,
+    LearningEventRecord,
+    RecommendationRecord,
+    User,
+)
 from src.integration.adaptive_client import (
     build_adaptive_event,
     get_adaptive_catalog,
     publish_learning_event,
     request_recommendations,
+    submit_confusion_annotation,
+    submit_task_attempt,
 )
-from src.integration.event_delivery import deliver_learning_event
+from src.integration.event_delivery import deliver_learning_event, persist_adaptive_submission
 from src.integration.event_store import persist_learning_event, update_adaptive_delivery
 
 
 class FakeResponse:
     content = b"{}"
+    status_code = 200
 
     def __init__(self, payload: dict):
         self.payload = payload
@@ -37,6 +47,8 @@ class AdaptiveIntegrationTests(unittest.TestCase):
             "SIMLAW_ADAPTIVE_API_KEY",
             "SIMLAW_ADAPTIVE_EVENTS_PATH",
             "SIMLAW_ADAPTIVE_RECOMMEND_PATH",
+            "SIMLAW_ADAPTIVE_ATTEMPTS_PATH",
+            "SIMLAW_ADAPTIVE_CONFUSIONS_PATH",
             "SIMLAW_ADAPTIVE_TIMEOUT_SECONDS",
         }
         self.original = {key: os.environ.get(key) for key in self.keys}
@@ -113,6 +125,119 @@ class AdaptiveIntegrationTests(unittest.TestCase):
         self.assertEqual(duplicate["status"], "duplicate")
         self.assertEqual(conflict["status"], "conflict")
         self.assertEqual(len(Base.metadata.tables), 9)
+
+    def test_sqlite_engine_creates_missing_parent_for_local_first_start(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            database_path = Path(temp) / "nested" / "runtime" / "local.db"
+            engine = create_database_engine(
+                f"sqlite+pysqlite:///{database_path.as_posix()}"
+            )
+            try:
+                Base.metadata.create_all(engine)
+            finally:
+                engine.dispose()
+            self.assertTrue(database_path.is_file())
+
+    def test_authenticated_identity_overrides_browser_student_for_attempts_and_confusions(self) -> None:
+        os.environ.update(
+            {
+                "SIMLAW_ADAPTIVE_API_BASE_URL": "https://adaptive.example/api/",
+                "SIMLAW_ADAPTIVE_API_KEY": "adaptive-secret",
+            }
+        )
+        calls = []
+
+        def post(url, **kwargs):
+            calls.append((url, kwargs))
+            return FakeResponse({"learning_event": {"event_id": "evt-1"}})
+
+        attempt = submit_task_attempt(
+            "authenticated-student",
+            {"attempt_id": "a1", "student_pseudonym": "forged-student"},
+            post=post,
+        )
+        confusion = submit_confusion_annotation(
+            "authenticated-student",
+            {"annotation_id": "c1", "student_pseudonym": "forged-student"},
+            post=post,
+        )
+        self.assertEqual(attempt["status"], "sent")
+        self.assertEqual(confusion["status"], "sent")
+        self.assertEqual(calls[0][0], "https://adaptive.example/api/attempts")
+        self.assertEqual(calls[1][0], "https://adaptive.example/api/confusions")
+        self.assertEqual(calls[0][1]["json"]["student_pseudonym"], "authenticated-student")
+        self.assertEqual(calls[1][1]["json"]["student_pseudonym"], "authenticated-student")
+
+    def test_adaptive_submission_persists_event_and_sanitized_snapshots(self) -> None:
+        engine = create_database_engine("sqlite+pysqlite:///:memory:")
+        Base.metadata.create_all(engine)
+        factory = create_session_factory(engine)
+        with get_db_session(factory) as session:
+            session.add(User(id="student-1", email="student@example.com"))
+        delivery = {
+            "status": "sent",
+            "error": "",
+            "response": {
+                "learning_event": {
+                    "schema_version": "edubrain-learning-event-v2",
+                    "event_id": "evt-attempt-1",
+                    "event_type": "task_attempt_assessment",
+                    "student_pseudonym": "student-1",
+                    "task_id": "task-1",
+                    "stage": "prestudy",
+                    "source_response_sha256": "b" * 64,
+                    "evidence_eligibility": {"long_term_profile": True},
+                },
+                "feedback": {
+                    "correct_options": ["A"],
+                    "rationale": "private grading rationale returned only to this response",
+                },
+                "profile": {
+                    "schema_version": "edubrain-learner-profile-v2",
+                    "student_pseudonym": "student-1",
+                    "knowledge": {},
+                },
+                "recommendations": [{"task_id": "task-2"}],
+                "policy_version": "policy-v1",
+            },
+        }
+        first = persist_adaptive_submission(
+            "student-1", delivery, session_factory=factory
+        )
+        duplicate = persist_adaptive_submission(
+            "student-1", delivery, session_factory=factory
+        )
+        self.assertEqual(first["status"], "inserted")
+        self.assertEqual(first["snapshot_status"], "stored")
+        self.assertEqual(duplicate["status"], "duplicate")
+        with get_db_session(factory) as session:
+            event = session.get(LearningEventRecord, "evt-attempt-1")
+            profile = session.get(LearnerProfileRecord, "student-1")
+            recommendation = session.scalar(select(RecommendationRecord))
+            self.assertEqual(event.user_id, "student-1")
+            self.assertEqual(event.event_type, "task_attempt_assessment")
+            self.assertNotIn("feedback", event.adaptive_response_json)
+            self.assertIsNotNone(profile)
+            self.assertEqual(
+                recommendation.recommendation_json["recommendations"][0]["task_id"],
+                "task-2",
+            )
+
+    def test_adaptive_submission_rejects_returned_identity_mismatch(self) -> None:
+        result = persist_adaptive_submission(
+            "student-1",
+            {
+                "status": "sent",
+                "response": {
+                    "learning_event": {
+                        "event_id": "evt-forged",
+                        "student_pseudonym": "student-2",
+                    }
+                },
+            },
+        )
+        self.assertEqual(result["status"], "conflict")
+        self.assertEqual(result["reason"], "adaptive_student_identity_mismatch")
 
     def test_adaptive_response_upserts_profile_and_one_recommendation_per_event(self) -> None:
         engine = create_database_engine("sqlite+pysqlite:///:memory:")

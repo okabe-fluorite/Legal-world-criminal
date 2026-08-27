@@ -72,3 +72,5 @@ uv run --isolated --with-requirements requirements.lock.txt -- python -X utf8 `
 `backend/scripts/build_governed_learning_content.py`负责把教师批准题库、Q矩阵和稳定知识点重绑到受治理法源，并生成KnowledgeCard、TaskItem和Evidence目录。构建器会拒绝法条引用片段不匹配、绝对本地路径、Schema错误或哈希漂移。
 
 TaskItem中的`answer_private`、`rationale_private`和`misconceptions_private`只用于服务端判分；知识API和adaptive推荐必须使用公开投影。检索coverage与词法重叠只能标为待语义审核候选，不得作为法律蕴含结论或教师金标。详细契约见[`KNOWLEDGE_CONTRACTS.md`](KNOWLEDGE_CONTRACTS.md)。
+
+TaskAttempt使用客户端ID和完整payload哈希保持不可变：同ID同payload幂等，同ID改内容冲突。backend以登录用户身份覆盖浏览器身份，并只持久化作答LearningEvent、画像与推荐，不在adaptive响应快照保存正确选项或解析。答案提前揭示的尝试只给反馈、不进入长期画像；困惑标注是自报信号，不直接降低知识状态。详见[`TASK_ATTEMPT_CONTRACTS.md`](TASK_ATTEMPT_CONTRACTS.md)。

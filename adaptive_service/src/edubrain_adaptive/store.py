@@ -102,11 +102,32 @@ class AdaptiveStore:
         capability_sum: dict[str, float] = defaultdict(float)
         capability_weight: dict[str, float] = defaultdict(float)
         capability_events: Counter[str] = Counter()
-        knowledge_history: dict[str, list[dict[str, str]]] = defaultdict(list)
+        knowledge_history: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        confusion_history: dict[str, list[dict[str, str]]] = defaultdict(list)
         errors: Counter[str] = Counter()
         excluded = 0
+        self_report_events = 0
 
         for event in events:
+            if str(event.get("event_type") or "") == "confusion_annotation":
+                self_report_events += 1
+                for row in event.get("confusion_annotations") or []:
+                    if not isinstance(row, dict):
+                        continue
+                    knowledge_id = str(row.get("knowledge_id") or "").strip()
+                    if not knowledge_id:
+                        continue
+                    confusion_history[knowledge_id].append(
+                        {
+                            "event_id": str(event.get("event_id") or ""),
+                            "task_id": str(event.get("task_id") or ""),
+                            "phase": str(event.get("phase") or event.get("stage") or ""),
+                            "confusion_type": str(row.get("confusion_type") or "other"),
+                            "note": str(row.get("note") or ""),
+                            "knowledge_name": str(row.get("knowledge_name") or ""),
+                            "submitted_at": str(event.get("scored_at") or ""),
+                        }
+                    )
             eligibility = event.get("evidence_eligibility") or {}
             if isinstance(eligibility, dict) and eligibility.get("long_term_profile") is False:
                 excluded += 1
@@ -130,6 +151,8 @@ class AdaptiveStore:
                         "status": str(row.get("status") or "partial"),
                         "knowledge_name": str(row.get("knowledge_name") or ""),
                         "event_id": str(event.get("event_id") or ""),
+                        "task_id": str(event.get("task_id") or ""),
+                        "evidence_weight": float(row.get("evidence_weight") or 1.0),
                     }
                 )
             for tag in event.get("error_tags") or []:
@@ -148,16 +171,33 @@ class AdaptiveStore:
         }
         knowledge = {}
         for knowledge_id, history in knowledge_history.items():
+            event_count = len({row["event_id"] for row in history})
+            task_count = len({row["task_id"] for row in history if row["task_id"]})
             knowledge[knowledge_id] = {
                 "knowledge_name": next(
                     (row["knowledge_name"] for row in reversed(history) if row["knowledge_name"]),
                     "",
                 ),
                 "latest": history[-1]["status"],
-                "event_count": len({row["event_id"] for row in history}),
+                "event_count": event_count,
+                "task_count": task_count,
                 "evidence_status": (
-                    "provisional" if len({row["event_id"] for row in history}) >= 2 else "insufficient_evidence"
+                    "provisional"
+                    if event_count >= 3 and task_count >= 2
+                    else "insufficient_evidence"
                 ),
+                "history": history,
+            }
+
+        confusions = {}
+        for knowledge_id, history in confusion_history.items():
+            confusions[knowledge_id] = {
+                "knowledge_name": next(
+                    (row["knowledge_name"] for row in reversed(history) if row["knowledge_name"]),
+                    "",
+                ),
+                "count": len(history),
+                "latest": history[-1],
                 "history": history,
             }
 
@@ -167,12 +207,15 @@ class AdaptiveStore:
             "event_count": len(events),
             "eligible_event_count": len(events) - excluded,
             "excluded_event_count": excluded,
+            "self_report_event_count": self_report_events,
             "capabilities": capabilities,
             "knowledge": knowledge,
+            "confusions": confusions,
             "error_tag_counts": dict(errors.most_common()),
             "updated_at": datetime.now(timezone.utc).isoformat(),
             "warnings": [
                 "case-stage evidence is formative and must not be interpreted as calibrated ORCDF mastery",
-                "knowledge status remains insufficient until repeated independent evidence is collected",
+                "knowledge status remains insufficient until at least three events across two distinct tasks are collected",
+                "confusion annotations are self-reports and do not directly lower mastery status",
             ],
         }

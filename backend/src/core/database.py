@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import os
 from contextlib import contextmanager
+from pathlib import Path
 from typing import Iterator
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
+from sqlalchemy.engine.url import make_url
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 DEFAULT_DATABASE_POOL_SIZE = 5
@@ -33,6 +35,10 @@ def get_database_url() -> str:
 def create_database_engine(database_url: str | None = None) -> Engine:
     url = database_url or get_database_url()
     if url.startswith("sqlite"):
+        parsed = make_url(url)
+        database = str(parsed.database or "").strip()
+        if database and database != ":memory:" and not database.startswith("file:"):
+            Path(database).expanduser().parent.mkdir(parents=True, exist_ok=True)
         return create_engine(url, future=True, pool_pre_ping=True)
     return create_engine(
         url,

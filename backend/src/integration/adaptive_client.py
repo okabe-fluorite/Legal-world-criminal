@@ -43,6 +43,8 @@ def get_adaptive_catalog() -> dict[str, Any]:
         "api_key_configured": bool(_text(os.environ.get("SIMLAW_ADAPTIVE_API_KEY"))),
         "events_path": _text(os.environ.get("SIMLAW_ADAPTIVE_EVENTS_PATH")) or "/events",
         "recommend_path": _text(os.environ.get("SIMLAW_ADAPTIVE_RECOMMEND_PATH")) or "/recommend",
+        "attempts_path": _text(os.environ.get("SIMLAW_ADAPTIVE_ATTEMPTS_PATH")) or "/attempts",
+        "confusions_path": _text(os.environ.get("SIMLAW_ADAPTIVE_CONFUSIONS_PATH")) or "/confusions",
         "timeout_seconds": _positive_int("SIMLAW_ADAPTIVE_TIMEOUT_SECONDS", 15),
     }
 
@@ -184,3 +186,87 @@ def request_recommendations(
             "response": None,
             "error": f"{type(exc).__name__}: {str(exc)[:500]}",
         }
+
+
+def _submit_student_payload(
+    *,
+    path_env: str,
+    default_path: str,
+    student_id: str,
+    payload: dict[str, Any],
+    post: Any,
+) -> dict[str, Any]:
+    url = _endpoint(path_env, default_path)
+    if not url:
+        return {"status": "disabled", "response": None, "error": ""}
+    headers = {"Content-Type": "application/json"}
+    api_key = _text(os.environ.get("SIMLAW_ADAPTIVE_API_KEY"))
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
+    body = dict(payload or {})
+    # Authenticated backend identity is authoritative. Never trust a browser
+    # supplied pseudonym or allow one student to submit evidence for another.
+    body["student_pseudonym"] = _text(student_id)
+    body.setdefault("course_id", "undergraduate-criminal-law")
+    try:
+        response = post(
+            url,
+            json=body,
+            headers=headers,
+            timeout=_positive_int("SIMLAW_ADAPTIVE_TIMEOUT_SECONDS", 15),
+        )
+        status_code = int(getattr(response, "status_code", 200) or 200)
+        if status_code >= 400:
+            try:
+                rejected = response.json() if response.content else {}
+            except Exception:
+                rejected = {}
+            return {
+                "status": "rejected",
+                "upstream_status": status_code,
+                "response": rejected if isinstance(rejected, dict) else {"data": rejected},
+                "error": "adaptive service rejected the submission",
+            }
+        response.raise_for_status()
+        result = response.json() if response.content else {}
+        return {
+            "status": "sent",
+            "response": result if isinstance(result, dict) else {"data": result},
+            "error": "",
+        }
+    except Exception as exc:
+        return {
+            "status": "error",
+            "response": None,
+            "error": f"{type(exc).__name__}: {str(exc)[:500]}",
+        }
+
+
+def submit_task_attempt(
+    student_id: str,
+    payload: dict[str, Any],
+    *,
+    post: Any = requests.post,
+) -> dict[str, Any]:
+    return _submit_student_payload(
+        path_env="SIMLAW_ADAPTIVE_ATTEMPTS_PATH",
+        default_path="/attempts",
+        student_id=student_id,
+        payload=payload,
+        post=post,
+    )
+
+
+def submit_confusion_annotation(
+    student_id: str,
+    payload: dict[str, Any],
+    *,
+    post: Any = requests.post,
+) -> dict[str, Any]:
+    return _submit_student_payload(
+        path_env="SIMLAW_ADAPTIVE_CONFUSIONS_PATH",
+        default_path="/confusions",
+        student_id=student_id,
+        payload=payload,
+        post=post,
+    )

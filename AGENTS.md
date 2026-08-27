@@ -193,6 +193,14 @@ teaching/
 - `POST /api/knowledge/search`返回受治理EvidencePack，`POST /api/knowledge/audit-citations`验证条号与逐字片段
 - BM25相关性与词法重叠不是法律蕴含；coverage必须保持`candidate_requires_semantic_audit`或`insufficient_evidence`
 
+### 预习/复习TaskAttempt
+
+- `schemas/task-attempt-v1.schema.json`和`confusion-annotation-v1.schema.json`冻结作答与困惑输入；登录backend提供`POST /api/adaptive/attempts`和`/confusions`
+- backend用JWT用户ID覆盖浏览器身份；adaptive私有判分，返回反馈后生成不可变LearningEvent并回写数据库画像/推荐
+- 同客户端ID同payload幂等，同ID改payload返回409；过期TaskItem哈希返回422；已答任务从下一推荐排除
+- 困惑是`confusion_annotation`自报事件，不作为负掌握证据；`provisional`至少需要3个合格事件、覆盖2道任务，且仍不是校准掌握概率
+- backend数据库不持久化判分反馈中的正确选项和解析；公开任务与推荐继续保持答案隔离
+
 ### NLI 模型层
 
 - 首选 IDEA-CCNL/Erlangshen-Roberta-330M-NLI（机构背书的中文 NLI）；英文模型不得兜底（中文输入下是噪声源），加载失败直接走 LLM-only

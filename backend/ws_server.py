@@ -75,7 +75,10 @@ from src.utils.model_config import build_model_catalog
 from src.integration.adaptive_client import (
     get_adaptive_catalog,
     request_recommendations,
+    submit_confusion_annotation,
+    submit_task_attempt,
 )
+from src.integration.event_delivery import persist_adaptive_submission
 from src.version import BACKEND_VERSION, BACKEND_VERSION_LABEL, BACKEND_VERSION_TIME
 
 logging.basicConfig(
@@ -2993,6 +2996,59 @@ async def adaptive_recommend(
         "recommendations": report.get("recommendations") or [],
         "warning": "external adaptive service is not configured",
     }
+
+
+def _adaptive_submission_response(
+    result: dict[str, Any],
+    *,
+    user_id: str,
+) -> dict[str, Any]:
+    if result.get("status") == "disabled":
+        raise HTTPException(
+            status_code=503,
+            detail="adaptive service is required for private task grading",
+        )
+    if result.get("status") == "rejected":
+        upstream_status = int(result.get("upstream_status") or 422)
+        raise HTTPException(
+            status_code=upstream_status if upstream_status in {409, 422} else 502,
+            detail=dict(result.get("response") or {}),
+        )
+    if result.get("status") != "sent":
+        raise HTTPException(
+            status_code=502,
+            detail=f"adaptive service unavailable: {result.get('error') or 'unknown error'}",
+        )
+    persistence = persist_adaptive_submission(user_id, result)
+    if persistence.get("status") in {"conflict", "error"}:
+        raise HTTPException(
+            status_code=409 if persistence.get("status") == "conflict" else 500,
+            detail={"message": "adaptive event persistence failed", "store": persistence},
+        )
+    return {
+        "status": "ok",
+        "source": "edubrain_adaptive_service",
+        "persistence": persistence,
+        **dict(result.get("response") or {}),
+    }
+
+
+@app.post("/api/adaptive/attempts")
+async def adaptive_attempt(
+    payload: dict[str, Any],
+    current_user: User = Depends(_get_current_user),
+):
+    result = submit_task_attempt(str(current_user.id), dict(payload or {}))
+    return _adaptive_submission_response(result, user_id=str(current_user.id))
+
+
+@app.post("/api/adaptive/confusions")
+async def adaptive_confusion(
+    payload: dict[str, Any],
+    current_user: User = Depends(_get_current_user),
+):
+    result = submit_confusion_annotation(str(current_user.id), dict(payload or {}))
+    return _adaptive_submission_response(result, user_id=str(current_user.id))
 
 
 @app.get("/api/sandbox")

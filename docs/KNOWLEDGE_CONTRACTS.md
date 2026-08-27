@@ -28,7 +28,7 @@ TaskItem是可推荐和可作答的版本化教学任务。它绑定知识点、
 - `rationale_private`
 - `misconceptions_private`
 
-`GET /api/knowledge/tasks/{task_id}`和adaptive推荐会删除这些字段，并显式返回`answer_included: false`。任何新接口、缓存、日志或前端状态都不得返回或嵌入私有字段。
+`GET /api/knowledge/tasks/{task_id}`和adaptive推荐会删除这些字段，并显式返回`answer_included: false`。任何新接口、缓存、日志或前端状态都不得返回或嵌入私有字段。完成服务端TaskAttempt判分后，系统才以公开反馈字段向当前登录学生返回正确选项和解析，详见[`TASK_ATTEMPT_CONTRACTS.md`](TASK_ATTEMPT_CONTRACTS.md)。
 
 ### EvidencePack
 
@@ -100,7 +100,6 @@ EvidencePack有意保留以下语义边界：
 
 ## 当前未覆盖范围
 
-- TaskAttempt服务端判分、幂等提交和LearningEvent回写；
 - 主观题Rubric与教师复核；
 - 司法解释、指导性案例和教材观点的分层Evidence；
 - 法律蕴含模型或教师审核后的claim-level支持结论；

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simlaw.local/schemas/confusion-annotation-v1.schema.json",
+  "title": "CriminalLawConfusionAnnotationV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "annotation_id", "student_pseudonym", "course_id",
+    "phase", "task_id", "knowledge_id", "confusion_type", "note",
+    "request_help", "submitted_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "criminal-law-confusion-annotation-v1"},
+    "annotation_id": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "student_pseudonym": {"type": "string", "minLength": 1, "maxLength": 128},
+    "course_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "phase": {"enum": ["prestudy", "review"]},
+    "task_id": {"type": "string", "maxLength": 128},
+    "knowledge_id": {"type": "string", "maxLength": 128},
+    "confusion_type": {"enum": ["concept_boundary", "rule_understanding", "fact_application", "evidence_use", "other"]},
+    "note": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "request_help": {"type": "boolean"},
+    "submitted_at": {"type": "string", "format": "date-time"}
+  },
+  "anyOf": [
+    {"properties": {"task_id": {"minLength": 1}}},
+    {"properties": {"knowledge_id": {"minLength": 1}}}
+  ]
+}
