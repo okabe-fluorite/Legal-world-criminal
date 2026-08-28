@@ -1,7 +1,7 @@
 # 产品机制证据审计
 
 - 协议：`product-evidence-audit-v1`
-- Git：`3236145744426e840fe97eb57c7990d8e6127785`
+- Git：`dc990cec15f7ee04ade21c40219bfa018f2a4931`
 - 结果：**PASS**
 - 本次调用：网络0、LLM 0、真实课堂记录0
 
