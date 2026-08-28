@@ -74,6 +74,15 @@ async function onConfirm(mode: PlayerMode, caseId: string) {
             <span v-if="entry.status" class="tag tag--success">
               {{ entry.status }}
             </span>
+            <span v-if="entry.case_bundle_version" class="tag case__version mono">
+              bundle {{ entry.case_bundle_version }}
+            </span>
+            <span v-if="entry.evidence_count" class="tag case__evidence mono">
+              {{ entry.evidence_count }} Evidence
+            </span>
+            <span v-if="entry.teacher_recheck_required" class="tag tag--accent">
+              教师复核
+            </span>
           </div>
         </div>
         <button
@@ -219,6 +228,14 @@ async function onConfirm(mode: PlayerMode, caseId: string) {
 .case__meta .tag {
   font-size: 0.66rem;
   padding: 1px 6px;
+}
+.case__version {
+  color: var(--accent-cool);
+  border-color: rgba(92, 122, 138, 0.4);
+}
+.case__evidence {
+  color: var(--accent-amber);
+  border-color: rgba(176, 138, 62, 0.35);
 }
 
 .case__start {

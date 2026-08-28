@@ -1,0 +1,52 @@
+{
+  "schema_version": "criminal-law-case-bundle-manifest-v1",
+  "generated_at": "2026-08-28T04:00:03.345387+00:00",
+  "builder": "build_case_bundles.py",
+  "selection_policy": "round_robin_sorted_case_cause_v1",
+  "source": {
+    "path": "dataset\\released_case_dataset.json",
+    "sha256": "b7788b91164b0d88943460457535672025953bca05bc807b6a0330a341e783c0"
+  },
+  "counts": {
+    "case_bundles": 3,
+    "evidence_items": 9,
+    "runtime_mappings": 3
+  },
+  "runtime_mapping": {
+    "case_1": {
+      "case_bundle_id": "CRIM_CASE_E860B385BA91B5E8C534",
+      "original_case_id": 1,
+      "content_sha256": "f102fd5d7bf38e2fa56189cb735bbf0a96a9cae7c455cfce5091cf44f9da0b79"
+    },
+    "case_2": {
+      "case_bundle_id": "CRIM_CASE_954A8D8D6B0CDB221B08",
+      "original_case_id": 3,
+      "content_sha256": "03c48567aee0ae80ec47d5169bebf5d9033cd3f61db5aa2b7e74c99f4c6c7e1f"
+    },
+    "case_3": {
+      "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+      "original_case_id": 2,
+      "content_sha256": "a1e5451b91fa20afaa7ce3af4d6568d14f1f4516de9ae4e1a3d3dcfd90dd868b"
+    }
+  },
+  "law_corpus_manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7",
+  "files": {
+    "case_bundles.jsonl": {
+      "bytes": 61349,
+      "sha256": "2276b07324126195354fe93cf2f3ddd26219288ffe9a9f178525ce63aae50b98"
+    },
+    "case_bundle_evidence.jsonl": {
+      "bytes": 10807,
+      "sha256": "ab7da082256f24884b4bdfdbb8de044ef7e88614b6b57cff2ac0cb02be627d68"
+    }
+  },
+  "schema": {
+    "path": "schemas\\case-bundle-v1.schema.json",
+    "sha256": "8edb466dee646996c18ad8c2c588815d4002213ac43acd0ae993136532405095"
+  },
+  "limits": [
+    "reference_private fields are teacher/scorer only",
+    "unresolved legal-basis fragments require term-level teacher review",
+    "pilot CaseBundles do not establish learning gain or legal gold status"
+  ]
+}

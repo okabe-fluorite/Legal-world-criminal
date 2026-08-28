@@ -40,6 +40,10 @@ class SandboxService:
         session.add(sandbox)
         session.flush()
         session.refresh(sandbox)
+        # Release the SQLite writer lock before copying and normalizing the
+        # seed tree. Seed initialization is idempotent; if it fails, the next
+        # request retries it from the persisted storage_root.
+        session.commit()
         self._initialize_seed_storage(Path(sandbox.storage_root))
         return sandbox
 
@@ -394,4 +398,3 @@ class SandboxService:
         session.flush()
         session.refresh(snapshot)
         return snapshot
-

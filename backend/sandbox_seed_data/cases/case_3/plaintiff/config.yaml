@@ -7,4 +7,8 @@ case_state: 空闲
 designated_lawyer_id: ''
 assigned_lawyer_id: ''
 profile: {}
+original_case_id: 2
+case_bundle_id: CRIM_CASE_BCE041E195C8247BC179
+case_bundle_version: 2026-08-27.1
+case_bundle_content_sha256: a1e5451b91fa20afaa7ce3af4d6568d14f1f4516de9ae4e1a3d3dcfd90dd868b
 source_title: 指导案例144号：张那木拉正当防卫案

@@ -1,7 +1,7 @@
 {
   "schema_version": "product-evidence-audit-v1",
-  "generated_at": "2026-08-27T15:02:53.549392+00:00",
-  "git_commit": "1f4436a19420d9055d0e1a51e8403092c9d0ced6",
+  "generated_at": "2026-08-28T04:00:06.276118+00:00",
+  "git_commit": "3236145744426e840fe97eb57c7990d8e6127785",
   "protocol": {
     "seed": 20260827,
     "network_calls": 0,
@@ -10,10 +10,24 @@
     "scope": "deterministic software-mechanism audit"
   },
   "inputs": {
-    "audit_script_sha256": "1359477147b17fc7e39755a20a9fa18bbe3b257840a3057acf6e13f0154e11a1",
+    "audit_script_sha256": "62897f988828d379fc659db8bfdf62844d291a08ab082cb8394a49ea2b09ecf1",
     "content_manifest_sha256": "fc1e43cfb646d0d24d0c34d748758cbeb536a64cdee2b9a604673c8e3561094f",
     "law_manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7",
-    "real_e2e_audit_sha256": "52daa45886cf0811ca0ba4da1639c75907974905b9106044a730c03e1bc403c2"
+    "real_e2e_audit_sha256": "beb44df993acaebbdcc6ea98b726d078495e56414604f46d968cc789b0854afc",
+    "case_bundle_manifest_sha256": "881e1a3d53d0e75f02677f45cd2bcaa0a97ab69197e7fb9342112f2bb18a2e93"
+  },
+  "case_bundles": {
+    "case_bundle_count": 3,
+    "case_evidence_count": 9,
+    "runtime_to_original_mapping": {
+      "case_1": 1,
+      "case_2": 3,
+      "case_3": 2
+    },
+    "mapping_matches_seed_policy": true,
+    "public_stage_projection_checks": 21,
+    "private_projection_leaks": [],
+    "unresolved_legal_basis_case_count": 1
   },
   "retrieval_and_citation": {
     "query_count": 10,
@@ -470,7 +484,9 @@
     "confusion_signals_rank_first": true,
     "completed_task_excluded": true,
     "answer_isolation": true,
-    "model_catalog_redaction": true
+    "model_catalog_redaction": true,
+    "case_bundle_runtime_mapping": true,
+    "case_bundle_public_projection": true
   },
   "status": "pass"
 }

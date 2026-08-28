@@ -139,7 +139,16 @@ def load_dataset_cases() -> list[dict[str, Any]]:
 
 
 def find_dataset_case(case_id: str) -> dict[str, Any] | None:
-    normalized = _normalize_case_id(case_id)
+    raw_case_id = str(case_id or "").strip()
+    normalized = _normalize_case_id(raw_case_id)
+    try:
+        from src.case_bundle.service import get_case_bundle_service
+
+        bundle = get_case_bundle_service().resolve(raw_case_id)
+        if bundle is not None:
+            normalized = str(bundle["original_case_id"])
+    except Exception as exc:
+        logger.warning("[TeachingTranscript] CaseBundle mapping unavailable: %s", exc)
     for record in load_dataset_cases():
         original_id = str(record.get("original_id") or "").strip()
         if original_id == normalized:
@@ -267,6 +276,14 @@ def _match_utterance_index(dialog_turns: list[DialogTurn], text: str) -> int | N
 def load_gold(case_id: str, stage: str) -> dict[str, Any]:
     """Load gold-standard fields for one stage from the case dataset."""
     stage = str(stage or "").strip().upper()
+    try:
+        from src.case_bundle.service import get_case_bundle_service
+
+        governed = get_case_bundle_service().teacher_gold(case_id, stage)
+        if governed is not None:
+            return governed
+    except Exception as exc:
+        logger.warning("[TeachingTranscript] governed CaseBundle gold unavailable: %s", exc)
     record = find_dataset_case(case_id)
     if not record:
         return {"gold_incomplete": True, "reason": "case not found in dataset"}
@@ -313,6 +330,17 @@ def build_scoring_input(
         "utterances": [utterance.to_dict() for utterance in utterances],
         "gold_incomplete": bool(gold.get("gold_incomplete")),
         "gold": gold,
+        "source_versions": {
+            key: gold.get(key)
+            for key in (
+                "case_bundle_id",
+                "case_bundle_version",
+                "case_bundle_content_sha256",
+                "law_corpus_manifest_sha256",
+                "rubric_version",
+            )
+            if gold.get(key)
+        },
         "built_at": datetime.now().isoformat(timespec="seconds"),
     }
 

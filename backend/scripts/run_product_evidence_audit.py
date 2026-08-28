@@ -28,6 +28,7 @@ for entry in (BACKEND_DIR, ADAPTIVE_SRC):
 
 from edubrain_adaptive.service import AdaptiveService  # noqa: E402
 from edubrain_adaptive.store import AdaptiveStore  # noqa: E402
+from src.case_bundle.service import CaseBundleService, PRIVATE_KEYS  # noqa: E402
 from src.knowledge.service import KnowledgeService  # noqa: E402
 from src.utils.model_config import MODEL_TASKS, ModelEndpoint  # noqa: E402
 
@@ -302,6 +303,42 @@ def model_routing_audit() -> dict[str, Any]:
     }
 
 
+def case_bundle_audit() -> dict[str, Any]:
+    service = CaseBundleService()
+    leaks = []
+    stage_checks = 0
+    for bundle in service.bundles:
+        for stage in (None, "LC", "INV", "PR", "DS", "CR", "CRA"):
+            public = service.public_bundle(bundle["runtime_case_id"], stage=stage)
+            stage_checks += 1
+            found = sorted(PRIVATE_KEYS & set(nested_keys(public)))
+            if found:
+                leaks.append(
+                    {
+                        "runtime_case_id": bundle["runtime_case_id"],
+                        "stage": stage,
+                        "private_keys": found,
+                    }
+                )
+    mapping = {
+        runtime_id: int(row["original_case_id"])
+        for runtime_id, row in service.manifest["runtime_mapping"].items()
+    }
+    return {
+        "case_bundle_count": len(service.bundles),
+        "case_evidence_count": len(service.evidence),
+        "runtime_to_original_mapping": mapping,
+        "mapping_matches_seed_policy": mapping
+        == {"case_1": 1, "case_2": 3, "case_3": 2},
+        "public_stage_projection_checks": stage_checks,
+        "private_projection_leaks": leaks,
+        "unresolved_legal_basis_case_count": sum(
+            bool(bundle.get("unresolved_legal_basis_fragments"))
+            for bundle in service.bundles
+        ),
+    }
+
+
 def build_report() -> dict[str, Any]:
     knowledge = KnowledgeService()
     data_dir = REPO_ROOT / "adaptive_service" / "data"
@@ -327,7 +364,11 @@ def build_report() -> dict[str, Any]:
                 / "law_corpus_manifest.json"
             ),
             "real_e2e_audit_sha256": sha256(REPO_ROOT / "docs" / "REAL_E2E_AUDIT.md"),
+            "case_bundle_manifest_sha256": sha256(
+                REPO_ROOT / "dataset" / "case_bundle_manifest.json"
+            ),
         },
+        "case_bundles": case_bundle_audit(),
         "retrieval_and_citation": retrieval_audit(knowledge),
         "adaptive_mechanism": adaptive_audit(data_dir),
         "public_projection": public_projection_audit(knowledge),
@@ -386,6 +427,12 @@ def build_report() -> dict[str, Any]:
             "safe_catalog_api_key_absent"
         ]
         and report["model_routing"]["safe_catalog_url_path_absent"],
+        "case_bundle_runtime_mapping": report["case_bundles"][
+            "mapping_matches_seed_policy"
+        ],
+        "case_bundle_public_projection": not report["case_bundles"][
+            "private_projection_leaks"
+        ],
     }
     report["checks"] = checks
     report["status"] = "pass" if all(checks.values()) else "fail"
@@ -410,6 +457,7 @@ def markdown_summary(report: dict[str, Any]) -> str:
         f"| 10个课程查询BM25 expected-hit@5 | {retrieval['bm25_expected_hit_rate_at_5']:.2%} | 只表示候选召回 |",
         f"| KnowledgeCard标准证据增强 expected-hit@5 | {retrieval['governed_expected_hit_rate_at_5']:.2%} | 不表示法律蕴含 |",
         f"| 证据目录有效条号/逐字片段 | {retrieval['citation_valid_count']}/{retrieval['exact_quote_count']} | 确定性存在与原文检查 |",
+        f"| CaseBundle运行映射/公开投影 | {'通过' if report['case_bundles']['mapping_matches_seed_policy'] and not report['case_bundles']['private_projection_leaks'] else '失败'} | 3案×7种公开投影，不含教师参考字段 |",
         f"| missing信号平均排序提升 | {adaptive['missing_signal_mean_rank_improvement']:.2f}位 | 软件策略响应，不是学习效果 |",
         f"| confusion信号平均排序提升 | {adaptive['confusion_signal_mean_rank_improvement']:.2f}位 | 自报信号响应，不是负掌握证据 |",
         f"| 已答任务排除 | {'通过' if adaptive['completed_task_exclusion_passed'] else '失败'} | 只验证任务闭环 |",

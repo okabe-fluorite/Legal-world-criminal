@@ -19,6 +19,7 @@ from src.core.models import (
     User,
 )
 from src.core.role_service import resolve_user_role
+from src.case_bundle.service import CaseBundleService, get_case_bundle_service
 from src.knowledge.service import KnowledgeService, get_knowledge_service
 
 
@@ -54,9 +55,11 @@ class TeacherService:
     def __init__(
         self,
         knowledge: KnowledgeService | None = None,
+        case_bundles: CaseBundleService | None = None,
         min_aggregate_size: int | None = None,
     ) -> None:
         self.knowledge = knowledge or get_knowledge_service()
+        self.case_bundles = case_bundles or get_case_bundle_service()
         if min_aggregate_size is None:
             try:
                 min_aggregate_size = int(
@@ -350,6 +353,22 @@ class TeacherService:
 
     def _review_objects(self) -> dict[tuple[str, str], dict[str, Any]]:
         objects: dict[tuple[str, str], dict[str, Any]] = {}
+        for bundle in self.case_bundles.bundles:
+            objects[("case_bundle", bundle["case_bundle_id"])] = {
+                "object_type": "case_bundle",
+                "object_id": bundle["case_bundle_id"],
+                "object_version": bundle["content_sha256"],
+                "title": bundle["title"],
+                "subtitle": (
+                    f"{bundle['runtime_case_id']} · {bundle['case_cause']} · "
+                    f"原案{bundle['original_case_id']}"
+                ),
+                "review_status": bundle["review"]["status"],
+                "standard_evidence_ids": list(bundle.get("evidence_ids") or []),
+                "unresolved_legal_basis_fragments": list(
+                    bundle.get("unresolved_legal_basis_fragments") or []
+                ),
+            }
         for card in self.knowledge.cards:
             objects[("knowledge_card", card["knowledge_id"])] = {
                 "object_type": "knowledge_card",
@@ -408,12 +427,32 @@ class TeacherService:
         return {
             "schema_version": "teacher-content-review-catalog-v1",
             "counts": {
+                "case_bundles": len(self.case_bundles.bundles),
                 "knowledge_cards": len(self.knowledge.cards),
                 "task_items": len(self.knowledge.tasks),
                 "teacher_review_events": len(reviews),
             },
             "objects": objects,
             "boundary": "审核事件是不可变覆盖记录，不会直接改写冻结的源内容",
+        }
+
+    def teacher_case_bundle(
+        self,
+        *,
+        session: Session,
+        teacher: User,
+        case_id: str,
+    ) -> dict[str, Any]:
+        self.require_teacher(session=session, user=teacher)
+        bundle = self.case_bundles.teacher_bundle(case_id)
+        if bundle is None:
+            raise TeacherObjectNotFoundError("case bundle not found")
+        return {
+            "schema_version": "teacher-case-bundle-response-v1",
+            "case_bundle": bundle,
+            "boundary": (
+                "teacher-only reference projection; review events do not rewrite this content"
+            ),
         }
 
     def submit_review(

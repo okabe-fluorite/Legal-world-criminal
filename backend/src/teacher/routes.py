@@ -29,7 +29,7 @@ class EnrollmentBody(BaseModel):
 
 class ContentReviewBody(BaseModel):
     review_id: str = Field(min_length=1, max_length=96, pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
-    object_type: Literal["knowledge_card", "task_item"]
+    object_type: Literal["case_bundle", "knowledge_card", "task_item"]
     object_id: str = Field(min_length=1, max_length=128)
     object_version: str = Field(pattern=r"^[a-f0-9]{64}$")
     decision: Literal["approve", "request_revision", "reject"]
@@ -114,6 +114,18 @@ def create_teacher_router(
         session: Session = Depends(session_dependency),
     ):
         return call(lambda: runtime.review_catalog(session=session, teacher=current_user))
+
+    @router.get("/case-bundles/{case_id}")
+    async def teacher_case_bundle(
+        case_id: str,
+        current_user: User = Depends(current_user_dependency),
+        session: Session = Depends(session_dependency),
+    ):
+        return call(
+            lambda: runtime.teacher_case_bundle(
+                session=session, teacher=current_user, case_id=case_id
+            )
+        )
 
     @router.post("/reviews")
     async def submit_review(

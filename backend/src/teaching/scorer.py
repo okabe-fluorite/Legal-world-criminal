@@ -318,6 +318,7 @@ class TeachingScorer:
             alignment_result=alignment_result,
             utterance_texts=utterance_texts,
             utterances=utterances,
+            source_versions=scoring_input.get("source_versions") or {},
         )
         self._persist(case_id, stage, case_output_dir, event)
 
@@ -369,6 +370,7 @@ class TeachingScorer:
         alignment_result: dict[str, Any] | None = None,
         utterance_texts: list[str] | None = None,
         utterances: list[dict[str, Any]] | None = None,
+        source_versions: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         capability_scores = self._normalize_capability_scores(
             payload.get("capability_scores") or {}, stage
@@ -408,8 +410,16 @@ class TeachingScorer:
                 separators=(",", ":"),
             ).encode("utf-8")
         ).hexdigest()
+        versions = dict(source_versions or {})
+        version_seed = str(
+            versions.get("case_bundle_content_sha256")
+            or versions.get("case_bundle_version")
+            or "legacy-unversioned-case"
+        )
         event_digest = hashlib.sha256(
-            f"{student_id}|{case_id}|{stage}|{source_digest}".encode("utf-8")
+            f"{student_id}|{case_id}|{stage}|{version_seed}|{source_digest}".encode(
+                "utf-8"
+            )
         ).hexdigest()[:24]
         assist_modes = [
             str(item.get("assist_mode") or "none").strip().lower()
@@ -434,6 +444,15 @@ class TeachingScorer:
             "student_id": student_id or "anonymous",
             "case_id": case_id,
             "task_id": f"case:{case_id}:{stage}",
+            "case_bundle_id": str(versions.get("case_bundle_id") or ""),
+            "case_bundle_version": str(versions.get("case_bundle_version") or ""),
+            "case_bundle_content_sha256": str(
+                versions.get("case_bundle_content_sha256") or ""
+            ),
+            "law_corpus_manifest_sha256": str(
+                versions.get("law_corpus_manifest_sha256") or ""
+            ),
+            "rubric_version": str(versions.get("rubric_version") or ""),
             "charge": charge,
             "stage": stage,
             "source_response_sha256": source_digest,

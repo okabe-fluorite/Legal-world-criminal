@@ -39,6 +39,7 @@ uv run --isolated --with-requirements requirements.lock.txt -- python `
 | `POST /api/teacher/classes/{id}/enrollments` | 加入已注册学生 | 返回班内稳定匿名`student-ref`，不回传邮箱 |
 | `GET /api/teacher/classes/{id}/analytics` | 班级形成性聚合 | 只查询自有班级；不返回学生邮箱或困惑原文 |
 | `GET /api/teacher/reviews/catalog` | 10卡/30任务公开复核目录 | 使用公开TaskItem投影，不含私有答案 |
+| `GET /api/teacher/case-bundles/{id}` | 3个案例的教师参考投影 | 仅teacher/admin；含指导要点与阶段教师参考 |
 | `POST /api/teacher/reviews` | 写不可变审核决定 | 同ID同payload幂等，同ID改内容409，旧内容版本422 |
 | `GET /api/teacher/reviews/audit` | 当前教师审核台账 | 不覆盖或删除既有事件 |
 
@@ -59,7 +60,7 @@ uv run --isolated --with-requirements requirements.lock.txt -- python `
 
 ## 内容复核
 
-教师可对KnowledgeCard或TaskItem提交：
+教师可对CaseBundle、KnowledgeCard或TaskItem提交：
 
 - `approve`：同意当前版本在本学期低风险试用；
 - `request_revision`：要求回到治理流水线修订后复核；

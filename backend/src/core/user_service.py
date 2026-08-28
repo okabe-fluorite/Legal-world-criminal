@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import re
+import time
 
-from sqlalchemy import select
+from sqlalchemy import select, text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 from .auth import hash_password, verify_password
@@ -25,6 +27,28 @@ class UserNotFoundError(RuntimeError):
     """Raised when a user cannot be found for the provided identity."""
 
 
+_SQLITE_BEGIN_RETRY_DELAYS = (0.02, 0.05, 0.1, 0.2, 0.4, 0.8, 1.2, 1.6)
+
+
+def _begin_sqlite_immediate(session: Session) -> None:
+    last_error: OperationalError | None = None
+    for attempt, delay in enumerate((0.0, *_SQLITE_BEGIN_RETRY_DELAYS)):
+        if delay:
+            time.sleep(delay)
+        try:
+            session.execute(text("BEGIN IMMEDIATE"))
+            return
+        except OperationalError as exc:
+            if "database is locked" not in str(exc).lower():
+                raise
+            last_error = exc
+            session.rollback()
+            if attempt >= len(_SQLITE_BEGIN_RETRY_DELAYS):
+                break
+    if last_error is not None:
+        raise last_error
+
+
 def _normalize_email(email: str) -> str:
     return email.strip().lower()
 
@@ -42,6 +66,14 @@ def _validate_auth_input(*, email: str, password: str) -> str:
 
 def register_user(*, session: Session, email: str, password: str) -> User:
     normalized_email = _validate_auth_input(email=email, password=password)
+    # Password hashing is deliberately completed before acquiring a database
+    # writer lock. SQLite registrations use BEGIN IMMEDIATE so concurrent
+    # classroom logins wait for a short write transaction instead of both
+    # upgrading read transactions and failing with SQLITE_BUSY.
+    password_digest = hash_password(password)
+    bind = session.get_bind()
+    if bind.dialect.name == "sqlite" and not session.in_transaction():
+        _begin_sqlite_immediate(session)
     existing_user = session.execute(select(User).where(User.email == normalized_email)).scalar_one_or_none()
     if existing_user is not None:
         raise UserAlreadyExistsError("email already exists")
@@ -50,7 +82,7 @@ def register_user(*, session: Session, email: str, password: str) -> User:
     session.add(user)
     session.flush()
 
-    credential = UserCredential(user_id=user.id, password_hash=hash_password(password))
+    credential = UserCredential(user_id=user.id, password_hash=password_digest)
     session.add(credential)
     session.flush()
     session.refresh(user)

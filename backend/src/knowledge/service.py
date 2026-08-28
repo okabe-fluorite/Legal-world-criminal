@@ -102,6 +102,16 @@ class KnowledgeService:
         task = self.task_by_id.get(str(task_id or "").strip())
         return self.public_task(task) if task else None
 
+    def evidence_for_article(
+        self,
+        title: str,
+        article_ref: str,
+    ) -> dict[str, Any] | None:
+        article = law_corpus.resolve_article(title, article_ref)
+        if article is None:
+            return None
+        return self._evidence_from_hit({**article, "score": 1.0})
+
     def _evidence_from_hit(self, hit: dict[str, Any]) -> dict[str, Any]:
         existing = self.evidence_by_article.get(
             (str(hit.get("source_title") or ""), str(hit.get("article_ref") or ""))

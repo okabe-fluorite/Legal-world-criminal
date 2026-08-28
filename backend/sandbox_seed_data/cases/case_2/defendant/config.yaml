@@ -7,4 +7,8 @@ case_state: 空闲
 designated_lawyer_id: ''
 assigned_lawyer_id: ''
 profile: {}
+original_case_id: 3
+case_bundle_id: CRIM_CASE_954A8D8D6B0CDB221B08
+case_bundle_version: 2026-08-27.1
+case_bundle_content_sha256: 03c48567aee0ae80ec47d5169bebf5d9033cd3f61db5aa2b7e74c99f4c6c7e1f
 source_title: 指导案例14号：董某某、宋某某抢劫案

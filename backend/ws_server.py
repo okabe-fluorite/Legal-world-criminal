@@ -485,6 +485,11 @@ from src.knowledge.routes import router as _knowledge_router
 
 app.include_router(_knowledge_router)
 
+# ── Governed CaseBundle public-stage API ──
+from src.case_bundle.routes import router as _case_bundle_router
+
+app.include_router(_case_bundle_router)
+
 # Per-sandbox gateway instances, keyed by sandbox_id
 _player_gateways: dict[str, _PlayerInputGateway] = {}
 
@@ -1960,7 +1965,7 @@ def _build_case_picker_entries(
     runtime_status: dict[str, Any] | None = None,
     selected_case_id: str = "",
     metadata_path: Path | None = None,
-) -> list[dict[str, str]]:
+) -> list[dict[str, Any]]:
     try:
         storage: Any = FileStorageManager(base_dir=storage_root)
     except TypeError:
@@ -1972,7 +1977,7 @@ def _build_case_picker_entries(
                 raise FileNotFoundError(case_id)
 
         storage = _FallbackStorage(storage_root)
-    entries: list[dict[str, str]] = []
+    entries: list[dict[str, Any]] = []
     metadata_by_case_id = _load_case_picker_metadata(metadata_path)
 
     for plaintiff_path in sorted(storage_root.glob("cases/case_*/plaintiff/config.yaml")):
@@ -2016,6 +2021,24 @@ def _build_case_picker_entries(
             title = f"被告人{defendant_name}涉嫌{raw_case_cause}案"
         else:
             title = f"{raw_case_cause}案"
+        bundle_meta: dict[str, Any] = {}
+        try:
+            from src.case_bundle.service import get_case_bundle_service
+
+            bundle = get_case_bundle_service().resolve(case_id)
+            if bundle is not None:
+                bundle_meta = {
+                    "case_bundle_id": str(bundle["case_bundle_id"]),
+                    "case_bundle_version": str(bundle["version"]),
+                    "case_bundle_content_sha256": str(bundle["content_sha256"]),
+                    "evidence_count": len(bundle.get("evidence_ids") or []),
+                    "knowledge_count": len(bundle.get("knowledge_links") or []),
+                    "teacher_recheck_required": bool(
+                        (bundle.get("review") or {}).get("teacher_recheck_required")
+                    ),
+                }
+        except Exception as exc:
+            logger.warning("Failed to resolve governed CaseBundle for %s: %s", case_id, exc)
         entries.append(
             {
                 "case_id": case_id,
@@ -2032,6 +2055,7 @@ def _build_case_picker_entries(
                     runtime_status=runtime_status,
                     selected_case_id=selected_case_id,
                 ),
+                **bundle_meta,
             }
         )
 

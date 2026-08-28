@@ -193,6 +193,15 @@ teaching/
 - `POST /api/knowledge/search`返回受治理EvidencePack，`POST /api/knowledge/audit-citations`验证条号与逐字片段
 - BM25相关性与词法重叠不是法律蕴含；coverage必须保持`candidate_requires_semantic_audit`或`insufficient_evidence`
 
+### CaseBundle案例契约
+
+- `schemas/case-bundle-v1.schema.json`冻结3个发布案例的稳定bundle ID、runtime/original映射、9条Evidence、六阶段学生材料、教师参考、Rubric、典型错误和版本哈希
+- 当前种子映射是`case_1→original 1`、`case_2→original 3`、`case_3→original 2`；seed与CaseBundle共用`select_diverse_cases`，DataLoader优先`original_case_id`，禁止再按runtime数字猜原案
+- `/api/case-bundles/{id}?stage=...`只返回该阶段`student_visible`和Rubric；`reference_private/teacher_reference_private/typical_errors_private`只供评分器与教师复核
+- 教师可读取完整CaseBundle并写不可变审核overlay；“以原判为准”等不能解析的法条自由文本保留风险标记，禁止伪造Evidence ID
+- 案例LearningEvent和事件ID绑定bundle ID/版本/内容哈希、法源manifest、Rubric版本，内容升级后不得与旧事件静默去重
+- 本地SQLite课堂并发启用WAL/busy timeout；注册把密码哈希移到写锁前并只对BUSY有界退避，sandbox先提交数据库记录再初始化seed，避免两名新用户同时进入时500
+
 ### 预习/复习TaskAttempt
 
 - `schemas/task-attempt-v1.schema.json`和`confusion-annotation-v1.schema.json`冻结作答与困惑输入；登录backend提供`POST /api/adaptive/attempts`和`/confusions`

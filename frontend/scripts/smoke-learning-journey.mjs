@@ -53,6 +53,14 @@ try {
   await page.getByPlaceholder("至少 6 位").fill("Journey-Smoke-2026!");
   await page.getByRole("button", { name: "注册并进入" }).click();
   await page.getByRole("button", { name: "自主学习" }).waitFor({ state: "visible" });
+  await page.locator(".case__version").first().waitFor({ state: "visible" });
+  const governedCaseCount = await page.locator(".case__version").count();
+  const caseEvidenceCount = await page.locator(".case__evidence").count();
+  if (governedCaseCount !== 3 || caseEvidenceCount !== 3) {
+    throw new Error(
+      `Expected 3 governed case entries, got versions=${governedCaseCount} evidence=${caseEvidenceCount}`,
+    );
+  }
   await page.getByRole("button", { name: "自主学习" }).click();
   await page.getByRole("dialog", { name: "刑法自主学习卷宗" }).waitFor({ state: "visible" });
   await page.getByText("知识卷宗", { exact: true }).waitFor();
@@ -88,6 +96,7 @@ try {
     url: page.url(),
     viewport: `${viewport.width}x${viewport.height}`,
     knowledge_cards: knowledgeCount,
+    governed_case_entries: governedCaseCount,
     option_count: optionCount,
     feedback_visible: feedbackVisible,
     next_task_visible: nextTaskVisible,

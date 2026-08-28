@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
 from sqlalchemy.engine.url import make_url
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
@@ -39,7 +39,22 @@ def create_database_engine(database_url: str | None = None) -> Engine:
         database = str(parsed.database or "").strip()
         if database and database != ":memory:" and not database.startswith("file:"):
             Path(database).expanduser().parent.mkdir(parents=True, exist_ok=True)
-        return create_engine(url, future=True, pool_pre_ping=True)
+        engine = create_engine(
+            url,
+            future=True,
+            pool_pre_ping=True,
+            connect_args={"timeout": 30, "check_same_thread": False},
+        )
+        if database and database != ":memory:" and not database.startswith("file:"):
+            @event.listens_for(engine, "connect")
+            def _configure_sqlite_connection(dbapi_connection, _connection_record) -> None:
+                cursor = dbapi_connection.cursor()
+                try:
+                    cursor.execute("PRAGMA busy_timeout=30000")
+                    cursor.execute("PRAGMA journal_mode=WAL")
+                finally:
+                    cursor.close()
+        return engine
     return create_engine(
         url,
         future=True,

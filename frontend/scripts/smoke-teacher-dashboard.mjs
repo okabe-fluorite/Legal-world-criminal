@@ -97,8 +97,13 @@ try {
 
   await page.getByRole("button", { name: /内容复核/ }).click();
   await page.locator(".review-table article").first().waitFor();
+  const reviewCounts = await page.locator(".review-counts dd").allTextContents();
+  if (reviewCounts.slice(0, 4).join(",") !== "3,10,30,0") {
+    throw new Error(`Unexpected governed review counts: ${reviewCounts.join(",")}`);
+  }
   await page.locator(".review-table article").first().getByRole("button", { name: "复核" }).click();
   await page.getByRole("dialog", { name: "提交教师内容复核" }).waitFor();
+  await page.getByText("指导要点（教师参考）").waitFor();
   await page.getByPlaceholder("写明法源、理论口径、题干或教学风险……").fill(
     "法源与课程基础口径一致，同意本学期低风险试用。",
   );
@@ -111,6 +116,7 @@ try {
     viewport: `${viewport.width}x${viewport.height}`,
     class_name: uniqueClass,
     metrics: metricValues,
+    review_counts: reviewCounts,
     privacy_leaks: privacyLeaks,
     review_event_recorded: true,
     console_errors: consoleErrors,

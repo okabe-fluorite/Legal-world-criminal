@@ -247,7 +247,7 @@ class DataLoader:
             profile_name = self._normalize_name(fallback_name)
 
         resolved_case = self.resolve_case(
-            case_id=config.get("case_id", "0"),
+            case_id=config.get("original_case_id", config.get("case_id", "0")),
             party_role=str(config.get("party_role", "plaintiff") or "plaintiff"),
             profile_name=profile_name,
         )
@@ -255,7 +255,7 @@ class DataLoader:
             return resolved_case
 
         party_role = str(config.get("party_role", "plaintiff") or "plaintiff")
-        case_id = config.get("case_id", "0")
+        case_id = config.get("original_case_id", config.get("case_id", "0"))
         normalized_current_path = str(Path(self.json_path).resolve()) if self.json_path else ""
         for candidate_path in fallback_dataset_paths:
             candidate = str(candidate_path or "").strip()

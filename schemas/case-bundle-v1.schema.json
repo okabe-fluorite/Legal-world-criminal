@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simlaw.local/schemas/case-bundle-v1.schema.json",
+  "title": "CriminalLawCaseBundleV1",
+  "$defs": {
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "name", "role", "weight"],
+      "properties": {
+        "code": {"type": "string", "minLength": 2},
+        "name": {"type": "string", "minLength": 2},
+        "role": {"enum": ["primary", "secondary"]},
+        "weight": {"type": "number", "enum": [0.5, 1.0]}
+      }
+    },
+    "rubric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "stage", "capabilities"],
+      "properties": {
+        "schema_version": {"const": "criminal-law-stage-rubric-v1"},
+        "stage": {"enum": ["LC", "INV", "PR", "DS", "CR", "CRA"]},
+        "capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/capability"}
+        }
+      }
+    },
+    "stagePacket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage", "stage_name", "availability", "student_visible", "rubric",
+        "teacher_reference_private", "typical_errors_private"
+      ],
+      "properties": {
+        "stage": {"enum": ["LC", "INV", "PR", "DS", "CR", "CRA"]},
+        "stage_name": {"type": "string", "minLength": 2},
+        "availability": {"enum": ["available", "not_applicable"]},
+        "student_visible": {"type": "object"},
+        "rubric": {"$ref": "#/$defs/rubric"},
+        "teacher_reference_private": {"type": "object"},
+        "typical_errors_private": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 2}
+        }
+      }
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "case_bundle_id", "runtime_case_id", "original_case_id",
+    "domain", "version", "title", "case_type", "case_category", "case_cause",
+    "charge", "release", "provenance", "knowledge_links", "evidence_ids",
+    "unresolved_legal_basis_fragments", "student_brief", "stage_packets",
+    "reference_private", "review", "source_dataset_sha256",
+    "law_corpus_manifest_sha256", "content_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "criminal-law-case-bundle-v1"},
+    "case_bundle_id": {"type": "string", "pattern": "^CRIM_CASE_[A-F0-9]{20}$"},
+    "runtime_case_id": {"type": "string", "pattern": "^case_[1-9][0-9]*$"},
+    "original_case_id": {"type": "integer", "minimum": 1},
+    "domain": {"const": "刑法"},
+    "version": {"type": "string", "minLength": 8},
+    "title": {"type": "string", "minLength": 4},
+    "case_type": {"type": "string", "minLength": 2},
+    "case_category": {"const": "criminal"},
+    "case_cause": {"type": "string", "minLength": 2},
+    "charge": {"type": "string", "minLength": 2},
+    "release": {"type": "object"},
+    "provenance": {
+      "type": "object",
+      "required": [
+        "source_title", "issuing_authority", "source_url", "local_source_path",
+        "local_source_sha256", "transformation"
+      ],
+      "properties": {
+        "source_title": {"type": "string", "minLength": 4},
+        "issuing_authority": {"type": "string", "minLength": 2},
+        "released_at": {"type": "string"},
+        "source_reference": {"type": "string"},
+        "source_url": {"type": "string", "minLength": 8},
+        "local_source_path": {"type": "string", "minLength": 2},
+        "local_source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "transformation": {"type": "string", "minLength": 2}
+      },
+      "additionalProperties": false
+    },
+    "knowledge_links": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["knowledge_id", "knowledge_name", "role", "knowledge_version"],
+        "properties": {
+          "knowledge_id": {"type": "string", "pattern": "^CRIM_KP_[A-F0-9]{16}$"},
+          "knowledge_name": {"type": "string", "minLength": 2},
+          "role": {"enum": ["primary", "secondary"]},
+          "knowledge_version": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    },
+    "evidence_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^EVID_[A-F0-9]{20}$"}
+    },
+    "unresolved_legal_basis_fragments": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 2}
+    },
+    "student_brief": {"type": "object"},
+    "stage_packets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["LC", "INV", "PR", "DS", "CR", "CRA"],
+      "properties": {
+        "LC": {"$ref": "#/$defs/stagePacket"},
+        "INV": {"$ref": "#/$defs/stagePacket"},
+        "PR": {"$ref": "#/$defs/stagePacket"},
+        "DS": {"$ref": "#/$defs/stagePacket"},
+        "CR": {"$ref": "#/$defs/stagePacket"},
+        "CRA": {"$ref": "#/$defs/stagePacket"}
+      }
+    },
+    "reference_private": {"type": "object"},
+    "review": {"type": "object"},
+    "source_dataset_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "law_corpus_manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

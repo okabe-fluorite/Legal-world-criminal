@@ -205,11 +205,22 @@ class TeacherServiceTests(unittest.TestCase):
         with get_db_session(self.factory) as session:
             teacher, _other, _student = self._users(session)
             catalog = self.service.review_catalog(session=session, teacher=teacher)
+            self.assertEqual(catalog["counts"]["case_bundles"], 3)
             self.assertEqual(catalog["counts"]["knowledge_cards"], 10)
             self.assertEqual(catalog["counts"]["task_items"], 30)
             serialized = json.dumps(catalog, ensure_ascii=False)
             self.assertNotIn("answer_private", serialized)
             self.assertNotIn("rationale_private", serialized)
+            case_target = next(
+                row for row in catalog["objects"] if row["object_type"] == "case_bundle"
+            )
+            teacher_case = self.service.teacher_case_bundle(
+                session=session,
+                teacher=teacher,
+                case_id=case_target["object_id"],
+            )
+            self.assertIn("reference_private", teacher_case["case_bundle"])
+            self.assertIn("guiding_points", teacher_case["case_bundle"]["reference_private"])
             target = next(
                 row for row in catalog["objects"] if row["object_type"] == "task_item"
             )
@@ -234,6 +245,13 @@ class TeacherServiceTests(unittest.TestCase):
                     session=session,
                     teacher=teacher,
                     **{**payload, "note": "same id changed payload"},
+                )
+
+            with self.assertRaises(TeacherPermissionError):
+                self.service.teacher_case_bundle(
+                    session=session,
+                    teacher=_student,
+                    case_id=case_target["object_id"],
                 )
 
         with get_db_session(self.factory) as session:

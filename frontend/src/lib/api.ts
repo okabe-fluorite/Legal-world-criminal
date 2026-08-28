@@ -17,6 +17,7 @@ import type {
   TaskAttemptResponse,
   TeachingReport,
   TeacherAnalyticsResponse,
+  TeacherCaseBundleResponse,
   TeacherOverviewResponse,
   TeacherReviewCatalogResponse,
 } from "./types";
@@ -248,9 +249,15 @@ export const api = {
     return request<TeacherReviewCatalogResponse>("/teacher/reviews/catalog");
   },
 
+  async teacherCaseBundle(caseId: string): Promise<TeacherCaseBundleResponse> {
+    return request<TeacherCaseBundleResponse>(
+      `/teacher/case-bundles/${encodeURIComponent(caseId)}`,
+    );
+  },
+
   async submitTeacherReview(payload: {
     review_id: string;
-    object_type: "knowledge_card" | "task_item";
+    object_type: "case_bundle" | "knowledge_card" | "task_item";
     object_id: string;
     object_version: string;
     decision: "approve" | "request_revision" | "reject";

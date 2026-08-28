@@ -6,6 +6,9 @@
 - `dataset/legacy_case_quality_audit.json`：旧124案机器质量审计。当前124案全部因缺正式发布状态而阻断。
 - `dataset/released_case_dataset.json`：正式产品只读取的案例发布集。
 - `dataset/released_case_quality_audit.json`：发布集逐案门禁结果。
+- `dataset/case_bundles.jsonl`：按运行ID冻结的3个案例教学包，含阶段公开/私有材料、Rubric和版本。
+- `dataset/case_bundle_evidence.jsonl`：案例引用的受治理刑法Evidence目录。
+- `dataset/case_bundle_manifest.json`：运行ID→bundle→原案ID映射、文件/Schema/法源哈希。
 - `dataset/knowledge_catalog.json`：教师批准试用的稳定知识点ID。
 - `adaptive_service/data/knowledge_cards.jsonl`：从稳定知识点扩展出的受治理课程知识卡。
 - `adaptive_service/data/task_items.jsonl`：从教师批准试用题重绑官方法源后的受治理任务；含服务端私有判分字段。
@@ -33,6 +36,8 @@ uv run --no-project --python 3.11 --with-requirements requirements.lock.txt `
 ```
 
 `build_seed_data_criminal.py`默认只读取发布集，并在写seed前再次执行门禁。扩充案例时先修改发布集，再运行门禁和测试；不得把旧124案整体复制回seed目录。
+
+发布集通过后必须先运行`build_case_bundles.py`再重建seed。CaseBundle构建器复用seed选案排序，拒绝映射漂移，并将`original_case_id/case_bundle_id/version/content_sha256`写入每个case配置。学生API只返回阶段公开投影；教师参考、指导要点、参考裁判和典型错误不得进入学生投影。详见[`CASE_BUNDLE_CONTRACT.md`](CASE_BUNDLE_CONTRACT.md)。
 
 ## 法源
 

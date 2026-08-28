@@ -7,4 +7,8 @@ case_state: 空闲
 designated_lawyer_id: ''
 assigned_lawyer_id: ''
 profile: {}
+original_case_id: 1
+case_bundle_id: CRIM_CASE_E860B385BA91B5E8C534
+case_bundle_version: 2026-08-27.1
+case_bundle_content_sha256: f102fd5d7bf38e2fa56189cb735bbf0a96a9cae7c455cfce5091cf44f9da0b79
 source_title: 指导性案例268号：严某聪以危险方法危害公共安全案

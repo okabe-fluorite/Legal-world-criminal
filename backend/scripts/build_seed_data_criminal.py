@@ -32,6 +32,12 @@ if sys.platform == "win32":
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+BACKEND_DIR = REPO_ROOT / "backend"
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
+
+from src.case_bundle.selection import select_diverse_cases  # noqa: E402
+
 DEFAULT_DATASET = REPO_ROOT / "dataset" / "released_case_dataset.json"
 SEED_DIR = REPO_ROOT / "backend" / "sandbox_seed_data"
 EXTRACTED_FILENAME = "case_data_extracted.json"
@@ -142,29 +148,6 @@ def prosecutor_config() -> dict:
 
 # ── Case config generation ─────────────────────────────────
 
-def select_diverse_cases(cases: list[dict], max_cases: int) -> list[dict]:
-    """按罪名大类轮转选案，保证教学罪名覆盖度（每轮每类取一案）。"""
-    by_cause: dict[str, list[dict]] = {}
-    for case in cases:
-        cause = str(case.get("extracted_info", {}).get("case_cause") or "其他").strip() or "其他"
-        by_cause.setdefault(cause, []).append(case)
-
-    selected: list[dict] = []
-    while len(selected) < max_cases:
-        picked_any = False
-        for cause in sorted(by_cause):
-            pool = by_cause[cause]
-            if not pool:
-                continue
-            selected.append(pool.pop(0))
-            picked_any = True
-            if len(selected) >= max_cases:
-                break
-        if not picked_any:
-            break
-    return selected
-
-
 def case_config(
     *,
     case_id: int,
@@ -172,6 +155,10 @@ def case_config(
     dataset_path: str,
     case_cause: str,
     source_title: str = "",
+    original_case_id: int | None = None,
+    case_bundle_id: str = "",
+    case_bundle_version: str = "",
+    case_bundle_content_sha256: str = "",
 ) -> dict:
     config = {
         "case_id": str(case_id),
@@ -184,6 +171,12 @@ def case_config(
         "assigned_lawyer_id": "",
         "profile": {},  # auto-filled from dataset by seeder
     }
+    if original_case_id is not None:
+        config["original_case_id"] = int(original_case_id)
+    if case_bundle_id:
+        config["case_bundle_id"] = case_bundle_id
+        config["case_bundle_version"] = case_bundle_version
+        config["case_bundle_content_sha256"] = case_bundle_content_sha256
     if source_title:
         config["source_title"] = source_title
     return config
@@ -294,11 +287,22 @@ def main() -> int:
     print(f"[2/4] Seeding {len(selected)} cases into {seed_dir}")
 
     cases_dir = seed_dir / "cases"
+    from src.case_bundle.service import get_case_bundle_service
+
+    bundle_service = get_case_bundle_service()
     reset_dir(cases_dir)
     for idx, case in enumerate(selected, start=1):
         extracted = case.get("extracted_info", {})
         cause = str(extracted.get("case_cause") or "刑事案件")
         source_title = str(extracted.get("source_title") or "").strip()
+        governed_bundle = bundle_service.resolve(f"case_{idx}")
+        if governed_bundle is None or int(governed_bundle["original_case_id"]) != int(
+            case["original_id"]
+        ):
+            raise ValueError(
+                f"CaseBundle runtime mapping drift for case_{idx}: "
+                f"selected original_id={case.get('original_id')}"
+            )
         for party_role in ("plaintiff", "defendant"):
             write_yaml(
                 cases_dir / f"case_{idx}" / party_role / "config.yaml",
@@ -308,6 +312,10 @@ def main() -> int:
                     dataset_path=EXTRACTED_FILENAME,
                     case_cause=cause,
                     source_title=source_title,
+                    original_case_id=int(case["original_id"]),
+                    case_bundle_id=str(governed_bundle["case_bundle_id"]),
+                    case_bundle_version=str(governed_bundle["version"]),
+                    case_bundle_content_sha256=str(governed_bundle["content_sha256"]),
                 ),
             )
 

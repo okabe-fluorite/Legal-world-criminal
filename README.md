@@ -29,6 +29,8 @@ uv run --isolated --with-requirements requirements.lock.txt -- `
 
 该命令使用本地SQLite，自动启动backend、adaptive与Vite前端；能识别三组重复的`api_key/baseurl/model`配置，正常优先OpenCode，429/用量窗口/服务暂不可用时自动回退DeepSeek官方API。密钥仅进入子进程环境，不打印、不写入仓库。访问`http://127.0.0.1:5173`，按`Ctrl+C`停止。
 
+本地SQLite启用WAL和30秒busy timeout；密码哈希在写事务前完成，短注册事务仅对`database is locked`做有界退避；sandbox记录先提交再初始化seed文件。学生与教师同时首次注册/建sandbox已通过真实并发浏览器门禁，不需要为本地试用换Docker/PostgreSQL。
+
 首次运行会自动执行一次`npm ci`。也可增加`--no-frontend`或`--no-adaptive`只启动部分服务。
 
 前端与可复现浏览器冒烟建议使用Node.js 20或更高版本；`playwright-core`只复用本机Edge/Chrome，不下载浏览器。
@@ -131,6 +133,10 @@ uv run --no-project --python 3.11 --with-requirements requirements.lock.txt `
 ```
 
 治理规则见[`docs/DATA_GOVERNANCE.md`](docs/DATA_GOVERNANCE.md)。
+
+3个发布案例现已进一步冻结为CaseBundle：稳定bundle ID、运行ID/原案ID映射、9条受治理刑法Evidence、六阶段学生可见材料、教师参考、能力Rubric、典型错误和内容版本统一记录。案例选择卡会显示bundle版本、Evidence数量和教师复核标记；公开阶段API不返回指导要点、参考判决或教师预期答案。
+
+CaseBundle还修复了一个真实映射问题：种子按案由排序后，`case_2→原案3`、`case_3→原案2`，评分器此前可能按数字取错参考材料。现在sandbox配置和LearningEvent均绑定bundle ID/版本/哈希、原案ID、法源manifest和Rubric版本。完整契约及重建顺序见[`docs/CASE_BUNDLE_CONTRACT.md`](docs/CASE_BUNDLE_CONTRACT.md)。
 
 ## 刑事流程
 

@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { api } from "../lib/api";
 import type {
   TeacherAnalyticsResponse,
+  TeacherCaseBundleResponse,
   TeacherClassroom,
   TeacherOverviewResponse,
   TeacherReviewCatalogResponse,
@@ -24,11 +25,13 @@ const createOpen = ref(false);
 const className = ref("刑法甲班");
 const classTerm = ref("2026秋");
 const studentEmail = ref("");
-const reviewFilter = ref<"all" | "knowledge_card" | "task_item">("all");
+const reviewFilter = ref<"all" | "case_bundle" | "knowledge_card" | "task_item">("all");
 const selectedReview = ref<TeacherReviewObject | null>(null);
 const reviewDecision = ref<"approve" | "request_revision" | "reject">("approve");
 const reviewNote = ref("");
 const reviewId = ref("");
+const selectedCaseBundle = ref<TeacherCaseBundleResponse["case_bundle"] | null>(null);
+const caseBundleLoading = ref(false);
 
 const classes = computed(() => overview.value?.classes ?? []);
 const selectedClass = computed(() =>
@@ -144,12 +147,24 @@ async function enrollStudent(): Promise<void> {
   }
 }
 
-function openReview(row: TeacherReviewObject): void {
+async function openReview(row: TeacherReviewObject): Promise<void> {
   selectedReview.value = row;
+  selectedCaseBundle.value = null;
   reviewDecision.value = row.latest_teacher_review?.decision ?? "approve";
   reviewNote.value = row.latest_teacher_review?.note ?? "";
   reviewId.value = newReviewId();
   error.value = "";
+  if (row.object_type === "case_bundle") {
+    caseBundleLoading.value = true;
+    try {
+      const result = await api.teacherCaseBundle(row.object_id);
+      selectedCaseBundle.value = result.case_bundle;
+    } catch (reason) {
+      error.value = reason instanceof Error ? reason.message : String(reason);
+    } finally {
+      caseBundleLoading.value = false;
+    }
+  }
 }
 
 async function submitReview(): Promise<void> {
@@ -373,10 +388,12 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
             </div>
             <div class="review-filter">
               <button :class="{ active: reviewFilter === 'all' }" @click="reviewFilter = 'all'">全部</button>
+              <button :class="{ active: reviewFilter === 'case_bundle' }" @click="reviewFilter = 'case_bundle'">案例</button>
               <button :class="{ active: reviewFilter === 'knowledge_card' }" @click="reviewFilter = 'knowledge_card'">知识卡</button>
               <button :class="{ active: reviewFilter === 'task_item' }" @click="reviewFilter = 'task_item'">任务</button>
             </div>
             <dl class="review-counts">
+              <div><dt>案例包</dt><dd>{{ reviewCatalog?.counts.case_bundles ?? 0 }}</dd></div>
               <div><dt>知识卡</dt><dd>{{ reviewCatalog?.counts.knowledge_cards ?? 0 }}</dd></div>
               <div><dt>任务</dt><dd>{{ reviewCatalog?.counts.task_items ?? 0 }}</dd></div>
               <div><dt>审核事件</dt><dd>{{ reviewCatalog?.counts.teacher_review_events ?? 0 }}</dd></div>
@@ -391,7 +408,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
             <div class="review-table">
               <article v-for="row in reviewObjects" :key="`${row.object_type}:${row.object_id}`">
                 <div class="review-object">
-                  <span>{{ row.object_type === "task_item" ? "任务" : "知识卡" }}</span>
+                  <span>{{ row.object_type === "task_item" ? "任务" : row.object_type === "case_bundle" ? "案例" : "知识卡" }}</span>
                   <div>
                     <h3>{{ row.title }}</h3>
                     <p>{{ row.subtitle }}</p>
@@ -431,6 +448,28 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
             <span>{{ selectedReview.object_version.slice(0, 16) }}…</span>
             <span>{{ selectedReview.standard_evidence_ids.length }}条证据</span>
           </div>
+          <section v-if="selectedReview.object_type === 'case_bundle'" class="case-review-detail">
+            <p v-if="caseBundleLoading" class="analytics-empty">正在读取教师参考投影……</p>
+            <template v-else-if="selectedCaseBundle">
+              <div class="case-review-detail__links">
+                <span v-for="link in selectedCaseBundle.knowledge_links" :key="link.knowledge_id">
+                  {{ link.knowledge_name }} · {{ link.role }}
+                </span>
+                <span>{{ selectedCaseBundle.evidence_ids.length }}条Evidence</span>
+                <span>
+                  {{ Object.values(selectedCaseBundle.stage_packets).filter((stage) => stage.availability === 'available').length }}个可用阶段
+                </span>
+              </div>
+              <div v-if="selectedCaseBundle.unresolved_legal_basis_fragments.length" class="case-review-detail__risk">
+                <strong>待复核法条缺口</strong>
+                <p v-for="item in selectedCaseBundle.unresolved_legal_basis_fragments" :key="item">{{ item }}</p>
+              </div>
+              <div class="case-review-detail__reference">
+                <strong>指导要点（教师参考）</strong>
+                <p>{{ selectedCaseBundle.reference_private.guiding_points }}</p>
+              </div>
+            </template>
+          </section>
           <label>
             <span>教师决定</span>
             <select v-model="reviewDecision">
@@ -597,7 +636,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .review-table article > button { padding: 7px; color: #88aab7; border: 1px solid rgba(92, 122, 138, 0.4); background: transparent; cursor: pointer; }
 
 .review-dialog-layer { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 24px; background: rgba(0, 0, 0, 0.72); }
-.review-dialog { width: min(620px, 100%); padding: 22px; border: 1px solid rgba(92, 122, 138, 0.48); background: #151713; box-shadow: 0 30px 90px #000; }
+.review-dialog { width: min(680px, 100%); max-height: 90vh; overflow-y: auto; padding: 22px; border: 1px solid rgba(92, 122, 138, 0.48); background: #151713; box-shadow: 0 30px 90px #000; }
 .review-dialog header { display: flex; justify-content: space-between; gap: 15px; }
 .review-dialog header h3 { font-size: 1.2rem; }
 .review-dialog header button { width: 31px; height: 31px; color: var(--parchment-muted); border: 1px solid var(--line); background: transparent; }
@@ -608,6 +647,14 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .review-dialog label > span { display: block; margin-bottom: 5px; color: var(--parchment-dim); font-size: 0.72rem; }
 .review-dialog textarea { min-height: 120px; resize: vertical; }
 .review-dialog__boundary { color: var(--parchment-faint); font-size: 0.68rem; }
+.case-review-detail { margin: 12px 0; padding: 11px; border: 1px solid var(--line); background: rgba(92, 122, 138, 0.045); }
+.case-review-detail__links { display: flex; flex-wrap: wrap; gap: 6px; }
+.case-review-detail__links span { padding: 3px 6px; color: #b9ced6; border: 1px solid rgba(92, 122, 138, 0.34); font-size: 0.66rem; }
+.case-review-detail__risk { margin-top: 9px; padding: 8px; color: #ddb091; border-left: 2px solid var(--accent); background: rgba(196, 71, 27, 0.07); }
+.case-review-detail__risk p { margin: 3px 0 0; font-size: 0.68rem; }
+.case-review-detail__reference { margin-top: 9px; }
+.case-review-detail__reference strong { color: var(--accent-amber); font-size: 0.72rem; }
+.case-review-detail__reference p { max-height: 105px; overflow-y: auto; margin: 5px 0 0; color: var(--parchment-muted); font-size: 0.72rem; line-height: 1.55; }
 .review-submit { width: 100%; padding: 10px; color: #dce8d4; border: 1px solid var(--accent-success); background: rgba(122, 153, 98, 0.1); font-family: var(--font-display); cursor: pointer; }
 
 @media (max-width: 1120px) {

@@ -153,7 +153,7 @@ export interface TeacherAnalyticsResponse {
 }
 
 export interface TeacherReviewObject {
-  object_type: "knowledge_card" | "task_item";
+  object_type: "case_bundle" | "knowledge_card" | "task_item";
   object_id: string;
   object_version: string;
   title: string;
@@ -162,6 +162,7 @@ export interface TeacherReviewObject {
   difficulty?: number;
   cognitive_dimension?: string;
   standard_evidence_ids: string[];
+  unresolved_legal_basis_fragments?: string[];
   latest_teacher_review?: {
     review_id: string;
     decision: "approve" | "request_revision" | "reject";
@@ -173,12 +174,43 @@ export interface TeacherReviewObject {
 export interface TeacherReviewCatalogResponse {
   schema_version: string;
   counts: {
+    case_bundles: number;
     knowledge_cards: number;
     task_items: number;
     teacher_review_events: number;
   };
   objects: TeacherReviewObject[];
   boundary: string;
+}
+
+export interface TeacherCaseBundleResponse {
+  schema_version: string;
+  boundary: string;
+  case_bundle: {
+    case_bundle_id: string;
+    runtime_case_id: string;
+    original_case_id: number;
+    title: string;
+    charge: string;
+    version: string;
+    content_sha256: string;
+    knowledge_links: Array<{
+      knowledge_id: string;
+      knowledge_name: string;
+      role: string;
+    }>;
+    evidence_ids: string[];
+    unresolved_legal_basis_fragments: string[];
+    stage_packets: Record<
+      string,
+      { stage_name: string; availability: string; rubric: { capabilities: unknown[] } }
+    >;
+    reference_private: {
+      guiding_points?: string;
+      defense_hint?: string;
+    };
+    review: { risk_flags?: string[] };
+  };
 }
 
 export interface SandboxState {
@@ -203,6 +235,12 @@ export interface CasePickerEntry {
   training_category?: string;
   difficulty?: string;
   status?: string;
+  case_bundle_id?: string;
+  case_bundle_version?: string;
+  case_bundle_content_sha256?: string;
+  evidence_count?: number;
+  knowledge_count?: number;
+  teacher_recheck_required?: boolean;
 }
 
 export interface CaseListResponse {
@@ -336,6 +374,11 @@ export interface LearningEvent {
   charge?: string;
   stage: string;
   task_id?: string;
+  case_bundle_id?: string;
+  case_bundle_version?: string;
+  case_bundle_content_sha256?: string;
+  law_corpus_manifest_sha256?: string;
+  rubric_version?: string;
   source_response_sha256?: string;
   assist?: {
     modes?: string[];
