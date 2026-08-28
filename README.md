@@ -105,6 +105,8 @@ EvidencePack中的检索相关性和coverage只是待语义审核候选，不等
 
 登录后点击顶部“自主学习”即可进入学生连续旅程：10个知识卷宗、课程目标与法源索引、个性化任务、作答把握、服务端判分、误概念反馈、证据账本、困惑便笺和下一任务在同一页面闭环。桌面为三栏卷宗，窄屏改为单列并保留困惑入口。页面形态与可复现浏览器冒烟见[`docs/STUDENT_LEARNING_JOURNEY.md`](docs/STUDENT_LEARNING_JOURNEY.md)。
 
+困惑入账后可进入“AI分层解惑”：系统先提出诊断追问，学生说明自己的理解后，才返回规范原文、白话解释、事实适用、争议边界和下一动作。模型引用必须来自当前KnowledgeCard标准Evidence并通过条号/逐字片段门禁；失败自动使用确定性fallback，低置信度标记教师复核。解惑不计分、不生成LearningEvent、不更新长期掌握，详见[`docs/GOVERNED_LEARNING_SUPPORT.md`](docs/GOVERNED_LEARNING_SUPPORT.md)。
+
 显式授予teacher/admin角色后，顶部会出现“教师驾驶舱”：教师可建立自己的班级、加入已注册学生、查看匿名形成性学情，并对10个KnowledgeCard和30个TaskItem写不可变复核事件。普通注册不能自报教师；班级聚合不含学生邮箱、困惑原文或排行榜，少于默认3人时抑制知识/能力/错误细分，内容审核也不会绕过冻结源文件。角色授权、API和本地教师冒烟见[`docs/TEACHER_MINIMUM_LOOP.md`](docs/TEACHER_MINIMUM_LOOP.md)。
 
 ## 产品机制审计与课堂试点

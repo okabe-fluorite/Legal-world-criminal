@@ -7,6 +7,9 @@ const baseUrl = process.env.JOURNEY_BASE_URL || "http://127.0.0.1:5173";
 const screenshotPath = path.resolve(
   process.env.JOURNEY_SCREENSHOT || "../.codex-artifacts/learning-journey.png",
 );
+const supportScreenshotPath = path.resolve(
+  process.env.JOURNEY_SUPPORT_SCREENSHOT || "../.codex-artifacts/learning-support-panel.png",
+);
 const viewport = {
   width: Number(process.env.JOURNEY_VIEWPORT_WIDTH || 1500),
   height: Number(process.env.JOURNEY_VIEWPORT_HEIGHT || 980),
@@ -83,6 +86,27 @@ try {
   await page.getByRole("button", { name: "归入证据账本" }).click();
   await page.getByText("困惑已进入证据账本，后续任务会优先回应。").waitFor();
 
+  let learningSupport = { tested: false, source: "not_requested", layers: 0 };
+  if (process.env.JOURNEY_TEST_SUPPORT === "1") {
+    await page.getByRole("button", { name: /开始分层解惑/ }).click();
+    await page.getByRole("dialog", { name: "AI分层解惑" }).waitFor();
+    await page.getByPlaceholder(/请先写出你的判断依据/).fill(
+      "我认为应先找出题目中的关键事实，再把该事实与法条列出的每个条件逐项对应，但我还不确定边界事实如何评价。",
+    );
+    await page.getByRole("button", { name: /生成分层解释/ }).click();
+    await page.getByText("规范原文", { exact: true }).waitFor({ timeout: 210000 });
+    const diagnosisText = await page.locator(".diagnosis-strip").innerText();
+    learningSupport = {
+      tested: true,
+      source: diagnosisText.includes("DETERMINISTIC FALLBACK")
+        ? "deterministic_fallback"
+        : "llm_governed_evidence",
+      layers: await page.locator(".layer-card").count(),
+    };
+    await page.screenshot({ path: supportScreenshotPath, fullPage: false });
+    await page.getByRole("button", { name: "关闭分层解惑" }).click();
+  }
+
   const profileMetrics = await page.locator(".ledger-metrics b").allTextContents();
   const privateFieldLeaks = await page.locator("body").evaluate((body) => {
     const text = body.textContent || "";
@@ -101,12 +125,14 @@ try {
     feedback_visible: feedbackVisible,
     next_task_visible: nextTaskVisible,
     profile_metrics: profileMetrics,
+    learning_support: learningSupport,
     private_field_leaks: privateFieldLeaks,
     console_errors: consoleErrors,
     page_errors: pageErrors,
     http_errors: httpErrors,
     request_failures: requestFailures,
     screenshot: screenshotPath,
+    support_screenshot: learningSupport.tested ? supportScreenshotPath : null,
   };
   console.log(JSON.stringify(result));
   const unexpectedRequestFailures = requestFailures.filter(

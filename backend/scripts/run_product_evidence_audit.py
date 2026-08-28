@@ -18,6 +18,8 @@ from pathlib import Path
 from statistics import mean
 from typing import Any
 
+from sqlalchemy import func, select
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BACKEND_DIR = REPO_ROOT / "backend"
@@ -29,7 +31,10 @@ for entry in (BACKEND_DIR, ADAPTIVE_SRC):
 from edubrain_adaptive.service import AdaptiveService  # noqa: E402
 from edubrain_adaptive.store import AdaptiveStore  # noqa: E402
 from src.case_bundle.service import CaseBundleService, PRIVATE_KEYS  # noqa: E402
+from src.core.database import Base, create_database_engine, create_session_factory, get_db_session  # noqa: E402
+from src.core.models import LearningEventRecord, LearnerProfileRecord, User  # noqa: E402
 from src.knowledge.service import KnowledgeService  # noqa: E402
+from src.learning_support.service import LearningSupportService  # noqa: E402
 from src.utils.model_config import MODEL_TASKS, ModelEndpoint  # noqa: E402
 
 
@@ -339,6 +344,65 @@ def case_bundle_audit() -> dict[str, Any]:
     }
 
 
+def learning_support_audit() -> dict[str, Any]:
+    with tempfile.TemporaryDirectory() as temp:
+        engine = create_database_engine(
+            f"sqlite+pysqlite:///{(Path(temp) / 'support-audit.db').as_posix()}"
+        )
+        Base.metadata.create_all(engine)
+        factory = create_session_factory(engine)
+        service = LearningSupportService(generator=lambda _prompt: "not-json")
+        card = service.knowledge.cards[0]
+        task = next(
+            row
+            for row in service.knowledge.tasks
+            if card["knowledge_id"] in row["knowledge_ids"]
+        )
+        with get_db_session(factory) as session:
+            user = User(id="support-audit-student", email="support-audit@example.com")
+            session.add(user)
+            session.flush()
+            created = service.create_session(
+                session=session,
+                user=user,
+                session_id="support-audit-session",
+                knowledge_id=card["knowledge_id"],
+                task_id=task["task_id"],
+                phase="prestudy",
+                confusion_type="fact_application",
+                confusion_note="audit confusion",
+            )
+            response = service.respond(
+                session=session,
+                user=user,
+                session_id="support-audit-session",
+                student_response="audit student explanation",
+            )
+        with get_db_session(factory) as session:
+            events = int(
+                session.scalar(select(func.count()).select_from(LearningEventRecord)) or 0
+            )
+            profiles = int(
+                session.scalar(select(func.count()).select_from(LearnerProfileRecord)) or 0
+            )
+        engine.dispose()
+        result = response["session"]["result"] or {}
+        return {
+            "session_created": created["session_status"] == "inserted",
+            "diagnostic_question_present": bool(
+                created["session"]["diagnostic_question"]
+            ),
+            "invalid_model_output_falls_back": response["session"]["result_source"]
+            == "deterministic_fallback",
+            "four_layers_present": set((result.get("layers") or {}))
+            == {"norm", "plain", "application", "dispute"},
+            "governed_citations_present": bool(
+                ((result.get("layers") or {}).get("norm") or {}).get("citations")
+            ),
+            "long_term_learning_events_created": events,
+            "learner_profiles_created": profiles,
+            "live_model_called": False,
+        }
 def build_report() -> dict[str, Any]:
     knowledge = KnowledgeService()
     data_dir = REPO_ROOT / "adaptive_service" / "data"
@@ -369,6 +433,7 @@ def build_report() -> dict[str, Any]:
             ),
         },
         "case_bundles": case_bundle_audit(),
+        "learning_support": learning_support_audit(),
         "retrieval_and_citation": retrieval_audit(knowledge),
         "adaptive_mechanism": adaptive_audit(data_dir),
         "public_projection": public_projection_audit(knowledge),
@@ -433,6 +498,15 @@ def build_report() -> dict[str, Any]:
         "case_bundle_public_projection": not report["case_bundles"][
             "private_projection_leaks"
         ],
+        "learning_support_governance": (
+            report["learning_support"]["session_created"]
+            and report["learning_support"]["diagnostic_question_present"]
+            and report["learning_support"]["invalid_model_output_falls_back"]
+            and report["learning_support"]["four_layers_present"]
+            and report["learning_support"]["governed_citations_present"]
+            and report["learning_support"]["long_term_learning_events_created"] == 0
+            and report["learning_support"]["learner_profiles_created"] == 0
+        ),
     }
     report["checks"] = checks
     report["status"] = "pass" if all(checks.values()) else "fail"
@@ -458,6 +532,7 @@ def markdown_summary(report: dict[str, Any]) -> str:
         f"| KnowledgeCard标准证据增强 expected-hit@5 | {retrieval['governed_expected_hit_rate_at_5']:.2%} | 不表示法律蕴含 |",
         f"| 证据目录有效条号/逐字片段 | {retrieval['citation_valid_count']}/{retrieval['exact_quote_count']} | 确定性存在与原文检查 |",
         f"| CaseBundle运行映射/公开投影 | {'通过' if report['case_bundles']['mapping_matches_seed_policy'] and not report['case_bundles']['private_projection_leaks'] else '失败'} | 3案×7种公开投影，不含教师参考字段 |",
+        f"| AI分层解惑fallback/画像隔离 | {'通过' if report['checks']['learning_support_governance'] else '失败'} | 非法模型输出必须fallback，LearningEvent/画像新增0 |",
         f"| missing信号平均排序提升 | {adaptive['missing_signal_mean_rank_improvement']:.2f}位 | 软件策略响应，不是学习效果 |",
         f"| confusion信号平均排序提升 | {adaptive['confusion_signal_mean_rank_improvement']:.2f}位 | 自报信号响应，不是负掌握证据 |",
         f"| 已答任务排除 | {'通过' if adaptive['completed_task_exclusion_passed'] else '失败'} | 只验证任务闭环 |",

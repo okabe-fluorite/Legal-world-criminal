@@ -614,6 +614,60 @@ export interface ConfusionAnnotationResponse extends AdaptiveRecommendationRespo
   };
 }
 
+export interface LearningSupportResult {
+  diagnosis: { category: string; summary: string };
+  layers: {
+    norm: {
+      content: string;
+      citations: Array<{ title: string; article_ref: string; quote: string }>;
+    };
+    plain: { content: string };
+    application: { content: string };
+    dispute: { content: string };
+  };
+  next_action: {
+    type: "retry_task" | "review_knowledge" | "ask_teacher" | string;
+    instruction: string;
+  };
+  confidence: number;
+  teacher_review_required: boolean;
+  warnings?: string[];
+  fallback_reason?: string;
+}
+
+export interface LearningSupportSession {
+  session_id: string;
+  knowledge_id: string;
+  task_id: string;
+  phase: "prestudy" | "review";
+  confusion_type: string;
+  confusion_note: string;
+  diagnostic_question: string;
+  knowledge_version: string;
+  task_version: string;
+  student_response: string;
+  status: "awaiting_response" | "completed" | "needs_teacher_review" | string;
+  result_source: "llm_governed_evidence" | "deterministic_fallback" | string;
+  result: LearningSupportResult | null;
+  model_route?: { task?: string; provider?: string; model_name?: string } | null;
+  evidence_eligibility: { long_term_profile: false; reason: string };
+}
+
+export interface LearningSupportSessionResponse {
+  session_status?: "inserted" | "duplicate" | string;
+  response_status?: "inserted" | "duplicate" | string;
+  session: LearningSupportSession;
+}
+
+export interface LearningSupportSeed {
+  knowledgeId: string;
+  knowledgeName: string;
+  taskId?: string;
+  phase: "prestudy" | "review";
+  confusionType: string;
+  note: string;
+}
+
 export interface TeachingReport {
   student_id: string;
   capability_radar: Array<{

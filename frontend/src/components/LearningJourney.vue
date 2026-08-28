@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { api } from "../lib/api";
+import LearningSupportPanel from "./LearningSupportPanel.vue";
 import type {
   AdaptiveKnowledgeEvidence,
   AdaptiveRecommendationItem,
@@ -8,6 +9,7 @@ import type {
   ConfusionAnnotationPayload,
   KnowledgeCard,
   KnowledgeCatalogResponse,
+  LearningSupportSeed,
   TaskAttemptFeedback,
   TaskAttemptPayload,
 } from "../lib/types";
@@ -36,6 +38,8 @@ const confusionNote = ref("");
 const confusionId = ref("");
 const confusionSaving = ref(false);
 const confusionSaved = ref("");
+const supportSeed = ref<LearningSupportSeed | null>(null);
+const supportOpen = ref(false);
 
 const REASON_LABELS: Record<string, string> = {
   case_evidence_indicates_weakness: "案件证据提示薄弱，优先补强",
@@ -270,6 +274,14 @@ async function saveConfusion(): Promise<void> {
     const result = await api.submitConfusion(payload);
     adaptive.value = result;
     confusionSaved.value = "困惑已进入证据账本，后续任务会优先回应。";
+    supportSeed.value = {
+      knowledgeId: card.knowledge_id,
+      knowledgeName: card.canonical_name,
+      taskId: payload.task_id,
+      phase: phase.value,
+      confusionType: confusionType.value,
+      note: payload.note,
+    };
     confusionNote.value = "";
     confusionId.value = "";
     confusionOpen.value = false;
@@ -548,7 +560,10 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
               </div>
               <button @click="confusionOpen = !confusionOpen">{{ confusionOpen ? "收起" : "填写" }}</button>
             </div>
-            <p v-if="confusionSaved" class="confusion-saved">{{ confusionSaved }}</p>
+            <div v-if="confusionSaved" class="confusion-saved">
+              <span>{{ confusionSaved }}</span>
+              <button v-if="supportSeed" @click="supportOpen = true">开始分层解惑 →</button>
+            </div>
             <template v-if="confusionOpen">
               <select v-model="confusionType" class="ledger-input">
                 <option v-for="type in CONFUSION_TYPES" :key="type.value" :value="type.value">
@@ -578,6 +593,12 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
           </section>
         </aside>
       </div>
+      <LearningSupportPanel
+        v-if="supportOpen && supportSeed"
+        :seed="supportSeed"
+        @close="supportOpen = false"
+        @retry-task="supportOpen = false"
+      />
     </section>
   </div>
 </template>
@@ -888,7 +909,8 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .confusion-block__head { display: flex; justify-content: space-between; align-items: center; }
 .confusion-block__head button { color: var(--accent-amber); border: 0; border-bottom: 1px solid rgba(176, 138, 62, 0.35); background: transparent; cursor: pointer; }
 .confusion-note { margin: 10px 0 0; color: var(--parchment-faint); font-size: 0.7rem; line-height: 1.55; }
-.confusion-saved { margin: 10px 0; padding: 8px; color: #bfd2b2; border-left: 2px solid var(--accent-success); background: rgba(122, 153, 98, 0.07); font-size: 0.7rem; }
+.confusion-saved { display:grid; gap:7px; margin:10px 0; padding:8px; color:#bfd2b2; border-left:2px solid var(--accent-success); background:rgba(122,153,98,.07); font-size:.7rem; }
+.confusion-saved button { justify-self:start; padding:0 0 2px; color:#b9ced6; border:0; border-bottom:1px solid rgba(92,122,138,.45); background:transparent; font-family:var(--font-display); cursor:pointer; }
 .ledger-input { width: 100%; margin-top: 9px; padding: 8px 9px; color: var(--parchment); border: 1px solid var(--line-strong); border-radius: 0; background: #0e0c09; font-family: var(--font-body); }
 .ledger-textarea { min-height: 88px; resize: vertical; }
 .confusion-submit { width: 100%; margin-top: 8px; padding: 8px; border-color: var(--accent-amber); background: rgba(176, 138, 62, 0.12); color: #ead8af; }

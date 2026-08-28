@@ -217,6 +217,14 @@ teaching/
 - `frontend/scripts/smoke-learning-journey.mjs`使用`playwright-core`复用本机Edge/Chrome，验证桌面和指定视口的真实登录、作答、反馈、困惑、私有字段与控制台/网络错误
 - 该页面只完成形成性选择任务闭环；主观题、AI分层解惑、正式考试控制和教师聚合仍属后续切片
 
+### 受治理AI分层解惑
+
+- `learning_support_sessions`保存学生私有两步会话：确定性诊断追问→学生回答→受治理四层解释；同ID幂等/冲突、跨学生403
+- 模型任务`learning_support`只接收KnowledgeCard、公开TaskItem和标准Evidence；学生文本中的指令不得执行
+- 模型JSON必须通过结构、条号、逐字quote和标准Evidence范围门禁；失败自动切KnowledgeCard deterministic fallback，坏输出不展示
+- 置信度低于0.65或fallback自动标教师复核；引用通过仍不宣称法律语义蕴含
+- 会话不生成LearningEvent、不更新LearnerProfile或正式成绩；`LearningSupportPanel.vue`强制“先追问、再解释”而非自由聊天
+
 ### 教师端最小闭环
 
 - 普通注册默认`student`；teacher/admin只能通过`SIMLAW_TEACHER_EMAILS`/`SIMLAW_ADMIN_EMAILS`或本地`backend/scripts/grant_user_role.py`显式授予，浏览器不能自报角色

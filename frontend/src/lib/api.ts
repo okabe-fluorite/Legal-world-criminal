@@ -7,6 +7,7 @@ import type {
   ConfusionAnnotationResponse,
   KnowledgeCatalogResponse,
   LearningEvent,
+  LearningSupportSessionResponse,
   PlayerAssistResponse,
   PlayerRequest,
   SandboxState,
@@ -212,6 +213,33 @@ export const api = {
       method: "POST",
       body: JSON.stringify(payload),
     });
+  },
+
+  async createLearningSupportSession(payload: {
+    session_id: string;
+    knowledge_id: string;
+    task_id?: string;
+    phase: "prestudy" | "review";
+    confusion_type: string;
+    confusion_note: string;
+  }): Promise<LearningSupportSessionResponse> {
+    return request<LearningSupportSessionResponse>("/learning-support/sessions", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async respondLearningSupport(
+    sessionId: string,
+    studentResponse: string,
+  ): Promise<LearningSupportSessionResponse> {
+    return request<LearningSupportSessionResponse>(
+      `/learning-support/sessions/${encodeURIComponent(sessionId)}/respond`,
+      {
+        method: "POST",
+        body: JSON.stringify({ student_response: studentResponse }),
+      },
+    );
   },
 
   async teacherOverview(): Promise<TeacherOverviewResponse> {
