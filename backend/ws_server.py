@@ -63,6 +63,7 @@ from src.core.user_service import (
 from src.human_eval.routes import create_human_eval_router
 from src.teacher.routes import create_teacher_router
 from src.learning_support.routes import create_learning_support_router
+from src.subjective.routes import create_subjective_router
 from src.orchestration.case_fsm import CaseStateMachine
 from src.orchestration.agent_registry import AgentRegistry
 from src.orchestration.scenario_orchestrator import ScenarioOrchestrator
@@ -954,6 +955,12 @@ app.include_router(
 )
 app.include_router(
     create_learning_support_router(
+        current_user_dependency=_get_current_user,
+        session_dependency=_db_session_dependency,
+    )
+)
+app.include_router(
+    create_subjective_router(
         current_user_dependency=_get_current_user,
         session_dependency=_db_session_dependency,
     )

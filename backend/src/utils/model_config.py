@@ -25,6 +25,7 @@ MODEL_TASKS = (
     "citation_alignment",
     "response_assist",
     "learning_support",
+    "subjective_scoring",
     "document_assist",
     "closing_summary",
     "eval",

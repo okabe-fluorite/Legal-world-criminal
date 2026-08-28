@@ -331,3 +331,47 @@ class LearningSupportSessionRecord(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
     )
+
+
+class SubjectiveAttemptRecord(Base):
+    """Student short-answer/role-reversal attempt awaiting teacher review."""
+
+    __tablename__ = "subjective_attempts"
+
+    attempt_id: Mapped[str] = mapped_column(String(96), primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    task_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    task_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    task_type: Mapped[str] = mapped_column(String(32), nullable=False)
+    phase: Mapped[str] = mapped_column(String(32), nullable=False)
+    response_text: Mapped[str] = mapped_column(String(5000), nullable=False)
+    response_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    confidence: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    request_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="needs_teacher_review", index=True)
+    ai_abstained: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    ai_score: Mapped[float | None] = mapped_column(nullable=True)
+    ai_confidence: Mapped[float] = mapped_column(nullable=False, default=0.0)
+    ai_feedback_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    citation_audit_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    model_route_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+
+
+class SubjectiveReviewRecord(Base):
+    """Immutable teacher decision for one subjective attempt."""
+
+    __tablename__ = "subjective_review_events"
+
+    review_id: Mapped[str] = mapped_column(String(96), primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(String(96), ForeignKey("subjective_attempts.attempt_id"), nullable=False, index=True)
+    teacher_user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    decision: Mapped[str] = mapped_column(String(32), nullable=False)
+    teacher_score: Mapped[float | None] = mapped_column(nullable=True)
+    knowledge_status: Mapped[str] = mapped_column(String(32), nullable=False, default="")
+    feedback: Mapped[str] = mapped_column(String(3000), nullable=False, default="")
+    error_tags_json: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    payload_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    learning_event_id: Mapped[str] = mapped_column(String(96), nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())

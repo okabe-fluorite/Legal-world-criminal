@@ -1,0 +1,25 @@
+{
+  "schema_version": "criminal-law-subjective-task-manifest-v1",
+  "generated_at": "2026-08-28T08:46:20.127279+00:00",
+  "builder": "build_subjective_tasks.py",
+  "counts": {
+    "subjective_tasks": 13,
+    "short_answer": 10,
+    "role_reversal": 3
+  },
+  "files": {
+    "subjective_tasks.jsonl": {
+      "bytes": 29126,
+      "sha256": "729dc8435037a85f140da80dd0ac3b8bb3578da3cef4d925ee6a09874869d24f"
+    }
+  },
+  "schema": {
+    "path": "schemas\\subjective-task-v1.schema.json",
+    "sha256": "fc7543514908bb155f9c3c3499dbb3401388ab79897564e3452617526604e8bd"
+  },
+  "limits": [
+    "AI feedback is formative and never directly creates mastery evidence",
+    "teacher review is required before eligible LearningEvent creation",
+    "tasks require term-level law teacher recheck"
+  ]
+}

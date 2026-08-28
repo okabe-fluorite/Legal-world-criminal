@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simlaw.local/schemas/subjective-task-v1.schema.json",
+  "title": "CriminalLawSubjectiveTaskV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "task_id", "domain", "status", "task_type",
+    "phase_eligibility", "knowledge_ids", "knowledge_names", "target_abilities",
+    "difficulty", "cognitive_dimension", "prompt", "context_public",
+    "response_constraints", "standard_evidence_ids", "rubric_private",
+    "expected_points_private", "review", "source_versions", "content_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "criminal-law-subjective-task-v1"},
+    "task_id": {"type": "string", "pattern": "^SUBJ_[A-F0-9]{20}$"},
+    "domain": {"const": "刑法"},
+    "status": {"const": "pilot_teacher_approved"},
+    "task_type": {"enum": ["short_answer", "role_reversal"]},
+    "phase_eligibility": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"enum": ["prestudy", "review"]}
+    },
+    "knowledge_ids": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^CRIM_KP_[A-F0-9]{16}$"}
+    },
+    "knowledge_names": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 2}},
+    "target_abilities": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "difficulty": {"type": "integer", "minimum": 1, "maximum": 3},
+    "cognitive_dimension": {"enum": ["分析", "评价", "创造"]},
+    "prompt": {"type": "string", "minLength": 30},
+    "context_public": {"type": "object"},
+    "response_constraints": {
+      "type": "object", "additionalProperties": false,
+      "required": ["min_characters", "max_characters", "citations_required"],
+      "properties": {
+        "min_characters": {"type": "integer", "minimum": 40},
+        "max_characters": {"type": "integer", "maximum": 5000},
+        "citations_required": {"type": "boolean"}
+      }
+    },
+    "standard_evidence_ids": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^EVID_[A-F0-9]{20}$"}
+    },
+    "rubric_private": {
+      "type": "object", "required": ["version", "dimensions"],
+      "properties": {
+        "version": {"const": "subjective-rubric-v1"},
+        "dimensions": {"type": "array", "minItems": 3}
+      }
+    },
+    "expected_points_private": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 4}},
+    "review": {"type": "object"},
+    "source_versions": {"type": "object"},
+    "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}
