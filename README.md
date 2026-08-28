@@ -107,7 +107,7 @@ EvidencePack中的检索相关性和coverage只是待语义审核候选，不等
 
 困惑入账后可进入“AI分层解惑”：系统先提出诊断追问，学生说明自己的理解后，才返回规范原文、白话解释、事实适用、争议边界和下一动作。模型引用必须来自当前KnowledgeCard标准Evidence并通过条号/逐字片段门禁；失败自动使用确定性fallback，低置信度标记教师复核。解惑不计分、不生成LearningEvent、不更新长期掌握，详见[`docs/GOVERNED_LEARNING_SUPPORT.md`](docs/GOVERNED_LEARNING_SUPPORT.md)。
 
-同一自主学习卷宗现提供13个主观任务：10个知识点短答和3个CaseBundle角色互换。模型任务`subjective_scoring`只形成修改建议，低置信度、坏结构、学生引用失败或越界Evidence均弃权；高置信度也必须进入任课教师匿名复核队列。只有教师批准并给出0—1分与`mastered/partial/missing`判定后，才生成`teacher_reviewed_subjective_assessment`进入画像；退回/拒绝不入画像。契约、API、真实浏览器闭环与证据边界见[`docs/SUBJECTIVE_TASK_REVIEW.md`](docs/SUBJECTIVE_TASK_REVIEW.md)。
+同一自主学习卷宗现提供13个主观任务：10个知识点短答和3个CaseBundle角色互换。模型任务`subjective_scoring`只形成修改建议，低置信度、坏结构、学生引用失败或越界Evidence均弃权；高置信度也必须进入任课教师匿名复核队列。只有教师批准并给出0—1分与`mastered/partial/missing`判定后，才生成`teacher_reviewed_subjective_assessment`进入画像；退回/拒绝不入画像。学生可在“我的复核台账”查看教师结论，退回稿一键带入原文修订；同一稿件只允许一次教师决定和一次画像事件。契约、API、真实浏览器闭环与证据边界见[`docs/SUBJECTIVE_TASK_REVIEW.md`](docs/SUBJECTIVE_TASK_REVIEW.md)。
 
 显式授予teacher/admin角色后，顶部会出现“教师驾驶舱”：教师可建立自己的班级、加入已注册学生、查看匿名形成性学情，对3个CaseBundle、10个KnowledgeCard和30个TaskItem写不可变内容复核事件，并复核自有班级的主观稿件。普通注册不能自报教师；班级聚合不含学生邮箱、困惑原文或排行榜，少于默认3人时抑制知识/能力/错误细分，内容审核也不会绕过冻结源文件。角色授权、API和本地教师冒烟见[`docs/TEACHER_MINIMUM_LOOP.md`](docs/TEACHER_MINIMUM_LOOP.md)。
 

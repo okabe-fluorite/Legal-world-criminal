@@ -387,6 +387,32 @@ class SubjectiveTaskTests(unittest.TestCase):
             history = service.list_attempts(session=session, user=student, phase="review")
             self.assertEqual(len(history["attempts"]), 2)
             self.assertEqual(history["attempts"][0]["status"], "needs_teacher_review")
+        with get_db_session(self.factory) as session:
+            teacher = session.get(User, "teacher-1")
+            service.review_attempt(
+                session=session,
+                teacher=teacher,
+                review_id="subjective-revision-reject",
+                attempt_id="subjective-revision-new",
+                decision="reject",
+                teacher_score=None,
+                knowledge_status="",
+                feedback="本次修订仍未回应核心争点。",
+                error_tags=["核心争点遗漏"],
+            )
+        with get_db_session(self.factory) as session:
+            student = session.get(User, "student-1")
+            history = service.list_attempts(session=session, user=student, phase="review")
+            self.assertEqual(history["attempts"][0]["status"], "teacher_rejected")
+            self.assertEqual(
+                history["attempts"][0]["teacher_review"]["decision"],
+                "reject",
+            )
+            event_count = int(
+                session.scalar(select(func.count()).select_from(LearningEventRecord))
+                or 0
+            )
+            self.assertEqual(event_count, 0)
 
 
 if __name__ == "__main__":

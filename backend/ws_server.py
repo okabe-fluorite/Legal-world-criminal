@@ -2973,7 +2973,12 @@ async def register_auth(payload: AuthRequest, session=Depends(_db_session_depend
     except UserAlreadyExistsError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
 
-    return _build_auth_response(user, role=resolve_user_role(session=session, user=user))
+    role = resolve_user_role(session=session, user=user)
+    # FastAPI yield-dependency cleanup may run after the response body is ready.
+    # Commit the new identity before returning a token so an immediate
+    # /sandbox/ensure request cannot race the registration transaction.
+    session.commit()
+    return _build_auth_response(user, role=role)
 
 
 @app.post("/api/auth/login")

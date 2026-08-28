@@ -23,6 +23,9 @@ const subjectiveDialogScreenshotPath = path.resolve(
 const studentSubjectiveScreenshotPath = path.resolve(
   process.env.STUDENT_SUBJECTIVE_SCREENSHOT || "../.codex-artifacts/student-subjective-feedback.png",
 );
+const studentTeacherFeedbackScreenshotPath = path.resolve(
+  process.env.STUDENT_TEACHER_FEEDBACK_SCREENSHOT || "../.codex-artifacts/student-teacher-feedback.png",
+);
 const viewport = {
   width: Number(process.env.TEACHER_VIEWPORT_WIDTH || 1500),
   height: Number(process.env.TEACHER_VIEWPORT_HEIGHT || 980),
@@ -43,6 +46,7 @@ for (const target of [
   subjectiveAfterScreenshotPath,
   subjectiveDialogScreenshotPath,
   studentSubjectiveScreenshotPath,
+  studentTeacherFeedbackScreenshotPath,
 ]) {
   fs.mkdirSync(path.dirname(target), { recursive: true });
 }
@@ -84,6 +88,32 @@ async function register(email) {
   if (registerResponse.status() !== 200 || sandboxResponse.status() !== 200) {
     throw new Error(
       `Registration bootstrap failed: auth=${registerResponse.status()} sandbox=${sandboxResponse.status()}`,
+    );
+  }
+  await page.getByRole("button", { name: "自主学习" }).waitFor({ state: "visible" });
+}
+
+async function login(email) {
+  const toggle = page.getByRole("button", { name: "已有账号? 登录" });
+  if (await toggle.isVisible().catch(() => false)) await toggle.click();
+  const loginResponsePromise = page.waitForResponse(
+    (response) => response.url().endsWith("/api/auth/login") && response.request().method() === "POST",
+    { timeout: 120000 },
+  );
+  const sandboxResponsePromise = page.waitForResponse(
+    (response) => response.url().endsWith("/api/sandbox/ensure") && response.request().method() === "POST",
+    { timeout: 120000 },
+  );
+  await page.getByPlaceholder("you@court.edu").fill(email);
+  await page.getByPlaceholder("至少 6 位").fill("Teacher-Smoke-2026!");
+  await page.getByRole("button", { name: "登录", exact: true }).click();
+  const [loginResponse, sandboxResponse] = await Promise.all([
+    loginResponsePromise,
+    sandboxResponsePromise,
+  ]);
+  if (loginResponse.status() !== 200 || sandboxResponse.status() !== 200) {
+    throw new Error(
+      `Login bootstrap failed: auth=${loginResponse.status()} sandbox=${sandboxResponse.status()}`,
     );
   }
   await page.getByRole("button", { name: "自主学习" }).waitFor({ state: "visible" });
@@ -148,6 +178,8 @@ try {
   await page.getByLabel("学期").fill("2026秋");
   await page.getByRole("button", { name: "建立班级" }).click();
   await page.getByText("班级已建立。").waitFor();
+  await page.locator(".class-list button.active").filter({ hasText: uniqueClass }).waitFor();
+  await page.getByLabel("学生邮箱").waitFor({ state: "visible" });
   await page.getByLabel("学生邮箱").fill(studentEmail);
   await page.getByRole("button", { name: "加入班级" }).click();
   await page.getByText(/学生已加入班级/).waitFor();
@@ -194,22 +226,84 @@ try {
   await page.locator(".subjective-review-row").getByRole("button", { name: /打开匿名稿件复核/ }).click();
   const subjectiveDialog = page.getByRole("dialog", { name: "教师主观稿件复核" });
   await subjectiveDialog.waitFor();
-  await subjectiveDialog.locator('input[type="number"]').fill("0.82");
-  await subjectiveDialog.locator("select").nth(1).selectOption("partial");
+  await subjectiveDialog.locator("select").first().selectOption("request_revision");
   await subjectiveDialog.getByPlaceholder(/指出规范/).fill(
-    "已能区分明文规定与一般价值判断；下一稿请进一步说明行为时法与裁判时法发生变化时的比较步骤。",
+    "请保留罪刑法定的对照事实，并在下一稿补充行为时法与裁判时法发生变化时的比较步骤。",
   );
   await subjectiveDialog.getByPlaceholder(/构成要件遗漏/).fill("时间效力比较不足；边界论证待展开");
   await page.screenshot({ path: subjectiveDialogScreenshotPath, fullPage: false });
+  await subjectiveDialog.getByRole("button", { name: "写入教师决定" }).click();
+  await page.getByText(/已退回学生修订/).waitFor({ timeout: 30000 });
+  await page.getByText("当前没有待复核稿件").waitFor();
+  const subjectiveQueueAfterRevisionRequest = await page.locator(".subjective-review-row").count();
+  await page.screenshot({ path: subjectiveAfterScreenshotPath, fullPage: false });
+
+  await page.getByRole("button", { name: "关闭教师驾驶舱" }).click();
+  await page.getByRole("button", { name: "退出" }).click();
+  await page.getByRole("button", { name: /登录|注册并进入/ }).first().waitFor();
+  await login(studentEmail);
+  await page.getByRole("button", { name: "自主学习" }).click();
+  await page.getByRole("dialog", { name: "刑法自主学习卷宗" }).waitFor();
+  await page.getByRole("button", { name: /进入主观论证与角色互换/ }).click();
+  await page.getByRole("dialog", { name: "刑法主观论证训练" }).waitFor();
+  const revisionReturn = page.locator(".teacher-return--request_revision");
+  await revisionReturn.waitFor({ timeout: 30000 });
+  const revisionFeedbackText = await revisionReturn.innerText();
+  const revisionFeedbackVisible =
+    revisionFeedbackText.includes("退回修订")
+    && revisionFeedbackText.includes("行为时法与裁判时法");
+  await revisionReturn.getByRole("button", { name: /带入原文开始修订/ }).click();
+  const revisionTextarea = page.getByPlaceholder(/先写争点/);
+  const revisionPrefilled = (await revisionTextarea.inputValue()).includes("《刑法》第三条");
+  await revisionTextarea.fill(
+    `${subjectiveResponse} 进一步依据《刑法》第十二条比较行为时法与裁判时法：原则上适用行为时法；新法不认为是犯罪或者处刑较轻时，依从旧兼从轻规则适用更有利的规范。`,
+  );
+  await page.getByRole("button", { name: /提交教师复核/ }).click();
+  await page.locator(".formative-review").waitFor({ timeout: 210000 });
+  const revisedStudentGateVisible = (await page.locator(".formative-review").innerText()).includes(
+    "needs_teacher_review",
+  );
+  await page.getByRole("button", { name: "关闭主观论证训练" }).click();
+  await page.getByRole("button", { name: "关闭自主学习" }).click();
+  await page.getByRole("button", { name: "退出" }).click();
+  await login(teacherEmail);
+  await page.getByRole("button", { name: "教师驾驶舱" }).click();
+  await page.getByRole("dialog", { name: "教师教学驾驶舱" }).waitFor();
+  await page.getByRole("button", { name: /主观复核/ }).click();
+  await page.locator(".subjective-review-row").waitFor({ timeout: 30000 });
+  const subjectiveQueueBeforeApproval = await page.locator(".subjective-review-row").count();
+  await page.locator(".subjective-review-row").getByRole("button", { name: /打开匿名稿件复核/ }).click();
+  await subjectiveDialog.waitFor();
+  await subjectiveDialog.locator('input[type="number"]').fill("0.82");
+  await subjectiveDialog.locator("select").nth(1).selectOption("partial");
+  await subjectiveDialog.getByPlaceholder(/指出规范/).fill(
+    "修订稿已补充新旧法比较步骤，批准进入形成性证据画像；仍需继续练习边界事实。",
+  );
+  await subjectiveDialog.getByPlaceholder(/构成要件遗漏/).fill("边界事实仍需展开");
   await subjectiveDialog.getByRole("button", { name: "批准并写入形成性证据" }).click();
   await page.getByText(/教师复核已入账，已生成形成性证据/).waitFor({ timeout: 30000 });
   await page.getByText("当前没有待复核稿件").waitFor();
   const subjectiveQueueAfter = await page.locator(".subjective-review-row").count();
-  await page.screenshot({ path: subjectiveAfterScreenshotPath, fullPage: false });
 
   await page.getByRole("button", { name: "班级学情" }).click();
   await page.waitForFunction(() => document.querySelectorAll(".metric-strip b")[2]?.textContent === "3");
   const metricsAfterApproval = await page.locator(".metric-strip b").allTextContents();
+
+  await page.getByRole("button", { name: "关闭教师驾驶舱" }).click();
+  await page.getByRole("button", { name: "退出" }).click();
+  await login(studentEmail);
+  await page.getByRole("button", { name: "自主学习" }).click();
+  await page.getByRole("dialog", { name: "刑法自主学习卷宗" }).waitFor();
+  await page.getByRole("button", { name: /进入主观论证与角色互换/ }).click();
+  await page.getByRole("dialog", { name: "刑法主观论证训练" }).waitFor();
+  const approvalReturn = page.locator(".teacher-return--approve");
+  await approvalReturn.waitFor({ timeout: 30000 });
+  const approvalFeedbackText = await approvalReturn.innerText();
+  const studentApprovalVisible =
+    approvalFeedbackText.includes("批准为形成性证据")
+    && approvalFeedbackText.includes("evt_subjective_");
+  await approvalReturn.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: studentTeacherFeedbackScreenshotPath, fullPage: false });
 
   const result = {
     teacher_role_entry_visible: true,
@@ -221,8 +315,14 @@ try {
     privacy_leaks: privacyLeaks,
     subjective_privacy_leaks: subjectivePrivacyLeaks,
     subjective_queue_before: subjectiveQueueBefore,
+    subjective_queue_after_revision_request: subjectiveQueueAfterRevisionRequest,
+    revision_feedback_visible: revisionFeedbackVisible,
+    revision_prefilled_original: revisionPrefilled,
+    revised_student_gate_visible: revisedStudentGateVisible,
+    subjective_queue_before_approval: subjectiveQueueBeforeApproval,
     subjective_queue_after: subjectiveQueueAfter,
     subjective_student_gate_visible: subjectiveTeacherGateVisible,
+    student_approval_visible: studentApprovalVisible,
     review_event_recorded: true,
     subjective_review_event_recorded: metricsAfterApproval[2] === "3",
     console_errors: consoleErrors,
@@ -235,12 +335,19 @@ try {
     subjective_queue_screenshot: subjectiveScreenshotPath,
     subjective_dialog_screenshot: subjectiveDialogScreenshotPath,
     subjective_after_screenshot: subjectiveAfterScreenshotPath,
+    student_teacher_feedback_screenshot: studentTeacherFeedbackScreenshotPath,
   };
   console.log(JSON.stringify(result));
   if (
     privacyLeaks.length ||
     subjectivePrivacyLeaks.length ||
+    subjectiveQueueAfterRevisionRequest !== 0 ||
+    !revisionFeedbackVisible ||
+    !revisionPrefilled ||
+    !revisedStudentGateVisible ||
+    subjectiveQueueBeforeApproval !== 1 ||
     subjectiveQueueAfter !== 0 ||
+    !studentApprovalVisible ||
     metricsAfterApproval[2] !== "3" ||
     consoleErrors.length ||
     pageErrors.length ||

@@ -14,7 +14,9 @@ import type {
   SkillCardDetail,
   SkillCardSummary,
   StatusResponse,
+  SubjectiveAttempt,
   SubjectiveAttemptResponse,
+  SubjectiveAttemptHistoryResponse,
   SubjectiveCatalogResponse,
   TaskAttemptPayload,
   TaskAttemptResponse,
@@ -265,6 +267,19 @@ export const api = {
       method: "POST",
       body: JSON.stringify(payload),
     });
+  },
+
+  async subjectiveAttemptHistory(
+    phase?: "prestudy" | "review",
+  ): Promise<SubjectiveAttemptHistoryResponse> {
+    const query = phase ? `?phase=${encodeURIComponent(phase)}` : "";
+    return request<SubjectiveAttemptHistoryResponse>(`/subjective-attempts${query}`);
+  },
+
+  async subjectiveAttempt(attemptId: string): Promise<SubjectiveAttempt> {
+    return request<SubjectiveAttempt>(
+      `/subjective-attempts/${encodeURIComponent(attemptId)}`,
+    );
   },
 
   async teacherSubjectiveQueue(): Promise<TeacherSubjectiveQueueResponse> {

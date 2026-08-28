@@ -725,7 +725,16 @@ export interface SubjectiveAttempt {
     passed: boolean;
   };
   model_route?: Record<string, unknown> | null;
-  evidence_eligibility: { long_term_profile: false; reason: string };
+  evidence_eligibility: { long_term_profile: boolean; reason: string };
+  teacher_review?: {
+    decision: "approve" | "request_revision" | "reject";
+    teacher_score: number | null;
+    knowledge_status: "mastered" | "partial" | "missing" | "";
+    feedback: string;
+    error_tags: string[];
+    learning_event_id: string;
+    reviewed_at?: string | null;
+  } | null;
   created_at?: string | null;
   student_ref?: string;
 }
@@ -740,6 +749,12 @@ export interface SubjectiveCatalogResponse {
 export interface SubjectiveAttemptResponse {
   attempt_status: "inserted" | "duplicate" | string;
   attempt: SubjectiveAttempt;
+}
+
+export interface SubjectiveAttemptHistoryResponse {
+  schema_version: string;
+  attempts: SubjectiveAttempt[];
+  privacy: string;
 }
 
 export interface TeacherSubjectiveQueueResponse {

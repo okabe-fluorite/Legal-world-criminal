@@ -1,17 +1,54 @@
 from __future__ import annotations
 
 import os
+import asyncio
+import tempfile
 import unittest
+from pathlib import Path
 
 from src.core.auth import AuthError, get_jwt_secret
 from src.core.database import Base, create_database_engine, create_session_factory, get_db_session
 from src.core.models import HumanEvalRating, User
 from src.core.user_service import InvalidAuthInputError, register_user
 from src.human_eval.service import HumanEvalService
-from ws_server import _extract_websocket_token, _require_debug_ui
+from ws_server import AuthRequest, _extract_websocket_token, _require_debug_ui, register_auth
 
 
 class SecurityTests(unittest.TestCase):
+    def test_registration_route_commits_identity_before_returning_token(self) -> None:
+        previous_secret = os.environ.get("JWT_SECRET")
+        os.environ["JWT_SECRET"] = "registration-route-test-secret-2026"
+        with tempfile.TemporaryDirectory() as temp:
+            engine = create_database_engine(
+                f"sqlite+pysqlite:///{(Path(temp) / 'registration.db').as_posix()}"
+            )
+            Base.metadata.create_all(engine)
+            factory = create_session_factory(engine)
+            session = factory()
+            try:
+                response = asyncio.run(
+                    register_auth(
+                        AuthRequest(
+                            email="route-commit@example.com",
+                            password="route-commit-password",
+                        ),
+                        session=session,
+                    )
+                )
+                self.assertTrue(response["access_token"])
+                with get_db_session(factory) as observer:
+                    user = observer.query(User).filter_by(
+                        email="route-commit@example.com"
+                    ).one_or_none()
+                    self.assertIsNotNone(user)
+            finally:
+                session.close()
+                engine.dispose()
+                if previous_secret is None:
+                    os.environ.pop("JWT_SECRET", None)
+                else:
+                    os.environ["JWT_SECRET"] = previous_secret
+
     def test_short_jwt_secret_is_rejected(self) -> None:
         old = os.environ.get("JWT_SECRET")
         try:
