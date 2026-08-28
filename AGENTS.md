@@ -10,7 +10,7 @@
 
 - 上游：https://github.com/chidaic/Legal-world.git（民事法律小镇，本项目已移除全部民事流程）
 - 产品形态：星火智学四模块闭环（预习 → **精学** → 复习 → 教师闭环）中的**精学模块（智能体编排）**
-- **范围边界**：预习（知识地图/前测）、复习（变式/角色互换）、教师闭环（班级学情）为并列独立模块，不在本仓库范围内。模块间仅约定数据接口——精学模块输出 LearningEvent / LearnerProfile / 技能卡（`learning-event-v1` 等 schema）供其他模块消费。
+- **范围边界**：本仓库以精学智能体为核心，并已集成可运行的预习/复习卷宗、主观任务和教师最小闭环以完成比赛演示与本地试点；模块仍通过 LearningEvent / LearnerProfile / Recommendation 契约解耦。当前实现不是教务系统、正式考试平台或已验证学习效果的完整课堂产品。
 
 ---
 
@@ -231,7 +231,16 @@ teaching/
 - `course_classes`与`class_enrollments`记录教师自有班级和已注册学生；teacher不能查询其他教师班级，admin才可跨班查看
 - `/api/teacher/classes/{id}/analytics`只返回班级匿名聚合，不含学生邮箱、困惑原文、学生名单或排行榜；默认少于3人时抑制知识/能力/错误细分，所有指标均标为形成性证据
 - `content_review_events`保存绑定内容哈希的不可变审核覆盖记录；教师页面不直接改写冻结JSON，也不返回TaskItem私有答案
-- `TeacherDashboard.vue`提供班级学情与内容复核两页；`smoke-teacher-dashboard.mjs`真实验证学生作答/困惑→教师建班/选课→聚合→复核与隐私/网络门禁
+- `TeacherDashboard.vue`提供班级学情、内容复核和主观复核三页；`smoke-teacher-dashboard.mjs`真实验证学生选择/主观作答与困惑→教师建班/选课→聚合→内容/主观复核→事件入画像及隐私/网络门禁
+
+### 主观短答与角色互换
+
+- `schemas/subjective-task-v1.schema.json`冻结独立SubjectiveTask；首批13题为10个核心知识短答+3个CaseBundle角色互换，不与选择题确定性判分接口混用
+- 学生公开投影包含题干、公开情境、字数和可引用法条索引，不含`rubric_private`、`expected_points_private`或标准答案
+- 模型任务`subjective_scoring`只给形成性优点/修订建议；低于0.72、坏JSON、学生引用失败或越界Evidence均弃权，高置信度也保持`needs_teacher_review`
+- 教师主观队列只查询自有有效班级并返回匿名`student-ref`；只有approve+0—1教师分+canonical知识状态生成`teacher_reviewed_subjective_assessment`，退回/拒绝不入长期画像
+- `SubjectiveTaskPanel.vue`提供学生论证稿纸，`TeacherDashboard.vue`第三页完成匿名复核；浏览器smoke验证桌面/780px、真实模型/弃权、批准后事件投递与隐私/网络门禁
+- 当前主观结果只是形成性证据；没有真实题目参数、双评一致性、正式成绩发布或路径因果证据
 
 ### 产品证据与消融
 

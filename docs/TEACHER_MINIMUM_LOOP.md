@@ -26,6 +26,7 @@ uv run --isolated --with-requirements requirements.lock.txt -- python `
 - `course_classes`：教师拥有的课程班级，包含课程、学期、名称和状态；
 - `class_enrollments`：已注册学生与班级的显式关系；
 - `content_review_events`：教师对冻结KnowledgeCard/TaskItem的不可变复核事件；
+- `subjective_attempts`与`subjective_review_events`：匿名主观稿件及教师不可变决定；
 - 现有`learning_events`与`learner_profiles`：班级学情的事实源，不复制第二套学习数据。
 
 ## API与权限
@@ -42,6 +43,8 @@ uv run --isolated --with-requirements requirements.lock.txt -- python `
 | `GET /api/teacher/case-bundles/{id}` | 3个案例的教师参考投影 | 仅teacher/admin；含指导要点与阶段教师参考 |
 | `POST /api/teacher/reviews` | 写不可变审核决定 | 同ID同payload幂等，同ID改内容409，旧内容版本422 |
 | `GET /api/teacher/reviews/audit` | 当前教师审核台账 | 不覆盖或删除既有事件 |
+| `GET /api/teacher/subjective-attempts` | 自有班级主观待办 | 匿名student-ref，不返回邮箱/原始用户ID |
+| `POST /api/teacher/subjective-reviews` | 批准/退回/拒绝主观稿件 | 只有批准才生成长期画像合格事件 |
 
 ## 班级学情口径
 
@@ -74,6 +77,7 @@ uv run --isolated --with-requirements requirements.lock.txt -- python `
 
 - “班级学情”页支持建班、加入学生、班级指标、知识补强信号、能力均值与错误标签；
 - “内容复核”页支持知识卡/任务筛选、版本与Evidence数量检查、教师决定与复核意见；
+- “主观复核”页展示自有班级匿名稿件、AI弃权/置信度、引用门禁和形成性建议；教师可批准、退回或拒绝；
 - 页面不展示学生邮箱、困惑原文或题目私有答案。
 
 ## 本地验证
@@ -90,11 +94,11 @@ $env:TEACHER_SMOKE_EMAIL='teacher-smoke@example.com'
 npm run smoke:teacher
 ```
 
-浏览器冒烟会自动：注册学生→完成一次TaskAttempt和困惑→退出→注册白名单教师→建班→加入学生→核对匿名指标→写内容复核事件→扫描隐私与控制台/网络错误，并保存班级学情和内容复核截图。
+浏览器冒烟会自动：注册学生→完成一次TaskAttempt、困惑和主观短答→确认AI反馈仍待教师→退出→注册白名单教师→建班→加入学生→核对匿名指标→写内容复核事件→打开主观匿名队列→教师批准→验证队列清零和班级事件增加→扫描隐私与控制台/网络错误，并保存关键截图。
 
 ## 当前缺口
 
 - 没有院校统一身份、教务课程同步、退课/调班审批和多教师协作；
 - 没有“强制困惑标注”课堂门禁或匿名原文的合规查看流程；
-- 没有教师对主观题的复核队列、双评一致性与正式成绩发布；
+- 主观题已有单教师形成性复核，但没有双评一致性、仲裁、正式成绩发布和申诉；
 - 没有真实班级试点数据、路径干预实验或面向不同院校的隐私阈值验证。

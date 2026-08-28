@@ -1,7 +1,7 @@
 {
   "schema_version": "product-evidence-audit-v1",
-  "generated_at": "2026-08-28T08:34:30.817775+00:00",
-  "git_commit": "b1bc2cbe79a90661a50f825929131e17f0646128",
+  "generated_at": "2026-08-28T13:13:05.652748+00:00",
+  "git_commit": "7221b969ee8a4f702c594f129303df6ebdea2e55",
   "protocol": {
     "seed": 20260827,
     "network_calls": 0,
@@ -10,7 +10,7 @@
     "scope": "deterministic software-mechanism audit"
   },
   "inputs": {
-    "audit_script_sha256": "7537da2e703f27d11fa42f7ab967ee006ddf71feccc6a3f95ffbc85248b3105c",
+    "audit_script_sha256": "9b3e5f8628452f4215457bb6f9063948c6f25320cfcbb6b258c960a89e35894e",
     "content_manifest_sha256": "fc1e43cfb646d0d24d0c34d748758cbeb536a64cdee2b9a604673c8e3561094f",
     "law_manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7",
     "real_e2e_audit_sha256": "beb44df993acaebbdcc6ea98b726d078495e56414604f46d968cc789b0854afc",
@@ -37,6 +37,24 @@
     "governed_citations_present": true,
     "long_term_learning_events_created": 0,
     "learner_profiles_created": 0,
+    "live_model_called": false
+  },
+  "subjective_tasks": {
+    "task_count": 13,
+    "short_answer_count": 10,
+    "role_reversal_count": 3,
+    "public_private_field_leaks": [],
+    "public_evidence_refs_complete": true,
+    "high_confidence_ai_still_needs_teacher_review": true,
+    "outside_evidence_forces_abstention": true,
+    "events_before_teacher_approval": 0,
+    "profiles_before_teacher_approval": 0,
+    "teacher_queue_attempt_count": 2,
+    "teacher_queue_hides_raw_identity": true,
+    "teacher_approval_event_type": "teacher_reviewed_subjective_assessment",
+    "events_after_teacher_approval": 1,
+    "approved_attempt_status": "teacher_approved",
+    "approved_event_long_term_eligible": true,
     "live_model_called": false
   },
   "retrieval_and_citation": {
@@ -456,6 +474,7 @@
       "citation_alignment",
       "response_assist",
       "learning_support",
+      "subjective_scoring",
       "document_assist",
       "closing_summary",
       "eval"
@@ -498,7 +517,8 @@
     "model_catalog_redaction": true,
     "case_bundle_runtime_mapping": true,
     "case_bundle_public_projection": true,
-    "learning_support_governance": true
+    "learning_support_governance": true,
+    "subjective_task_governance": true
   },
   "status": "pass"
 }
