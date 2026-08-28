@@ -14,6 +14,8 @@ import type {
   SkillCardDetail,
   SkillCardSummary,
   StatusResponse,
+  SubjectiveAttemptResponse,
+  SubjectiveCatalogResponse,
   TaskAttemptPayload,
   TaskAttemptResponse,
   TeachingReport,
@@ -21,6 +23,7 @@ import type {
   TeacherCaseBundleResponse,
   TeacherOverviewResponse,
   TeacherReviewCatalogResponse,
+  TeacherSubjectiveQueueResponse,
 } from "./types";
 
 const API_BASE = "/api";
@@ -240,6 +243,51 @@ export const api = {
         body: JSON.stringify({ student_response: studentResponse }),
       },
     );
+  },
+
+  async subjectiveCatalog(
+    phase: "prestudy" | "review",
+  ): Promise<SubjectiveCatalogResponse> {
+    return request<SubjectiveCatalogResponse>(
+      `/subjective-tasks/catalog?phase=${encodeURIComponent(phase)}`,
+    );
+  },
+
+  async submitSubjectiveAttempt(payload: {
+    attempt_id: string;
+    task_id: string;
+    task_version: string;
+    phase: "prestudy" | "review";
+    response_text: string;
+    confidence: number | null;
+  }): Promise<SubjectiveAttemptResponse> {
+    return request<SubjectiveAttemptResponse>("/subjective-attempts", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async teacherSubjectiveQueue(): Promise<TeacherSubjectiveQueueResponse> {
+    return request<TeacherSubjectiveQueueResponse>("/teacher/subjective-attempts");
+  },
+
+  async reviewSubjectiveAttempt(payload: {
+    review_id: string;
+    attempt_id: string;
+    decision: "approve" | "request_revision" | "reject";
+    teacher_score: number | null;
+    knowledge_status: "mastered" | "partial" | "missing" | "";
+    feedback: string;
+    error_tags: string[];
+  }): Promise<{
+    review_status: string;
+    attempt_status: string;
+    learning_event?: LearningEvent | null;
+  }> {
+    return request("/teacher/subjective-reviews", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
   },
 
   async teacherOverview(): Promise<TeacherOverviewResponse> {

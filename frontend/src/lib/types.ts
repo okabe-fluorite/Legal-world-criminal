@@ -668,6 +668,86 @@ export interface LearningSupportSeed {
   note: string;
 }
 
+export interface SubjectiveTask {
+  schema_version: string;
+  task_id: string;
+  domain: string;
+  status: string;
+  task_type: "short_answer" | "role_reversal";
+  phase_eligibility: Array<"prestudy" | "review">;
+  knowledge_ids: string[];
+  knowledge_names: string[];
+  target_abilities: string[];
+  difficulty: number;
+  cognitive_dimension: string;
+  prompt: string;
+  context_public: Record<string, unknown>;
+  response_constraints: {
+    min_characters: number;
+    max_characters: number;
+    citations_required: boolean;
+  };
+  standard_evidence_ids: string[];
+  evidence_refs_public: Array<{
+    evidence_id: string;
+    source_title: string;
+    article_ref: string;
+  }>;
+  review: Record<string, unknown>;
+  source_versions: Record<string, unknown>;
+  content_sha256: string;
+}
+
+export interface SubjectiveAttempt {
+  attempt_id: string;
+  task: SubjectiveTask;
+  phase: "prestudy" | "review";
+  response_text: string;
+  confidence: number | null;
+  status: string;
+  ai_abstained: boolean;
+  ai_score: number | null;
+  ai_confidence: number;
+  ai_feedback: {
+    rubric_scores: Record<string, number>;
+    strengths: string[];
+    corrections: string[];
+    suggested_revision: string;
+    evidence_ids_used: string[];
+    confidence: number;
+    abstained: boolean;
+    abstain_reason: string;
+    score_is_formative_only: true;
+  };
+  citation_audit: {
+    valid_standard_count: number;
+    required: boolean;
+    passed: boolean;
+  };
+  model_route?: Record<string, unknown> | null;
+  evidence_eligibility: { long_term_profile: false; reason: string };
+  created_at?: string | null;
+  student_ref?: string;
+}
+
+export interface SubjectiveCatalogResponse {
+  schema_version: string;
+  counts: { tasks: number; short_answer: number; role_reversal: number };
+  tasks: SubjectiveTask[];
+  warnings: string[];
+}
+
+export interface SubjectiveAttemptResponse {
+  attempt_status: "inserted" | "duplicate" | string;
+  attempt: SubjectiveAttempt;
+}
+
+export interface TeacherSubjectiveQueueResponse {
+  schema_version: string;
+  attempts: SubjectiveAttempt[];
+  privacy: string;
+}
+
 export interface TeachingReport {
   student_id: string;
   capability_radar: Array<{

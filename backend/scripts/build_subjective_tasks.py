@@ -48,9 +48,23 @@ def finalize(row: dict[str, Any]) -> dict[str, Any]:
     return row
 
 
+def evidence_refs(ids: list[str], evidence_by_id: dict[str, dict[str, Any]]) -> list[dict[str, str]]:
+    return [
+        {
+            "evidence_id": evidence_id,
+            "source_title": evidence_by_id[evidence_id]["source_title"],
+            "article_ref": evidence_by_id[evidence_id]["article_ref"],
+        }
+        for evidence_id in ids
+        if evidence_id in evidence_by_id
+    ]
+
+
 def main() -> int:
     knowledge = KnowledgeService()
     cases = CaseBundleService()
+    all_evidence = dict(knowledge.evidence_by_id)
+    all_evidence.update(cases.evidence_by_id)
     rows: list[dict[str, Any]] = []
     for card in knowledge.cards:
         rows.append(
@@ -79,6 +93,7 @@ def main() -> int:
                     },
                     "response_constraints": {"min_characters": 80, "max_characters": 1200, "citations_required": True},
                     "standard_evidence_ids": card["standard_evidence_ids"],
+                    "evidence_refs_public": evidence_refs(card["standard_evidence_ids"], all_evidence),
                     "rubric_private": RUBRIC,
                     "expected_points_private": [
                         card["learning_objective"],
@@ -130,6 +145,7 @@ def main() -> int:
                     },
                     "response_constraints": {"min_characters": 120, "max_characters": 1800, "citations_required": True},
                     "standard_evidence_ids": bundle["evidence_ids"],
+                    "evidence_refs_public": evidence_refs(bundle["evidence_ids"], all_evidence),
                     "rubric_private": {
                         "version": "subjective-rubric-v1",
                         "dimensions": [

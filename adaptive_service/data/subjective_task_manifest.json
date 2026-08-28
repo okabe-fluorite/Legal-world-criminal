@@ -1,6 +1,6 @@
 {
   "schema_version": "criminal-law-subjective-task-manifest-v1",
-  "generated_at": "2026-08-28T08:46:20.127279+00:00",
+  "generated_at": "2026-08-28T09:04:00.533459+00:00",
   "builder": "build_subjective_tasks.py",
   "counts": {
     "subjective_tasks": 13,
@@ -9,13 +9,13 @@
   },
   "files": {
     "subjective_tasks.jsonl": {
-      "bytes": 29126,
-      "sha256": "729dc8435037a85f140da80dd0ac3b8bb3578da3cef4d925ee6a09874869d24f"
+      "bytes": 33199,
+      "sha256": "ef48453341a89f722b3ff072b3cf53342765abcdfb5c9696740a0ccdf9f3edb9"
     }
   },
   "schema": {
     "path": "schemas\\subjective-task-v1.schema.json",
-    "sha256": "fc7543514908bb155f9c3c3499dbb3401388ab79897564e3452617526604e8bd"
+    "sha256": "50f87ce16535b19f98cb4ac4cf1b8457254bb8e6d2bd3cfb2f25dcf466d33b2f"
   },
   "limits": [
     "AI feedback is formative and never directly creates mastery evidence",

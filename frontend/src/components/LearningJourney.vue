@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { api } from "../lib/api";
 import LearningSupportPanel from "./LearningSupportPanel.vue";
+import SubjectiveTaskPanel from "./SubjectiveTaskPanel.vue";
 import type {
   AdaptiveKnowledgeEvidence,
   AdaptiveRecommendationItem,
@@ -40,6 +41,7 @@ const confusionSaving = ref(false);
 const confusionSaved = ref("");
 const supportSeed = ref<LearningSupportSeed | null>(null);
 const supportOpen = ref(false);
+const subjectiveOpen = ref(false);
 
 const REASON_LABELS: Record<string, string> = {
   case_evidence_indicates_weakness: "案件证据提示薄弱，优先补强",
@@ -550,6 +552,11 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
               </button>
               <p v-if="!visibleQueue.length" class="queue-empty">暂无未完成任务。</p>
             </div>
+            <button class="subjective-entry" @click="subjectiveOpen = true">
+              <span class="mono">ARGUMENT DRAFT</span>
+              <strong>进入主观论证与角色互换 →</strong>
+              <small>10个知识短答 · 3个案例角色任务 · 教师复核后入画像</small>
+            </button>
           </section>
 
           <section class="ledger-block confusion-block">
@@ -598,6 +605,11 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
         :seed="supportSeed"
         @close="supportOpen = false"
         @retry-task="supportOpen = false"
+      />
+      <SubjectiveTaskPanel
+        v-if="subjectiveOpen"
+        :phase="phase"
+        @close="subjectiveOpen = false"
       />
     </section>
   </div>
@@ -905,6 +917,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .queue-list strong { overflow: hidden; font-family: var(--font-display); font-size: 0.78rem; font-weight: 560; white-space: nowrap; text-overflow: ellipsis; }
 .queue-list small { overflow: hidden; color: var(--parchment-faint); font-size: 0.64rem; white-space: nowrap; text-overflow: ellipsis; }
 .queue-empty { color: var(--parchment-faint); font-size: 0.72rem; }
+.subjective-entry{width:100%;display:grid;gap:3px;margin-top:10px;padding:10px;color:var(--parchment-muted);text-align:left;border:1px solid rgba(176,138,62,.32);background:linear-gradient(110deg,rgba(176,138,62,.08),transparent);cursor:pointer}.subjective-entry>span{color:var(--accent-amber);font-size:.61rem;letter-spacing:.11em}.subjective-entry strong{font-family:var(--font-display);font-size:.8rem;font-weight:560}.subjective-entry small{color:var(--parchment-faint);font-size:.62rem}
 
 .confusion-block__head { display: flex; justify-content: space-between; align-items: center; }
 .confusion-block__head button { color: var(--accent-amber); border: 0; border-bottom: 1px solid rgba(176, 138, 62, 0.35); background: transparent; cursor: pointer; }

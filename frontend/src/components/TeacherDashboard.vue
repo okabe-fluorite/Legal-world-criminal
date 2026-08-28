@@ -2,20 +2,23 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { api } from "../lib/api";
 import type {
+  SubjectiveAttempt,
   TeacherAnalyticsResponse,
   TeacherCaseBundleResponse,
   TeacherClassroom,
   TeacherOverviewResponse,
   TeacherReviewCatalogResponse,
   TeacherReviewObject,
+  TeacherSubjectiveQueueResponse,
 } from "../lib/types";
 
 const emit = defineEmits<{ close: [] }>();
 
-const tab = ref<"analytics" | "reviews">("analytics");
+const tab = ref<"analytics" | "reviews" | "subjective">("analytics");
 const overview = ref<TeacherOverviewResponse | null>(null);
 const analytics = ref<TeacherAnalyticsResponse | null>(null);
 const reviewCatalog = ref<TeacherReviewCatalogResponse | null>(null);
+const subjectiveQueue = ref<TeacherSubjectiveQueueResponse | null>(null);
 const selectedClassId = ref("");
 const loading = ref(true);
 const actionBusy = ref(false);
@@ -32,6 +35,13 @@ const reviewNote = ref("");
 const reviewId = ref("");
 const selectedCaseBundle = ref<TeacherCaseBundleResponse["case_bundle"] | null>(null);
 const caseBundleLoading = ref(false);
+const selectedSubjective = ref<SubjectiveAttempt | null>(null);
+const subjectiveDecision = ref<"approve" | "request_revision" | "reject">("approve");
+const subjectiveScore = ref<number | null>(0.7);
+const subjectiveKnowledgeStatus = ref<"mastered" | "partial" | "missing">("partial");
+const subjectiveFeedback = ref("");
+const subjectiveErrorTags = ref("");
+const subjectiveReviewId = ref("");
 
 const classes = computed(() => overview.value?.classes ?? []);
 const selectedClass = computed(() =>
@@ -43,6 +53,13 @@ const reviewObjects = computed(() => {
     ? rows
     : rows.filter((row) => row.object_type === reviewFilter.value);
 });
+const subjectiveAttempts = computed(() => subjectiveQueue.value?.attempts ?? []);
+const subjectiveAbstainedCount = computed(() =>
+  subjectiveAttempts.value.filter((row) => row.ai_abstained).length,
+);
+const subjectiveCitationPassedCount = computed(() =>
+  subjectiveAttempts.value.filter((row) => row.citation_audit.passed).length,
+);
 const atRiskKnowledge = computed(() => analytics.value?.knowledge ?? []);
 const maxKnowledgeSignal = computed(() =>
   Math.max(
@@ -70,12 +87,14 @@ async function load(): Promise<void> {
   loading.value = true;
   error.value = "";
   try {
-    const [overviewResult, reviewResult] = await Promise.all([
+    const [overviewResult, reviewResult, subjectiveResult] = await Promise.all([
       api.teacherOverview(),
       api.teacherReviewCatalog(),
+      api.teacherSubjectiveQueue(),
     ]);
     overview.value = overviewResult;
     reviewCatalog.value = reviewResult;
+    subjectiveQueue.value = subjectiveResult;
     if (!selectedClassId.value && classes.value[0]) {
       selectedClassId.value = classes.value[0].class_id;
     }
@@ -84,6 +103,64 @@ async function load(): Promise<void> {
     error.value = reason instanceof Error ? reason.message : String(reason);
   } finally {
     loading.value = false;
+  }
+}
+
+function openSubjectiveReview(row: SubjectiveAttempt): void {
+  selectedSubjective.value = row;
+  subjectiveDecision.value = "approve";
+  subjectiveScore.value = row.ai_score ?? 0.7;
+  subjectiveKnowledgeStatus.value = "partial";
+  subjectiveFeedback.value = "";
+  subjectiveErrorTags.value = "";
+  subjectiveReviewId.value = `subjective-${newReviewId()}`;
+  error.value = "";
+}
+
+async function submitSubjectiveReview(): Promise<void> {
+  const row = selectedSubjective.value;
+  if (!row || !subjectiveReviewId.value || actionBusy.value) return;
+  if (
+    subjectiveDecision.value === "approve"
+    && (subjectiveScore.value === null || subjectiveScore.value < 0 || subjectiveScore.value > 1)
+  ) {
+    error.value = "批准稿件必须给出0到1之间的教师评分。";
+    return;
+  }
+  actionBusy.value = true;
+  error.value = "";
+  try {
+    const result = await api.reviewSubjectiveAttempt({
+      review_id: subjectiveReviewId.value,
+      attempt_id: row.attempt_id,
+      decision: subjectiveDecision.value,
+      teacher_score: subjectiveDecision.value === "approve" ? subjectiveScore.value : null,
+      knowledge_status: subjectiveDecision.value === "approve" ? subjectiveKnowledgeStatus.value : "",
+      feedback: subjectiveFeedback.value.trim(),
+      error_tags: subjectiveErrorTags.value
+        .split(/[，,;；\n]/)
+        .map((value) => value.trim())
+        .filter(Boolean),
+    });
+    notice.value = result.learning_event
+      ? `教师复核已入账，已生成形成性证据 ${result.learning_event.event_id}。`
+      : subjectiveDecision.value === "request_revision"
+        ? "已退回学生修订；本次未生成掌握证据。"
+        : "已拒绝该稿件；本次未生成掌握证据。";
+    selectedSubjective.value = null;
+    const refreshes: Promise<unknown>[] = [api.teacherSubjectiveQueue().then((value) => {
+      subjectiveQueue.value = value;
+    })];
+    if (selectedClassId.value) {
+      refreshes.push(api.teacherClassAnalytics(selectedClassId.value).then((value) => {
+        analytics.value = value;
+      }));
+    }
+    await Promise.all(refreshes);
+  } catch (reason) {
+    error.value = reason instanceof Error ? reason.message : String(reason);
+  } finally {
+    actionBusy.value = false;
   }
 }
 
@@ -193,7 +270,8 @@ async function submitReview(): Promise<void> {
 
 function handleKeydown(event: KeyboardEvent): void {
   if (event.key === "Escape") {
-    if (selectedReview.value) selectedReview.value = null;
+    if (selectedSubjective.value) selectedSubjective.value = null;
+    else if (selectedReview.value) selectedReview.value = null;
     else emit("close");
   }
 }
@@ -227,6 +305,10 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
           <button :class="{ active: tab === 'reviews' }" @click="tab = 'reviews'">
             内容复核
             <span class="mono">{{ reviewCatalog?.counts.teacher_review_events ?? 0 }}</span>
+          </button>
+          <button :class="{ active: tab === 'subjective' }" @click="tab = 'subjective'">
+            主观复核
+            <span class="mono">{{ subjectiveAttempts.length }}</span>
           </button>
         </nav>
         <div class="teacher-boundary mono">
@@ -378,7 +460,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
           </main>
         </template>
 
-        <template v-else>
+        <template v-else-if="tab === 'reviews'">
           <aside class="review-index">
             <div class="section-head">
               <div>
@@ -429,6 +511,94 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
                 <button @click="openReview(row)">复核</button>
               </article>
             </div>
+          </main>
+        </template>
+
+        <template v-else>
+          <aside class="review-index subjective-review-index">
+            <div class="section-head">
+              <div>
+                <p class="teacher-kicker mono">ARGUMENT REVIEW</p>
+                <h3>学生论证稿</h3>
+              </div>
+              <span class="queue-stamp mono">{{ subjectiveAttempts.length }} 待办</span>
+            </div>
+            <dl class="review-counts">
+              <div><dt>待人工复核</dt><dd>{{ subjectiveAttempts.length }}</dd></div>
+              <div><dt>AI主动弃权</dt><dd>{{ subjectiveAbstainedCount }}</dd></div>
+              <div><dt>引用门禁通过</dt><dd>{{ subjectiveCitationPassedCount }}</dd></div>
+              <div><dt>长期画像更新</dt><dd>0（待批准）</dd></div>
+            </dl>
+            <p class="review-boundary">{{ subjectiveQueue?.privacy }}</p>
+            <div class="subjective-boundary-card">
+              <strong>双重门禁</strong>
+              <p>AI只给修改建议。教师批准前，分数、掌握状态和推荐路径都不会变化。</p>
+            </div>
+          </aside>
+
+          <main class="review-main subjective-review-main">
+            <header class="subjective-queue-head">
+              <div>
+                <p class="teacher-kicker mono">ANONYMOUS FORMATIVE QUEUE</p>
+                <h3>匿名形成性复核队列</h3>
+                <p>阅读学生原文、AI弃权原因和引用门禁，再作独立教学判断。</p>
+              </div>
+              <span class="privacy-stamp">仅自有班级</span>
+            </header>
+
+            <div v-if="subjectiveAttempts.length" class="subjective-review-list">
+              <article v-for="row in subjectiveAttempts" :key="row.attempt_id" class="subjective-review-row">
+                <div class="subjective-review-row__identity">
+                  <span class="subjective-review-row__seal">{{ row.task.task_type === "role_reversal" ? "变" : "答" }}</span>
+                  <div>
+                    <p class="mono">{{ row.student_ref }} · {{ row.phase === "prestudy" ? "课前" : "课后" }}</p>
+                    <h3>{{ row.task.knowledge_names.join(" / ") }}</h3>
+                    <span>{{ row.task.task_type === "role_reversal" ? "角色互换" : "知识短答" }} · 难度{{ row.task.difficulty }}/3</span>
+                  </div>
+                </div>
+
+                <blockquote>{{ row.response_text }}</blockquote>
+
+                <div class="subjective-audit-strip mono">
+                  <span :class="row.ai_abstained ? 'audit--warn' : 'audit--ok'">
+                    {{ row.ai_abstained ? "AI弃权" : `AI参考 ${((row.ai_score ?? 0) * 10).toFixed(1)}/10` }}
+                  </span>
+                  <span>置信度 {{ Math.round(row.ai_confidence * 100) }}%</span>
+                  <span :class="row.citation_audit.passed ? 'audit--ok' : 'audit--warn'">
+                    引用门禁{{ row.citation_audit.passed ? "通过" : "未通过" }}
+                  </span>
+                  <span>把握度 {{ row.confidence ?? "未填" }}/5</span>
+                </div>
+
+                <div class="subjective-ai-notes">
+                  <section>
+                    <strong>AI认为可保留</strong>
+                    <ul v-if="row.ai_feedback.strengths.length">
+                      <li v-for="item in row.ai_feedback.strengths" :key="item">{{ item }}</li>
+                    </ul>
+                    <p v-else>无可靠结论。</p>
+                  </section>
+                  <section>
+                    <strong>{{ row.ai_abstained ? "弃权原因" : "建议修订" }}</strong>
+                    <ul v-if="row.ai_feedback.corrections.length">
+                      <li v-for="item in row.ai_feedback.corrections" :key="item">{{ item }}</li>
+                    </ul>
+                    <p v-else>{{ row.ai_feedback.abstain_reason || row.ai_feedback.suggested_revision || "等待教师独立判断。" }}</p>
+                  </section>
+                </div>
+
+                <footer>
+                  <span>当前状态：{{ row.status }} · 未进入长期画像</span>
+                  <button @click="openSubjectiveReview(row)">打开匿名稿件复核 →</button>
+                </footer>
+              </article>
+            </div>
+
+            <section v-else class="analytics-welcome subjective-empty">
+              <span>清</span>
+              <h3>当前没有待复核稿件</h3>
+              <p>学生提交主观短答或角色互换任务后，稿件会自动进入其任课教师的匿名队列。</p>
+            </section>
           </main>
         </template>
       </div>
@@ -485,6 +655,71 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
           <p class="review-dialog__boundary">提交会新增不可变审核事件，不会直接修改冻结JSON内容；修订须回到受治理构建流程。</p>
           <button class="review-submit" :disabled="actionBusy" @click="submitReview">
             {{ actionBusy ? "写入中…" : "写入审核台账" }}
+          </button>
+        </section>
+      </div>
+
+      <div v-if="selectedSubjective" class="review-dialog-layer" @click.self="selectedSubjective = null">
+        <section class="review-dialog subjective-review-dialog" role="dialog" aria-label="教师主观稿件复核">
+          <header>
+            <div>
+              <p class="teacher-kicker mono">TEACHER GATE · {{ selectedSubjective.student_ref }}</p>
+              <h3>{{ selectedSubjective.task.knowledge_names.join(" / ") }}</h3>
+            </div>
+            <button aria-label="关闭主观复核" @click="selectedSubjective = null">×</button>
+          </header>
+          <div class="review-dialog__meta mono">
+            <span>{{ selectedSubjective.task.task_type }}</span>
+            <span>{{ selectedSubjective.phase }}</span>
+            <span>{{ selectedSubjective.citation_audit.passed ? "引用通过" : "引用未通过" }}</span>
+            <span>{{ selectedSubjective.ai_abstained ? "AI弃权" : `AI置信度${Math.round(selectedSubjective.ai_confidence * 100)}%` }}</span>
+          </div>
+
+          <section class="subjective-manuscript">
+            <strong>学生原文</strong>
+            <p>{{ selectedSubjective.response_text }}</p>
+          </section>
+          <section class="subjective-model-advice">
+            <strong>AI形成性参考（非成绩）</strong>
+            <p v-if="selectedSubjective.ai_feedback.suggested_revision">{{ selectedSubjective.ai_feedback.suggested_revision }}</p>
+            <p v-else>{{ selectedSubjective.ai_feedback.abstain_reason || "模型未给出可采信建议。" }}</p>
+          </section>
+
+          <label>
+            <span>教师决定</span>
+            <select v-model="subjectiveDecision">
+              <option value="approve">批准为形成性掌握证据</option>
+              <option value="request_revision">退回学生修订</option>
+              <option value="reject">拒绝本次稿件</option>
+            </select>
+          </label>
+          <div v-if="subjectiveDecision === 'approve'" class="subjective-verdict-grid">
+            <label>
+              <span>教师评分（0—1）</span>
+              <input v-model.number="subjectiveScore" type="number" min="0" max="1" step="0.01" />
+            </label>
+            <label>
+              <span>知识掌握判定</span>
+              <select v-model="subjectiveKnowledgeStatus">
+                <option value="mastered">mastered · 已掌握</option>
+                <option value="partial">partial · 部分掌握</option>
+                <option value="missing">missing · 尚未掌握</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            <span>给学生的教师反馈</span>
+            <textarea v-model="subjectiveFeedback" maxlength="3000" placeholder="指出规范、事实涵摄、反方论证或表达中最需要修订的部分……"></textarea>
+          </label>
+          <label>
+            <span>错误标签（逗号或分号分隔）</span>
+            <input v-model="subjectiveErrorTags" maxlength="500" placeholder="例如：构成要件遗漏；边界论证不足" />
+          </label>
+          <p class="review-dialog__boundary">
+            只有“批准”会生成 teacher_reviewed_subjective_assessment；退回和拒绝均不会更新画像或正式成绩。
+          </p>
+          <button class="review-submit" :disabled="actionBusy" @click="submitSubjectiveReview">
+            {{ actionBusy ? "写入中…" : subjectiveDecision === "approve" ? "批准并写入形成性证据" : "写入教师决定" }}
           </button>
         </section>
       </div>
@@ -553,7 +788,8 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .class-form input,
 .enroll-form input,
 .review-dialog select,
-.review-dialog textarea { width: 100%; padding: 8px 9px; color: var(--parchment); border: 1px solid var(--line-strong); background: #0c0e0c; font-family: var(--font-body); }
+.review-dialog textarea,
+.review-dialog input { width: 100%; padding: 8px 9px; color: var(--parchment); border: 1px solid var(--line-strong); background: #0c0e0c; font-family: var(--font-body); }
 .class-form button,
 .enroll-form button { padding: 8px; color: #dbe7de; border: 1px solid rgba(122, 153, 98, 0.45); background: rgba(122, 153, 98, 0.08); cursor: pointer; }
 .enroll-form label { color: var(--parchment-muted); font-size: 0.75rem; }
@@ -617,6 +853,34 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .review-counts dt { color: var(--parchment-dim); }
 .review-counts dd { margin: 0; color: var(--parchment); font-family: var(--font-mono); }
 .review-boundary { color: var(--parchment-faint); font-size: 0.7rem; line-height: 1.6; }
+.queue-stamp { padding: 4px 7px; color: #ddb091; border: 1px solid rgba(196, 123, 74, 0.42); font-size: 0.65rem; }
+.subjective-boundary-card { margin-top: 18px; padding: 12px; border: 1px dashed rgba(196, 123, 74, 0.42); background: rgba(196, 123, 74, 0.045); }
+.subjective-boundary-card strong { color: #ddb091; font-family: var(--font-display); }
+.subjective-boundary-card p { margin: 6px 0 0; color: var(--parchment-faint); font-size: 0.7rem; line-height: 1.65; }
+.subjective-queue-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--line-strong); }
+.subjective-queue-head h3 { font-size: 1.35rem; }
+.subjective-queue-head p:last-child { margin: 5px 0 0; color: var(--parchment-faint); font-size: 0.72rem; }
+.subjective-review-list { display: grid; gap: 14px; margin-top: 17px; }
+.subjective-review-row { position: relative; padding: 16px; border: 1px solid var(--line); background: linear-gradient(135deg, rgba(255,255,255,.022), rgba(92,122,138,.025)); box-shadow: inset 3px 0 rgba(196, 123, 74, 0.48); }
+.subjective-review-row__identity { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 11px; align-items: center; }
+.subjective-review-row__seal { width: 42px; height: 42px; display: grid; place-items: center; color: #ddb091; border: 1px solid rgba(196, 123, 74, 0.46); box-shadow: inset 0 0 0 3px #21170f; font-family: var(--font-display); transform: rotate(-2deg); }
+.subjective-review-row__identity p { margin: 0; color: #88aab7; font-size: .62rem; }
+.subjective-review-row__identity h3 { margin: 2px 0; font-size: .96rem; }
+.subjective-review-row__identity div > span { color: var(--parchment-faint); font-size: .68rem; }
+.subjective-review-row blockquote { max-height: 138px; overflow-y: auto; margin: 13px 0 11px; padding: 11px 13px; color: var(--parchment-muted); border-left: 2px solid rgba(92, 122, 138, .55); background: rgba(0,0,0,.18); font-size: .76rem; line-height: 1.7; white-space: pre-wrap; }
+.subjective-audit-strip { display: flex; flex-wrap: wrap; gap: 6px; }
+.subjective-audit-strip span { padding: 3px 6px; color: var(--parchment-faint); border: 1px solid var(--line); font-size: .62rem; }
+.subjective-audit-strip .audit--ok { color: #b8cca9; border-color: rgba(122, 153, 98, .4); }
+.subjective-audit-strip .audit--warn { color: #e3b38e; border-color: rgba(196, 123, 74, .5); }
+.subjective-ai-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 10px; }
+.subjective-ai-notes section { padding: 9px 10px; border: 1px dashed var(--line); }
+.subjective-ai-notes strong { color: var(--parchment-dim); font-size: .69rem; }
+.subjective-ai-notes ul { margin: 5px 0 0; padding-left: 17px; color: var(--parchment-faint); font-size: .68rem; line-height: 1.5; }
+.subjective-ai-notes p { margin: 5px 0 0; color: var(--parchment-faint); font-size: .68rem; }
+.subjective-review-row footer { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+.subjective-review-row footer span { color: var(--parchment-faint); font-size: .66rem; }
+.subjective-review-row footer button { padding: 7px 10px; color: #ddb091; border: 1px solid rgba(196, 123, 74, .45); background: rgba(196, 123, 74, .055); cursor: pointer; }
+.subjective-empty { min-height: 420px; }
 .review-table-head,
 .review-table article { display: grid; grid-template-columns: minmax(280px, 1.5fr) 170px 220px 62px; align-items: center; gap: 14px; }
 .review-table-head { padding: 0 10px 9px; color: var(--parchment-faint); border-bottom: 1px solid var(--line-strong); font-size: 0.65rem; }
@@ -647,6 +911,16 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .review-dialog label > span { display: block; margin-bottom: 5px; color: var(--parchment-dim); font-size: 0.72rem; }
 .review-dialog textarea { min-height: 120px; resize: vertical; }
 .review-dialog__boundary { color: var(--parchment-faint); font-size: 0.68rem; }
+.subjective-review-dialog { width: min(820px, 100%); }
+.subjective-manuscript,
+.subjective-model-advice { margin: 11px 0; padding: 11px 12px; border: 1px solid var(--line); background: rgba(0,0,0,.16); }
+.subjective-manuscript strong,
+.subjective-model-advice strong { color: #b9ced6; font-size: .72rem; }
+.subjective-manuscript p,
+.subjective-model-advice p { max-height: 170px; overflow-y: auto; margin: 6px 0 0; color: var(--parchment-muted); font-size: .75rem; line-height: 1.7; white-space: pre-wrap; }
+.subjective-model-advice { border-left: 2px solid rgba(196, 123, 74, .6); }
+.subjective-verdict-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+.subjective-review-dialog input[type="number"] { font-family: var(--font-mono); }
 .case-review-detail { margin: 12px 0; padding: 11px; border: 1px solid var(--line); background: rgba(92, 122, 138, 0.045); }
 .case-review-detail__links { display: flex; flex-wrap: wrap; gap: 6px; }
 .case-review-detail__links span { padding: 3px 6px; color: #b9ced6; border: 1px solid rgba(92, 122, 138, 0.34); font-size: 0.66rem; }
@@ -683,5 +957,9 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   .review-evidence,
   .review-latest { grid-column: 1; }
   .review-table article > button { grid-column: 2; grid-row: 1 / 4; }
+  .subjective-ai-notes,
+  .subjective-verdict-grid { grid-template-columns: 1fr; }
+  .subjective-review-row footer { align-items: flex-start; flex-direction: column; }
+  .subjective-review-row footer button { width: 100%; }
 }
 </style>
