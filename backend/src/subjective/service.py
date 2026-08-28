@@ -384,7 +384,7 @@ class SubjectiveTaskService:
                 }
                 for row in rows
             ],
-            "privacy": "only students enrolled in teacher-owned active classes are included",
+            "privacy": "仅返回任课教师自有且有效班级中的已选课学生；只提供匿名student-ref，不返回邮箱或原始用户ID。",
         }
 
     def review_attempt(

@@ -180,6 +180,14 @@ async function loadAnalytics(classId: string): Promise<void> {
   }
 }
 
+async function loadSubjectiveQueue(): Promise<void> {
+  try {
+    subjectiveQueue.value = await api.teacherSubjectiveQueue();
+  } catch (reason) {
+    error.value = reason instanceof Error ? reason.message : String(reason);
+  }
+}
+
 async function createClass(): Promise<void> {
   if (!className.value.trim() || !classTerm.value.trim() || actionBusy.value) return;
   actionBusy.value = true;
@@ -216,7 +224,7 @@ async function enrollStudent(): Promise<void> {
       : `学生已加入班级（${result.student_ref}）。`;
     studentEmail.value = "";
     overview.value = await api.teacherOverview();
-    await loadAnalytics(classroom.class_id);
+    await Promise.all([loadAnalytics(classroom.class_id), loadSubjectiveQueue()]);
   } catch (reason) {
     error.value = reason instanceof Error ? reason.message : String(reason);
   } finally {
@@ -278,6 +286,9 @@ function handleKeydown(event: KeyboardEvent): void {
 
 watch(selectedClassId, (value, previous) => {
   if (value && value !== previous && !loading.value) void loadAnalytics(value);
+});
+watch(tab, (value) => {
+  if (value === "subjective" && !loading.value) void loadSubjectiveQueue();
 });
 
 onMounted(() => {

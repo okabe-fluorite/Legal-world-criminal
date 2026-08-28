@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -32,9 +33,19 @@ from edubrain_adaptive.service import AdaptiveService  # noqa: E402
 from edubrain_adaptive.store import AdaptiveStore  # noqa: E402
 from src.case_bundle.service import CaseBundleService, PRIVATE_KEYS  # noqa: E402
 from src.core.database import Base, create_database_engine, create_session_factory, get_db_session  # noqa: E402
-from src.core.models import LearningEventRecord, LearnerProfileRecord, User  # noqa: E402
+from src.core.models import (  # noqa: E402
+    ClassEnrollmentRecord,
+    CourseClassRecord,
+    LearningEventRecord,
+    LearnerProfileRecord,
+    SubjectiveAttemptRecord,
+    SubjectiveReviewRecord,
+    User,
+)
 from src.knowledge.service import KnowledgeService  # noqa: E402
 from src.learning_support.service import LearningSupportService  # noqa: E402
+from src.core.role_service import grant_user_role  # noqa: E402
+from src.subjective.service import SubjectiveTaskService  # noqa: E402
 from src.utils.model_config import MODEL_TASKS, ModelEndpoint  # noqa: E402
 
 
@@ -403,6 +414,184 @@ def learning_support_audit() -> dict[str, Any]:
             "learner_profiles_created": profiles,
             "live_model_called": False,
         }
+
+
+def subjective_task_audit() -> dict[str, Any]:
+    with tempfile.TemporaryDirectory() as temp:
+        previous_database_url = os.environ.get("DATABASE_URL")
+        database_path = (Path(temp) / "subjective-audit.db").as_posix()
+        os.environ["DATABASE_URL"] = f"sqlite+pysqlite:///{database_path}"
+        engine = create_database_engine(os.environ["DATABASE_URL"])
+        Base.metadata.create_all(engine)
+        factory = create_session_factory(engine)
+        probe = SubjectiveTaskService(generator=lambda _prompt: "")
+        task = probe.tasks[0]
+        evidence = probe.evidence_by_id[task["standard_evidence_ids"][0]]
+        response_text = (
+            f"我先依据《刑法》{evidence['article_ref']}确定核心规则，再把题目事实逐项对应规范条件。"
+            "成立情形必须满足全部构成条件；反例只要缺少关键条件，就不能得出同一结论。"
+            "最后还应说明事实争议与规范解释争议的区别，避免只凭结果严重倒推主观要件。"
+        )
+        good_payload = {
+            "rubric_scores": {
+                row["code"]: 0.8 for row in task["rubric_private"]["dimensions"]
+            },
+            "strengths": ["能够区分事实与规范条件。"],
+            "corrections": ["需要进一步说明边界事实。"],
+            "suggested_revision": "补充反例并写清法条与事实的连接。",
+            "evidence_ids_used": [task["standard_evidence_ids"][0]],
+            "confidence": 0.9,
+            "abstain": False,
+            "abstain_reason": "",
+        }
+        good = SubjectiveTaskService(
+            generator=lambda _prompt: (
+                json.dumps(good_payload, ensure_ascii=False),
+                {"task": "subjective_scoring", "provider": "audit"},
+            )
+        )
+        bad = SubjectiveTaskService(
+            generator=lambda _prompt: json.dumps(
+                {
+                    **good_payload,
+                    "evidence_ids_used": ["EVID_OUTSIDE_TASK"],
+                },
+                ensure_ascii=False,
+            )
+        )
+        try:
+            with get_db_session(factory) as session:
+                teacher = User(id="subjective-audit-teacher", email="teacher-audit@example.com")
+                student = User(id="subjective-audit-student", email="student-audit@example.com")
+                session.add_all([teacher, student])
+                session.flush()
+                grant_user_role(
+                    session=session,
+                    user=teacher,
+                    role="teacher",
+                    granted_by="product-audit",
+                )
+                classroom = CourseClassRecord(
+                    id="subjective-audit-class",
+                    teacher_user_id=teacher.id,
+                    course_id="undergraduate-criminal-law",
+                    name="audit class",
+                    term="2026-audit",
+                    status="active",
+                )
+                session.add(classroom)
+                session.flush()
+                session.add(
+                    ClassEnrollmentRecord(
+                        id="subjective-audit-enrollment",
+                        class_id=classroom.id,
+                        student_user_id=student.id,
+                        status="active",
+                    )
+                )
+
+            with get_db_session(factory) as session:
+                student = session.get(User, "subjective-audit-student")
+                good_attempt = good.submit_attempt(
+                    session=session,
+                    user=student,
+                    attempt_id="subjective-audit-good",
+                    task_id=task["task_id"],
+                    task_version=task["content_sha256"],
+                    phase="prestudy",
+                    response_text=response_text,
+                    confidence=3,
+                )["attempt"]
+                bad_attempt = bad.submit_attempt(
+                    session=session,
+                    user=student,
+                    attempt_id="subjective-audit-bad",
+                    task_id=task["task_id"],
+                    task_version=task["content_sha256"],
+                    phase="review",
+                    response_text=response_text,
+                    confidence=3,
+                )["attempt"]
+
+            with get_db_session(factory) as session:
+                events_before = int(
+                    session.scalar(select(func.count()).select_from(LearningEventRecord))
+                    or 0
+                )
+                profiles_before = int(
+                    session.scalar(select(func.count()).select_from(LearnerProfileRecord))
+                    or 0
+                )
+                teacher = session.get(User, "subjective-audit-teacher")
+                queue = good.teacher_queue(session=session, teacher=teacher)
+                approved = good.review_attempt(
+                    session=session,
+                    teacher=teacher,
+                    review_id="subjective-audit-review",
+                    attempt_id="subjective-audit-good",
+                    decision="approve",
+                    teacher_score=0.82,
+                    knowledge_status="partial",
+                    feedback="audit teacher review",
+                    error_tags=["audit-boundary"],
+                )
+
+            with get_db_session(factory) as session:
+                events_after = int(
+                    session.scalar(select(func.count()).select_from(LearningEventRecord))
+                    or 0
+                )
+                review = session.get(SubjectiveReviewRecord, "subjective-audit-review")
+                approved_record = session.get(
+                    SubjectiveAttemptRecord, "subjective-audit-good"
+                )
+                event = session.get(LearningEventRecord, review.learning_event_id)
+
+            catalog = good.catalog()
+            public_keys = set(nested_keys(catalog))
+            queue_json = json.dumps(queue, ensure_ascii=False)
+            return {
+                "task_count": catalog["counts"]["tasks"],
+                "short_answer_count": catalog["counts"]["short_answer"],
+                "role_reversal_count": catalog["counts"]["role_reversal"],
+                "public_private_field_leaks": sorted(
+                    {"rubric_private", "expected_points_private"} & public_keys
+                ),
+                "public_evidence_refs_complete": all(
+                    bool(row.get("evidence_refs_public")) for row in catalog["tasks"]
+                ),
+                "high_confidence_ai_still_needs_teacher_review": (
+                    good_attempt["status"] == "needs_teacher_review"
+                    and good_attempt["ai_confidence"] == 0.9
+                    and not good_attempt["evidence_eligibility"]["long_term_profile"]
+                ),
+                "outside_evidence_forces_abstention": (
+                    bad_attempt["ai_abstained"] and bad_attempt["ai_score"] is None
+                ),
+                "events_before_teacher_approval": events_before,
+                "profiles_before_teacher_approval": profiles_before,
+                "teacher_queue_attempt_count": len(queue["attempts"]),
+                "teacher_queue_hides_raw_identity": (
+                    "student-audit@example.com" not in queue_json
+                    and "subjective-audit-student" not in queue_json
+                    and "student_ref" in queue_json
+                ),
+                "teacher_approval_event_type": approved["learning_event"]["event_type"],
+                "events_after_teacher_approval": events_after,
+                "approved_attempt_status": approved_record.status,
+                "approved_event_long_term_eligible": bool(
+                    event and event.long_term_profile_eligible
+                ),
+                "live_model_called": False,
+            }
+        finally:
+            engine.dispose()
+            if previous_database_url is None:
+                os.environ.pop("DATABASE_URL", None)
+            else:
+                os.environ["DATABASE_URL"] = previous_database_url
+
+
 def build_report() -> dict[str, Any]:
     knowledge = KnowledgeService()
     data_dir = REPO_ROOT / "adaptive_service" / "data"
@@ -434,6 +623,7 @@ def build_report() -> dict[str, Any]:
         },
         "case_bundles": case_bundle_audit(),
         "learning_support": learning_support_audit(),
+        "subjective_tasks": subjective_task_audit(),
         "retrieval_and_citation": retrieval_audit(knowledge),
         "adaptive_mechanism": adaptive_audit(data_dir),
         "public_projection": public_projection_audit(knowledge),
@@ -507,6 +697,24 @@ def build_report() -> dict[str, Any]:
             and report["learning_support"]["long_term_learning_events_created"] == 0
             and report["learning_support"]["learner_profiles_created"] == 0
         ),
+        "subjective_task_governance": (
+            report["subjective_tasks"]["task_count"] == 13
+            and report["subjective_tasks"]["short_answer_count"] == 10
+            and report["subjective_tasks"]["role_reversal_count"] == 3
+            and not report["subjective_tasks"]["public_private_field_leaks"]
+            and report["subjective_tasks"]["public_evidence_refs_complete"]
+            and report["subjective_tasks"]["high_confidence_ai_still_needs_teacher_review"]
+            and report["subjective_tasks"]["outside_evidence_forces_abstention"]
+            and report["subjective_tasks"]["events_before_teacher_approval"] == 0
+            and report["subjective_tasks"]["profiles_before_teacher_approval"] == 0
+            and report["subjective_tasks"]["teacher_queue_hides_raw_identity"]
+            and report["subjective_tasks"]["teacher_approval_event_type"]
+            == "teacher_reviewed_subjective_assessment"
+            and report["subjective_tasks"]["events_after_teacher_approval"] == 1
+            and report["subjective_tasks"]["approved_attempt_status"]
+            == "teacher_approved"
+            and report["subjective_tasks"]["approved_event_long_term_eligible"]
+        ),
     }
     report["checks"] = checks
     report["status"] = "pass" if all(checks.values()) else "fail"
@@ -533,6 +741,7 @@ def markdown_summary(report: dict[str, Any]) -> str:
         f"| 证据目录有效条号/逐字片段 | {retrieval['citation_valid_count']}/{retrieval['exact_quote_count']} | 确定性存在与原文检查 |",
         f"| CaseBundle运行映射/公开投影 | {'通过' if report['case_bundles']['mapping_matches_seed_policy'] and not report['case_bundles']['private_projection_leaks'] else '失败'} | 3案×7种公开投影，不含教师参考字段 |",
         f"| AI分层解惑fallback/画像隔离 | {'通过' if report['checks']['learning_support_governance'] else '失败'} | 非法模型输出必须fallback，LearningEvent/画像新增0 |",
+        f"| 13个主观/变式任务与教师门禁 | {'通过' if report['checks']['subjective_task_governance'] else '失败'} | AI含高置信度结果也不直接入画像；坏Evidence弃权，教师批准后才生成1条合格事件 |",
         f"| missing信号平均排序提升 | {adaptive['missing_signal_mean_rank_improvement']:.2f}位 | 软件策略响应，不是学习效果 |",
         f"| confusion信号平均排序提升 | {adaptive['confusion_signal_mean_rank_improvement']:.2f}位 | 自报信号响应，不是负掌握证据 |",
         f"| 已答任务排除 | {'通过' if adaptive['completed_task_exclusion_passed'] else '失败'} | 只验证任务闭环 |",
@@ -540,7 +749,7 @@ def markdown_summary(report: dict[str, Any]) -> str:
         "",
         "## 结论边界",
         "",
-        "本审计证明受治理检索、确定性引用核验、自适应排序、已答排除、答案隔离和模型目录脱敏按当前代码工作。它不评估法律语义蕴含、刑法掌握校准、学生学习增益、路径因果效果或LLM正式成绩效度。Agent六阶段真实E2E证据仍见`docs/REAL_E2E_AUDIT.md`，本脚本没有再次调用模型，也没有制造所谓Agent消融结果。",
+        "本审计证明受治理检索、确定性引用核验、自适应排序、已答排除、答案隔离、主观任务教师门禁和模型目录脱敏按当前代码工作。它不评估法律语义蕴含、刑法掌握校准、学生学习增益、路径因果效果或LLM正式成绩效度。Agent六阶段真实E2E证据仍见`docs/REAL_E2E_AUDIT.md`，本脚本没有再次调用模型，也没有制造所谓Agent消融结果。",
         "",
         "完整逐知识点结果见同名JSON。",
         "",

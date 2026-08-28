@@ -11,6 +11,18 @@ const screenshotPath = path.resolve(
 const analyticsScreenshotPath = path.resolve(
   process.env.TEACHER_ANALYTICS_SCREENSHOT || "../.codex-artifacts/teacher-analytics.png",
 );
+const subjectiveScreenshotPath = path.resolve(
+  process.env.TEACHER_SUBJECTIVE_SCREENSHOT || "../.codex-artifacts/teacher-subjective-review.png",
+);
+const subjectiveAfterScreenshotPath = path.resolve(
+  process.env.TEACHER_SUBJECTIVE_AFTER_SCREENSHOT || "../.codex-artifacts/teacher-subjective-after.png",
+);
+const subjectiveDialogScreenshotPath = path.resolve(
+  process.env.TEACHER_SUBJECTIVE_DIALOG_SCREENSHOT || "../.codex-artifacts/teacher-subjective-dialog.png",
+);
+const studentSubjectiveScreenshotPath = path.resolve(
+  process.env.STUDENT_SUBJECTIVE_SCREENSHOT || "../.codex-artifacts/student-subjective-feedback.png",
+);
 const viewport = {
   width: Number(process.env.TEACHER_VIEWPORT_WIDTH || 1500),
   height: Number(process.env.TEACHER_VIEWPORT_HEIGHT || 980),
@@ -24,7 +36,16 @@ const candidates = [
 const executablePath = candidates.find((candidate) => fs.existsSync(candidate));
 if (!executablePath) throw new Error("No installed Chromium browser found");
 
-fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
+for (const target of [
+  screenshotPath,
+  analyticsScreenshotPath,
+  subjectiveScreenshotPath,
+  subjectiveAfterScreenshotPath,
+  subjectiveDialogScreenshotPath,
+  studentSubjectiveScreenshotPath,
+]) {
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+}
 const browser = await chromium.launch({ executablePath, headless: true });
 const page = await browser.newPage({ viewport });
 const consoleErrors = [];
@@ -45,18 +66,48 @@ page.on("requestfailed", (request) => {
 });
 
 async function register(email) {
+  const registerResponsePromise = page.waitForResponse(
+    (response) => response.url().endsWith("/api/auth/register") && response.request().method() === "POST",
+    { timeout: 120000 },
+  );
+  const sandboxResponsePromise = page.waitForResponse(
+    (response) => response.url().endsWith("/api/sandbox/ensure") && response.request().method() === "POST",
+    { timeout: 120000 },
+  );
   await page.getByPlaceholder("you@court.edu").fill(email);
   await page.getByPlaceholder("至少 6 位").fill("Teacher-Smoke-2026!");
   await page.getByRole("button", { name: "注册并进入" }).click();
+  const [registerResponse, sandboxResponse] = await Promise.all([
+    registerResponsePromise,
+    sandboxResponsePromise,
+  ]);
+  if (registerResponse.status() !== 200 || sandboxResponse.status() !== 200) {
+    throw new Error(
+      `Registration bootstrap failed: auth=${registerResponse.status()} sandbox=${sandboxResponse.status()}`,
+    );
+  }
   await page.getByRole("button", { name: "自主学习" }).waitFor({ state: "visible" });
 }
 
 try {
   await page.goto(baseUrl, { waitUntil: "networkidle" });
   const studentEmail = `teacher-student-${Date.now()}@example.com`;
+  const subjectiveResponse =
+    "《刑法》第三条要求只有法律明文规定为犯罪的行为才能定罪处罚。成立例是行为发生时刑法已明确规定构成犯罪，且行为事实逐项满足构成要件；不成立例是仅有社会危害性评价，却找不到明确罪名和构成条件。判断时应先确认行为时有效规范，再把主体、行为、结果和主观方面分别对应，不能用价值判断替代明文规定。";
   await register(studentEmail);
+  const studentUserId = await page.evaluate(() => {
+    const token = localStorage.getItem("lw.token");
+    if (!token) return "";
+    const payload = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    return String(JSON.parse(atob(payload)).sub || "");
+  });
+  // The governed case list is populated only after sandbox initialization.
+  // Waiting here prevents the learning catalog request from racing that first-start write.
+  await page.locator(".case__version").first().waitFor({ state: "visible", timeout: 60000 });
   await page.getByRole("button", { name: "自主学习" }).click();
   await page.getByRole("dialog", { name: "刑法自主学习卷宗" }).waitFor();
+  await page.getByText("知识卷宗", { exact: true }).waitFor();
+  await page.locator(".option-row").first().waitFor({ state: "visible", timeout: 60000 });
   await page.locator(".option-row").first().click();
   await page.getByRole("button", { name: "提交取证" }).click();
   await page.locator(".feedback-sheet").waitFor();
@@ -66,6 +117,22 @@ try {
   );
   await page.getByRole("button", { name: "归入证据账本" }).click();
   await page.getByText("困惑已进入证据账本，后续任务会优先回应。").waitFor();
+
+  await page.getByRole("button", { name: /进入主观论证与角色互换/ }).click();
+  await page.getByRole("dialog", { name: "刑法主观论证训练" }).waitFor();
+  await page.getByPlaceholder(/先写争点/).fill(subjectiveResponse);
+  await page.getByRole("button", { name: /提交教师复核/ }).click();
+  await page.locator(".formative-review").waitFor({ timeout: 210000 });
+  const studentSubjectiveStatus = await page.locator(".formative-review").innerText();
+  const subjectiveTeacherGateVisible =
+    studentSubjectiveStatus.includes("needs_teacher_review")
+    && studentSubjectiveStatus.includes("教师复核");
+  if (!subjectiveTeacherGateVisible) {
+    throw new Error(`Subjective attempt did not enter teacher gate: ${studentSubjectiveStatus}`);
+  }
+  await page.locator(".formative-review").scrollIntoViewIfNeeded();
+  await page.screenshot({ path: studentSubjectiveScreenshotPath, fullPage: false });
+  await page.getByRole("button", { name: "关闭主观论证训练" }).click();
   await page.getByRole("button", { name: "关闭自主学习" }).click();
   await page.getByRole("button", { name: "退出" }).click();
   await page.getByRole("button", { name: "注册并进入" }).waitFor();
@@ -90,7 +157,8 @@ try {
     throw new Error(`Unexpected teacher metrics: ${metricValues.join(",")}`);
   }
   const bodyText = await page.locator(".teacher-board").innerText();
-  const privacyLeaks = [studentEmail, "teacher-smoke-private-confusion-note"].filter((value) =>
+  const privacyLeaks = [studentEmail, studentUserId, "teacher-smoke-private-confusion-note"].filter((value) =>
+    value &&
     bodyText.includes(value),
   );
   await page.screenshot({ path: analyticsScreenshotPath, fullPage: false });
@@ -111,24 +179,69 @@ try {
   await page.getByText("审核意见已写入不可变台账。").waitFor();
   await page.screenshot({ path: screenshotPath, fullPage: false });
 
+  await page.getByRole("button", { name: /主观复核/ }).click();
+  await page.locator(".subjective-review-row").waitFor({ timeout: 30000 });
+  const subjectiveQueueBefore = await page.locator(".subjective-review-row").count();
+  if (subjectiveQueueBefore !== 1) {
+    throw new Error(`Expected one class-scoped subjective attempt, received ${subjectiveQueueBefore}`);
+  }
+  const subjectiveBoardText = await page.locator(".teacher-board").innerText();
+  const subjectivePrivacyLeaks = [studentEmail, studentUserId].filter(
+    (value) => value && subjectiveBoardText.includes(value),
+  );
+  await page.locator(".subjective-review-row footer button").scrollIntoViewIfNeeded();
+  await page.screenshot({ path: subjectiveScreenshotPath, fullPage: false });
+  await page.locator(".subjective-review-row").getByRole("button", { name: /打开匿名稿件复核/ }).click();
+  const subjectiveDialog = page.getByRole("dialog", { name: "教师主观稿件复核" });
+  await subjectiveDialog.waitFor();
+  await subjectiveDialog.locator('input[type="number"]').fill("0.82");
+  await subjectiveDialog.locator("select").nth(1).selectOption("partial");
+  await subjectiveDialog.getByPlaceholder(/指出规范/).fill(
+    "已能区分明文规定与一般价值判断；下一稿请进一步说明行为时法与裁判时法发生变化时的比较步骤。",
+  );
+  await subjectiveDialog.getByPlaceholder(/构成要件遗漏/).fill("时间效力比较不足；边界论证待展开");
+  await page.screenshot({ path: subjectiveDialogScreenshotPath, fullPage: false });
+  await subjectiveDialog.getByRole("button", { name: "批准并写入形成性证据" }).click();
+  await page.getByText(/教师复核已入账，已生成形成性证据/).waitFor({ timeout: 30000 });
+  await page.getByText("当前没有待复核稿件").waitFor();
+  const subjectiveQueueAfter = await page.locator(".subjective-review-row").count();
+  await page.screenshot({ path: subjectiveAfterScreenshotPath, fullPage: false });
+
+  await page.getByRole("button", { name: "班级学情" }).click();
+  await page.waitForFunction(() => document.querySelectorAll(".metric-strip b")[2]?.textContent === "3");
+  const metricsAfterApproval = await page.locator(".metric-strip b").allTextContents();
+
   const result = {
     teacher_role_entry_visible: true,
     viewport: `${viewport.width}x${viewport.height}`,
     class_name: uniqueClass,
     metrics: metricValues,
+    metrics_after_subjective_approval: metricsAfterApproval,
     review_counts: reviewCounts,
     privacy_leaks: privacyLeaks,
+    subjective_privacy_leaks: subjectivePrivacyLeaks,
+    subjective_queue_before: subjectiveQueueBefore,
+    subjective_queue_after: subjectiveQueueAfter,
+    subjective_student_gate_visible: subjectiveTeacherGateVisible,
     review_event_recorded: true,
+    subjective_review_event_recorded: metricsAfterApproval[2] === "3",
     console_errors: consoleErrors,
     page_errors: pageErrors,
     http_errors: httpErrors,
     request_failures: requestFailures,
     screenshot: screenshotPath,
     analytics_screenshot: analyticsScreenshotPath,
+    student_subjective_screenshot: studentSubjectiveScreenshotPath,
+    subjective_queue_screenshot: subjectiveScreenshotPath,
+    subjective_dialog_screenshot: subjectiveDialogScreenshotPath,
+    subjective_after_screenshot: subjectiveAfterScreenshotPath,
   };
   console.log(JSON.stringify(result));
   if (
     privacyLeaks.length ||
+    subjectivePrivacyLeaks.length ||
+    subjectiveQueueAfter !== 0 ||
+    metricsAfterApproval[2] !== "3" ||
     consoleErrors.length ||
     pageErrors.length ||
     httpErrors.length ||
@@ -136,6 +249,16 @@ try {
   ) {
     process.exitCode = 1;
   }
+} catch (error) {
+  console.error(JSON.stringify({
+    smoke_error: error instanceof Error ? error.message : String(error),
+    url: page.url(),
+    console_errors: consoleErrors,
+    page_errors: pageErrors,
+    http_errors: httpErrors,
+    request_failures: requestFailures,
+  }));
+  throw error;
 } finally {
   await browser.close();
 }
