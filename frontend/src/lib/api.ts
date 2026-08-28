@@ -5,9 +5,11 @@ import type {
   CitationFeedback,
   ConfusionAnnotationPayload,
   ConfusionAnnotationResponse,
+  EvidenceTimelineResponse,
   KnowledgeCatalogResponse,
   LearningEvent,
   LearningSupportSessionResponse,
+  ModelCatalogResponse,
   PlayerAssistResponse,
   PlayerRequest,
   SandboxState,
@@ -198,6 +200,14 @@ export const api = {
       method: "POST",
       body: JSON.stringify(context),
     });
+  },
+
+  async adaptiveEvidenceTimeline(): Promise<EvidenceTimelineResponse> {
+    return request<EvidenceTimelineResponse>("/adaptive/evidence-timeline");
+  },
+
+  async modelCatalog(): Promise<ModelCatalogResponse> {
+    return request<ModelCatalogResponse>("/model/catalog");
   },
 
   async knowledgeCatalog(): Promise<KnowledgeCatalogResponse> {

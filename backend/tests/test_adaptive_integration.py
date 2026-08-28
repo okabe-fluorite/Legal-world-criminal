@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import asyncio
 import tempfile
 import unittest
 from pathlib import Path
@@ -24,6 +25,7 @@ from src.integration.adaptive_client import (
 )
 from src.integration.event_delivery import deliver_learning_event, persist_adaptive_submission
 from src.integration.event_store import persist_learning_event, update_adaptive_delivery
+from ws_server import adaptive_evidence_timeline
 
 
 class FakeResponse:
@@ -79,6 +81,37 @@ class AdaptiveIntegrationTests(unittest.TestCase):
             ],
             "evidence_eligibility": {"long_term_profile": True},
         }
+
+    def test_student_evidence_timeline_is_owned_and_omits_response_text(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            engine = create_database_engine(
+                f"sqlite+pysqlite:///{(Path(temp) / 'timeline.db').as_posix()}"
+            )
+            Base.metadata.create_all(engine)
+            factory = create_session_factory(engine)
+            with get_db_session(factory) as session:
+                student = User(id="timeline-student", email="timeline@example.com")
+                other = User(id="timeline-other", email="other-timeline@example.com")
+                session.add_all([student, other])
+            first = self.event("timeline-student")
+            first["event_id"] = "timeline-event"
+            first["error_tags"] = ["遗漏构成条件"]
+            first["standard_evidence_ids"] = ["EVID_TIMELINE"]
+            other_event = self.event("timeline-other")
+            other_event["event_id"] = "other-timeline-event"
+            persist_learning_event(first, session_factory=factory)
+            persist_learning_event(other_event, session_factory=factory)
+            with get_db_session(factory) as session:
+                student = session.get(User, "timeline-student")
+                result = asyncio.run(
+                    adaptive_evidence_timeline(current_user=student, session=session)
+                )
+            engine.dispose()
+        self.assertEqual([row["event_id"] for row in result["events"]], ["timeline-event"])
+        self.assertEqual(result["events"][0]["error_tags"], ["遗漏构成条件"])
+        serialized = str(result)
+        self.assertNotIn("timeline-other", serialized)
+        self.assertNotIn("source_response_sha256", serialized)
 
     def test_free_form_knowledge_is_marked_unmapped(self) -> None:
         payload = build_adaptive_event(self.event())

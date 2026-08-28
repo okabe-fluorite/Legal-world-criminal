@@ -496,6 +496,53 @@ export interface AdaptiveRecommendationResponse {
   recommendations: AdaptiveRecommendationItem[];
 }
 
+export interface EvidenceTimelineEvent {
+  event_id: string;
+  event_type: string;
+  stage: string;
+  task_id: string;
+  created_at?: string | null;
+  long_term_profile_eligible: boolean;
+  knowledge_verdicts: Array<{
+    knowledge_id?: string;
+    knowledge_name?: string;
+    kp?: string;
+    status?: string;
+    reason?: string;
+  }>;
+  error_tags: string[];
+  standard_evidence_ids: string[];
+}
+
+export interface EvidenceTimelineResponse {
+  schema_version: string;
+  events: EvidenceTimelineEvent[];
+  boundary: string;
+}
+
+export interface ModelRouteStatus {
+  task: string;
+  provider: string;
+  model_name: string;
+  api_base: string;
+  api_key_configured: boolean;
+  timeout_seconds: number;
+  configured: boolean;
+  circuit_open?: boolean;
+}
+
+export interface ModelCatalogResponse {
+  schema_version: string;
+  small_model_enabled: boolean;
+  small_model_tasks: string[];
+  routes: ModelRouteStatus[];
+  failover: {
+    mode: string;
+    circuit_seconds: number;
+    routes: ModelRouteStatus[];
+  };
+}
+
 export interface KnowledgeCard {
   schema_version: "criminal-law-knowledge-card-v1" | string;
   knowledge_id: string;

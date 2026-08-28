@@ -5,12 +5,14 @@ import { stageAccent } from "../lib/caseState";
 import LearningDossier from "./LearningDossier.vue";
 import LearningJourney from "./LearningJourney.vue";
 import TeacherDashboard from "./TeacherDashboard.vue";
+import CognitiveDashboard from "./CognitiveDashboard.vue";
 
 const session = useSession();
 
 const showDossier = ref(false);
 const showJourney = ref(false);
 const showTeacher = ref(false);
+const showCognitive = ref(false);
 const isTeacher = computed(() => ["teacher", "admin"].includes(session.state.role));
 
 const wsDotClass = computed(() => {
@@ -97,6 +99,9 @@ const accent = computed(() => stageAccent(session.state.caseState));
         <button class="btn hdr__journey" @click="showJourney = true">
           自主学习
         </button>
+        <button class="btn hdr__cognitive" @click="showCognitive = true">
+          认知诊断
+        </button>
         <button v-if="isTeacher" class="btn hdr__teacher" @click="showTeacher = true">
           教师驾驶舱
         </button>
@@ -104,6 +109,11 @@ const accent = computed(() => stageAccent(session.state.caseState));
 
       <LearningDossier v-if="showDossier" @close="showDossier = false" />
       <LearningJourney v-if="showJourney" @close="showJourney = false" />
+      <CognitiveDashboard
+        v-if="showCognitive"
+        @close="showCognitive = false"
+        @open-journey="showCognitive = false; showJourney = true"
+      />
       <TeacherDashboard v-if="showTeacher" @close="showTeacher = false" />
 
       <div class="hdr__user">
@@ -251,6 +261,16 @@ const accent = computed(() => stageAccent(session.state.caseState));
   color: #b9ced6;
   border-color: rgba(92, 122, 138, 0.58);
   background: rgba(92, 122, 138, 0.05);
+}
+.hdr__cognitive {
+  color: #c4dbe1;
+  border-color: rgba(100, 139, 153, 0.62);
+  background: linear-gradient(110deg, rgba(100, 139, 153, 0.1), transparent);
+}
+.hdr__cognitive:hover {
+  color: #edf6f7;
+  border-color: #87aebb;
+  background: rgba(100, 139, 153, 0.16);
 }
 .hdr__teacher:hover {
   color: #e0ebef;

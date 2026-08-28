@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Awaitable, Callable
 import yaml
+from sqlalchemy import select
 
 import uvicorn
 from fastapi import Depends, FastAPI, Header, HTTPException, Request, WebSocket, WebSocketDisconnect
@@ -47,7 +48,7 @@ from src.core.file_storage_manager import FileStorageManager
 from src.core.checkpoint_manager import CheckpointManager
 from src.core.auth import AuthError, create_access_token, decode_access_token, get_access_token_expires_at
 from src.core.database import Base, create_database_engine, create_session_factory, get_db_session
-from src.core.models import Sandbox, User
+from src.core.models import LearningEventRecord, Sandbox, User
 from src.core.role_service import resolve_user_role
 from src.core.sandbox_manager import SandboxManager, SandboxRuntimeContext
 from src.core.sandbox_service import SandboxService
@@ -3024,6 +3025,46 @@ async def model_catalog(current_user: User = Depends(_get_current_user)):
 async def adaptive_catalog(current_user: User = Depends(_get_current_user)):
     _ = current_user
     return get_adaptive_catalog()
+
+
+@app.get("/api/adaptive/evidence-timeline")
+async def adaptive_evidence_timeline(
+    current_user: User = Depends(_get_current_user),
+    session=Depends(_db_session_dependency),
+):
+    """Return the current learner's deidentified evidence timeline."""
+
+    rows = list(
+        session.scalars(
+            select(LearningEventRecord)
+            .where(LearningEventRecord.user_id == str(current_user.id))
+            .order_by(LearningEventRecord.created_at.asc(), LearningEventRecord.event_id)
+            .limit(100)
+        ).all()
+    )
+    events = []
+    for row in rows:
+        payload = dict(row.payload_json or {})
+        events.append(
+            {
+                "event_id": row.event_id,
+                "event_type": row.event_type,
+                "stage": row.stage,
+                "task_id": row.task_id,
+                "created_at": row.created_at.isoformat() if row.created_at else None,
+                "long_term_profile_eligible": bool(row.long_term_profile_eligible),
+                "knowledge_verdicts": list(payload.get("knowledge_verdicts") or []),
+                "error_tags": [str(value) for value in payload.get("error_tags") or []],
+                "standard_evidence_ids": [
+                    str(value) for value in payload.get("standard_evidence_ids") or []
+                ],
+            }
+        )
+    return {
+        "schema_version": "student-evidence-timeline-v1",
+        "events": events,
+        "boundary": "仅返回当前登录学生的形成性事件；不含回答原文、邮箱或校准掌握概率。",
+    }
 
 
 @app.post("/api/adaptive/recommend")
