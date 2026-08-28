@@ -363,6 +363,9 @@ class SubjectiveReviewRecord(Base):
     """Immutable teacher decision for one subjective attempt."""
 
     __tablename__ = "subjective_review_events"
+    __table_args__ = (
+        UniqueConstraint("attempt_id", name="uq_subjective_review_attempt"),
+    )
 
     review_id: Mapped[str] = mapped_column(String(96), primary_key=True)
     attempt_id: Mapped[str] = mapped_column(String(96), ForeignKey("subjective_attempts.attempt_id"), nullable=False, index=True)

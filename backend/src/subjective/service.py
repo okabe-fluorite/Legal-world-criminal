@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from typing import Any, Callable
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from src.case_bundle.service import get_case_bundle_service
@@ -247,7 +247,30 @@ class SubjectiveTaskService:
         }
 
     @staticmethod
-    def _serialize_attempt(record: SubjectiveAttemptRecord, task: dict[str, Any]) -> dict[str, Any]:
+    def _student_review(review: SubjectiveReviewRecord | None) -> dict[str, Any] | None:
+        if review is None:
+            return None
+        return {
+            "decision": review.decision,
+            "teacher_score": review.teacher_score,
+            "knowledge_status": review.knowledge_status,
+            "feedback": review.feedback,
+            "error_tags": list(review.error_tags_json or []),
+            "learning_event_id": review.learning_event_id,
+            "reviewed_at": review.created_at.isoformat() if review.created_at else None,
+        }
+
+    @staticmethod
+    def _serialize_attempt(
+        record: SubjectiveAttemptRecord,
+        task: dict[str, Any],
+        review: SubjectiveReviewRecord | None = None,
+    ) -> dict[str, Any]:
+        approved = bool(
+            review is not None
+            and review.decision == "approve"
+            and review.learning_event_id
+        )
         return {
             "attempt_id": record.attempt_id,
             "task": SubjectiveTaskService.public_task(task),
@@ -262,9 +285,14 @@ class SubjectiveTaskService:
             "citation_audit": record.citation_audit_json,
             "model_route": record.model_route_json,
             "evidence_eligibility": {
-                "long_term_profile": False,
-                "reason": "subjective_attempt_requires_teacher_approval",
+                "long_term_profile": approved,
+                "reason": (
+                    "teacher_approved_subjective_attempt"
+                    if approved
+                    else "subjective_attempt_requires_teacher_approval"
+                ),
             },
+            "teacher_review": SubjectiveTaskService._student_review(review),
             "created_at": record.created_at.isoformat() if record.created_at else None,
         }
 
@@ -341,7 +369,57 @@ class SubjectiveTaskService:
             raise SubjectiveNotFoundError("subjective attempt not found")
         if record.user_id != str(user.id):
             raise SubjectivePermissionError("subjective attempt belongs to another student")
-        return self._serialize_attempt(record, self.by_id[record.task_id])
+        review = session.scalar(
+            select(SubjectiveReviewRecord)
+            .where(SubjectiveReviewRecord.attempt_id == record.attempt_id)
+            .order_by(SubjectiveReviewRecord.created_at.desc())
+        )
+        return self._serialize_attempt(record, self.by_id[record.task_id], review)
+
+    def list_attempts(
+        self,
+        *,
+        session: Session,
+        user: User,
+        phase: str | None = None,
+    ) -> dict[str, Any]:
+        query = (
+            select(SubjectiveAttemptRecord)
+            .where(SubjectiveAttemptRecord.user_id == str(user.id))
+        )
+        if phase is not None:
+            if phase not in {"prestudy", "review"}:
+                raise ValueError("unsupported subjective attempt phase")
+            query = query.where(SubjectiveAttemptRecord.phase == phase)
+        query = query.order_by(
+            SubjectiveAttemptRecord.created_at.desc(),
+            SubjectiveAttemptRecord.attempt_id,
+        ).limit(100)
+        rows = list(session.scalars(query).all())
+        reviews: dict[str, SubjectiveReviewRecord] = {}
+        if rows:
+            review_rows = list(
+                session.scalars(
+                    select(SubjectiveReviewRecord).where(
+                        SubjectiveReviewRecord.attempt_id.in_(
+                            [row.attempt_id for row in rows]
+                        )
+                    )
+                ).all()
+            )
+            reviews = {row.attempt_id: row for row in review_rows}
+        return {
+            "schema_version": "student-subjective-attempt-history-v1",
+            "attempts": [
+                self._serialize_attempt(
+                    row,
+                    self.by_id[row.task_id],
+                    reviews.get(row.attempt_id),
+                )
+                for row in rows
+            ],
+            "privacy": "仅返回当前登录学生自己的稿件与去标识化教师结论，不返回教师账号或用户ID。",
+        }
 
     def _teacher_student_ids(self, session: Session, teacher: User) -> set[str] | None:
         if resolve_user_role(session=session, user=teacher) == "admin":
@@ -425,6 +503,13 @@ class SubjectiveTaskService:
             if existing.payload_sha256 != digest:
                 raise SubjectiveConflictError("review_id payload conflict")
             return {"review_status": "duplicate", "learning_event_id": existing.learning_event_id}
+        existing_attempt_review = session.scalar(
+            select(SubjectiveReviewRecord).where(
+                SubjectiveReviewRecord.attempt_id == attempt.attempt_id
+            )
+        )
+        if existing_attempt_review is not None:
+            raise SubjectiveConflictError("subjective attempt already has a teacher decision")
         task = self.by_id[attempt.task_id]
         learning_event = None
         event_id = ""
@@ -471,18 +556,31 @@ class SubjectiveTaskService:
             feedback=str(feedback or "").strip(), error_tags_json=[str(v) for v in error_tags],
             payload_sha256=digest, learning_event_id=event_id,
         )
-        session.add(review)
-        attempt.status = {
+        next_status = {
             "approve": "teacher_approved",
             "request_revision": "revision_requested",
             "reject": "teacher_rejected",
         }[decision]
+        transition = session.execute(
+            update(SubjectiveAttemptRecord)
+            .where(
+                SubjectiveAttemptRecord.attempt_id == attempt.attempt_id,
+                SubjectiveAttemptRecord.status == "needs_teacher_review",
+            )
+            .values(status=next_status)
+            .execution_options(synchronize_session=False)
+        )
+        if transition.rowcount != 1:
+            raise SubjectiveConflictError(
+                "subjective attempt is no longer awaiting teacher review"
+            )
+        session.add(review)
         session.flush()
         session.commit()
         delivery = deliver_learning_event(learning_event) if learning_event else None
         return {
             "review_status": "inserted",
-            "attempt_status": attempt.status,
+            "attempt_status": next_status,
             "learning_event": learning_event,
             "delivery": delivery,
         }

@@ -80,6 +80,20 @@ def create_subjective_router(
     ):
         return call(lambda: runtime.submit_attempt(session=session, user=current_user, **body.model_dump()))
 
+    @router.get("/api/subjective-attempts")
+    async def list_attempts(
+        phase: Literal["prestudy", "review"] | None = None,
+        current_user: User = Depends(current_user_dependency),
+        session: Session = Depends(session_dependency),
+    ):
+        return call(
+            lambda: runtime.list_attempts(
+                session=session,
+                user=current_user,
+                phase=phase,
+            )
+        )
+
     @router.get("/api/subjective-attempts/{attempt_id}")
     async def get_attempt(
         attempt_id: str,

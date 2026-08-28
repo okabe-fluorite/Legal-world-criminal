@@ -19,7 +19,11 @@ from src.core.models import (
     User,
 )
 from src.core.role_service import grant_user_role
-from src.subjective.service import SubjectivePermissionError, SubjectiveTaskService
+from src.subjective.service import (
+    SubjectiveConflictError,
+    SubjectivePermissionError,
+    SubjectiveTaskService,
+)
 
 
 class SubjectiveTaskTests(unittest.TestCase):
@@ -247,6 +251,142 @@ class SubjectiveTaskTests(unittest.TestCase):
             self.assertIsNotNone(event)
             self.assertTrue(event.long_term_profile_eligible)
             self.assertEqual(event.payload_json["task_version"], task["content_sha256"])
+            student = session.get(User, "student-1")
+            history = service.list_attempts(session=session, user=student, phase="review")
+            self.assertEqual(len(history["attempts"]), 1)
+            visible = history["attempts"][0]
+            self.assertTrue(visible["evidence_eligibility"]["long_term_profile"])
+            self.assertEqual(visible["teacher_review"]["decision"], "approve")
+            self.assertEqual(visible["teacher_review"]["teacher_score"], 0.82)
+            serialized = json.dumps(history, ensure_ascii=False)
+            self.assertNotIn("teacher-1", serialized)
+            self.assertNotIn("teacher@example.com", serialized)
+
+    def test_one_attempt_accepts_only_one_teacher_decision_and_event(self) -> None:
+        service = self.service(confidence=0.9)
+        task = service.tasks[0]
+        with get_db_session(self.factory) as session:
+            student = session.get(User, "student-1")
+            service.submit_attempt(
+                session=session,
+                user=student,
+                attempt_id="subjective-single-review",
+                task_id=task["task_id"],
+                task_version=task["content_sha256"],
+                phase="prestudy",
+                response_text=self.valid_response(service, task),
+                confidence=4,
+            )
+        payload = {
+            "attempt_id": "subjective-single-review",
+            "decision": "approve",
+            "teacher_score": 0.8,
+            "knowledge_status": "partial",
+            "feedback": "第一次且唯一的教师决定。",
+            "error_tags": ["边界待补"],
+        }
+        with get_db_session(self.factory) as session:
+            teacher = session.get(User, "teacher-1")
+            inserted = service.review_attempt(
+                session=session,
+                teacher=teacher,
+                review_id="single-review-id",
+                **payload,
+            )
+            duplicate = service.review_attempt(
+                session=session,
+                teacher=teacher,
+                review_id="single-review-id",
+                **payload,
+            )
+            self.assertEqual(inserted["review_status"], "inserted")
+            self.assertEqual(duplicate["review_status"], "duplicate")
+        with get_db_session(self.factory) as session:
+            teacher = session.get(User, "teacher-1")
+            with self.assertRaises(SubjectiveConflictError):
+                service.review_attempt(
+                    session=session,
+                    teacher=teacher,
+                    review_id="second-review-id",
+                    **payload,
+                )
+        with get_db_session(self.factory) as session:
+            review_count = int(
+                session.scalar(select(func.count()).select_from(SubjectiveReviewRecord))
+                or 0
+            )
+            event_count = int(
+                session.scalar(
+                    select(func.count())
+                    .select_from(LearningEventRecord)
+                    .where(
+                        LearningEventRecord.event_type
+                        == "teacher_reviewed_subjective_assessment"
+                    )
+                )
+                or 0
+            )
+            self.assertEqual(review_count, 1)
+            self.assertEqual(event_count, 1)
+
+    def test_student_history_returns_deidentified_revision_feedback(self) -> None:
+        service = self.service(confidence=0.9)
+        task = service.tasks[0]
+        original = self.valid_response(service, task)
+        with get_db_session(self.factory) as session:
+            student = session.get(User, "student-1")
+            service.submit_attempt(
+                session=session,
+                user=student,
+                attempt_id="subjective-revision-original",
+                task_id=task["task_id"],
+                task_version=task["content_sha256"],
+                phase="review",
+                response_text=original,
+                confidence=3,
+            )
+        with get_db_session(self.factory) as session:
+            teacher = session.get(User, "teacher-1")
+            service.review_attempt(
+                session=session,
+                teacher=teacher,
+                review_id="subjective-revision-request",
+                attempt_id="subjective-revision-original",
+                decision="request_revision",
+                teacher_score=None,
+                knowledge_status="",
+                feedback="请补充行为时法与裁判时法的比较步骤。",
+                error_tags=["时间效力比较不足"],
+            )
+        with get_db_session(self.factory) as session:
+            student = session.get(User, "student-1")
+            history = service.list_attempts(session=session, user=student, phase="review")
+            self.assertEqual(history["attempts"][0]["status"], "revision_requested")
+            self.assertEqual(
+                history["attempts"][0]["teacher_review"]["decision"],
+                "request_revision",
+            )
+            self.assertFalse(
+                history["attempts"][0]["evidence_eligibility"]["long_term_profile"]
+            )
+            serialized = json.dumps(history, ensure_ascii=False)
+            self.assertNotIn("teacher-1", serialized)
+            self.assertNotIn("teacher@example.com", serialized)
+            service.submit_attempt(
+                session=session,
+                user=student,
+                attempt_id="subjective-revision-new",
+                task_id=task["task_id"],
+                task_version=task["content_sha256"],
+                phase="review",
+                response_text=original + "修订稿进一步比较行为时法与裁判时法。",
+                confidence=4,
+            )
+        with get_db_session(self.factory) as session:
+            student = session.get(User, "student-1")
+            history = service.list_attempts(session=session, user=student, phase="review")
+            self.assertEqual(len(history["attempts"]), 2)
+            self.assertEqual(history["attempts"][0]["status"], "needs_teacher_review")
 
 
 if __name__ == "__main__":
