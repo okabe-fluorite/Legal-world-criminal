@@ -299,3 +299,35 @@ class ContentReviewRecord(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
+
+
+class LearningSupportSessionRecord(Base):
+    """Student-owned, non-mastery AI clarification session."""
+
+    __tablename__ = "learning_support_sessions"
+
+    session_id: Mapped[str] = mapped_column(String(96), primary_key=True)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=False, index=True
+    )
+    knowledge_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    task_id: Mapped[str] = mapped_column(String(128), nullable=False, default="")
+    phase: Mapped[str] = mapped_column(String(32), nullable=False)
+    confusion_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    confusion_note: Mapped[str] = mapped_column(String(2000), nullable=False)
+    diagnostic_question: Mapped[str] = mapped_column(String(2000), nullable=False)
+    knowledge_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    task_version: Mapped[str] = mapped_column(String(64), nullable=False, default="")
+    request_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    student_response: Mapped[str] = mapped_column(String(5000), nullable=False, default="")
+    response_sha256: Mapped[str] = mapped_column(String(64), nullable=False, default="")
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="awaiting_response")
+    result_source: Mapped[str] = mapped_column(String(64), nullable=False, default="")
+    result_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    model_route_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+    )

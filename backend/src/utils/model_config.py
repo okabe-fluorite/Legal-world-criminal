@@ -24,6 +24,7 @@ MODEL_TASKS = (
     "teaching_judge",
     "citation_alignment",
     "response_assist",
+    "learning_support",
     "document_assist",
     "closing_summary",
     "eval",

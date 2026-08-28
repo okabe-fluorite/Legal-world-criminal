@@ -14,6 +14,7 @@ Xinference、Ollama 网关或云端微调模型。
 | `teaching_judge` | 八能力Rubric教学裁判 |
 | `citation_alignment` | 法条与学生论断的引用对齐裁判 |
 | `response_assist` | 学生表达润色/低风险辅助 |
+| `learning_support` | 受治理的“诊断追问→分层解惑”JSON解释 |
 | `document_assist` | 辩护词等文书辅助 |
 | `closing_summary` | 单案结案反馈 |
 | `eval` | 离线评测裁判 |
@@ -24,7 +25,7 @@ Xinference、Ollama 网关或云端微调模型。
 SIMLAW_SMALL_MODEL_API_KEY=local-or-hosted-key
 SIMLAW_SMALL_MODEL_API_BASE_URL=http://127.0.0.1:8001/v1
 SIMLAW_SMALL_MODEL_NAME=criminal-law-tutor-7b-lora
-SIMLAW_SMALL_MODEL_TASKS=teaching_judge,citation_alignment,response_assist
+SIMLAW_SMALL_MODEL_TASKS=teaching_judge,citation_alignment,response_assist,learning_support
 SIMLAW_SMALL_MODEL_TIMEOUT_SECONDS=180
 ```
 
