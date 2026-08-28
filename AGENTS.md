@@ -215,7 +215,16 @@ teaching/
 - 顶部“自主学习”打开`frontend/src/components/LearningJourney.vue`，串联知识卷宗、目标/法源、推荐题、把握度、判分反馈、画像门槛、困惑便笺和下一任务
 - 桌面使用知识索引/任务卷页/证据账本三栏；1040px以下使用单列滚动并把账本下沉，不能为适配窄屏而隐藏困惑入口
 - `frontend/scripts/smoke-learning-journey.mjs`使用`playwright-core`复用本机Edge/Chrome，验证桌面和指定视口的真实登录、作答、反馈、困惑、私有字段与控制台/网络错误
-- 该页面只完成形成性选择任务闭环；主观题、AI分层解惑、正式考试控制和教师聚合仍属后续切片
+- 自主学习页已连接选择题、困惑、AI分层解惑和主观任务；正式考试控制仍未实现，教师聚合/复核在独立驾驶舱
+
+### 比赛认知诊断与路径驾驶舱
+
+- 顶部“认知诊断”打开`CognitiveDashboard.vue`，四页集中展示在线Evidence-KT、学生自有事件时间线、ORCDF shadow、七步路径和Model Adapter
+- `/api/adaptive/evidence-timeline`只返回当前学生的去标识化LearningEvent摘要，不含回答原文、邮箱或response hash
+- ORCDF前端快照来自`D:\EduBrain_orcdf_artifacts`真实产物并保存来源SHA；数据是MOOCCubeX民法/宪法实验，mastery未校准且不进入当前刑法画像
+- 七步路径动态组合KnowledgeCard、Recommendation、SubjectiveTask与CasePicker；它是可解释候选路径，不宣称因果最优
+- 模型页只展示脱敏路由；小模型未接入时必须显示`not_connected`，不得宣称已完成LoRA/SFT
+- `smoke-cognitive-dashboard.mjs`在1500×980验证10知识、2事件、3版本、48格矩阵、7路径节点、4模型路由及0私有/网络错误
 
 ### 受治理AI分层解惑
 
