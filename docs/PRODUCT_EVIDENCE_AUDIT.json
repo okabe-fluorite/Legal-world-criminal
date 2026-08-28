@@ -1,7 +1,7 @@
 {
   "schema_version": "product-evidence-audit-v1",
-  "generated_at": "2026-08-28T04:03:34.033477+00:00",
-  "git_commit": "dc990cec15f7ee04ade21c40219bfa018f2a4931",
+  "generated_at": "2026-08-28T08:34:30.817775+00:00",
+  "git_commit": "b1bc2cbe79a90661a50f825929131e17f0646128",
   "protocol": {
     "seed": 20260827,
     "network_calls": 0,
@@ -10,7 +10,7 @@
     "scope": "deterministic software-mechanism audit"
   },
   "inputs": {
-    "audit_script_sha256": "62897f988828d379fc659db8bfdf62844d291a08ab082cb8394a49ea2b09ecf1",
+    "audit_script_sha256": "7537da2e703f27d11fa42f7ab967ee006ddf71feccc6a3f95ffbc85248b3105c",
     "content_manifest_sha256": "fc1e43cfb646d0d24d0c34d748758cbeb536a64cdee2b9a604673c8e3561094f",
     "law_manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7",
     "real_e2e_audit_sha256": "beb44df993acaebbdcc6ea98b726d078495e56414604f46d968cc789b0854afc",
@@ -28,6 +28,16 @@
     "public_stage_projection_checks": 21,
     "private_projection_leaks": [],
     "unresolved_legal_basis_case_count": 1
+  },
+  "learning_support": {
+    "session_created": true,
+    "diagnostic_question_present": true,
+    "invalid_model_output_falls_back": true,
+    "four_layers_present": true,
+    "governed_citations_present": true,
+    "long_term_learning_events_created": 0,
+    "learner_profiles_created": 0,
+    "live_model_called": false
   },
   "retrieval_and_citation": {
     "query_count": 10,
@@ -445,13 +455,14 @@
       "teaching_judge",
       "citation_alignment",
       "response_assist",
+      "learning_support",
       "document_assist",
       "closing_summary",
       "eval"
     ],
     "safe_catalog_api_key_absent": true,
     "safe_catalog_url_path_absent": true,
-    "failover_behavior_test_file_sha256": "581b4490bcc17f85ab14bc7c360b354d0449f6838650b6a4f3bb89a0cd439d61",
+    "failover_behavior_test_file_sha256": "4ea8a403e325c69be31ffb5a50d073566803df08e593fa16c81aa2fc79d00f7e",
     "live_model_called": false
   },
   "agent_pipeline": {
@@ -486,7 +497,8 @@
     "answer_isolation": true,
     "model_catalog_redaction": true,
     "case_bundle_runtime_mapping": true,
-    "case_bundle_public_projection": true
+    "case_bundle_public_projection": true,
+    "learning_support_governance": true
   },
   "status": "pass"
 }
