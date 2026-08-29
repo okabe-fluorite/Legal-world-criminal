@@ -16,7 +16,7 @@
 
 已基于恢复库录制5段真实浏览器素材并合成65.2秒无声预演：原始视频继续留在Git忽略目录；公开时长、SHA、分辨率和0错误门禁见`03-Demo/VIDEO_SEGMENTS_AUDIT.json`。该预演不是最终配音成片，也不替代用户/专家证据。
 
-另生成97.84秒、1920×1080、中文字幕、AI配音DRAFT，已包含去标识INV/PR形成性审计、检察官回应与Agent不起诉快照；公开审计见`03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json`。视频全程标识“AI配音·DRAFT”，最终提交前仍须团队完整审片并决定保留AI配音或替换真人旁白。
+另生成121.6秒、1920×1080、中文字幕、AI配音DRAFT，已包含Evidence-KT、ORCDF、七步路径、Model Adapter、可信RAG、教师HITL、多智能体以及去标识INV/PR形成性审计；公开审计见`03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json`。10段旁白最大语速1.037倍，未检出超过1.2秒静音，全程标识“AI配音·DRAFT”；最终提交前仍须团队完整审片并决定保留AI配音或替换真人旁白。
 
 ## 不得删除的证据边界
 

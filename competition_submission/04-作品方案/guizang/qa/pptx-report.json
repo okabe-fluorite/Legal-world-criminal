@@ -57,7 +57,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0497
+      "mean_abs_error": 0.0495
     },
     {
       "slide": 5,
@@ -71,7 +71,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.045
+      "mean_abs_error": 0.0445
     },
     {
       "slide": 6,
@@ -85,7 +85,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0581
+      "mean_abs_error": 0.0589
     },
     {
       "slide": 7,
@@ -113,7 +113,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.067
+      "mean_abs_error": 0.0663
     },
     {
       "slide": 9,
@@ -127,7 +127,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0496
+      "mean_abs_error": 0.0494
     },
     {
       "slide": 10,
@@ -155,7 +155,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0611
+      "mean_abs_error": 0.0612
     },
     {
       "slide": 12,
@@ -169,7 +169,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0793
+      "mean_abs_error": 0.0798
     }
   ]
 }

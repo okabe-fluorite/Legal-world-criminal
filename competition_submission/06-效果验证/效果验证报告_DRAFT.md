@@ -18,7 +18,7 @@
 - 教师闭环：测试脚本操作合成账号完成退回→原文修订→批准；同稿单决定、单事件；浏览器事件2→3。该结果不是目标用户试用。
 - 标杆案件冻结演示库：LC→INV→PR→不起诉→结案，461.547秒；测试脚本提供29次固定回答（非29名真人、非用户证据）；case3产生3个阶段LearningEvent、3/3 Agent退场、0 runtime issue。
 - Model Adapter：四任务路由可见；当前基线OpenCode/DeepSeek；微调端点`not_connected`。
-- 比赛材料：Guizang PPT 12页、1,483,789字节，浏览器四类错误为0，PowerPoint实机回渲染12/12为1600×900；97.84秒1080p AI配音视频仍为DRAFT，已显著标识AI配音，尚待团队完整审片。
+- 比赛材料：Guizang PPT 12页，浏览器四类错误为0，PowerPoint实机回渲染12/12为1600×900；121.6秒1080p AI配音视频覆盖七项强制技术，最大语速1.037倍且未检出超过1.2秒静音，但仍为DRAFT并待团队完整审片。
 
 | 机制 | 权威证据文件 | 版本/日期 |
 |---|---|---|
@@ -31,7 +31,7 @@
 | 教师退回—修订—批准 | `competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json` | 合成账号；浏览器事件2→3；源/恢复各24项语义审计通过 |
 | case3冻结演示E2E | `competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json`、`CASE3_INV_PR_SNAPSHOT.json` | 461.547秒、29次固定脚本回答、0 runtime issue；不起诉分支非专家结论 |
 | Guizang PPT | `competition_submission/04-作品方案/guizang/qa/report.json`、`pptx-report.json` | 材料commit`0e863fb`；12页；浏览器四类错误为0；最大回渲染误差0.0953 |
-| 演示视频DRAFT | `competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json` | 97.84秒、1920×1080；SHA `680e5285...83d16`；AI配音标识可见 |
+| 演示视频DRAFT | `competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json` | 121.6秒、1920×1080；SHA `682e463e...2fd19e`；七项技术7/7、AI配音标识可见 |
 
 ### L1量化摘要
 
@@ -42,7 +42,7 @@
 | 典型问题自动门禁 | 3/3；错误引用2/2拒绝 | 结构、标准要点、允许来源与逐字quote门禁通过 | 独立专家准确率 |
 | 关键法条时效 | 5/5 | 5条目标法条的来源、版本和文本一致 | 全量法库时效或具体案件适法正确 |
 | Guizang网页/PPT | 12页；Web四类错误0；PPT回渲染12/12 | 主要展示视口可用且Office渲染稳定 | 目标用户可用性 |
-| AI配音视频DRAFT | 97.84秒、1920×1080 | 已形成180秒以内可审片草案 | 团队最终批准或真实用户认可 |
+| AI配音视频DRAFT | 121.6秒、1920×1080 | 已形成180秒以内、七项技术7/7的可审片草案 | 团队最终批准或真实用户认可 |
 
 ## 3. L2三题内容验证
 

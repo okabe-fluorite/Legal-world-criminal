@@ -1,11 +1,24 @@
 {
-  "schema": "competition-narrated-demo-draft-audit-v1",
+  "schema": "competition-narrated-demo-draft-audit-v2",
+  "source_git_commit": "2c8a3efa703547498f043d89a50329b928a04dbc",
   "file": "星火智学_真实交互演示_AI配音_DRAFT.mp4",
-  "duration_seconds": 97.84,
-  "bytes": 8865345,
-  "sha256": "680e5285528f39fa631679cc13052ede0571ee1ee19e421fed0133fcc0833d16",
+  "duration_seconds": 121.6,
+  "bytes": 9533563,
+  "sha256": "682e463ecc03cf71a8b3ff4f43c4df3cbda1f780832eba99b25cbe1f392fd19e",
   "resolution": "1920x1080",
-  "fps": 25,
+  "fps": "25/1",
+  "media": {
+    "format": "mov,mp4,m4a,3gp,3g2,mj2",
+    "video_codec": "h264",
+    "video_profile": "High",
+    "pixel_format": "yuv420p",
+    "width": 1920,
+    "height": 1080,
+    "fps": "25/1",
+    "audio_codec": "aac",
+    "audio_sample_rate": 48000,
+    "audio_channels": 2
+  },
   "audio": {
     "present": true,
     "voice": "Microsoft Huihui Desktop",
@@ -13,70 +26,243 @@
     "voice_items": [
       {
         "id": "01-cover",
-        "visual_duration_seconds": 3.5,
+        "visual_duration_seconds": 4.1,
         "raw_voice_duration_seconds": 3.889,
-        "voice_speed_factor": 1.23464
+        "voice_speed_factor": 1.0371
       },
       {
         "id": "02-diagnosis",
-        "visual_duration_seconds": 17.48,
+        "visual_duration_seconds": 17.8,
         "raw_voice_duration_seconds": 17.546,
-        "voice_speed_factor": 1.02426
+        "voice_speed_factor": 1.00548
       },
       {
         "id": "03-rag",
-        "visual_duration_seconds": 15.48,
+        "visual_duration_seconds": 15.7,
         "raw_voice_duration_seconds": 15.387,
-        "voice_speed_factor": 1.01699
+        "voice_speed_factor": 1.00241
       },
       {
         "id": "04-student",
-        "visual_duration_seconds": 9.28,
+        "visual_duration_seconds": 11.6,
         "raw_voice_duration_seconds": 11.364,
-        "voice_speed_factor": 1.27253
+        "voice_speed_factor": 1.01011
       },
       {
         "id": "05-teacher",
-        "visual_duration_seconds": 11.08,
+        "visual_duration_seconds": 11.0,
         "raw_voice_duration_seconds": 10.66,
-        "voice_speed_factor": 1.0
+        "voice_speed_factor": 1.0009
       },
       {
         "id": "06-agent-architecture",
-        "visual_duration_seconds": 4.5,
+        "visual_duration_seconds": 8.0,
         "raw_voice_duration_seconds": 7.625,
-        "voice_speed_factor": 1.83734
+        "voice_speed_factor": 1.0
       },
       {
         "id": "07-case-inv",
-        "visual_duration_seconds": 10.0,
+        "visual_duration_seconds": 15.2,
         "raw_voice_duration_seconds": 14.809,
-        "voice_speed_factor": 1.53456
+        "voice_speed_factor": 1.0
       },
       {
         "id": "08-case-pr",
-        "visual_duration_seconds": 11.0,
+        "visual_duration_seconds": 16.7,
         "raw_voice_duration_seconds": 16.397,
-        "voice_speed_factor": 1.53966
+        "voice_speed_factor": 1.0029
       },
       {
         "id": "09-case",
-        "visual_duration_seconds": 11.92,
+        "visual_duration_seconds": 15.0,
         "raw_voice_duration_seconds": 14.76,
-        "voice_speed_factor": 1.27574
+        "voice_speed_factor": 1.00753
       },
       {
         "id": "10-close",
-        "visual_duration_seconds": 3.5,
+        "visual_duration_seconds": 6.4,
         "raw_voice_duration_seconds": 6.061,
-        "voice_speed_factor": 1.92423
+        "voice_speed_factor": 1.00187
       }
-    ]
+    ],
+    "analysis": {
+      "silence_threshold_seconds": 1.2,
+      "silence_over_threshold_count": 0,
+      "silence_durations_seconds": [],
+      "max_silence_seconds": 0.0,
+      "integrated_loudness_lufs": -23.3,
+      "true_peak_dbfs": -3.6
+    }
   },
   "subtitles": {
     "present": true,
     "language": "zh-CN",
     "count": 10
+  },
+  "timeline": {
+    "01-cover": {
+      "start_seconds": 0.0,
+      "end_seconds": 4.1
+    },
+    "02-diagnosis": {
+      "start_seconds": 4.1,
+      "end_seconds": 21.9
+    },
+    "03-rag": {
+      "start_seconds": 21.9,
+      "end_seconds": 37.6
+    },
+    "04-student": {
+      "start_seconds": 37.6,
+      "end_seconds": 49.2
+    },
+    "05-teacher": {
+      "start_seconds": 49.2,
+      "end_seconds": 60.2
+    },
+    "06-agent-architecture": {
+      "start_seconds": 60.2,
+      "end_seconds": 68.2
+    },
+    "07-case-inv": {
+      "start_seconds": 68.2,
+      "end_seconds": 83.4
+    },
+    "08-case-pr": {
+      "start_seconds": 83.4,
+      "end_seconds": 100.1
+    },
+    "09-case": {
+      "start_seconds": 100.1,
+      "end_seconds": 115.1
+    },
+    "10-close": {
+      "start_seconds": 115.1,
+      "end_seconds": 121.5
+    }
+  },
+  "content_coverage": {
+    "required_count": 7,
+    "present_count": 7,
+    "all_required_present": true,
+    "items": [
+      {
+        "id": "evidence_kt",
+        "label": "Evidence-KT保守画像与证据不足",
+        "items": [
+          "02-diagnosis"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 21.9,
+        "present": true
+      },
+      {
+        "id": "orcdf_shadow",
+        "label": "ORCDF V0/V1/V2 shadow、未校准与迁移边界",
+        "items": [
+          "02-diagnosis"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 21.9,
+        "present": true
+      },
+      {
+        "id": "personalized_path",
+        "label": "七步个性化路径与LearningEvent重排",
+        "items": [
+          "02-diagnosis"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 21.9,
+        "present": true
+      },
+      {
+        "id": "model_adapter",
+        "label": "Model Adapter基线与微调not_connected",
+        "items": [
+          "02-diagnosis"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 21.9,
+        "present": true
+      },
+      {
+        "id": "trusted_rag",
+        "label": "可信RAG、权威Evidence与错误引用拒绝",
+        "items": [
+          "03-rag"
+        ],
+        "start_seconds": 21.9,
+        "end_seconds": 37.6,
+        "present": true
+      },
+      {
+        "id": "teacher_hitl",
+        "label": "学生修订与教师Human-in-the-loop门禁",
+        "items": [
+          "04-student",
+          "05-teacher"
+        ],
+        "start_seconds": 37.6,
+        "end_seconds": 60.2,
+        "present": true
+      },
+      {
+        "id": "multi_agent_case",
+        "label": "状态机、多智能体、工具权限与case3真实E2E",
+        "items": [
+          "06-agent-architecture",
+          "07-case-inv",
+          "08-case-pr",
+          "09-case"
+        ],
+        "start_seconds": 60.2,
+        "end_seconds": 115.1,
+        "present": true
+      }
+    ]
+  },
+  "visual_source_sha256": {
+    "01-cover": {
+      "source": "slide-01.png",
+      "sha256": "6496686c87af43bdb30c932e28f6a8ca4c1b643ed3128295838a23165b4a9f20"
+    },
+    "02-diagnosis": {
+      "source": "01-diagnosis-orcdf-path-model.webm",
+      "sha256": "19408c7a92c590bc2dcfeb2a1818ee6f84f9561337e7f8113e75ef69958f120d"
+    },
+    "03-rag": {
+      "source": "02-trusted-rag.webm",
+      "sha256": "e2afe3584c15d77690f14e0c9a19e792ea94091df688f961aa7ea7068423ef0c"
+    },
+    "04-student": {
+      "source": "03-student-teacher-feedback.webm",
+      "sha256": "f982a52c8a11c1666c4f2cc078f7e44b109900952a696ad9662020501b277113"
+    },
+    "05-teacher": {
+      "source": "04-teacher-dashboard.webm",
+      "sha256": "3208678663d1fcf662488c10675ad2cc846ae8a4a75072fbe9b13ffe75cf7c6f"
+    },
+    "06-agent-architecture": {
+      "source": "slide-09.png",
+      "sha256": "dc6d3e5740b8a79204bfe05c14f7b384216118ed21cf1c2fc5e6d781a990df58"
+    },
+    "07-case-inv": {
+      "source": "CASE3_E2E_INV.png",
+      "sha256": "8da45ba445005b077a15019bb29a648a04a545e1afc4733bb9d171a4a68eeb0e"
+    },
+    "08-case-pr": {
+      "source": "CASE3_E2E_PR.png",
+      "sha256": "2df6f9661d0a466151928fecf93286d77d5e52c631f7b5cf464cf03bff769514"
+    },
+    "09-case": {
+      "source": "05-case3-card-and-evidence.webm",
+      "sha256": "7883e8bca5ab07dd0249c709f8e5d1eb23f361f89edd91ecf3e2b9265a65e41c"
+    },
+    "10-close": {
+      "source": "slide-12.png",
+      "sha256": "329cd7a3b8176697cacaa367420164c860a1dab92ce458e9f58fab87a31bb657"
+    }
   },
   "source_interaction_audit": "VIDEO_SEGMENTS_AUDIT.json",
   "case3_audit_snapshots": {
@@ -93,10 +279,12 @@
     }
   },
   "qa": {
-    "sampled_ten_timeline_frames_reviewed": true,
+    "sampled_timeline_frames_reviewed": true,
     "subtitles_max_two_lines": true,
     "ai_voice_label_visible_throughout": true,
-    "silence_over_1_2_seconds_detected": false
+    "silence_over_1_2_seconds_detected": false,
+    "max_voice_speed_factor": 1.0371,
+    "duration_under_180_seconds": true
   },
   "evidence_boundary": "AI-voiced DRAFT assembled from audited real browser interactions, three PPT stills, and two frozen case3 audit snapshots; not the final team-approved submission, not target-user evidence, and not expert validation"
 }

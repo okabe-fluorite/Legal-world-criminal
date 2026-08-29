@@ -4,13 +4,13 @@
   "files": [
     {
       "path": "public/伦理与安全合规声明正文.pdf",
-      "bytes": 299729,
-      "sha256": "01e7064f62f1cb332e15f91a7e8e84d681735853f0a6803064794e7577e4b5e0"
+      "bytes": 299727,
+      "sha256": "859d837731f150e85c013808b97b09676b3d7c3c16e03ce1e9550774e60233f5"
     },
     {
       "path": "public/签署前核对清单.pdf",
       "bytes": 168229,
-      "sha256": "30e6bfd9e539f780ca9f381d65beed530f7da6611281928da6bc3e06196af4e8"
+      "sha256": "9ae5261eaa197e5d19b818eaefb2c271b8dc58eeb4cf881f0c8f980c02cc9417"
     }
   ],
   "boundary": "Public draft body and checklist; no names or signatures"

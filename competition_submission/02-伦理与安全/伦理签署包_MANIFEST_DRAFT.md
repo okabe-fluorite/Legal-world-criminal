@@ -6,7 +6,7 @@
 
 | 字段 | 值 |
 |---|---|
-| Git commit | `db616bc42aedbd79325edd5f13b2a16875a9c5ae` |
+| Git commit | `2c8a3efa703547498f043d89a50329b928a04dbc` |
 | 法源manifest SHA-256 | `78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7` |
 | 构建脚本 | `competition_submission/scripts/build_ethics_signature_package.py` |
 | 构建日期 | `2026-08-30` |
@@ -19,18 +19,18 @@
 
 | 文件 | 内容 | SHA-256 |
 |---|---|---|
-| `public/伦理与安全合规声明正文.pdf` | 用途、数据、AI、诊断、Agent、隐私、风险与发布边界 | `01e7064f62f1cb332e15f91a7e8e84d681735853f0a6803064794e7577e4b5e0` |
-| `public/签署前核对清单.pdf` | 内容、隐私、法源、模型、外部证据和批准门禁 | `30e6bfd9e539f780ca9f381d65beed530f7da6611281928da6bc3e06196af4e8` |
+| `public/伦理与安全合规声明正文.pdf` | 用途、数据、AI、诊断、Agent、隐私、风险与发布边界 | `859d837731f150e85c013808b97b09676b3d7c3c16e03ce1e9550774e60233f5` |
+| `public/签署前核对清单.pdf` | 内容、隐私、法源、模型、外部证据和批准门禁 | `9ae5261eaa197e5d19b818eaefb2c271b8dc58eeb4cf881f0c8f980c02cc9417` |
 
-公开ZIP SHA-256：`7975fb9763ee1cb08b4a4c608c2036432fb539b813261cdb73d395b6b3f0a8c3`
+公开ZIP SHA-256：`1d1d660d731a135e71f6a8bab60cbb4a6e6d552ec754555cc16440b3e0ee50f9`
 
 ## 私密签署页包
 
 | 文件 | 内容 | SHA-256 |
 |---|---|---|
-| `private/伦理声明签署页_私密.pdf` | 三名责任角色的姓名、签名、日期和公开授权选择 | `4ff4e14a6489c726fc0d41fca34dd76e6c04f2b973faaae3dd50faa0e6cbf826` |
+| `private/伦理声明签署页_私密.pdf` | 三名责任角色的姓名、签名、日期和公开授权选择 | `6dfaaccdf66d253ca72616d3a0f95871364141dcded2016be9fe4581eb4054de` |
 
-私密ZIP SHA-256：`813cf2d9599c1d912d862a82b23c07fe1e53849bd151fb2d775b43ec1a3317c1`
+私密ZIP SHA-256：`52b172ad3cbea0e7eac73fde1de8d3267f3beacf0c6339329331bb1e888595e9`
 
 ## 构建与签署门禁
 

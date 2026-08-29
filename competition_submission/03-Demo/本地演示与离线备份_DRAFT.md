@@ -215,4 +215,4 @@ py competition_submission/scripts/build_narrated_demo.py `
   --public-audit competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json
 ```
 
-脚本使用本机`Microsoft Huihui Desktop`，把Guizang封面/案件架构/片尾、5段真实交互与2张去标识INV/PR审计快照组合，生成1080p H.264/AAC、中文字幕和全程AI配音标识。当前审片版97.84秒、约8.81MB，视频SHA见公开审计；它仍是DRAFT，不自动升级为最终参赛视频。
+脚本使用本机`Microsoft Huihui Desktop`，把Guizang封面/案件架构/片尾、5段真实交互与2张去标识INV/PR审计快照组合，生成1080p H.264/AAC、中文字幕和全程AI配音标识。当前提议审片版121.6秒、约9.09MiB，10段旁白最大语速1.037倍，未检出超过1.2秒静音；视频SHA与七项内容覆盖见公开审计。它仍是DRAFT，不自动升级为最终参赛视频。
