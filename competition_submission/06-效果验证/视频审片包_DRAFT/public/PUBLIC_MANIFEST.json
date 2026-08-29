@@ -1,0 +1,17 @@
+{
+  "schema": "video-review-stage-manifest-v1",
+  "stage": "public_video_qa",
+  "files": [
+    {
+      "path": "25帧视觉接触表.png",
+      "bytes": 1377277,
+      "sha256": "ba3e65a627d11609c1e189137e1022143e71a1e5999e3a31527e347887eeeb7a"
+    },
+    {
+      "path": "public/视频技术审计与时间轴.pdf",
+      "bytes": 132276,
+      "sha256": "9a127098c531f543067b1b30920acb51a90704a266b971d261e8e2e6b49a2c06"
+    }
+  ],
+  "boundary": "Technical and sampled visual QA; not team approval"
+}

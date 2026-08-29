@@ -1,0 +1,116 @@
+{
+  "schema": "video-review-package-build-audit-v1",
+  "video_sha256": "682e463ecc03cf71a8b3ff4f43c4df3cbda1f780832eba99b25cbe1f392fd19e",
+  "video_duration_seconds": 121.6,
+  "sampled_frame_count": 25,
+  "content_coverage": {
+    "required_count": 7,
+    "present_count": 7,
+    "all_required_present": true,
+    "items": [
+      {
+        "id": "evidence_kt",
+        "label": "Evidence-KT保守画像与证据不足",
+        "items": [
+          "02-diagnosis"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 21.9,
+        "present": true
+      },
+      {
+        "id": "orcdf_shadow",
+        "label": "ORCDF V0/V1/V2 shadow、未校准与迁移边界",
+        "items": [
+          "02-diagnosis"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 21.9,
+        "present": true
+      },
+      {
+        "id": "personalized_path",
+        "label": "七步个性化路径与LearningEvent重排",
+        "items": [
+          "02-diagnosis"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 21.9,
+        "present": true
+      },
+      {
+        "id": "model_adapter",
+        "label": "Model Adapter基线与微调not_connected",
+        "items": [
+          "02-diagnosis"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 21.9,
+        "present": true
+      },
+      {
+        "id": "trusted_rag",
+        "label": "可信RAG、权威Evidence与错误引用拒绝",
+        "items": [
+          "03-rag"
+        ],
+        "start_seconds": 21.9,
+        "end_seconds": 37.6,
+        "present": true
+      },
+      {
+        "id": "teacher_hitl",
+        "label": "学生修订与教师Human-in-the-loop门禁",
+        "items": [
+          "04-student",
+          "05-teacher"
+        ],
+        "start_seconds": 37.6,
+        "end_seconds": 60.2,
+        "present": true
+      },
+      {
+        "id": "multi_agent_case",
+        "label": "状态机、多智能体、工具权限与case3真实E2E",
+        "items": [
+          "06-agent-architecture",
+          "07-case-inv",
+          "08-case-pr",
+          "09-case"
+        ],
+        "start_seconds": 60.2,
+        "end_seconds": 115.1,
+        "present": true
+      }
+    ]
+  },
+  "media_qa": {
+    "sampled_timeline_frames_reviewed": true,
+    "subtitles_max_two_lines": true,
+    "ai_voice_label_visible_throughout": true,
+    "silence_over_1_2_seconds_detected": false,
+    "max_voice_speed_factor": 1.0371,
+    "duration_under_180_seconds": true
+  },
+  "audio_analysis": {
+    "silence_threshold_seconds": 1.2,
+    "silence_over_threshold_count": 0,
+    "silence_durations_seconds": [],
+    "max_silence_seconds": 0.0,
+    "integrated_loudness_lufs": -23.3,
+    "true_peak_dbfs": -3.6
+  },
+  "public_pdf_pages": 2,
+  "private_pdf_pages": 2,
+  "required_public_missing": [],
+  "required_private_missing": [],
+  "secret_scan": {
+    "hits": [],
+    "passed": true
+  },
+  "required_reviewer_count": 3,
+  "real_approval_count": 0,
+  "team_review_complete": false,
+  "video_approved": false,
+  "evidence_boundary": "Technical QA and blank review form only; the team has not approved the video"
+}

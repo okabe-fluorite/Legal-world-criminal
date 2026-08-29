@@ -1,0 +1,12 @@
+{
+  "schema": "video-review-stage-manifest-v1",
+  "stage": "private_full_review_approval",
+  "files": [
+    {
+      "path": "private/团队完整审片批准表_私密.pdf",
+      "bytes": 136940,
+      "sha256": "9edbfd5cde98a3d3c2703c58358438e7c7278a8ad08b2488c26575d2dc51c6a3"
+    }
+  ],
+  "boundary": "Blank real-review form; completed signatures stay offline"
+}

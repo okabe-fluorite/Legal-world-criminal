@@ -32,6 +32,7 @@
 | case3冻结演示E2E | `competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json`、`CASE3_INV_PR_SNAPSHOT.json` | 461.547秒、29次固定脚本回答、0 runtime issue；不起诉分支非专家结论 |
 | Guizang PPT | `competition_submission/04-作品方案/guizang/qa/report.json`、`pptx-report.json` | 材料commit`0e863fb`；12页；浏览器四类错误为0；最大回渲染误差0.0953 |
 | 演示视频DRAFT | `competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json` | 121.6秒、1920×1080；SHA `682e463e...2fd19e`；七项技术7/7、AI配音标识可见 |
+| 团队审片材料 | `competition_submission/06-效果验证/视频审片包_DRAFT/MANIFEST.json`、`BUILD_AUDIT.json` | 25帧接触表、技术PDF与三角色批准表已就绪；真实批准仍为0/3 |
 
 ### L1量化摘要
 

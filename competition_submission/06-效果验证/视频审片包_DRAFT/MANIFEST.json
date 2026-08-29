@@ -1,0 +1,69 @@
+{
+  "schema": "video-review-package-manifest-v1",
+  "source_git_commit": "d2d20a65a58fa072aca8a073c1ba4eed1f940831",
+  "package_build_date": "2026-08-30",
+  "video_sha256": "682e463ecc03cf71a8b3ff4f43c4df3cbda1f780832eba99b25cbe1f392fd19e",
+  "video_duration_seconds": 121.6,
+  "files": [
+    {
+      "path": "25帧视觉接触表.png",
+      "bytes": 1377277,
+      "sha256": "ba3e65a627d11609c1e189137e1022143e71a1e5999e3a31527e347887eeeb7a"
+    },
+    {
+      "path": "BUILD_AUDIT.json",
+      "bytes": 3233,
+      "sha256": "5d4ed098b11d13deefc42110f3c6d9b15cd1031d3737808dd43bae5de49fc856"
+    },
+    {
+      "path": "README.md",
+      "bytes": 497,
+      "sha256": "5f2d3a02b8ae334cf1c55f8d192377081c7f857d47b54d14e2cfcc3a917edc7d"
+    },
+    {
+      "path": "private/PRIVATE_MANIFEST.json",
+      "bytes": 379,
+      "sha256": "cb0f0f8889637887a9bb75afff0e1bc094612e16580175ef3722d39b01051ccd"
+    },
+    {
+      "path": "private/团队完整审片批准表_私密.pdf",
+      "bytes": 136940,
+      "sha256": "9edbfd5cde98a3d3c2703c58358438e7c7278a8ad08b2488c26575d2dc51c6a3"
+    },
+    {
+      "path": "public/PUBLIC_MANIFEST.json",
+      "bytes": 521,
+      "sha256": "5d421e26b438e6687e5e57e5c081c009d6fdd87ae358db5a16043be43abdb4f1"
+    },
+    {
+      "path": "public/视频技术审计与时间轴.pdf",
+      "bytes": 132276,
+      "sha256": "9a127098c531f543067b1b30920acb51a90704a266b971d261e8e2e6b49a2c06"
+    },
+    {
+      "path": "团队审片批准页包_DRAFT.zip",
+      "bytes": 133597,
+      "sha256": "01f7318a75a6cca021a6813e9c08f815c74dc684720b3a4af4d7bb2da228b9bc"
+    },
+    {
+      "path": "团队审片批准页包_DRAFT.zip.sha256.txt",
+      "bytes": 102,
+      "sha256": "c29f026cb6da19170960216aa9303b1b7a23a923b8c09b98587b36de9a7c4b90"
+    },
+    {
+      "path": "视频技术审片包_DRAFT.zip",
+      "bytes": 1493537,
+      "sha256": "8eaf9a311a667767ca91daa74cb2e6ea381ca824116c1cbf87afc5390c154d34"
+    },
+    {
+      "path": "视频技术审片包_DRAFT.zip.sha256.txt",
+      "bytes": 99,
+      "sha256": "75a83c74ee55fc178b4fe7d854f8ce58afa98bc639f64225ba924f1badae1539"
+    }
+  ],
+  "required_reviewer_count": 3,
+  "real_approval_count": 0,
+  "team_review_complete": false,
+  "video_approved": false,
+  "evidence_boundary": "Prepared review evidence and blank private approval form; no review or approval is fabricated"
+}

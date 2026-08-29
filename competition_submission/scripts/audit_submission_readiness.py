@@ -40,6 +40,8 @@ def main() -> int:
     user_trial_audit = read_json(SUBMISSION / "06-效果验证" / "目标用户试用包_DRAFT" / "BUILD_AUDIT.json")
     ethics_package = read_json(SUBMISSION / "02-伦理与安全" / "伦理签署包_DRAFT" / "MANIFEST.json")
     ethics_package_audit = read_json(SUBMISSION / "02-伦理与安全" / "伦理签署包_DRAFT" / "BUILD_AUDIT.json")
+    video_review = read_json(SUBMISSION / "06-效果验证" / "视频审片包_DRAFT" / "MANIFEST.json")
+    video_review_audit = read_json(SUBMISSION / "06-效果验证" / "视频审片包_DRAFT" / "BUILD_AUDIT.json")
     typical = read_json(REPO / "docs" / "TYPICAL_QUESTION_EVALUATION.json")
     ppt_meta = read_json(ppt_report)
     web_meta = read_json(web_report)
@@ -109,8 +111,13 @@ def main() -> int:
                 "true_peak_dbfs": video_audio_analysis.get("true_peak_dbfs"),
                 "ai_voice_label_visible": narrated.get("audio", {}).get("ai_generated_label_visible"),
                 "subtitle_count": narrated.get("subtitles", {}).get("count"),
+                "review_package_sampled_frames": video_review_audit.get("sampled_frame_count"),
+                "required_reviewer_count": video_review.get("required_reviewer_count"),
+                "real_approval_count": video_review.get("real_approval_count"),
+                "team_review_complete": video_review.get("team_review_complete"),
+                "video_approved": video_review.get("video_approved"),
             },
-            "boundary": "AI配音DRAFT已含去标识case3 INV/PR审计快照，尚未团队完整审片与最终批准",
+            "boundary": "技术QA与25帧接触表已就绪；AI配音DRAFT尚未由内容、技术、隐私/伦理三名审片人完整播放并一致批准",
         },
         {
             "id": "reproducible_code",

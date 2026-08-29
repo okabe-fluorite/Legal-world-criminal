@@ -6,5 +6,8 @@
 /04-作品方案/guizang/qa/screens/
 /04-作品方案/guizang/qa/pptx-render*/
 
+# 视频审片25帧可由build_video_review_package.py复现；只提交接触表和审计
+/06-效果验证/视频审片包_DRAFT/frames/
+
 # 本地冻结的演示数据库含演示账号哈希，只离线保管，不提交Git
 /offline_backup/
