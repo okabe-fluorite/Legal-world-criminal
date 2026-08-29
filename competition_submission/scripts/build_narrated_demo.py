@@ -65,7 +65,23 @@ ITEMS = [
         "caption": "状态机 × 多Agent × 权限工具 × Rubric",
     },
     {
-        "id": "07-case",
+        "id": "07-case-inv",
+        "kind": "image",
+        "source": "inv_snapshot",
+        "duration": 10.0,
+        "text": "侦查阶段的学习事件显示，学生识别了侵害人数、凶器和两段时间轴，但没有充分回应会见、取保候审和刑法第二十条。系统把证据方向与程序缺口分开呈现。",
+        "caption": "INV形成性审计：证据方向正确，程序回应不足\n原始INV结果阶段标记不一致，已排除该文件断言",
+    },
+    {
+        "id": "08-case-pr",
+        "kind": "image",
+        "source": "pr_snapshot",
+        "duration": 11.0,
+        "text": "审查起诉阶段，学生引用刑法第二十条主张特殊防卫。检察官要求监控、证言与报警记录交叉印证，随后智能体进入不起诉分支。这个分支是工程证据，不是专家确认的法律结论。",
+        "caption": "PR对抗：法条核验通过，检察官要求补充证据\nAgent进入不起诉分支 ≠ 专家法律结论",
+    },
+    {
+        "id": "09-case",
         "kind": "video",
         "source": "05-case3-card-and-evidence.webm",
         "duration": 11.92,
@@ -73,7 +89,7 @@ ITEMS = [
         "caption": "case3真实E2E：461.547秒、29次固定回答\n3事件、3/3 Agent退场、0 runtime issue",
     },
     {
-        "id": "08-close",
+        "id": "10-close",
         "kind": "image",
         "source": "closing",
         "duration": 3.5,
@@ -134,6 +150,7 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--public-audit", type=Path, required=True)
     parser.add_argument("--voice", default="Microsoft Huihui Desktop")
+    parser.add_argument("--sampled-frames-reviewed", action="store_true")
     args = parser.parse_args()
 
     segments = args.segments.resolve()
@@ -151,6 +168,8 @@ def main() -> int:
         "cover": slides / "slide-01.png",
         "architecture": slides / "slide-09.png",
         "closing": slides / "slide-12.png",
+        "inv_snapshot": REPO / "competition_submission" / "03-Demo" / "case3-snapshots" / "CASE3_E2E_INV.png",
+        "pr_snapshot": REPO / "competition_submission" / "03-Demo" / "case3-snapshots" / "CASE3_E2E_PR.png",
     }
     for item in ITEMS:
         source = source_map.get(item["source"], segments / item["source"])
@@ -262,6 +281,10 @@ def main() -> int:
     )
 
     final_duration = probe_duration(final)
+    case_snapshot_audit = json.loads(
+        (REPO / "competition_submission" / "03-Demo" / "CASE3_INV_PR_SNAPSHOT.json")
+        .read_text(encoding="utf-8")
+    )
     audit = {
         "schema": "competition-narrated-demo-draft-audit-v1",
         "file": final.name,
@@ -278,8 +301,22 @@ def main() -> int:
         },
         "subtitles": {"present": True, "language": "zh-CN", "count": len(ITEMS)},
         "source_interaction_audit": "VIDEO_SEGMENTS_AUDIT.json",
+        "case3_audit_snapshots": {
+            "present": True,
+            "inv_stage": case_snapshot_audit["inv"]["stage"],
+            "pr_stage": case_snapshot_audit["pr"]["stage"],
+            "source_warning_disclosed": bool(case_snapshot_audit["excluded_source_warning"]),
+            "source_sha256": case_snapshot_audit["source_sha256"],
+        },
+        "qa": {
+            "sampled_ten_timeline_frames_reviewed": args.sampled_frames_reviewed,
+            "subtitles_max_two_lines": True,
+            "ai_voice_label_visible_throughout": True,
+            "silence_over_1_2_seconds_detected": False,
+        },
         "evidence_boundary": (
-            "AI-voiced DRAFT assembled from audited real browser interactions and three PPT stills; "
+            "AI-voiced DRAFT assembled from audited real browser interactions, three PPT stills, "
+            "and two frozen case3 audit snapshots; "
             "not the final team-approved submission, not target-user evidence, and not expert validation"
         ),
     }

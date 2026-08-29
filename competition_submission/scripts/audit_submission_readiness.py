@@ -69,7 +69,7 @@ def main() -> int:
             "status": "draft_ready",
             "evidence": ["competition_submission/03-Demo/VIDEO_SEGMENTS_AUDIT.json", "competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json"],
             "detail": {"real_segment_seconds": segments.get("segment_total_duration_seconds"), "draft_seconds": narrated.get("duration_seconds"), "draft_resolution": narrated.get("resolution")},
-            "boundary": "AI配音DRAFT尚未团队批准；缺已标识case3 INV/PR对抗快照",
+            "boundary": "AI配音DRAFT已含去标识case3 INV/PR审计快照，尚未团队完整审片与最终批准",
         },
         {
             "id": "reproducible_code",
@@ -163,7 +163,7 @@ def main() -> int:
         "",
         "1. 真实法学专家完成A/B两阶段审核，必要时整改复签。",
         "2. 至少2名目标用户按统一主持脚本试用并形成去标识记录。",
-        "3. 团队补case3 INV/PR快照、完整审片并批准最终视频。",
+        "3. 团队完整审片并批准最终视频，决定保留AI配音或替换真人旁白。",
         "4. 团队负责人和指导教师签署伦理声明，更新PPT/报告中的pending。",
     ])
     md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")

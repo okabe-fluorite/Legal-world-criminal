@@ -1,7 +1,7 @@
 {
   "slides": 12,
   "all_1600x900": true,
-  "max_mean_abs_error": 0.095,
+  "max_mean_abs_error": 0.0956,
   "rows": [
     {
       "slide": 1,
@@ -29,7 +29,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.095
+      "mean_abs_error": 0.0956
     },
     {
       "slide": 3,
@@ -43,7 +43,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0405
+      "mean_abs_error": 0.0406
     },
     {
       "slide": 4,
@@ -57,7 +57,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0499
+      "mean_abs_error": 0.05
     },
     {
       "slide": 5,
@@ -85,7 +85,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0577
+      "mean_abs_error": 0.0586
     },
     {
       "slide": 7,
@@ -113,7 +113,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0669
+      "mean_abs_error": 0.0668
     },
     {
       "slide": 9,
@@ -127,7 +127,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0493
+      "mean_abs_error": 0.0492
     },
     {
       "slide": 10,
@@ -155,7 +155,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0611
+      "mean_abs_error": 0.0612
     },
     {
       "slide": 12,
@@ -169,7 +169,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.079
+      "mean_abs_error": 0.0793
     }
   ]
 }

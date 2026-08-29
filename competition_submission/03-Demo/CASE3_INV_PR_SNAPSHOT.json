@@ -1,0 +1,85 @@
+{
+  "schema": "case3-inv-pr-audit-snapshot-v1",
+  "generated_at": "2026-08-29T14:17:48.437226+00:00",
+  "case_id": "case_3",
+  "case_title": "张那木拉特殊防卫案",
+  "source_sha256": {
+    "inv_learning_event": "fa9e63eb67311e11a1acfce0f972bde27eb7c7f9aa6db99aa3f276a8c5eda696",
+    "pr_learning_event": "721f85c9c46d59ea8412848be2353fe75326b7ccfc32c4aa0b76fb02d54fefdb",
+    "pr_result": "b5753b30b637a188c8f51fed0fdba0de4f5bc05191cbd885dacab54097478af7",
+    "prosecution_decision": "6e0557a60847b37542bfae1c92daa6a09e4684ede4d09b9a420710602a3add96",
+    "case3_e2e_summary": "3f820364612090fdf76fef7de6fa73abf000fece125ee8cd018f98d81001cf93"
+  },
+  "excluded_source_warning": {
+    "file": "INV_result.json",
+    "sha256": "6f4aa4e67148b4ec25a69d9ddf44f288e9eaff2cbaebcbd27eaab3d76b7b11ae",
+    "reason": "filename implies INV but embedded scenario_type is 'LC'; excluded from INV assertions"
+  },
+  "inv": {
+    "stage": "INV",
+    "knowledge_status": "partial",
+    "knowledge_reason": "学生能识别正当防卫的关键事实并反对简单倒推防卫过当，但未展开特殊防卫的构成要件，也未引用刑法第20条规范依据",
+    "capability_scores": {
+      "fact_identification": 0.7,
+      "procedural_compliance": 0.5,
+      "rule_retrieval": 0.5
+    },
+    "evidence_quote": "应绘制两段行为时间轴，核对侵害人数、凶器、攻击后脑等要害部位、陈某倒地后周某是否仍持刀继续侵害",
+    "error_tags": [
+      "程序节点遗漏-未回应取保候审申请及手续",
+      "程序节点遗漏-未回应羁押场所查询",
+      "规范引用缺失-未引用刑法第20条正当防卫条款"
+    ],
+    "knowledge_gaps": [
+      "取保候审的适用条件与申请程序（刑诉法第67条）",
+      "侦查阶段辩护律师会见权的具体规定（刑诉法第39条）",
+      "特殊防卫（刑法第20条第3款）的构成要件与适用"
+    ]
+  },
+  "pr": {
+    "stage": "PR",
+    "knowledge_status": "partial",
+    "lawyer_argument": "审查起诉应依据《中华人民共和国刑法》第二十条逐项审查不法侵害是否正在进行、多人持致命凶器攻击要害是否属于第三款的行凶，以及部分侵害人被制伏后其他侵害是否仍在继续。监控、凶器和报警记录能够印证现实危险持续的，应提出特殊防卫、不负刑事责任及依法不起诉意见。",
+    "prosecutor_response": "你的辩护意见核心观点我已记录在案，无需再重复。我想再确认一点：你方是否主张张那木拉在制伏部分侵害人后，仍面临其他侵害人的现实威胁，这一点需要监控时间线之外的证据支撑。\n\n如果有目击证言或报警通话记录能印证当时危险并未解除，请一并补充提交，我会在审查中一并考量。意见交流到这里已经比较充分，我会依法审查后作出处理决定。\n\n【审查起诉阶段结束】",
+    "valid_citation": {
+      "citation": "《中华人民共和国刑法》第二十条",
+      "title": "中华人民共和国刑法",
+      "article_ref": "第二十条",
+      "status": "valid",
+      "content": "为了使国家、公共利益、本人或者他人的人身、财产和其他权利免受正在进行的不法侵害，而采取的制止不法侵害的行为，对不法侵害人造成损害的，属于正当防卫，不负刑事责任。\n正当防卫明显超过必要限度造成重大损害的，应当负刑事责任，但是应当减轻或者免除处罚。\n对正在进行行凶、杀人、抢劫、强奸、绑架以及其他严重危及人身安全的暴力犯罪，",
+      "issue": ""
+    },
+    "capability_scores": {
+      "rule_retrieval": {
+        "score": 1.0,
+        "source": "deterministic"
+      },
+      "subsumption": {
+        "score": 0.6,
+        "source": "judge"
+      },
+      "claim_construction": {
+        "score": 0.7,
+        "source": "judge"
+      }
+    },
+    "decision": {
+      "prosecute": false,
+      "reason_excerpt": "经审查，周某强等四人持砍刀、铁锨等致命凶器闯入张那木拉暂住处并攻击其要害部位，不法侵害现实且紧迫，属于刑法第二十条第三款规定的\"行凶\"；张那木拉在人身安全遭受严重暴力侵害时持刀反击致陈某2新死亡，其后周某强仍在屋外挥舞砍刀继续实施侵害，张那木拉为制止侵害、保护兄长持铁锨将其打入鱼塘，均系为制止正在进行的不法侵害所必需，不属于防卫过当，依法不负刑事责任。监控录像、凶器提取、尸检伤情鉴定及报警记录能够相互印证，不存在证据缺失。依据刑事诉讼法第一百七十七条第一款，本案犯罪嫌疑人没有犯罪事实，应作出不起诉决定。",
+      "full_reason_sha256": "0e680091082af64fed908d8fa40e4304234e6d4ee7f20b597740d75a0c809c30"
+    }
+  },
+  "e2e": {
+    "elapsed_seconds": 461.547,
+    "fixed_response_count": 29,
+    "stages_seen": [
+      "LC",
+      "INV",
+      "PR"
+    ],
+    "closed": true,
+    "agent_despawn_count": 3,
+    "runtime_issue_count": 0
+  },
+  "evidence_boundary": "frozen synthetic demo account and deterministic student inputs; LLM judge feedback is formative; Agent non-prosecution branch is not expert validation or a guaranteed legal outcome"
+}

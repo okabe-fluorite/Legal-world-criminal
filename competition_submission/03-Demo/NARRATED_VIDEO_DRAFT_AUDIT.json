@@ -1,9 +1,9 @@
 {
   "schema": "competition-narrated-demo-draft-audit-v1",
   "file": "星火智学_真实交互演示_AI配音_DRAFT.mp4",
-  "duration_seconds": 76.84,
-  "bytes": 7729119,
-  "sha256": "32af5dc5e40020bcd08175b3c8f46ec51991c7d8f0d60361e2641955825dd48a",
+  "duration_seconds": 97.84,
+  "bytes": 8865345,
+  "sha256": "680e5285528f39fa631679cc13052ede0571ee1ee19e421fed0133fcc0833d16",
   "resolution": "1920x1080",
   "fps": 25,
   "audio": {
@@ -48,13 +48,25 @@
         "voice_speed_factor": 1.83734
       },
       {
-        "id": "07-case",
+        "id": "07-case-inv",
+        "visual_duration_seconds": 10.0,
+        "raw_voice_duration_seconds": 14.809,
+        "voice_speed_factor": 1.53456
+      },
+      {
+        "id": "08-case-pr",
+        "visual_duration_seconds": 11.0,
+        "raw_voice_duration_seconds": 16.397,
+        "voice_speed_factor": 1.53966
+      },
+      {
+        "id": "09-case",
         "visual_duration_seconds": 11.92,
         "raw_voice_duration_seconds": 14.76,
         "voice_speed_factor": 1.27574
       },
       {
-        "id": "08-close",
+        "id": "10-close",
         "visual_duration_seconds": 3.5,
         "raw_voice_duration_seconds": 6.061,
         "voice_speed_factor": 1.92423
@@ -64,8 +76,27 @@
   "subtitles": {
     "present": true,
     "language": "zh-CN",
-    "count": 8
+    "count": 10
   },
   "source_interaction_audit": "VIDEO_SEGMENTS_AUDIT.json",
-  "evidence_boundary": "AI-voiced DRAFT assembled from audited real browser interactions and three PPT stills; not the final team-approved submission, not target-user evidence, and not expert validation"
+  "case3_audit_snapshots": {
+    "present": true,
+    "inv_stage": "INV",
+    "pr_stage": "PR",
+    "source_warning_disclosed": true,
+    "source_sha256": {
+      "inv_learning_event": "fa9e63eb67311e11a1acfce0f972bde27eb7c7f9aa6db99aa3f276a8c5eda696",
+      "pr_learning_event": "721f85c9c46d59ea8412848be2353fe75326b7ccfc32c4aa0b76fb02d54fefdb",
+      "pr_result": "b5753b30b637a188c8f51fed0fdba0de4f5bc05191cbd885dacab54097478af7",
+      "prosecution_decision": "6e0557a60847b37542bfae1c92daa6a09e4684ede4d09b9a420710602a3add96",
+      "case3_e2e_summary": "3f820364612090fdf76fef7de6fa73abf000fece125ee8cd018f98d81001cf93"
+    }
+  },
+  "qa": {
+    "sampled_ten_timeline_frames_reviewed": true,
+    "subtitles_max_two_lines": true,
+    "ai_voice_label_visible_throughout": true,
+    "silence_over_1_2_seconds_detected": false
+  },
+  "evidence_boundary": "AI-voiced DRAFT assembled from audited real browser interactions, three PPT stills, and two frozen case3 audit snapshots; not the final team-approved submission, not target-user evidence, and not expert validation"
 }
