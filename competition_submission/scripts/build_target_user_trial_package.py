@@ -47,6 +47,7 @@ EFFECT_DIR = SUBMISSION / "06-效果验证"
 LAW_MANIFEST = REPO / "backend" / "legal_corpus" / "processed" / "law_corpus_manifest.json"
 DEFAULT_OUTPUT = EFFECT_DIR / "目标用户试用包_DRAFT"
 PARTICIPANTS = ("U01", "U02")
+FOOTER_LABEL = "星火智学 · XH-202620 · 目标用户试用材料"
 
 
 def git_output(*args: str) -> str:
@@ -391,18 +392,18 @@ def main() -> int:
     private_files: list[Path] = []
     for participant in PARTICIPANTS:
         path = private_dir / f"{participant}_知情同意书_私密.pdf"
-        build_pdf(path, f"{participant}目标用户试用知情同意书", consent_story(participant, commit, st))
+        build_pdf(path, f"{participant}目标用户试用知情同意书", consent_story(participant, commit, st), FOOTER_LABEL)
         private_files.append(path)
 
     host_path = public_dir / "统一试用主持脚本.pdf"
-    build_pdf(host_path, "目标用户统一试用主持脚本", host_story(commit, law_sha, st))
+    build_pdf(host_path, "目标用户统一试用主持脚本", host_story(commit, law_sha, st), FOOTER_LABEL)
     public_files = [host_path]
     for participant in PARTICIPANTS:
         path = public_dir / f"{participant}_去标识试用记录.pdf"
-        build_pdf(path, f"{participant}去标识试用记录", record_story(participant, commit, law_sha, st))
+        build_pdf(path, f"{participant}去标识试用记录", record_story(participant, commit, law_sha, st), FOOTER_LABEL)
         public_files.append(path)
     summary_path = public_dir / "U01_U02去标识汇总模板.pdf"
-    build_pdf(summary_path, "U01 U02去标识试用汇总模板", summary_story(commit, st))
+    build_pdf(summary_path, "U01 U02去标识试用汇总模板", summary_story(commit, st), FOOTER_LABEL)
     public_files.append(summary_path)
 
     private_manifest = private_dir / "PRIVATE_MANIFEST.json"

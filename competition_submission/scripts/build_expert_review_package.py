@@ -204,12 +204,18 @@ def page_footer(pdf: canvas.Canvas, doc: SimpleDocTemplate) -> None:
     pdf.line(18 * mm, 13 * mm, A4[0] - 18 * mm, 13 * mm)
     pdf.setFont("MSYH", 7)
     pdf.setFillColor(GREY)
-    pdf.drawString(18 * mm, 8.5 * mm, "星火智学 · XH-202620 · 独立法学专家审核材料")
+    footer_label = getattr(doc, "footer_label", "星火智学 · XH-202620 · 独立法学专家审核材料")
+    pdf.drawString(18 * mm, 8.5 * mm, footer_label)
     pdf.drawRightString(A4[0] - 18 * mm, 8.5 * mm, f"{doc.page}")
     pdf.restoreState()
 
 
-def build_pdf(path: Path, title: str, story: list[Any]) -> None:
+def build_pdf(
+    path: Path,
+    title: str,
+    story: list[Any],
+    footer_label: str = "星火智学 · XH-202620 · 独立法学专家审核材料",
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = SimpleDocTemplate(
         str(path),
@@ -222,6 +228,7 @@ def build_pdf(path: Path, title: str, story: list[Any]) -> None:
         topMargin=17 * mm,
         bottomMargin=19 * mm,
     )
+    doc.footer_label = footer_label
     doc.build(story, onFirstPage=page_footer, onLaterPages=page_footer, canvasmaker=InvariantCanvas)
 
 
