@@ -1,8 +1,8 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-29T19:52:21.441206+00:00",
-  "git_commit": "2c8a3efa703547498f043d89a50329b928a04dbc",
-  "tracked_worktree_clean_before_audit": false,
+  "generated_at": "2026-08-29T20:04:42.161615+00:00",
+  "git_commit": "41a445f32b7c75593dde9fb8aa610bdd3009383f",
+  "tracked_worktree_clean_before_audit": true,
   "untracked_user_material_count": 5,
   "checks": [
     {
@@ -38,9 +38,22 @@
         "competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json"
       ],
       "detail": {
+        "source_git_commit": "2c8a3efa703547498f043d89a50329b928a04dbc",
         "real_segment_seconds": 65.24,
         "draft_seconds": 121.6,
-        "draft_resolution": "1920x1080"
+        "draft_bytes": 9533563,
+        "draft_sha256": "682e463ecc03cf71a8b3ff4f43c4df3cbda1f780832eba99b25cbe1f392fd19e",
+        "draft_resolution": "1920x1080",
+        "video_codec": "h264",
+        "audio_codec": "aac",
+        "content_coverage": "7/7",
+        "all_required_content_present": true,
+        "max_voice_speed_factor": 1.0371,
+        "silence_over_1_2_seconds": 0,
+        "integrated_loudness_lufs": -23.3,
+        "true_peak_dbfs": -3.6,
+        "ai_voice_label_visible": true,
+        "subtitle_count": 10
       },
       "boundary": "AI配音DRAFT已含去标识case3 INV/PR审计快照，尚未团队完整审片与最终批准"
     },
