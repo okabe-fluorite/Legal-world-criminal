@@ -28,6 +28,13 @@
 
 共使用10种登记版式；没有连续三页同结构。图片均为真实本地系统截图，使用直角、无阴影、`fit-contain`保真展示。
 
+## 交付形态
+
+- `index.html`：可交互网页PPT，保留横向翻页、动效、ESC索引和B键低功耗模式。
+- `slides.html`：12页可编辑内容源；`build.mjs`从Guizang模板可复现生成`index.html`。
+- `星火智学_作品方案_Guizang_DRAFT.pptx`：把浏览器验收后的1600×900页面作为全幅图片嵌入，适合直接发送和提交预览；逐字修改应回到`slides.html`后重新导出。
+- `qa/report.json`与`qa/pptx-report.json`：分别记录浏览器与PowerPoint渲染门禁；逐页临时截图不提交Git。
+
 ## 仍需真实补齐
 
 - 独立法学专家审核三个典型问题；当前自动门禁3/3不等于专家准确率。

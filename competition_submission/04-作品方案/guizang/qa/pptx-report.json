@@ -1,0 +1,175 @@
+{
+  "slides": 12,
+  "all_1600x900": true,
+  "max_mean_abs_error": 0.0949,
+  "rows": [
+    {
+      "slide": 1,
+      "source": "slide-01.png",
+      "render": "幻灯片1.PNG",
+      "source_size": [
+        1600,
+        900
+      ],
+      "render_size": [
+        1600,
+        900
+      ],
+      "mean_abs_error": 0.0347
+    },
+    {
+      "slide": 2,
+      "source": "slide-02.png",
+      "render": "幻灯片2.PNG",
+      "source_size": [
+        1600,
+        900
+      ],
+      "render_size": [
+        1600,
+        900
+      ],
+      "mean_abs_error": 0.0949
+    },
+    {
+      "slide": 3,
+      "source": "slide-03.png",
+      "render": "幻灯片3.PNG",
+      "source_size": [
+        1600,
+        900
+      ],
+      "render_size": [
+        1600,
+        900
+      ],
+      "mean_abs_error": 0.0405
+    },
+    {
+      "slide": 4,
+      "source": "slide-04.png",
+      "render": "幻灯片4.PNG",
+      "source_size": [
+        1600,
+        900
+      ],
+      "render_size": [
+        1600,
+        900
+      ],
+      "mean_abs_error": 0.0497
+    },
+    {
+      "slide": 5,
+      "source": "slide-05.png",
+      "render": "幻灯片5.PNG",
+      "source_size": [
+        1600,
+        900
+      ],
+      "render_size": [
+        1600,
+        900
+      ],
+      "mean_abs_error": 0.0446
+    },
+    {
+      "slide": 6,
+      "source": "slide-06.png",
+      "render": "幻灯片6.PNG",
+      "source_size": [
+        1600,
+        900
+      ],
+      "render_size": [
+        1600,
+        900
+      ],
+      "mean_abs_error": 0.0582
+    },
+    {
+      "slide": 7,
+      "source": "slide-07.png",
+      "render": "幻灯片7.PNG",
+      "source_size": [
+        1600,
+        900
+      ],
+      "render_size": [
+        1600,
+        900
+      ],
+      "mean_abs_error": 0.031
+    },
+    {
+      "slide": 8,
+      "source": "slide-08.png",
+      "render": "幻灯片8.PNG",
+      "source_size": [
+        1600,
+        900
+      ],
+      "render_size": [
+        1600,
+        900
+      ],
+      "mean_abs_error": 0.0671
+    },
+    {
+      "slide": 9,
+      "source": "slide-09.png",
+      "render": "幻灯片9.PNG",
+      "source_size": [
+        1600,
+        900
+      ],
+      "render_size": [
+        1600,
+        900
+      ],
+      "mean_abs_error": 0.0482
+    },
+    {
+      "slide": 10,
+      "source": "slide-10.png",
+      "render": "幻灯片10.PNG",
+      "source_size": [
+        1600,
+        900
+      ],
+      "render_size": [
+        1600,
+        900
+      ],
+      "mean_abs_error": 0.0742
+    },
+    {
+      "slide": 11,
+      "source": "slide-11.png",
+      "render": "幻灯片11.PNG",
+      "source_size": [
+        1600,
+        900
+      ],
+      "render_size": [
+        1600,
+        900
+      ],
+      "mean_abs_error": 0.0612
+    },
+    {
+      "slide": 12,
+      "source": "slide-12.png",
+      "render": "幻灯片12.PNG",
+      "source_size": [
+        1600,
+        900
+      ],
+      "render_size": [
+        1600,
+        900
+      ],
+      "mean_abs_error": 0.0812
+    }
+  ]
+}
