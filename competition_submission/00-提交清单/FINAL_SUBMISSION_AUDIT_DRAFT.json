@@ -1,7 +1,7 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-29T16:29:12.033947+00:00",
-  "git_commit": "ed82e3fa476c2f2b2dda2dc176fd3b553508b96c",
+  "generated_at": "2026-08-29T16:37:58.048334+00:00",
+  "git_commit": "6090ffd94daadf577067fb4a7667e8490c5ac115",
   "tracked_worktree_clean_before_audit": true,
   "untracked_user_material_count": 5,
   "checks": [
@@ -80,8 +80,11 @@
         "competition_submission/06-效果验证/专家审核包_MANIFEST_DRAFT.md"
       ],
       "detail": {
-        "automatic_gate_passed": null,
-        "expert_status": null
+        "case_count": 3,
+        "automated_gate_pass_count": 3,
+        "all_expert_reviews_complete": false,
+        "generated_at": "2026-08-28T16:17:02.490918+00:00",
+        "suite_sha256": "3b5f896c63fb6e207c59c5039876c8f35d6a823eeeb36ba7b2b0dc73c71180c2"
       },
       "boundary": "自动门禁不等于专家准确率"
     },
