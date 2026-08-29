@@ -1,0 +1,57 @@
+{
+  "schema_version": "criminal-law-typical-question-suite-v1",
+  "course": "undergraduate-criminal-law",
+  "cases": [
+    {
+      "case_id": "TQ01_RETROACTIVITY",
+      "title": "罪刑法定与从旧兼从轻",
+      "knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+      "question": "甲实施行为时旧法认为构成犯罪，但裁判时新法不认为是犯罪；如果新法仍认为犯罪但处刑较轻，又应如何选择法律？请说明规则并引用法条。",
+      "standard_answer": "依据《刑法》第十二条，原则上适用行为时的法律；裁判时的本法不认为是犯罪，或者虽认为犯罪但处刑较轻的，适用本法，即从旧兼从轻。罪刑法定要求不得脱离明文规定定罪。",
+      "required_source_ids": [
+        "EVID_884FC4550E1F5A30DACE"
+      ],
+      "required_points": [
+        {"point_id": "old_law_default", "label": "原则适用行为时法", "keyword_groups": [["行为时", "法律"], ["从旧"]]},
+        {"point_id": "new_law_decriminalizes", "label": "新法不认为犯罪时适用新法", "keyword_groups": [["不认为是犯罪", "新法"], ["不认为是犯罪", "本法"]]},
+        {"point_id": "new_law_lighter", "label": "新法处刑较轻时适用新法", "keyword_groups": [["处刑较轻", "新法"], ["处刑较轻", "本法"]]}
+      ]
+    },
+    {
+      "case_id": "TQ02_SPECIAL_DEFENSE",
+      "title": "正当防卫与特殊防卫",
+      "knowledge_id": "CRIM_KP_7B01D1EBC00BC8ED",
+      "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+      "question": "多人持砍刀、铁锨等凶器闯入私人场所攻击他人后脑等要害部位；其中一人被制伏后，其他人仍持刀继续侵害。防卫人反击造成一死一伤，是否当然属于防卫过当？请结合规则与指导案例要点说明。",
+      "standard_answer": "不当然属于防卫过当。应按时间轴判断不法侵害是否仍在进行。多人持致命凶器攻击要害部位、严重危及人身安全，属于刑法第二十条第三款的行凶；即使部分侵害人被制伏，只要其他侵害仍在继续，防卫权没有终止。造成不法侵害人伤亡的，可成立特殊防卫，不负刑事责任。",
+      "required_source_ids": [
+        "EVID_9CB6894B3E55465B19C6",
+        "CASE_GUIDE_CRIM_CASE_BCE041E195C8247BC179"
+      ],
+      "required_points": [
+        {"point_id": "ongoing_infringement", "label": "审查正在进行的不法侵害", "keyword_groups": [["正在进行", "不法侵害"], ["侵害", "仍在继续"]]},
+        {"point_id": "violent_assault", "label": "致命凶器攻击要害属于行凶", "keyword_groups": [["行凶"], ["严重危及人身安全"]]},
+        {"point_id": "remaining_attackers", "label": "部分被制伏不终止剩余防卫权", "keyword_groups": [["部分", "防卫权", "没有终止"], ["其他侵害", "仍在继续"]]},
+        {"point_id": "no_liability", "label": "特殊防卫伤亡不负刑责", "keyword_groups": [["特殊防卫", "不负刑事责任"], ["第三款", "不负刑事责任"]]}
+      ]
+    },
+    {
+      "case_id": "TQ03_ROBBERY_ELEMENTS",
+      "title": "抢劫罪基本构成",
+      "knowledge_id": "CRIM_KP_DB1E1940114B4C0F",
+      "case_bundle_id": "CRIM_CASE_954A8D8D6B0CDB221B08",
+      "question": "行为人以非法占有为目的，当场持刀威胁被害人并取得价值很低的财物。能否仅因财物价值低就否定抢劫罪？请列出基本判断步骤并引用法条。",
+      "standard_answer": "不能仅因财物价值低否定抢劫罪。应审查非法占有目的，是否以暴力、胁迫或者其他强制方法压制反抗，手段与取财是否具有当场性，以及是否取得公私财物。符合这些基本构成时，依《刑法》第二百六十三条评价；财物价值低不当然排除成立。",
+      "required_source_ids": [
+        "EVID_739F98E83E2A8E71CE61"
+      ],
+      "required_points": [
+        {"point_id": "illegal_possession", "label": "非法占有目的", "keyword_groups": [["非法占有"]]},
+        {"point_id": "coercive_means", "label": "暴力胁迫等手段", "keyword_groups": [["暴力"], ["胁迫"]]},
+        {"point_id": "on_the_spot", "label": "手段与取财的当场性", "keyword_groups": [["当场"]]},
+        {"point_id": "taking_property", "label": "取得公私财物", "keyword_groups": [["取得", "财物"], ["取财"]]},
+        {"point_id": "low_value_not_exclusion", "label": "价值低不当然排除", "keyword_groups": [["价值低", "不"], ["数额小", "不"]]}
+      ]
+    }
+  ]
+}

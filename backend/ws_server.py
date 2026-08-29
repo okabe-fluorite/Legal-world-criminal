@@ -35,6 +35,7 @@ if str(_backend_dir) not in sys.path:
     sys.path.insert(0, str(_backend_dir))
 
 ROOT_ENV_PATH = _backend_dir.parent / ".env"
+TYPICAL_QUESTION_REPORT_PATH = _backend_dir.parent / "docs" / "TYPICAL_QUESTION_EVALUATION.json"
 
 
 def _should_override_dotenv() -> bool:
@@ -3019,6 +3020,21 @@ async def model_catalog(current_user: User = Depends(_get_current_user)):
     """Return secret-free task routing for primary and fine-tuned models."""
     _ = current_user
     return build_model_catalog()
+
+
+@app.get("/api/competition/typical-questions")
+async def competition_typical_questions(
+    current_user: User = Depends(_get_current_user),
+):
+    """Return the committed, secret-free three-question evaluation report."""
+
+    _ = current_user
+    if not TYPICAL_QUESTION_REPORT_PATH.is_file():
+        raise HTTPException(status_code=503, detail="typical question report is not built")
+    report = json.loads(TYPICAL_QUESTION_REPORT_PATH.read_text(encoding="utf-8"))
+    if report.get("case_count") != 3:
+        raise HTTPException(status_code=503, detail="typical question report is incomplete")
+    return report
 
 
 @app.get("/api/adaptive/catalog")

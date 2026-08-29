@@ -1,0 +1,602 @@
+{
+  "schema_version": "typical-question-evaluation-v1",
+  "generated_at": "2026-08-28T16:17:02.490918+00:00",
+  "mode": "live_model_reaudited",
+  "suite_sha256": "3b5f896c63fb6e207c59c5039876c8f35d6a823eeeb36ba7b2b0dc73c71180c2",
+  "law_manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7",
+  "case_bundle_manifest_sha256": "881e1a3d53d0e75f02677f45cd2bcaa0a97ab69197e7fb9342112f2bb18a2e93",
+  "case_count": 3,
+  "automated_gate_pass_count": 3,
+  "all_expert_reviews_complete": false,
+  "cases": [
+    {
+      "case_id": "TQ01_RETROACTIVITY",
+      "title": "罪刑法定与从旧兼从轻",
+      "knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+      "question": "甲实施行为时旧法认为构成犯罪，但裁判时新法不认为是犯罪；如果新法仍认为犯罪但处刑较轻，又应如何选择法律？请说明规则并引用法条。",
+      "standard_answer": "依据《刑法》第十二条，原则上适用行为时的法律；裁判时的本法不认为是犯罪，或者虽认为犯罪但处刑较轻的，适用本法，即从旧兼从轻。罪刑法定要求不得脱离明文规定定罪。",
+      "required_source_ids": [
+        "EVID_884FC4550E1F5A30DACE"
+      ],
+      "required_points": [
+        {
+          "point_id": "old_law_default",
+          "label": "原则适用行为时法",
+          "keyword_groups": [
+            [
+              "行为时",
+              "法律"
+            ],
+            [
+              "从旧"
+            ]
+          ]
+        },
+        {
+          "point_id": "new_law_decriminalizes",
+          "label": "新法不认为犯罪时适用新法",
+          "keyword_groups": [
+            [
+              "不认为是犯罪",
+              "新法"
+            ],
+            [
+              "不认为是犯罪",
+              "本法"
+            ]
+          ]
+        },
+        {
+          "point_id": "new_law_lighter",
+          "label": "新法处刑较轻时适用新法",
+          "keyword_groups": [
+            [
+              "处刑较轻",
+              "新法"
+            ],
+            [
+              "处刑较轻",
+              "本法"
+            ]
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "source_id": "CARD_CRIM_KP_467B1D9FCFABDA50",
+          "source_type": "teacher_gated_knowledge_card",
+          "title": "罪刑法定原则",
+          "article_ref": "课程口径",
+          "quote": "理解罪刑法定及从旧兼从轻的适用边界 法律明文规定为犯罪的，依照法律定罪处刑；并结合行为时法与裁判时法审查从旧兼从轻。",
+          "authority": "本科刑法试点知识卡",
+          "version": "e71ed2945c64c02da92390f22bcf5affa6956d76be2cc745d860fc6f353f9676",
+          "source_url": ""
+        },
+        {
+          "source_id": "EVID_884FC4550E1F5A30DACE",
+          "source_type": "法律条文",
+          "title": "中华人民共和国刑法",
+          "article_ref": "第十二条",
+          "quote": "中华人民共和国成立以后本法施行以前的行为，如果当时的法律不认为是犯罪的，适用当时的法律；如果当时的法律认为是犯罪的，依照本法总则第四章第八节的规定应当追诉的，按照当时的法律追究刑事责任，但是如果本法不认为是犯罪或者处刑较轻的，适用本法。\n本法施行以前，依照当时的法律已经作出的生效判决，继续有效。",
+          "authority": "法律",
+          "version": "npc-flk-2026-02-26-xingfa-amendment-12",
+          "source_url": "https://flk.npc.gov.cn/",
+          "source_bundle_sha256": "42ab93f764e3dd0c0f2479db94f5e6e4b73455317cc5dfc2ad47e003fc005875"
+        }
+      ],
+      "run_status": "model_completed",
+      "model_output": {
+        "answer": "根据《中华人民共和国刑法》第十二条确立的“从旧兼从轻”规则：行为时的法律认为是犯罪，但裁判时（本法）不认为是犯罪的，应当适用裁判时的新法，即不追究刑事责任；如果新法仍认为是犯罪但处刑较轻的，同样适用新法。",
+        "rule_steps": [
+          "第一步：确定行为时法与裁判时法对同一行为的规定是否不同。",
+          "第二步：若行为时法不认为是犯罪，则直接适用行为时法（从旧），不构成犯罪。",
+          "第三步：若行为时法认为是犯罪，则进一步比较裁判时法：若裁判时法不认为是犯罪，则适用裁判时法（从轻），不构成犯罪。",
+          "第四步：若裁判时法仍认为是犯罪但处刑较轻，则适用裁判时法（从轻）；若处刑相同或更重，则适用行为时法（从旧）。"
+        ],
+        "conclusion": "甲行为时旧法认为犯罪，裁判时新法不认为是犯罪的，应适用新法，不按犯罪处理；若新法仍认为犯罪但处刑较轻，也应适用新法。",
+        "citations": [
+          {
+            "source_id": "EVID_884FC4550E1F5A30DACE",
+            "title": "中华人民共和国刑法",
+            "article_ref": "第十二条",
+            "quote": "如果当时的法律认为是犯罪的，依照本法总则第四章第八节的规定应当追诉的，按照当时的法律追究刑事责任，但是如果本法不认为是犯罪或者处刑较轻的，适用本法。"
+          }
+        ],
+        "uncertainty": "本问题所涉规则在提供的法条中有明确表述，无争议。但需注意，若行为时法不认为是犯罪，则不存在“从旧兼从轻”的适用问题，直接适用行为时法。",
+        "confidence": 0.98,
+        "ai_generated": true
+      },
+      "model_route": {
+        "task": "learning_support",
+        "provider": "primary",
+        "model_name": "deepseek-v4-flash",
+        "api_base": "https://opencode.ai",
+        "api_key_configured": true,
+        "timeout_seconds": 180,
+        "configured": true
+      },
+      "structural_pass": true,
+      "point_audit": [
+        {
+          "point_id": "old_law_default",
+          "label": "原则适用行为时法",
+          "passed": true,
+          "matched_keywords": [
+            "行为时",
+            "法律"
+          ]
+        },
+        {
+          "point_id": "new_law_decriminalizes",
+          "label": "新法不认为犯罪时适用新法",
+          "passed": true,
+          "matched_keywords": [
+            "不认为是犯罪",
+            "新法"
+          ]
+        },
+        {
+          "point_id": "new_law_lighter",
+          "label": "新法处刑较轻时适用新法",
+          "passed": true,
+          "matched_keywords": [
+            "处刑较轻",
+            "新法"
+          ]
+        }
+      ],
+      "point_coverage": 1.0,
+      "citation_audit": {
+        "citations": [
+          {
+            "source_id": "EVID_884FC4550E1F5A30DACE",
+            "in_allowed_sources": true,
+            "exact_quote": true,
+            "quote": "如果当时的法律认为是犯罪的，依照本法总则第四章第八节的规定应当追诉的，按照当时的法律追究刑事责任，但是如果本法不认为是犯罪或者处刑较轻的，适用本法。"
+          }
+        ],
+        "valid_source_ids": [
+          "EVID_884FC4550E1F5A30DACE"
+        ],
+        "missing_required_source_ids": [],
+        "passed": true
+      },
+      "automated_gate_pass": true,
+      "expert_review_status": "pending",
+      "verified_accurate": false
+    },
+    {
+      "case_id": "TQ02_SPECIAL_DEFENSE",
+      "title": "正当防卫与特殊防卫",
+      "knowledge_id": "CRIM_KP_7B01D1EBC00BC8ED",
+      "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+      "question": "多人持砍刀、铁锨等凶器闯入私人场所攻击他人后脑等要害部位；其中一人被制伏后，其他人仍持刀继续侵害。防卫人反击造成一死一伤，是否当然属于防卫过当？请结合规则与指导案例要点说明。",
+      "standard_answer": "不当然属于防卫过当。应按时间轴判断不法侵害是否仍在进行。多人持致命凶器攻击要害部位、严重危及人身安全，属于刑法第二十条第三款的行凶；即使部分侵害人被制伏，只要其他侵害仍在继续，防卫权没有终止。造成不法侵害人伤亡的，可成立特殊防卫，不负刑事责任。",
+      "required_source_ids": [
+        "EVID_9CB6894B3E55465B19C6",
+        "CASE_GUIDE_CRIM_CASE_BCE041E195C8247BC179"
+      ],
+      "required_points": [
+        {
+          "point_id": "ongoing_infringement",
+          "label": "审查正在进行的不法侵害",
+          "keyword_groups": [
+            [
+              "正在进行",
+              "不法侵害"
+            ],
+            [
+              "侵害",
+              "仍在继续"
+            ]
+          ]
+        },
+        {
+          "point_id": "violent_assault",
+          "label": "致命凶器攻击要害属于行凶",
+          "keyword_groups": [
+            [
+              "行凶"
+            ],
+            [
+              "严重危及人身安全"
+            ]
+          ]
+        },
+        {
+          "point_id": "remaining_attackers",
+          "label": "部分被制伏不终止剩余防卫权",
+          "keyword_groups": [
+            [
+              "部分",
+              "防卫权",
+              "没有终止"
+            ],
+            [
+              "其他侵害",
+              "仍在继续"
+            ]
+          ]
+        },
+        {
+          "point_id": "no_liability",
+          "label": "特殊防卫伤亡不负刑责",
+          "keyword_groups": [
+            [
+              "特殊防卫",
+              "不负刑事责任"
+            ],
+            [
+              "第三款",
+              "不负刑事责任"
+            ]
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "source_id": "CARD_CRIM_KP_7B01D1EBC00BC8ED",
+          "source_type": "teacher_gated_knowledge_card",
+          "title": "正当防卫与防卫过当",
+          "article_ref": "课程口径",
+          "quote": "识别防卫起因、时间、对象、限度及特殊防卫 围绕不法侵害、时间、对象、防卫意图、限度和特殊防卫逐项判断。",
+          "authority": "本科刑法试点知识卡",
+          "version": "04a0b42bdf56ad87ea8f9fa390ffe7de44cc9893a322d3745ee5e0499a5e56d8",
+          "source_url": ""
+        },
+        {
+          "source_id": "EVID_9CB6894B3E55465B19C6",
+          "source_type": "法律条文",
+          "title": "中华人民共和国刑法",
+          "article_ref": "第二十条",
+          "quote": "为了使国家、公共利益、本人或者他人的人身、财产和其他权利免受正在进行的不法侵害，而采取的制止不法侵害的行为，对不法侵害人造成损害的，属于正当防卫，不负刑事责任。\n正当防卫明显超过必要限度造成重大损害的，应当负刑事责任，但是应当减轻或者免除处罚。\n对正在进行行凶、杀人、抢劫、强奸、绑架以及其他严重危及人身安全的暴力犯罪，采取防卫行为，造成不法侵害人伤亡的，不属于防卫过当，不负刑事责任。",
+          "authority": "法律",
+          "version": "npc-flk-2026-02-26-xingfa-amendment-12",
+          "source_url": "https://flk.npc.gov.cn/",
+          "source_bundle_sha256": "42ab93f764e3dd0c0f2479db94f5e6e4b73455317cc5dfc2ad47e003fc005875"
+        },
+        {
+          "source_id": "CASE_GUIDE_CRIM_CASE_BCE041E195C8247BC179",
+          "source_type": "guiding_case_point",
+          "title": "指导案例144号：张那木拉正当防卫案",
+          "article_ref": "CLI.C.310492973",
+          "quote": "对于使用致命性凶器攻击他人要害部位、严重危及人身安全的行为，应认定为刑法第二十条第三款规定的行凶；多人共同实施不法侵害时，即使部分侵害人已被制伏，只要其他侵害人仍在继续实施侵害，防卫人仍可进行防卫。",
+          "authority": "最高人民法院",
+          "version": "a1e5451b91fa20afaa7ce3af4d6568d14f1f4516de9ae4e1a3d3dcfd90dd868b",
+          "source_url": "https://www.pkulaw.com/pfnl/c05aeed05a57db0a40aebdcacb83e71eb063d8af69afebdfbdfb.html",
+          "local_source_sha256": "9adbb8422dd50f38ccf0e740d4fd325857b96628021410deaac1f2f8ecf98bbe"
+        }
+      ],
+      "run_status": "model_completed",
+      "model_output": {
+        "answer": "不当然属于防卫过当。根据指导案例144号，使用致命性凶器攻击他人要害部位、严重危及人身安全的行为，应认定为刑法第二十条第三款规定的“行凶”；多人共同实施不法侵害时，即使部分侵害人已被制伏，只要其他侵害人仍在继续实施侵害，防卫人仍可进行防卫。本案中，多人持砍刀、铁锨等凶器攻击后脑等要害部位，属于严重危及人身安全的暴力犯罪，且在被制伏一人后其他人仍继续侵害，防卫人反击造成一死一伤，符合特殊防卫的适用条件，依法不属于防卫过当，不负刑事责任。",
+        "rule_steps": [
+          "第一步：识别不法侵害是否正在进行。多人持凶器攻击要害部位，属于正在进行的不法侵害。",
+          "第二步：判断是否属于刑法第二十条第三款规定的“行凶”等严重危及人身安全的暴力犯罪。使用致命性凶器攻击他人要害部位，应认定为“行凶”。",
+          "第三步：适用特殊防卫规则。对正在进行行凶等严重危及人身安全的暴力犯罪采取防卫行为，造成不法侵害人伤亡的，不属于防卫过当。",
+          "第四步：处理多人共同侵害情形。即使部分侵害人已被制伏，只要其他侵害人仍在继续实施侵害，防卫人仍可进行防卫，不影响特殊防卫的成立。"
+        ],
+        "conclusion": "本案不当然属于防卫过当。在符合特殊防卫条件时，防卫人反击造成一死一伤，属于正当防卫，不负刑事责任。",
+        "citations": [
+          {
+            "source_id": "EVID_9CB6894B3E55465B19C6",
+            "title": "中华人民共和国刑法",
+            "article_ref": "第二十条",
+            "quote": "对正在进行行凶、杀人、抢劫、强奸、绑架以及其他严重危及人身安全的暴力犯罪，采取防卫行为，造成不法侵害人伤亡的，不属于防卫过当，不负刑事责任。"
+          },
+          {
+            "source_id": "CASE_GUIDE_CRIM_CASE_BCE041E195C8247BC179",
+            "title": "指导案例144号：张那木拉正当防卫案",
+            "article_ref": "CLI.C.310492973",
+            "quote": "对于使用致命性凶器攻击他人要害部位、严重危及人身安全的行为，应认定为刑法第二十条第三款规定的行凶；多人共同实施不法侵害时，即使部分侵害人已被制伏，只要其他侵害人仍在继续实施侵害，防卫人仍可进行防卫。"
+          },
+          {
+            "source_id": "CARD_CRIM_KP_7B01D1EBC00BC8ED",
+            "title": "正当防卫与防卫过当",
+            "article_ref": "课程口径",
+            "quote": "识别防卫起因、时间、对象、限度及特殊防卫 围绕不法侵害、时间、对象、防卫意图、限度和特殊防卫逐项判断。"
+          }
+        ],
+        "uncertainty": "本结论基于给定事实（多人持砍刀、铁锨等凶器攻击后脑等要害部位，部分被制伏后其他人继续侵害）及指导案例要点。若具体案件中凶器性质、攻击部位、侵害紧迫性等不符合特殊防卫条件，则仍需按一般防卫限度判断是否过当。",
+        "confidence": 0.95,
+        "ai_generated": true
+      },
+      "model_route": {
+        "task": "learning_support",
+        "provider": "primary",
+        "model_name": "deepseek-v4-flash",
+        "api_base": "https://opencode.ai",
+        "api_key_configured": true,
+        "timeout_seconds": 180,
+        "configured": true
+      },
+      "structural_pass": true,
+      "point_audit": [
+        {
+          "point_id": "ongoing_infringement",
+          "label": "审查正在进行的不法侵害",
+          "passed": true,
+          "matched_keywords": [
+            "正在进行",
+            "不法侵害"
+          ]
+        },
+        {
+          "point_id": "violent_assault",
+          "label": "致命凶器攻击要害属于行凶",
+          "passed": true,
+          "matched_keywords": [
+            "行凶"
+          ]
+        },
+        {
+          "point_id": "remaining_attackers",
+          "label": "部分被制伏不终止剩余防卫权",
+          "passed": true,
+          "matched_keywords": [
+            "其他侵害",
+            "仍在继续"
+          ]
+        },
+        {
+          "point_id": "no_liability",
+          "label": "特殊防卫伤亡不负刑责",
+          "passed": true,
+          "matched_keywords": [
+            "特殊防卫",
+            "不负刑事责任"
+          ]
+        }
+      ],
+      "point_coverage": 1.0,
+      "citation_audit": {
+        "citations": [
+          {
+            "source_id": "EVID_9CB6894B3E55465B19C6",
+            "in_allowed_sources": true,
+            "exact_quote": true,
+            "quote": "对正在进行行凶、杀人、抢劫、强奸、绑架以及其他严重危及人身安全的暴力犯罪，采取防卫行为，造成不法侵害人伤亡的，不属于防卫过当，不负刑事责任。"
+          },
+          {
+            "source_id": "CASE_GUIDE_CRIM_CASE_BCE041E195C8247BC179",
+            "in_allowed_sources": true,
+            "exact_quote": true,
+            "quote": "对于使用致命性凶器攻击他人要害部位、严重危及人身安全的行为，应认定为刑法第二十条第三款规定的行凶；多人共同实施不法侵害时，即使部分侵害人已被制伏，只要其他侵害人仍在继续实施侵害，防卫人仍可进行防卫。"
+          },
+          {
+            "source_id": "CARD_CRIM_KP_7B01D1EBC00BC8ED",
+            "in_allowed_sources": true,
+            "exact_quote": true,
+            "quote": "识别防卫起因、时间、对象、限度及特殊防卫 围绕不法侵害、时间、对象、防卫意图、限度和特殊防卫逐项判断。"
+          }
+        ],
+        "valid_source_ids": [
+          "CARD_CRIM_KP_7B01D1EBC00BC8ED",
+          "CASE_GUIDE_CRIM_CASE_BCE041E195C8247BC179",
+          "EVID_9CB6894B3E55465B19C6"
+        ],
+        "missing_required_source_ids": [],
+        "passed": true
+      },
+      "automated_gate_pass": true,
+      "expert_review_status": "pending",
+      "verified_accurate": false
+    },
+    {
+      "case_id": "TQ03_ROBBERY_ELEMENTS",
+      "title": "抢劫罪基本构成",
+      "knowledge_id": "CRIM_KP_DB1E1940114B4C0F",
+      "case_bundle_id": "CRIM_CASE_954A8D8D6B0CDB221B08",
+      "question": "行为人以非法占有为目的，当场持刀威胁被害人并取得价值很低的财物。能否仅因财物价值低就否定抢劫罪？请列出基本判断步骤并引用法条。",
+      "standard_answer": "不能仅因财物价值低否定抢劫罪。应审查非法占有目的，是否以暴力、胁迫或者其他强制方法压制反抗，手段与取财是否具有当场性，以及是否取得公私财物。符合这些基本构成时，依《刑法》第二百六十三条评价；财物价值低不当然排除成立。",
+      "required_source_ids": [
+        "EVID_739F98E83E2A8E71CE61"
+      ],
+      "required_points": [
+        {
+          "point_id": "illegal_possession",
+          "label": "非法占有目的",
+          "keyword_groups": [
+            [
+              "非法占有"
+            ]
+          ]
+        },
+        {
+          "point_id": "coercive_means",
+          "label": "暴力胁迫等手段",
+          "keyword_groups": [
+            [
+              "暴力"
+            ],
+            [
+              "胁迫"
+            ]
+          ]
+        },
+        {
+          "point_id": "on_the_spot",
+          "label": "手段与取财的当场性",
+          "keyword_groups": [
+            [
+              "当场"
+            ]
+          ]
+        },
+        {
+          "point_id": "taking_property",
+          "label": "取得公私财物",
+          "keyword_groups": [
+            [
+              "取得",
+              "财物"
+            ],
+            [
+              "取财"
+            ]
+          ]
+        },
+        {
+          "point_id": "low_value_not_exclusion",
+          "label": "价值低不当然排除",
+          "keyword_groups": [
+            [
+              "价值低",
+              "不"
+            ],
+            [
+              "数额小",
+              "不"
+            ]
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "source_id": "CARD_CRIM_KP_DB1E1940114B4C0F",
+          "source_type": "teacher_gated_knowledge_card",
+          "title": "抢劫罪的基本构成",
+          "article_ref": "课程口径",
+          "quote": "依据暴力、胁迫等手段与非法占有目的识别抢劫罪基本构成 结合非法占有目的、暴力胁迫等手段、当场性和取财行为判断抢劫罪基本构成。",
+          "authority": "本科刑法试点知识卡",
+          "version": "dacec9ac2ac9d2ef855f0c8cb8b46ed1826e6cf0b771a4b39be8cf11d2c44587",
+          "source_url": ""
+        },
+        {
+          "source_id": "EVID_739F98E83E2A8E71CE61",
+          "source_type": "法律条文",
+          "title": "中华人民共和国刑法",
+          "article_ref": "第二百六十三条",
+          "quote": "以暴力、胁迫或者其他方法抢劫公私财物的，处三年以上十年以下有期徒刑，并处罚金；有下列情形之一的，处十年以上有期徒刑、无期徒刑或者死刑，并处罚金或者没收财产：\n（一）入户抢劫的；\n（二）在公共交通工具上抢劫的；\n（三）抢劫银行或者其他金融机构的；\n（四）多次抢劫或者抢劫数额巨大的；\n（五）抢劫致人重伤、死亡的；\n（六）冒充军警人员抢劫的；\n（七）持枪抢劫的；\n（八）抢劫军用物资或者抢险、救灾、救济物资的。",
+          "authority": "法律",
+          "version": "npc-flk-2026-02-26-xingfa-amendment-12",
+          "source_url": "https://flk.npc.gov.cn/",
+          "source_bundle_sha256": "42ab93f764e3dd0c0f2479db94f5e6e4b73455317cc5dfc2ad47e003fc005875"
+        },
+        {
+          "source_id": "CASE_GUIDE_CRIM_CASE_954A8D8D6B0CDB221B08",
+          "source_type": "guiding_case_point",
+          "title": "指导案例14号：董某某、宋某某抢劫案",
+          "article_ref": "CLI.C.1181156",
+          "quote": "对判处管制或者宣告缓刑的未成年被告人，可以根据犯罪具体情况以及禁止事项与所犯罪行的关联程度适用禁止令；未成年人因上网诱发犯罪的，可以禁止其在一定期限内进入网吧等特定场所。",
+          "authority": "最高人民法院",
+          "version": "03c48567aee0ae80ec47d5169bebf5d9033cd3f61db5aa2b7e74c99f4c6c7e1f",
+          "source_url": "https://www.pkulaw.com/pfnl/a25051f3312b07f3c7372a2b9f8389df6d57579b3a2ac3a2bdfb.html",
+          "local_source_sha256": "bb81033074de77cbe170a258baa307428db6ee1e9e8ed72d5d3eb231cd2fe6ed"
+        }
+      ],
+      "run_status": "model_completed",
+      "model_output": {
+        "answer": "不能仅因财物价值低就否定抢劫罪。抢劫罪的成立以暴力、胁迫等手段和非法占有目的为核心，刑法条文并未将财物价值大小作为构成要件。",
+        "rule_steps": [
+          "第一步：确认行为人是否具有非法占有目的。",
+          "第二步：确认行为人是否当场实施了暴力、胁迫或者其他方法。",
+          "第三步：确认取财行为与暴力、胁迫手段之间具有当场性、直接关联性。",
+          "第四步：综合上述要素判断是否符合抢劫罪基本构成；财物价值低不属于否定抢劫罪的理由。"
+        ],
+        "conclusion": "行为人以非法占有为目的，当场持刀威胁被害人并取得价值很低的财物，仍可能构成抢劫罪；财物价值低不影响抢劫罪的成立。",
+        "citations": [
+          {
+            "source_id": "CARD_CRIM_KP_DB1E1940114B4C0F",
+            "title": "抢劫罪的基本构成",
+            "article_ref": "课程口径",
+            "quote": "依据暴力、胁迫等手段与非法占有目的识别抢劫罪基本构成 结合非法占有目的、暴力胁迫等手段、当场性和取财行为判断抢劫罪基本构成。"
+          },
+          {
+            "source_id": "EVID_739F98E83E2A8E71CE61",
+            "title": "中华人民共和国刑法",
+            "article_ref": "第二百六十三条",
+            "quote": "以暴力、胁迫或者其他方法抢劫公私财物的，处三年以上十年以下有期徒刑，并处罚金；有下列情形之一的，处十年以上有期徒刑、无期徒刑或者死刑，并处罚金或者没收财产：\n（一）入户抢劫的；\n（二）在公共交通工具上抢劫的；\n（三）抢劫银行或者其他金融机构的；\n（四）多次抢劫或者抢劫数额巨大的；\n（五）抢劫致人重伤、死亡的；\n（六）冒充军警人员抢劫的；\n（七）持枪抢劫的；\n（八）抢劫军用物资或者抢险、救灾、救济物资的。"
+          }
+        ],
+        "uncertainty": "提供的指导案例内容与抢劫罪构成无关，未予采用。知识卡未直接说明财物价值低是否影响定罪，但刑法条文未将数额作为抢劫罪构成要件，故结论基于法条无数额门槛这一事实。",
+        "confidence": 0.9,
+        "ai_generated": true
+      },
+      "model_route": {
+        "task": "learning_support",
+        "provider": "primary",
+        "model_name": "deepseek-v4-flash",
+        "api_base": "https://opencode.ai",
+        "api_key_configured": true,
+        "timeout_seconds": 180,
+        "configured": true
+      },
+      "structural_pass": true,
+      "point_audit": [
+        {
+          "point_id": "illegal_possession",
+          "label": "非法占有目的",
+          "passed": true,
+          "matched_keywords": [
+            "非法占有"
+          ]
+        },
+        {
+          "point_id": "coercive_means",
+          "label": "暴力胁迫等手段",
+          "passed": true,
+          "matched_keywords": [
+            "暴力"
+          ]
+        },
+        {
+          "point_id": "on_the_spot",
+          "label": "手段与取财的当场性",
+          "passed": true,
+          "matched_keywords": [
+            "当场"
+          ]
+        },
+        {
+          "point_id": "taking_property",
+          "label": "取得公私财物",
+          "passed": true,
+          "matched_keywords": [
+            "取得",
+            "财物"
+          ]
+        },
+        {
+          "point_id": "low_value_not_exclusion",
+          "label": "价值低不当然排除",
+          "passed": true,
+          "matched_keywords": [
+            "价值低",
+            "不"
+          ]
+        }
+      ],
+      "point_coverage": 1.0,
+      "citation_audit": {
+        "citations": [
+          {
+            "source_id": "CARD_CRIM_KP_DB1E1940114B4C0F",
+            "in_allowed_sources": true,
+            "exact_quote": true,
+            "quote": "依据暴力、胁迫等手段与非法占有目的识别抢劫罪基本构成 结合非法占有目的、暴力胁迫等手段、当场性和取财行为判断抢劫罪基本构成。"
+          },
+          {
+            "source_id": "EVID_739F98E83E2A8E71CE61",
+            "in_allowed_sources": true,
+            "exact_quote": true,
+            "quote": "以暴力、胁迫或者其他方法抢劫公私财物的，处三年以上十年以下有期徒刑，并处罚金；有下列情形之一的，处十年以上有期徒刑、无期徒刑或者死刑，并处罚金或者没收财产：\n（一）入户抢劫的；\n（二）在公共交通工具上抢劫的；\n（三）抢劫银行或者其他金融机构的；\n（四）多次抢劫或者抢劫数额巨大的；\n（五）抢劫致人重伤、死亡的；\n（六）冒充军警人员抢劫的；\n（七）持枪抢劫的；\n（八）抢劫军用物资或者抢险、救灾、救济物资的。"
+          }
+        ],
+        "valid_source_ids": [
+          "CARD_CRIM_KP_DB1E1940114B4C0F",
+          "EVID_739F98E83E2A8E71CE61"
+        ],
+        "missing_required_source_ids": [],
+        "passed": true
+      },
+      "automated_gate_pass": true,
+      "expert_review_status": "pending",
+      "verified_accurate": false
+    }
+  ],
+  "boundary": {
+    "proves": "governed inputs, model output, point matching, and exact citation gates are reproducible",
+    "does_not_prove": "independent legal correctness, learning gain, or classroom effectiveness"
+  }
+}

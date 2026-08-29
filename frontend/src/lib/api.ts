@@ -3,6 +3,7 @@ import type {
   AdaptiveRecommendationResponse,
   CaseListResponse,
   CitationFeedback,
+  CitationAuditResponse,
   ConfusionAnnotationPayload,
   ConfusionAnnotationResponse,
   EvidenceTimelineResponse,
@@ -28,6 +29,7 @@ import type {
   TeacherOverviewResponse,
   TeacherReviewCatalogResponse,
   TeacherSubjectiveQueueResponse,
+  TypicalQuestionReport,
 } from "./types";
 
 const API_BASE = "/api";
@@ -208,6 +210,22 @@ export const api = {
 
   async modelCatalog(): Promise<ModelCatalogResponse> {
     return request<ModelCatalogResponse>("/model/catalog");
+  },
+
+  async typicalQuestionReport(): Promise<TypicalQuestionReport> {
+    return request<TypicalQuestionReport>("/competition/typical-questions");
+  },
+
+  async auditKnowledgeCitations(citations: Array<{
+    title: string;
+    article_ref: string;
+    quote: string;
+    claim: string;
+  }>): Promise<CitationAuditResponse> {
+    return request<CitationAuditResponse>("/knowledge/audit-citations", {
+      method: "POST",
+      body: JSON.stringify({ citations }),
+    });
   },
 
   async knowledgeCatalog(): Promise<KnowledgeCatalogResponse> {

@@ -543,6 +543,88 @@ export interface ModelCatalogResponse {
   };
 }
 
+export interface TypicalQuestionSource {
+  source_id: string;
+  source_type: string;
+  title: string;
+  article_ref: string;
+  quote: string;
+  authority: string;
+  version: string;
+  source_url: string;
+  source_bundle_sha256?: string;
+  local_source_sha256?: string;
+}
+
+export interface TypicalQuestionCase {
+  case_id: string;
+  title: string;
+  question: string;
+  standard_answer: string;
+  required_source_ids: string[];
+  sources: TypicalQuestionSource[];
+  run_status: string;
+  model_output: {
+    answer: string;
+    rule_steps: string[];
+    conclusion: string;
+    citations: Array<{
+      source_id: string;
+      title: string;
+      article_ref: string;
+      quote: string;
+    }>;
+    uncertainty: string;
+    confidence: number;
+    ai_generated: true;
+  };
+  model_route?: { task?: string; provider?: string; model_name?: string; api_base?: string };
+  point_audit: Array<{
+    point_id: string;
+    label: string;
+    passed: boolean;
+    matched_keywords: string[];
+  }>;
+  point_coverage: number;
+  citation_audit: {
+    passed: boolean;
+    valid_source_ids: string[];
+    missing_required_source_ids: string[];
+  };
+  automated_gate_pass: boolean;
+  expert_review_status: "pending" | "approved" | "rejected" | string;
+  verified_accurate: boolean;
+}
+
+export interface TypicalQuestionReport {
+  schema_version: string;
+  generated_at: string;
+  mode: string;
+  suite_sha256: string;
+  law_manifest_sha256: string;
+  case_bundle_manifest_sha256: string;
+  case_count: number;
+  automated_gate_pass_count: number;
+  all_expert_reviews_complete: boolean;
+  cases: TypicalQuestionCase[];
+  boundary: { proves: string; does_not_prove: string };
+}
+
+export interface CitationAuditResponse {
+  schema_version: string;
+  items: Array<{
+    index: number;
+    status: string;
+    title: string;
+    article_ref: string;
+    quote_status: string;
+    claim_support_status: string;
+    risk_flags: string[];
+  }>;
+  summary: Record<string, number> & { total: number };
+  semantic_boundary: string;
+}
+
 export interface KnowledgeCard {
   schema_version: "criminal-law-knowledge-card-v1" | string;
   knowledge_id: string;

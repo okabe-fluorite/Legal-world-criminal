@@ -6,6 +6,7 @@ import LearningDossier from "./LearningDossier.vue";
 import LearningJourney from "./LearningJourney.vue";
 import TeacherDashboard from "./TeacherDashboard.vue";
 import CognitiveDashboard from "./CognitiveDashboard.vue";
+import TrustedRagShowcase from "./TrustedRagShowcase.vue";
 
 const session = useSession();
 
@@ -13,6 +14,7 @@ const showDossier = ref(false);
 const showJourney = ref(false);
 const showTeacher = ref(false);
 const showCognitive = ref(false);
+const showTrustedRag = ref(false);
 const isTeacher = computed(() => ["teacher", "admin"].includes(session.state.role));
 
 const wsDotClass = computed(() => {
@@ -102,6 +104,9 @@ const accent = computed(() => stageAccent(session.state.caseState));
         <button class="btn hdr__cognitive" @click="showCognitive = true">
           认知诊断
         </button>
+        <button class="btn hdr__rag" @click="showTrustedRag = true">
+          可信RAG
+        </button>
         <button v-if="isTeacher" class="btn hdr__teacher" @click="showTeacher = true">
           教师驾驶舱
         </button>
@@ -114,6 +119,7 @@ const accent = computed(() => stageAccent(session.state.caseState));
         @close="showCognitive = false"
         @open-journey="showCognitive = false; showJourney = true"
       />
+      <TrustedRagShowcase v-if="showTrustedRag" @close="showTrustedRag = false" />
       <TeacherDashboard v-if="showTeacher" @close="showTeacher = false" />
 
       <div class="hdr__user">
@@ -271,6 +277,16 @@ const accent = computed(() => stageAccent(session.state.caseState));
   color: #edf6f7;
   border-color: #87aebb;
   background: rgba(100, 139, 153, 0.16);
+}
+.hdr__rag {
+  color: #e2c98e;
+  border-color: rgba(176, 138, 62, 0.58);
+  background: rgba(176, 138, 62, 0.05);
+}
+.hdr__rag:hover {
+  color: #f3dfb0;
+  border-color: var(--accent-amber);
+  background: rgba(176, 138, 62, 0.11);
 }
 .hdr__teacher:hover {
   color: #e0ebef;
