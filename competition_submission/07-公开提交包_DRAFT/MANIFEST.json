@@ -1,0 +1,111 @@
+{
+  "schema": "xh-202620-public-submission-draft-manifest-v1",
+  "source_git_commit": "73a8d9646a69e19e899d8224729f34009c57b6ad",
+  "package_build_date": "2026-08-30",
+  "files": [
+    {
+      "path": "01-作品方案/星火智学_作品方案_Guizang_DRAFT.pptx",
+      "bytes": 1477753,
+      "sha256": "4456fda0394778ad4a6c01049abba23565513404878b94ae7aab060ea0ff58ac"
+    },
+    {
+      "path": "02-演示视频/星火智学_真实交互演示_AI配音_DRAFT.mp4",
+      "bytes": 9533563,
+      "sha256": "682e463ecc03cf71a8b3ff4f43c4df3cbda1f780832eba99b25cbe1f392fd19e"
+    },
+    {
+      "path": "03-效果验证/EVIDENCE_INDEX.json",
+      "bytes": 2903,
+      "sha256": "48ff649b8366fa16e4a43d6564fec32d677cb4f97b2208a5bbc37ff4cbc9d5ba"
+    },
+    {
+      "path": "03-效果验证/星火智学效果验证报告_DRAFT.pdf",
+      "bytes": 255907,
+      "sha256": "fe4bb091f549115272b645b380084554cf429be0e0efec53ab437caf096d3518"
+    },
+    {
+      "path": "04-伦理与安全/伦理与安全合规声明正文.pdf",
+      "bytes": 299727,
+      "sha256": "859d837731f150e85c013808b97b09676b3d7c3c16e03ce1e9550774e60233f5"
+    },
+    {
+      "path": "04-伦理与安全/签署前核对清单.pdf",
+      "bytes": 168229,
+      "sha256": "9ae5261eaa197e5d19b818eaefb2c271b8dc58eeb4cf881f0c8f980c02cc9417"
+    },
+    {
+      "path": "05-代码/LegalWorld-星火智学-源码_DRAFT.zip",
+      "bytes": 14700506,
+      "sha256": "4adf9b7d9bf7ab16a76b39a03cb1e25df082789888768e5b86cd89173ad01236"
+    },
+    {
+      "path": "06-公开审计/25帧视觉接触表.png",
+      "bytes": 1377277,
+      "sha256": "ba3e65a627d11609c1e189137e1022143e71a1e5999e3a31527e347887eeeb7a"
+    },
+    {
+      "path": "06-公开审计/FROZEN_DEMO_AUDIT.json",
+      "bytes": 2575,
+      "sha256": "e895b77890d5b217550281ce5f12f51bf787ba0ad62fda8b35f89e2bc7b6b508"
+    },
+    {
+      "path": "06-公开审计/LEGAL_SOURCE_CURRENCY_AUDIT.json",
+      "bytes": 9548,
+      "sha256": "f2a648a5046981f06607323c6669f148fe73824188e9031a24e2d935e81ddd26"
+    },
+    {
+      "path": "06-公开审计/LEGAL_SOURCE_CURRENCY_AUDIT.md",
+      "bytes": 4937,
+      "sha256": "6c5309a46ae5cc99956f50cbe984fd920db35eedd767eb8a5ebf4a80e597d3b5"
+    },
+    {
+      "path": "06-公开审计/NARRATED_VIDEO_DRAFT_AUDIT.json",
+      "bytes": 8697,
+      "sha256": "7baf68482053824d4365d144646d7c8504e8bfef57319b64fad06c4141272927"
+    },
+    {
+      "path": "06-公开审计/专家审核包_MANIFEST_DRAFT.md",
+      "bytes": 3611,
+      "sha256": "233276f45529a4e62153cedf31f36301d93773b9fa9f7d043238a6be8fe09382"
+    },
+    {
+      "path": "06-公开审计/伦理签署包_MANIFEST_DRAFT.md",
+      "bytes": 2404,
+      "sha256": "71d4dc9703901795c082fbbcae9b66d78d888899eea16f6f25a5070797ec4ca2"
+    },
+    {
+      "path": "06-公开审计/效果验证报告包_MANIFEST_DRAFT.md",
+      "bytes": 2151,
+      "sha256": "bf6b0ca3ad6a3cbd9ca7a50efb338ef1c5a7e2236cadd840614163675ca1120d"
+    },
+    {
+      "path": "06-公开审计/目标用户试用包_MANIFEST_DRAFT.md",
+      "bytes": 2662,
+      "sha256": "dd75e24d951ac888c2c174e153988e503d5c4f1a96b63df67b282ac9f1fcd059"
+    },
+    {
+      "path": "06-公开审计/视频审片包_MANIFEST_DRAFT.md",
+      "bytes": 2031,
+      "sha256": "f8632486a9dfae0c83d8f108e86f013e0596f0ee45627aa1856ee2c7e388a9e5"
+    },
+    {
+      "path": "06-公开审计/视频技术审计与时间轴.pdf",
+      "bytes": 132276,
+      "sha256": "9a127098c531f543067b1b30920acb51a90704a266b971d261e8e2e6b49a2c06"
+    }
+  ],
+  "source_code": {
+    "entry_count": 396,
+    "sha256": "4adf9b7d9bf7ab16a76b39a03cb1e25df082789888768e5b86cd89173ad01236",
+    "sanitized_env": true
+  },
+  "pending": {
+    "expert_review": true,
+    "real_target_users": 2,
+    "ethics_signatures": 3,
+    "video_approvals": 3,
+    "effect_report_approvals": 3
+  },
+  "ready_for_final_submission": false,
+  "evidence_boundary": "Public DRAFT package only; human review, users, signatures and approvals remain pending"
+}
