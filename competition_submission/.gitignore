@@ -9,5 +9,8 @@
 # 视频审片25帧可由build_video_review_package.py复现；只提交接触表和审计
 /06-效果验证/视频审片包_DRAFT/frames/
 
+# 综合公开提交ZIP已内含源码ZIP，避免Git再保存一份重复副本
+/07-公开提交包_DRAFT/LegalWorld-星火智学-源码_DRAFT.zip
+
 # 本地冻结的演示数据库含演示账号哈希，只离线保管，不提交Git
 /offline_backup/
