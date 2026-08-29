@@ -14,17 +14,32 @@
 - 在线Evidence-KT：10个刑法知识点、学生自有事件时间线、证据不足与provisional门槛；状态不是校准概率。
 - ORCDF shadow：真实MOOCCubeX训练；同47题V0/V1/V2 AUC为0.7272/0.7489/0.7528；只支持受控预测比较。
 - 可信RAG：三个典型问题自动门禁3/3，错误引用2/2拒绝；不等于专家准确率。
+- 法源时效：演示关键的《刑法》第三条、第十二条、第二十条、第二百六十三条及《刑诉法》第一百七十七条5/5与官方文本一致；只覆盖5条，不等于全量法库已逐条完成2026年时效复核。
 - 教师闭环：测试脚本操作合成账号完成退回→原文修订→批准；同稿单决定、单事件；浏览器事件2→3。该结果不是目标用户试用。
-- 标杆案件冻结演示库：LC→INV→PR→不起诉→结案，461.547秒；测试脚本提供29次固定回答（非29名真人、非用户证据）；3个case LearningEvent、3/3 Agent退场、0 runtime issue。
+- 标杆案件冻结演示库：LC→INV→PR→不起诉→结案，461.547秒；测试脚本提供29次固定回答（非29名真人、非用户证据）；case3产生3个阶段LearningEvent、3/3 Agent退场、0 runtime issue。
 - Model Adapter：四任务路由可见；当前基线OpenCode/DeepSeek；微调端点`not_connected`。
+- 比赛材料：Guizang PPT 12页、1,483,789字节，浏览器四类错误为0，PowerPoint实机回渲染12/12为1600×900；97.84秒1080p AI配音视频仍为DRAFT，已显著标识AI配音，尚待团队完整审片。
 
 | 机制 | 权威证据文件 | 版本/日期 |
 |---|---|---|
-| 认知诊断/ORCDF/路径/模型路由 | `docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md` | 核心代码`265e4e7`；2026-08-29复核 |
-| 三个典型问题 | `docs/TYPICAL_QUESTION_EVALUATION.json` | 文件内生成时间与来源SHA；专家pending |
-| 教师退回—修订—批准 | `frontend/scripts/smoke-teacher-dashboard.mjs` | 核心闭环`0fe990e`后持续回归 |
-| case3冻结演示E2E | `competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json` | 源commit与backup manifest SHA见文件；24项源/恢复语义审计通过 |
-| Guizang PPT | `competition_submission/04-作品方案/guizang/qa/report.json` | 材料commit`a3a77e8`；2026-08-29 |
+| 认知诊断/ORCDF/路径/模型路由 | `docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md` | 2026-08-29复核；页面明确MOOCCubeX迁移与未校准边界 |
+| 三个典型问题 | `docs/TYPICAL_QUESTION_EVALUATION.json` | 2026-08-29生成；suite SHA `3b5f896c...1180c2`；专家pending |
+| 关键法源时效 | `competition_submission/03-Demo/LEGAL_SOURCE_CURRENCY_AUDIT.json` | 2026-08-29 23:53 UTC+8；5/5通过 |
+| 教师退回—修订—批准 | `competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json` | 合成账号；浏览器事件2→3；源/恢复各24项语义审计通过 |
+| case3冻结演示E2E | `competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json`、`CASE3_INV_PR_SNAPSHOT.json` | 461.547秒、29次固定脚本回答、0 runtime issue；不起诉分支非专家结论 |
+| Guizang PPT | `competition_submission/04-作品方案/guizang/qa/report.json`、`pptx-report.json` | 材料commit`0e863fb`；12页；浏览器四类错误为0；最大回渲染误差0.0953 |
+| 演示视频DRAFT | `competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json` | 97.84秒、1920×1080；SHA `680e5285...83d16`；AI配音标识可见 |
+
+### L1量化摘要
+
+| 证据对象 | 结果 | 能证明 | 不能证明 |
+|---|---:|---|---|
+| 冻结演示库语义审计 | 源24/24、恢复24/24 | 备份与恢复后的演示语义一致 | 真实课堂稳定性或学习效果 |
+| case3真实配置E2E | 461.547秒、3阶段、3/3 Agent退场、0 runtime issue | 固定输入下状态机与模型链路可完成 | 29名用户、专家适法意见或成功率 |
+| 典型问题自动门禁 | 3/3；错误引用2/2拒绝 | 结构、标准要点、允许来源与逐字quote门禁通过 | 独立专家准确率 |
+| 关键法条时效 | 5/5 | 5条目标法条的来源、版本和文本一致 | 全量法库时效或具体案件适法正确 |
+| Guizang网页/PPT | 12页；Web四类错误0；PPT回渲染12/12 | 主要展示视口可用且Office渲染稳定 | 目标用户可用性 |
+| AI配音视频DRAFT | 97.84秒、1920×1080 | 已形成180秒以内可审片草案 | 团队最终批准或真实用户认可 |
 
 ## 3. L2三题内容验证
 
@@ -35,6 +50,8 @@
 | 抢劫罪基本构成 | 通过 | 通过 | `[pending]` | `[待填写]` |
 
 专家未签字前，报告不得生成“专家准确率”百分比。
+
+三题使用到的目标法条已通过5/5时效与逐字一致性审计；这只消除“引用文本过期或被篡改”这一层风险，不代替专家对标准答案、事实涵摄和case3不起诉适用的审查。
 
 如专家要求修改，旧输出、旧manifest和旧审核表保留；新run重新执行自动门禁并由专家复签。报告只引用最终“可发布”版本，同时附修订链。
 
@@ -59,4 +76,5 @@
 
 | 日期 | 变更 | 证据文件 | 复核人 |
 |---|---|---|---|
+| 2026-08-30 | 同步PPT实机QA、5/5法源审计、case3与视频DRAFT证据索引 | 本报告第2节列示文件 | `[待团队复核]` |
 | `[填写]` | `[填写]` | `[填写]` | `[填写]` |

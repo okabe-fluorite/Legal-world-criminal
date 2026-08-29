@@ -112,7 +112,13 @@ def main() -> int:
             "requirement": "至少3个典型问题及准确性论证",
             "status": "expert_pending",
             "evidence": ["docs/TYPICAL_QUESTION_EVALUATION.json", "competition_submission/06-效果验证/专家审核包_MANIFEST_DRAFT.md"],
-            "detail": {"automatic_gate_passed": typical.get("summary", {}).get("passed"), "expert_status": typical.get("expert_review_status")},
+            "detail": {
+                "case_count": typical.get("case_count"),
+                "automated_gate_pass_count": typical.get("automated_gate_pass_count"),
+                "all_expert_reviews_complete": typical.get("all_expert_reviews_complete"),
+                "generated_at": typical.get("generated_at"),
+                "suite_sha256": typical.get("suite_sha256"),
+            },
             "boundary": "自动门禁不等于专家准确率",
         },
         {
