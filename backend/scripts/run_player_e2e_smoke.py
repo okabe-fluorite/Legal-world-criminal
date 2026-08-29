@@ -118,6 +118,17 @@ CASE_3_RESPONSES = {
 CASE_RESPONSES = {"case_3": CASE_3_RESPONSES}
 
 
+def _auth_path(reuse_account: bool) -> str:
+    return "login" if reuse_account else "register"
+
+
+def _validate_reuse_credentials(
+    reuse_account: bool, email: str | None, password: str | None
+) -> None:
+    if reuse_account and (not email or not password):
+        raise ValueError("--reuse-account requires both --email and --password")
+
+
 def _request(
     method: str,
     url: str,
@@ -152,10 +163,11 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
     email = args.email or f"e2e-{uuid.uuid4().hex[:12]}@example.com"
     password = args.password or f"E2E-{uuid.uuid4().hex}-Strong"
 
+    auth_path = _auth_path(args.reuse_account)
     auth = await asyncio.to_thread(
         _request,
         "POST",
-        f"{base}/api/auth/register",
+        f"{base}/api/auth/{auth_path}",
         payload={"email": email, "password": password},
     )
     token = str(auth["access_token"])
@@ -342,10 +354,19 @@ def main() -> int:
     parser.add_argument("--case-id", default="case_1")
     parser.add_argument("--email")
     parser.add_argument("--password")
+    parser.add_argument(
+        "--reuse-account",
+        action="store_true",
+        help="log in to an existing synthetic account instead of registering a new one",
+    )
     parser.add_argument("--timeout-seconds", type=int, default=2400)
     parser.add_argument("--post-close-seconds", type=float, default=3.0)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
+    try:
+        _validate_reuse_credentials(args.reuse_account, args.email, args.password)
+    except ValueError as exc:
+        parser.error(str(exc))
     try:
         result = asyncio.run(run(args))
     except Exception as exc:

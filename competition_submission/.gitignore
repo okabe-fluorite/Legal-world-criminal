@@ -5,3 +5,6 @@
 # Guizang逐页截图可由qa_screenshots.mjs复现；只保留总览和结构化报告
 /04-作品方案/guizang/qa/screens/
 /04-作品方案/guizang/qa/pptx-render/
+
+# 本地冻结的演示数据库含演示账号哈希，只离线保管，不提交Git
+/offline_backup/

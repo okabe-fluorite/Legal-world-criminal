@@ -5,6 +5,12 @@ import { chromium } from "playwright-core";
 
 const baseUrl = process.env.TEACHER_BASE_URL || "http://127.0.0.1:5173";
 const teacherEmail = process.env.TEACHER_SMOKE_EMAIL || "teacher-smoke@example.com";
+const studentEmail = process.env.TEACHER_STUDENT_EMAIL || `teacher-student-${Date.now()}@example.com`;
+const smokePassword = process.env.TEACHER_SMOKE_PASSWORD || "Teacher-Smoke-2026!";
+const configuredClassName = process.env.TEACHER_CLASS_NAME || "";
+const resultJsonPath = process.env.TEACHER_RESULT_JSON
+  ? path.resolve(process.env.TEACHER_RESULT_JSON)
+  : "";
 const screenshotPath = path.resolve(
   process.env.TEACHER_SCREENSHOT || "../.codex-artifacts/teacher-dashboard.png",
 );
@@ -79,7 +85,7 @@ async function register(email) {
     { timeout: 120000 },
   );
   await page.getByPlaceholder("you@court.edu").fill(email);
-  await page.getByPlaceholder("至少 6 位").fill("Teacher-Smoke-2026!");
+  await page.getByPlaceholder("至少 6 位").fill(smokePassword);
   await page.getByRole("button", { name: "注册并进入" }).click();
   const [registerResponse, sandboxResponse] = await Promise.all([
     registerResponsePromise,
@@ -105,7 +111,7 @@ async function login(email) {
     { timeout: 120000 },
   );
   await page.getByPlaceholder("you@court.edu").fill(email);
-  await page.getByPlaceholder("至少 6 位").fill("Teacher-Smoke-2026!");
+  await page.getByPlaceholder("至少 6 位").fill(smokePassword);
   await page.getByRole("button", { name: "登录", exact: true }).click();
   const [loginResponse, sandboxResponse] = await Promise.all([
     loginResponsePromise,
@@ -121,7 +127,6 @@ async function login(email) {
 
 try {
   await page.goto(baseUrl, { waitUntil: "networkidle" });
-  const studentEmail = `teacher-student-${Date.now()}@example.com`;
   const subjectiveResponse =
     "《刑法》第三条要求只有法律明文规定为犯罪的行为才能定罪处罚。成立例是行为发生时刑法已明确规定构成犯罪，且行为事实逐项满足构成要件；不成立例是仅有社会危害性评价，却找不到明确罪名和构成条件。判断时应先确认行为时有效规范，再把主体、行为、结果和主观方面分别对应，不能用价值判断替代明文规定。";
   await register(studentEmail);
@@ -173,7 +178,7 @@ try {
   await page.getByRole("dialog", { name: "教师教学驾驶舱" }).waitFor();
 
   await page.getByRole("button", { name: "+ 新建" }).click();
-  const uniqueClass = `刑法试点班-${Date.now().toString().slice(-6)}`;
+  const uniqueClass = configuredClassName || `刑法试点班-${Date.now().toString().slice(-6)}`;
   await page.getByLabel("班级名称").fill(uniqueClass);
   await page.getByLabel("学期").fill("2026秋");
   await page.getByRole("button", { name: "建立班级" }).click();
@@ -337,6 +342,10 @@ try {
     subjective_after_screenshot: subjectiveAfterScreenshotPath,
     student_teacher_feedback_screenshot: studentTeacherFeedbackScreenshotPath,
   };
+  if (resultJsonPath) {
+    fs.mkdirSync(path.dirname(resultJsonPath), { recursive: true });
+    fs.writeFileSync(resultJsonPath, JSON.stringify(result, null, 2), "utf8");
+  }
   console.log(JSON.stringify(result));
   if (
     privacyLeaks.length ||

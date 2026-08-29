@@ -2,11 +2,25 @@ from __future__ import annotations
 
 import unittest
 
-from scripts.run_player_e2e_smoke import _stage_response
+from scripts.run_player_e2e_smoke import (
+    _auth_path,
+    _stage_response,
+    _validate_reuse_credentials,
+)
 from src.tools.legal.document_drafting_support import extract_document_body
 
 
 class E2ESmokeRunnerTests(unittest.TestCase):
+    def test_reuse_account_switches_authentication_to_login(self) -> None:
+        self.assertEqual(_auth_path(False), "register")
+        self.assertEqual(_auth_path(True), "login")
+
+    def test_reuse_account_requires_explicit_credentials(self) -> None:
+        _validate_reuse_credentials(False, None, None)
+        _validate_reuse_credentials(True, "demo@example.com", "secret")
+        with self.assertRaisesRegex(ValueError, "requires both"):
+            _validate_reuse_credentials(True, None, "secret")
+
     def test_ds_response_is_a_complete_extractable_defense_document(self) -> None:
         response = _stage_response("DS", "请提交完整辩护词")
         body = extract_document_body(
