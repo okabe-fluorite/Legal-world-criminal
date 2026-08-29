@@ -1,7 +1,7 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-29T17:59:21.294530+00:00",
-  "git_commit": "a41ddd9671f15f42dffd08a508d474b6374db540",
+  "generated_at": "2026-08-29T18:23:37.998701+00:00",
+  "git_commit": "7eb7f2c7bff98c68568eddb37f044088d047245f",
   "tracked_worktree_clean_before_audit": true,
   "untracked_user_material_count": 5,
   "checks": [
@@ -97,11 +97,23 @@
       "requirement": "至少2名真实目标用户试用记录",
       "status": "pending_external",
       "evidence": [
-        "competition_submission/06-效果验证/目标用户知情同意书_DRAFT.md",
-        "competition_submission/06-效果验证/目标用户统一试用主持脚本_DRAFT.md",
-        "competition_submission/06-效果验证/目标用户试用记录表_DRAFT.md"
+        "competition_submission/06-效果验证/目标用户试用包_MANIFEST_DRAFT.md",
+        "competition_submission/06-效果验证/目标用户试用包_DRAFT/MANIFEST.json",
+        "competition_submission/06-效果验证/目标用户试用包_DRAFT/BUILD_AUDIT.json"
       ],
-      "boundary": "只有模板，无真实参与者记录"
+      "detail": {
+        "participants_preallocated": [
+          "U01",
+          "U02"
+        ],
+        "pdf_count": 6,
+        "private_public_separation": true,
+        "privacy_separation_passed": true,
+        "secret_scan_passed": true,
+        "real_participant_count": 0,
+        "trial_records_complete": false
+      },
+      "boundary": "U01/U02标准化试用材料已就绪，但只是空白表；真实参与者仍为0，不能写成用户验证完成"
     },
     {
       "id": "effect_report",
