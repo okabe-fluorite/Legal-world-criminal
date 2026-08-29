@@ -1,0 +1,202 @@
+{
+  "schema": "competition-legal-source-currency-audit-v1",
+  "checked_at": "2026-08-29T23:53:58+08:00",
+  "result": "PASS_WITH_SCOPE_LIMITATIONS",
+  "target_article_count": 5,
+  "target_article_pass_count": 5,
+  "comparison_method": {
+    "normalization": "Unicode NFC; collapse all whitespace to one ASCII space; trim",
+    "digest": "SHA-256 over UTF-8 normalized article body",
+    "pass_rule": "local and official normalized article bodies are identical"
+  },
+  "current_law_status": {
+    "criminal_law": {
+      "latest_effective_amendment_identified": "中华人民共和国刑法修正案（十二）",
+      "effective_from": "2024-03-01",
+      "official_2026_current_law_directory_status": "listed; amendments through 十二 are listed",
+      "target_articles_modified_by_amendment_12": []
+    },
+    "criminal_procedure_law": {
+      "latest_effective_revision_identified": "2018-10-26 third revision",
+      "official_2026_current_law_directory_status": "listed with revisions in 1996, 2012 and 2018",
+      "article_177_modified_after_2018_identified": false,
+      "later_legislative_activity_boundary": "A 2025 NPC report states that amendment work is in the legislative plan; this is not an enacted amendment. A 2025 interpretation concerns Article 292, not Article 177."
+    }
+  },
+  "official_web_sources": [
+    {
+      "id": "npc-current-laws-2026",
+      "title": "现行有效法律目录（310件）",
+      "publisher": "全国人民代表大会",
+      "url": "https://www.npc.gov.cn/c2/c30834/202603/P020260316580245162685.pdf",
+      "purpose": "Confirm the latest listed Criminal Law amendment and the latest listed Criminal Procedure Law revision"
+    },
+    {
+      "id": "npc-criminal-procedure-law-2018",
+      "title": "中华人民共和国刑事诉讼法",
+      "publisher": "中国人大网",
+      "url": "https://www.npc.gov.cn/c2/c12435/201905/t20190521_276591.html",
+      "purpose": "Verify the current consolidated text and Article 177"
+    },
+    {
+      "id": "npc-criminal-procedure-amendment-2018",
+      "title": "全国人民代表大会常务委员会关于修改《中华人民共和国刑事诉讼法》的决定",
+      "publisher": "中国人大网",
+      "url": "https://www.npc.gov.cn/npc/c2/c12435/201905/t20190521_276584.html",
+      "purpose": "Verify the renumbering to Article 177 and its amended third paragraph"
+    },
+    {
+      "id": "samr-criminal-law-consolidated",
+      "title": "中华人民共和国刑法",
+      "publisher": "国家市场监督管理总局",
+      "url": "https://www.samr.gov.cn/zw/zfxxgk/fdzdgknr/bgt/art/2025/art_890f1333b6284c3cbb225c3cd2647c4b.html",
+      "purpose": "Verify Criminal Law Articles 3, 12, 20 and 263 in an official rendered consolidated text"
+    },
+    {
+      "id": "npc-criminal-law-amendment-12-explanation",
+      "title": "关于《中华人民共和国刑法修正案（十二）（草案）》的说明",
+      "publisher": "中国人大网",
+      "url": "https://www.npc.gov.cn/npc/c2/c30834/202312/t20231229_433982.html",
+      "purpose": "Confirm that Amendment 12 changes seven articles unrelated to Articles 3, 12, 20 and 263"
+    },
+    {
+      "id": "npc-official-law-database",
+      "title": "国家法律法规数据库",
+      "publisher": "全国人民代表大会常务委员会办公厅",
+      "url": "https://flk.npc.gov.cn/",
+      "purpose": "Identify the official portal used by the local download bundle"
+    }
+  ],
+  "local_corpus_integrity": {
+    "manifest": "backend/legal_corpus/processed/law_corpus_manifest.json",
+    "manifest_schema": "simlaw-law-corpus-manifest-v2",
+    "criminal_law_output": {
+      "path": "backend/legal_corpus/processed/xingfa.jsonl",
+      "article_count": 505,
+      "version_as_of": "2024-03-01",
+      "expected_sha256": "a718b37c6c9d97347018c72e44c0b1b886cd0599bf2ac0bf3c4b45e6ebe37b43",
+      "actual_sha256": "a718b37c6c9d97347018c72e44c0b1b886cd0599bf2ac0bf3c4b45e6ebe37b43",
+      "hash_match": true
+    },
+    "criminal_procedure_law_output": {
+      "path": "backend/legal_corpus/processed/xingsufa.jsonl",
+      "article_count": 308,
+      "version_as_of": "2018-10-26",
+      "expected_sha256": "bf2826df2ead8039eddd8193feb5047a62b391949f3c8c0726e8857c0b77fa50",
+      "actual_sha256": "bf2826df2ead8039eddd8193feb5047a62b391949f3c8c0726e8857c0b77fa50",
+      "hash_match": true
+    },
+    "official_download_artifacts": {
+      "stored_outside_repository": true,
+      "external_archive_checked": true,
+      "all_manifest_hashes_matched": true,
+      "artifacts": [
+        {
+          "manifest_path": "raw_data/法律/国家法律法规数据库_批量下载_20260226_141154/中华人民共和国刑法_20201226.docx",
+          "sha256": "282fee49f12b6420a1a5ecde4ea2aa58b0e496e566cf959378bd1f8edb53f5e6",
+          "hash_match": true
+        },
+        {
+          "manifest_path": "raw_data/法律/国家法律法规数据库_批量下载_20260226_141135/中华人民共和国刑法修正案（十二）_20231229.docx",
+          "sha256": "ee51fc72c880c8ed4456ec50196498da6b16bab2430ad63229d408b247ce20c4",
+          "hash_match": true
+        },
+        {
+          "manifest_path": "raw_data/法律/国家法律法规数据库_批量下载_20260226_141154/中华人民共和国刑事诉讼法_20181026.docx",
+          "sha256": "6810ffec97e23afcf5e5e0605f6f15c38299e0acb70c55d77c3c5a1882d954a7",
+          "hash_match": true
+        }
+      ]
+    }
+  },
+  "article_checks": [
+    {
+      "law": "中华人民共和国刑法",
+      "article_ref": "第三条",
+      "local_path": "backend/legal_corpus/processed/xingfa.jsonl",
+      "local_version_as_of": "2024-03-01",
+      "official_source_ids": [
+        "samr-criminal-law-consolidated",
+        "npc-criminal-law-amendment-12-explanation",
+        "npc-current-laws-2026"
+      ],
+      "normalized_char_count": 44,
+      "normalized_sha256": "f7878c3dbf74c725d4e52f35ba36217eee7fb5fa2ca106716e9ac1e983c7355b",
+      "exact_match_after_normalization": true,
+      "result": "PASS"
+    },
+    {
+      "law": "中华人民共和国刑法",
+      "article_ref": "第十二条",
+      "local_path": "backend/legal_corpus/processed/xingfa.jsonl",
+      "local_version_as_of": "2024-03-01",
+      "official_source_ids": [
+        "samr-criminal-law-consolidated",
+        "npc-criminal-law-amendment-12-explanation",
+        "npc-current-laws-2026"
+      ],
+      "normalized_char_count": 148,
+      "normalized_sha256": "6fc83e3f74a793e2d531b74d40f2548ca6d3d10b662c072cc9d2cc67151e7f13",
+      "exact_match_after_normalization": true,
+      "result": "PASS"
+    },
+    {
+      "law": "中华人民共和国刑法",
+      "article_ref": "第二十条",
+      "local_path": "backend/legal_corpus/processed/xingfa.jsonl",
+      "local_version_as_of": "2024-03-01",
+      "official_source_ids": [
+        "samr-criminal-law-consolidated",
+        "npc-criminal-law-amendment-12-explanation",
+        "npc-current-laws-2026"
+      ],
+      "normalized_char_count": 193,
+      "normalized_sha256": "421b7dd9a8d55ef8bc2f9afa378b3ce5bd7decd51f2eb07bc136ba2aa1a1c964",
+      "exact_match_after_normalization": true,
+      "result": "PASS"
+    },
+    {
+      "law": "中华人民共和国刑法",
+      "article_ref": "第二百六十三条",
+      "local_path": "backend/legal_corpus/processed/xingfa.jsonl",
+      "local_version_as_of": "2024-03-01",
+      "official_source_ids": [
+        "samr-criminal-law-consolidated",
+        "npc-criminal-law-amendment-12-explanation",
+        "npc-current-laws-2026"
+      ],
+      "normalized_char_count": 203,
+      "normalized_sha256": "4b76c441f2b3fe524f61ba521149c5e3811dbda8857bb2e288173fabc4ded397",
+      "exact_match_after_normalization": true,
+      "result": "PASS"
+    },
+    {
+      "law": "中华人民共和国刑事诉讼法",
+      "article_ref": "第一百七十七条",
+      "local_path": "backend/legal_corpus/processed/xingsufa.jsonl",
+      "local_version_as_of": "2018-10-26",
+      "official_source_ids": [
+        "npc-criminal-procedure-law-2018",
+        "npc-criminal-procedure-amendment-2018",
+        "npc-current-laws-2026"
+      ],
+      "normalized_char_count": 214,
+      "normalized_sha256": "62246a66207b0d0e71eb445eb22a45dd0ee46e175cf85487ce74243f70de7a31",
+      "exact_match_after_normalization": true,
+      "result": "PASS"
+    }
+  ],
+  "scope_limitations": [
+    "This audit checks source currency, provenance and exact article text for five demo-critical articles only; it is not a full-corpus legal currency audit.",
+    "The official portal item URLs were not preserved in the original download artifacts; the manifest retains the portal URL, snapshot date and source hashes.",
+    "The SAMR rendered Criminal Law page is a consolidated text through Amendment 11. Amendment 12 scope and the 2026 current-law directory were therefore checked separately before treating the four unaffected Criminal Law articles as current.",
+    "A web search can fail to surface newly enacted changes. Recheck the official database immediately before submission, every classroom term and before any real legal use.",
+    "Article-text currency does not prove that a model's application of Article 20 or Article 177 to case facts is legally correct. The case3 non-prosecution branch remains a model/demo result pending independent legal-expert review."
+  ],
+  "submission_impact": {
+    "rag_update_required": false,
+    "ppt_update_required": false,
+    "video_update_required": false,
+    "expert_review_still_required": true
+  }
+}
