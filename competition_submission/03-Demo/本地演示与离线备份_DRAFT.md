@@ -205,3 +205,14 @@ py competition_submission/scripts/assemble_demo_preview.py `
 ```
 
 当前已验收版本为5段、总时长65.24秒、1600×900/25fps、浏览器错误0；65.2秒预演SHA见公开审计。原视频不入Git。最终成片还需按170秒脚本加入旁白/字幕、PR对抗快照与团队片尾，且总长不得超过180秒。
+
+生成AI配音审片DRAFT：
+
+```powershell
+py competition_submission/scripts/build_narrated_demo.py `
+  --segments competition_submission/offline_backup/video-capture-final `
+  --output-dir competition_submission/offline_backup/narrated-video-final `
+  --public-audit competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json
+```
+
+脚本使用本机`Microsoft Huihui Desktop`，把Guizang封面/案件架构/片尾与5段交互组合，生成1080p H.264/AAC、中文字幕和全程AI配音标识。当前审片版76.84秒、约7.73MB，视频SHA见公开审计；它仍是DRAFT，不自动升级为最终参赛视频。

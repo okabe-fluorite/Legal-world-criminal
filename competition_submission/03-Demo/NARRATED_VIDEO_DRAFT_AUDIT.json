@@ -1,0 +1,71 @@
+{
+  "schema": "competition-narrated-demo-draft-audit-v1",
+  "file": "星火智学_真实交互演示_AI配音_DRAFT.mp4",
+  "duration_seconds": 76.84,
+  "bytes": 7729119,
+  "sha256": "32af5dc5e40020bcd08175b3c8f46ec51991c7d8f0d60361e2641955825dd48a",
+  "resolution": "1920x1080",
+  "fps": 25,
+  "audio": {
+    "present": true,
+    "voice": "Microsoft Huihui Desktop",
+    "ai_generated_label_visible": true,
+    "voice_items": [
+      {
+        "id": "01-cover",
+        "visual_duration_seconds": 3.5,
+        "raw_voice_duration_seconds": 3.889,
+        "voice_speed_factor": 1.23464
+      },
+      {
+        "id": "02-diagnosis",
+        "visual_duration_seconds": 17.48,
+        "raw_voice_duration_seconds": 17.546,
+        "voice_speed_factor": 1.02426
+      },
+      {
+        "id": "03-rag",
+        "visual_duration_seconds": 15.48,
+        "raw_voice_duration_seconds": 15.387,
+        "voice_speed_factor": 1.01699
+      },
+      {
+        "id": "04-student",
+        "visual_duration_seconds": 9.28,
+        "raw_voice_duration_seconds": 11.364,
+        "voice_speed_factor": 1.27253
+      },
+      {
+        "id": "05-teacher",
+        "visual_duration_seconds": 11.08,
+        "raw_voice_duration_seconds": 10.66,
+        "voice_speed_factor": 1.0
+      },
+      {
+        "id": "06-agent-architecture",
+        "visual_duration_seconds": 4.5,
+        "raw_voice_duration_seconds": 7.625,
+        "voice_speed_factor": 1.83734
+      },
+      {
+        "id": "07-case",
+        "visual_duration_seconds": 11.92,
+        "raw_voice_duration_seconds": 14.76,
+        "voice_speed_factor": 1.27574
+      },
+      {
+        "id": "08-close",
+        "visual_duration_seconds": 3.5,
+        "raw_voice_duration_seconds": 6.061,
+        "voice_speed_factor": 1.92423
+      }
+    ]
+  },
+  "subtitles": {
+    "present": true,
+    "language": "zh-CN",
+    "count": 8
+  },
+  "source_interaction_audit": "VIDEO_SEGMENTS_AUDIT.json",
+  "evidence_boundary": "AI-voiced DRAFT assembled from audited real browser interactions and three PPT stills; not the final team-approved submission, not target-user evidence, and not expert validation"
+}

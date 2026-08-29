@@ -57,3 +57,9 @@
 | `05-case3-card-and-evidence.webm` | case3标杆卡与冻结后6事件画像 | 122—155s | 仍需插入已标识的INV/PR对抗及不起诉快照 |
 
 五段合计65.24秒；已合成65.2秒无声H.264预演。浏览器四类错误0，抽检每段start/mid/end和总片start/middle/end，登录页已移除。具体SHA见`../03-Demo/VIDEO_SEGMENTS_AUDIT.json`。这只是最终成片的真实交互底片，不得改名为“最终视频”。
+
+## AI配音审片版
+
+已用真实底片+Guizang封面/架构/收束页生成76.84秒1080p DRAFT：中文字幕每段最多两行，全程右下角显示`AI配音 · DRAFT`，48kHz双声道AAC未检出超过1.2秒异常静音。抽检封面、诊断、RAG、教师、case3和收束页，字幕未遮挡核心证据。
+
+审计见`../03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json`。最终提交前必须由团队完整播放审片，补充已标识的case3 INV/PR对抗与不起诉快照，并决定使用AI配音还是替换真人旁白；无论选择哪一种，均保留AI生成内容标识与证据边界。

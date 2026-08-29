@@ -16,6 +16,8 @@
 
 已基于恢复库录制5段真实浏览器素材并合成65.2秒无声预演：原始视频继续留在Git忽略目录；公开时长、SHA、分辨率和0错误门禁见`03-Demo/VIDEO_SEGMENTS_AUDIT.json`。该预演不是最终配音成片，也不替代用户/专家证据。
 
+另生成76.84秒、1920×1080、中文字幕、AI配音DRAFT，公开审计见`03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json`。视频全程标识“AI配音·DRAFT”，用于队友审片；最终提交前仍须团队复核、补case3 PR对抗快照并决定保留AI配音或替换真人旁白。
+
 ## 不得删除的证据边界
 
 - MOOCCubeX民法/宪法ORCDF是`shadow/实验`，不是刑法课堂实时掌握率。
