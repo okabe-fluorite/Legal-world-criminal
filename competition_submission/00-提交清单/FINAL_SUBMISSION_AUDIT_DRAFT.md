@@ -1,9 +1,10 @@
 # XH-202620最终提交就绪审计（DRAFT）
 
-- Git：`1fab43a1db3a8e09b55a97b10c2a966b6589401b`
+- Git：`6b0ee3e6dd9ff4f7a5224e36affa9c899ddac265`
 - 最终提交就绪：**否**
 - 外部待补：`three_questions, target_users, ethics`
 - 内部待批准：`video, effect_report`
+- 真实人员执行入口：`competition_submission/00-提交清单/真实人员完成操作单.md`
 
 | 要求 | 状态 | 证据边界 |
 |---|---|---|
