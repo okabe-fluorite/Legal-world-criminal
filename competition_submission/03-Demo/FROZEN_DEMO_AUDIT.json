@@ -1,8 +1,8 @@
 {
   "schema": "competition-frozen-demo-public-audit-v1",
-  "generated_at": "2026-08-29T10:56:20.088933+00:00",
-  "source_git_commit": "e8e5524a3c3be0337d7862e76e4eef398f08fae3",
-  "backup_manifest_sha256": "44cec30b5c7566475e30f66df751c5ec4be270ce7db5a34eb577e4b5faa46806",
+  "generated_at": "2026-08-29T11:13:29.175219+00:00",
+  "source_git_commit": "2079c452fde6f11b75997c24b97c55602e8660c0",
+  "backup_manifest_sha256": "44d1a11bff2efb5eaccbe4440a5a84a6c2b6fb55fed8dc4ce59e73c5402ea14c",
   "backup_file_count": 140,
   "backup_payload_bytes": 1570695,
   "private_backup_policy": {
