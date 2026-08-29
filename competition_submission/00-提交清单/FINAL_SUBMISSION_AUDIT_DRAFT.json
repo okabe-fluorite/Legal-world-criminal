@@ -1,7 +1,7 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-29T15:21:28.708249+00:00",
-  "git_commit": "980f15344318d24211b717e25f8419da87d8b330",
+  "generated_at": "2026-08-29T16:29:12.033947+00:00",
+  "git_commit": "ed82e3fa476c2f2b2dda2dc176fd3b553508b96c",
   "tracked_worktree_clean_before_audit": true,
   "untracked_user_material_count": 5,
   "checks": [
@@ -23,9 +23,9 @@
         "competition_submission\\04-作品方案\\guizang\\qa\\pptx-report.json"
       ],
       "detail": {
-        "bytes": 1484486,
+        "bytes": 1483789,
         "slides": 12,
-        "max_render_mae": 0.0956
+        "max_render_mae": 0.0953
       },
       "boundary": "仍名为DRAFT；真实用户/专家状态待替换"
     },
@@ -55,6 +55,21 @@
         "competition_submission/scripts/"
       ],
       "boundary": "私密模型配置不入库"
+    },
+    {
+      "id": "legal_source_currency",
+      "requirement": "演示关键法源现行有效且可追溯",
+      "status": "passed",
+      "evidence": [
+        "competition_submission/03-Demo/LEGAL_SOURCE_CURRENCY_AUDIT.json",
+        "competition_submission/03-Demo/LEGAL_SOURCE_CURRENCY_AUDIT.md"
+      ],
+      "detail": {
+        "target_articles": 5,
+        "passed": 5,
+        "checked_at": "2026-08-29T23:53:58+08:00"
+      },
+      "boundary": "仅覆盖5条演示关键法条；法条文本现行不等于case3适法结论已获专家确认"
     },
     {
       "id": "three_questions",
