@@ -1,0 +1,145 @@
+{
+  "schema": "xh-202620-submission-readiness-audit-v1",
+  "generated_at": "2026-08-29T13:09:36.782984+00:00",
+  "git_commit": "e66782dc4015e1a4c82ff66babcc496346a3ff48",
+  "tracked_worktree_clean_before_audit": true,
+  "untracked_user_material_count": 7,
+  "checks": [
+    {
+      "id": "demo_docs",
+      "requirement": "可访问Demo或明确本地一键启动说明",
+      "status": "passed",
+      "evidence": [
+        "competition_submission/03-Demo/本地演示与离线备份_DRAFT.md"
+      ],
+      "boundary": "本地运行；尚无公开在线地址"
+    },
+    {
+      "id": "ppt",
+      "requirement": "100MB以内作品方案PPT",
+      "status": "passed",
+      "evidence": [
+        "competition_submission\\04-作品方案\\星火智学_作品方案_Guizang_DRAFT.pptx",
+        "competition_submission\\04-作品方案\\guizang\\qa\\pptx-report.json"
+      ],
+      "detail": {
+        "bytes": 1483911,
+        "slides": 12,
+        "max_render_mae": 0.095
+      },
+      "boundary": "仍名为DRAFT；真实用户/专家状态待替换"
+    },
+    {
+      "id": "video",
+      "requirement": "3分钟以内真实交互演示视频",
+      "status": "draft_ready",
+      "evidence": [
+        "competition_submission/03-Demo/VIDEO_SEGMENTS_AUDIT.json",
+        "competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json"
+      ],
+      "detail": {
+        "real_segment_seconds": 65.24,
+        "draft_seconds": 76.84,
+        "draft_resolution": "1920x1080"
+      },
+      "boundary": "AI配音DRAFT尚未团队批准；缺已标识case3 INV/PR对抗快照"
+    },
+    {
+      "id": "reproducible_code",
+      "requirement": "可复现代码、依赖锁和模型接口说明",
+      "status": "passed",
+      "evidence": [
+        "requirements.lock.txt",
+        "frontend/package-lock.json",
+        "docs/MODEL_ADAPTER.md",
+        "competition_submission/scripts/"
+      ],
+      "boundary": "私密模型配置不入库"
+    },
+    {
+      "id": "three_questions",
+      "requirement": "至少3个典型问题及准确性论证",
+      "status": "expert_pending",
+      "evidence": [
+        "docs/TYPICAL_QUESTION_EVALUATION.json",
+        "competition_submission/06-效果验证/专家审核包_MANIFEST_DRAFT.md"
+      ],
+      "detail": {
+        "automatic_gate_passed": null,
+        "expert_status": null
+      },
+      "boundary": "自动门禁不等于专家准确率"
+    },
+    {
+      "id": "target_users",
+      "requirement": "至少2名真实目标用户试用记录",
+      "status": "pending_external",
+      "evidence": [
+        "competition_submission/06-效果验证/目标用户知情同意书_DRAFT.md",
+        "competition_submission/06-效果验证/目标用户统一试用主持脚本_DRAFT.md",
+        "competition_submission/06-效果验证/目标用户试用记录表_DRAFT.md"
+      ],
+      "boundary": "只有模板，无真实参与者记录"
+    },
+    {
+      "id": "effect_report",
+      "requirement": "效果验证报告",
+      "status": "draft_ready",
+      "evidence": [
+        "competition_submission/06-效果验证/效果验证报告_DRAFT.md"
+      ],
+      "boundary": "L1软件证据完成；L2专家/L3用户待补；不声称L4学习效果"
+    },
+    {
+      "id": "ethics",
+      "requirement": "伦理与安全合规声明",
+      "status": "signature_pending",
+      "evidence": [
+        "competition_submission/02-伦理与安全/伦理与安全合规声明_DRAFT.md"
+      ],
+      "boundary": "尚未团队负责人/指导教师签字"
+    },
+    {
+      "id": "ai_label",
+      "requirement": "AI生成内容显著标识",
+      "status": "passed",
+      "evidence": [
+        "competition_submission/04-作品方案/guizang/slides.html",
+        "competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json"
+      ],
+      "detail": {
+        "video_ai_label": true
+      }
+    },
+    {
+      "id": "offline_backup",
+      "requirement": "离线演示备份和演示账号/数据",
+      "status": "passed",
+      "evidence": [
+        "competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json"
+      ],
+      "detail": {
+        "source_checks": 24,
+        "restore_checks": 24,
+        "synthetic_users": 2
+      },
+      "boundary": "私密备份含演示密码哈希，不入Git，仅团队离线保管"
+    }
+  ],
+  "external_pending": [
+    "three_questions",
+    "target_users",
+    "ethics"
+  ],
+  "internal_pending": [
+    "video",
+    "effect_report"
+  ],
+  "ready_for_final_submission": false,
+  "web_ppt_qa": {
+    "overflow": 0,
+    "console_errors": 0,
+    "page_errors": 0,
+    "failed_requests": 0
+  }
+}
