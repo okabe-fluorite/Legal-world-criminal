@@ -1,0 +1,270 @@
+{
+  "generatedAt": "2026-08-29T08:26:43.243Z",
+  "viewport": "1600x900",
+  "slides": [
+    {
+      "index": 1,
+      "screenshot": "qa/screens/slide-01.png",
+      "layout": "S01",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "星火智学Evidence 驱动学习"
+    },
+    {
+      "index": 2,
+      "screenshot": "qa/screens/slide-02.png",
+      "layout": "S13",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "不是再做一个法律聊天机器人"
+    },
+    {
+      "index": 3,
+      "screenshot": "qa/screens/slide-03.png",
+      "layout": "S14",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "每一次个性化，都来自新证据"
+    },
+    {
+      "index": 4,
+      "screenshot": "qa/screens/slide-04.png",
+      "layout": "S08",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "能引用，不等于引用正确"
+    },
+    {
+      "index": 5,
+      "screenshot": "qa/screens/slide-05.png",
+      "layout": "S22",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [
+        {
+          "src": "images/05-diagnosis.png",
+          "complete": true,
+          "natural": [
+            1500,
+            980
+          ],
+          "rect": [
+            -9.18389892578125,
+            -2.996246337890625,
+            1618.36767578125,
+            527.992431640625,
+            -2.996246337890625,
+            1609.1837768554688,
+            524.9961853027344,
+            -9.18389892578125
+          ]
+        }
+      ],
+      "title": ""
+    },
+    {
+      "index": 6,
+      "screenshot": "qa/screens/slide-06.png",
+      "layout": "S22",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [
+        {
+          "src": "images/06-orcdf.png",
+          "complete": true,
+          "natural": [
+            1500,
+            980
+          ],
+          "rect": [
+            -8.92999267578125,
+            -2.913421630859375,
+            1617.85986328125,
+            527.826904296875,
+            -2.913421630859375,
+            1608.9298706054688,
+            524.9134826660156,
+            -8.92999267578125
+          ]
+        }
+      ],
+      "title": ""
+    },
+    {
+      "index": 7,
+      "screenshot": "qa/screens/slide-07.png",
+      "layout": "S11",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "一条路径，七类学习证据"
+    },
+    {
+      "index": 8,
+      "screenshot": "qa/screens/slide-08.png",
+      "layout": "S08",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "AI给建议，教师决定是否入画像"
+    },
+    {
+      "index": 9,
+      "screenshot": "qa/screens/slide-09.png",
+      "layout": "S17",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "张那木拉案真实条件分支"
+    },
+    {
+      "index": 10,
+      "screenshot": "qa/screens/slide-10.png",
+      "layout": "S05",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "业务页面不随模型更换"
+    },
+    {
+      "index": 11,
+      "screenshot": "qa/screens/slide-11.png",
+      "layout": "S16",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [
+        {
+          "src": "images/11-rag-q1.png",
+          "complete": true,
+          "natural": [
+            1500,
+            980
+          ],
+          "rect": [
+            95.62796783447266,
+            299.6578369140625,
+            436.1012878417969,
+            199.98199462890625,
+            299.6578369140625,
+            531.7292556762695,
+            499.63983154296875,
+            95.62796783447266
+          ]
+        },
+        {
+          "src": "images/11-rag-q2.png",
+          "complete": true,
+          "natural": [
+            1500,
+            980
+          ],
+          "rect": [
+            581.1889038085938,
+            308.5401916503906,
+            437.252685546875,
+            202.54647827148438,
+            308.5401916503906,
+            1018.4415893554688,
+            511.086669921875,
+            581.1889038085938
+          ]
+        },
+        {
+          "src": "images/11-rag-bad.png",
+          "complete": true,
+          "natural": [
+            1500,
+            980
+          ],
+          "rect": [
+            1067.933349609375,
+            308.54010009765625,
+            437.2684326171875,
+            202.54666137695312,
+            308.54010009765625,
+            1505.2017822265625,
+            511.0867614746094,
+            1067.933349609375
+          ]
+        }
+      ],
+      "title": "三题同屏，边界同样可见"
+    },
+    {
+      "index": 12,
+      "screenshot": "qa/screens/slide-12.png",
+      "layout": "S10",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "可运行不等于已验证"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": []
+}
