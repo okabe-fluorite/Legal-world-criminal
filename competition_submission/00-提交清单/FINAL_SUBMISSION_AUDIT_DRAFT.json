@@ -1,7 +1,7 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-29T20:22:24.076796+00:00",
-  "git_commit": "a8f39bb1f4a8afe667f432a78ea5af85e5e7a555",
+  "generated_at": "2026-08-29T21:04:22.402920+00:00",
+  "git_commit": "e71d3564bce2fa8a0b23ee6c8349f36a767d00d6",
   "tracked_worktree_clean_before_audit": true,
   "untracked_user_material_count": 5,
   "checks": [
@@ -138,9 +138,28 @@
       "requirement": "效果验证报告",
       "status": "draft_ready",
       "evidence": [
-        "competition_submission/06-效果验证/效果验证报告_DRAFT.md"
+        "competition_submission/06-效果验证/效果验证报告包_MANIFEST_DRAFT.md",
+        "competition_submission/06-效果验证/效果验证报告包_DRAFT/MANIFEST.json",
+        "competition_submission/06-效果验证/效果验证报告包_DRAFT/BUILD_AUDIT.json"
       ],
-      "boundary": "L1软件证据完成；L2专家/L3用户待补；不声称L4学习效果"
+      "detail": {
+        "report_sha256": "fe4bb091f549115272b645b380084554cf429be0e0efec53ab437caf096d3518",
+        "evidence_index_sha256": "48ff649b8366fa16e4a43d6564fec32d677cb4f97b2208a5bbc37ff4cbc9d5ba",
+        "public_pdf_pages": 5,
+        "private_pdf_pages": 2,
+        "source_count": 11,
+        "evidence_levels": {
+          "L1": "software evidence available within listed scope",
+          "L2": "expert review pending",
+          "L3": "real participant count 0",
+          "L4": "not conducted"
+        },
+        "required_approver_count": 3,
+        "real_approval_count": 0,
+        "report_review_complete": false,
+        "report_approved": false
+      },
+      "boundary": "L1软件证据按列明范围完成；L2专家、L3真实用户、L4学习效果仍未完成；报告真实批准0/3"
     },
     {
       "id": "ethics",
