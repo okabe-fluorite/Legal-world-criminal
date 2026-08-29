@@ -14,6 +14,8 @@
 
 本地`offline_backup/final-demo/`已生成但不进入Git：它含演示密码哈希，仅供团队离线保管。可公开的去标识审计摘要为`03-Demo/FROZEN_DEMO_AUDIT.json`，源备份与空目录恢复各24项语义检查均通过。
 
+已基于恢复库录制5段真实浏览器素材并合成65.2秒无声预演：原始视频继续留在Git忽略目录；公开时长、SHA、分辨率和0错误门禁见`03-Demo/VIDEO_SEGMENTS_AUDIT.json`。该预演不是最终配音成片，也不替代用户/专家证据。
+
 ## 不得删除的证据边界
 
 - MOOCCubeX民法/宪法ORCDF是`shadow/实验`，不是刑法课堂实时掌握率。

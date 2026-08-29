@@ -179,3 +179,29 @@ py competition_submission/scripts/audit_demo_state.py --runtime competition_subm
 - case3完整流程过长：回放379秒真实E2E关键节点，再现场运行短输入与引用核验。
 - 任何页面出现HTTP/console错误：停止录制，切到离线备份；不得剪辑成“实时成功”。
 - “0错误”仅指脚本覆盖的console/page/HTTP/request错误及结案后3秒观察窗口；不外推到未执行功能。
+
+## 7. 真实浏览器视频素材
+
+使用恢复库启动本地栈后，在第二个PowerShell设置仅本次进程可见的环境变量：
+
+```powershell
+$env:DEMO_STUDENT_EMAIL = "demo-student@example.com"
+$env:DEMO_TEACHER_EMAIL = "demo-teacher@example.com"
+$env:DEMO_ACCOUNT_PASSWORD = "<团队现场保管的强密码>"
+$env:DEMO_CAPTURE_DIR = (Resolve-Path competition_submission/offline_backup).Path + "\video-capture-final"
+node competition_submission/scripts/capture_demo_segments.mjs
+```
+
+脚本在同一浏览器页完成登录，记录登录结束时刻，再用FFmpeg重编码删除登录区间；原始含凭据视频立即删除，不保存Token文件。若Playwright本机尚无视频编码组件，可先执行`npx playwright install ffmpeg`，或由管理员把本机FFmpeg配置到Playwright缓存。
+
+合成无声H.264预演并生成公开审计：
+
+```powershell
+py competition_submission/scripts/assemble_demo_preview.py `
+  --segments competition_submission/offline_backup/video-capture-final `
+  --output competition_submission/offline_backup/video-capture-final/星火智学_无声真实交互预演.mp4 `
+  --public-audit competition_submission/03-Demo/VIDEO_SEGMENTS_AUDIT.json `
+  --sampled-frames-reviewed
+```
+
+当前已验收版本为5段、总时长65.24秒、1600×900/25fps、浏览器错误0；65.2秒预演SHA见公开审计。原视频不入Git。最终成片还需按170秒脚本加入旁白/字幕、PR对抗快照与团队片尾，且总长不得超过180秒。

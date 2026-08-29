@@ -1,0 +1,103 @@
+{
+  "schema": "competition-silent-demo-preview-audit-v1",
+  "segments": [
+    {
+      "name": "01-diagnosis-orcdf-path-model",
+      "file": "01-diagnosis-orcdf-path-model.webm",
+      "duration_seconds": 17.48,
+      "bytes": 790937,
+      "sha256": "19408c7a92c590bc2dcfeb2a1818ee6f84f9561337e7f8113e75ef69958f120d",
+      "codec": "vp9",
+      "resolution": "1600x900",
+      "fps": "25/1",
+      "browser_error_counts": {
+        "console": 0,
+        "page": 0,
+        "http": 0,
+        "request": 0
+      }
+    },
+    {
+      "name": "02-trusted-rag",
+      "file": "02-trusted-rag.webm",
+      "duration_seconds": 15.48,
+      "bytes": 1198762,
+      "sha256": "e2afe3584c15d77690f14e0c9a19e792ea94091df688f961aa7ea7068423ef0c",
+      "codec": "vp9",
+      "resolution": "1600x900",
+      "fps": "25/1",
+      "browser_error_counts": {
+        "console": 0,
+        "page": 0,
+        "http": 0,
+        "request": 0
+      }
+    },
+    {
+      "name": "03-student-teacher-feedback",
+      "file": "03-student-teacher-feedback.webm",
+      "duration_seconds": 9.28,
+      "bytes": 870953,
+      "sha256": "f982a52c8a11c1666c4f2cc078f7e44b109900952a696ad9662020501b277113",
+      "codec": "vp9",
+      "resolution": "1600x900",
+      "fps": "25/1",
+      "browser_error_counts": {
+        "console": 0,
+        "page": 0,
+        "http": 0,
+        "request": 0
+      }
+    },
+    {
+      "name": "04-teacher-dashboard",
+      "file": "04-teacher-dashboard.webm",
+      "duration_seconds": 11.08,
+      "bytes": 371568,
+      "sha256": "3208678663d1fcf662488c10675ad2cc846ae8a4a75072fbe9b13ffe75cf7c6f",
+      "codec": "vp9",
+      "resolution": "1600x900",
+      "fps": "25/1",
+      "browser_error_counts": {
+        "console": 0,
+        "page": 0,
+        "http": 0,
+        "request": 0
+      }
+    },
+    {
+      "name": "05-case3-card-and-evidence",
+      "file": "05-case3-card-and-evidence.webm",
+      "duration_seconds": 11.92,
+      "bytes": 550616,
+      "sha256": "7883e8bca5ab07dd0249c709f8e5d1eb23f361f89edd91ecf3e2b9265a65e41c",
+      "codec": "vp9",
+      "resolution": "1600x900",
+      "fps": "25/1",
+      "browser_error_counts": {
+        "console": 0,
+        "page": 0,
+        "http": 0,
+        "request": 0
+      }
+    }
+  ],
+  "segment_total_duration_seconds": 65.24,
+  "preview": {
+    "file": "星火智学_无声真实交互预演.mp4",
+    "duration_seconds": 65.2,
+    "bytes": 3905478,
+    "sha256": "db1acd659af685a516aa0780eb32574e4a64de723426295a67ff9116dc172687",
+    "codec": "h264",
+    "resolution": "1600x900",
+    "fps": "25/1",
+    "audio": false
+  },
+  "qa": {
+    "sampled_start_mid_end_frames_reviewed": true,
+    "login_pages_removed_by_reencode": true,
+    "credential_or_token_files_published": false,
+    "browser_error_total": 0
+  },
+  "evidence_boundary": "silent 65-second browser interaction preview from synthetic frozen-demo accounts; raw preview is private/ignored and is not the final <=180-second narrated submission; not evidence of target-user approval, learning gain, or expert legal validity"
+}
