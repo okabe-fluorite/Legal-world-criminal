@@ -1,7 +1,7 @@
 {
   "slides": 12,
   "all_1600x900": true,
-  "max_mean_abs_error": 0.0951,
+  "max_mean_abs_error": 0.095,
   "rows": [
     {
       "slide": 1,
@@ -29,7 +29,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0951
+      "mean_abs_error": 0.095
     },
     {
       "slide": 3,
@@ -57,7 +57,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0497
+      "mean_abs_error": 0.0499
     },
     {
       "slide": 5,
@@ -85,7 +85,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0584
+      "mean_abs_error": 0.0577
     },
     {
       "slide": 7,
@@ -127,7 +127,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0491
+      "mean_abs_error": 0.0493
     },
     {
       "slide": 10,
@@ -155,7 +155,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0612
+      "mean_abs_error": 0.0611
     },
     {
       "slide": 12,
@@ -169,7 +169,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0812
+      "mean_abs_error": 0.079
     }
   ]
 }
