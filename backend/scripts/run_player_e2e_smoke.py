@@ -71,6 +71,52 @@ TEST_RESPONSES = {
     ),
 }
 
+CASE_3_RESPONSES = {
+    "LC": (
+        "作为辩护人，我先核实委托关系、张那木拉身份、案件阶段和强制措施。"
+        "现阶段只根据已披露材料提出初步意见，不承诺结果；请按时间顺序说明四人持械进入、"
+        "屋内捅刺、屋外持铁锨反击以及报警留场的事实。"
+    ),
+    "INV": (
+        "侦查阶段应依法会见，并立即申请调取现场监控、报警记录、现场勘验、砍刀铁锨铁锤等物证、"
+        "尸检伤情鉴定和在场证言。应绘制两段行为时间轴，核对侵害人数、凶器、攻击后脑等要害部位、"
+        "陈某倒地后周某是否仍持刀继续侵害，不能见到一死一伤就倒推防卫过当。"
+    ),
+    "PR": (
+        "审查起诉应依据《中华人民共和国刑法》第二十条逐项审查不法侵害是否正在进行、"
+        "多人持致命凶器攻击要害是否属于第三款的行凶，以及部分侵害人被制伏后其他侵害是否仍在继续。"
+        "监控、凶器和报警记录能够印证现实危险持续的，应提出特殊防卫、不负刑事责任及依法不起诉意见。"
+    ),
+    "DS": (
+        "辩护词\n\n"
+        "审判长、审判员：\n"
+        "受张那木拉委托，辩护人依据已披露的监控、现场勘验、凶器、伤情鉴定和报警记录，提出如下意见。\n\n"
+        "一、不法侵害现实、紧迫且严重危及人身安全。\n"
+        "周某等四人携带砍刀、铁锨、铁锤闯入私人场所，持致命性凶器攻击张那木拉后脑等要害部位，"
+        "属于《中华人民共和国刑法》第二十条第三款规定的行凶。\n\n"
+        "二、两段反击期间防卫权没有终止。\n"
+        "屋内陈某倒地后，周某仍在屋外持刀继续侵害，剩余现实危险尚未排除。应结合监控时间轴、凶器位置、"
+        "攻击动作和在场证言分别审查屋内捅刺与屋外反击，不能把部分侵害人被制伏等同全部侵害结束。\n\n"
+        "三、造成一死一伤不当然属于防卫过当。\n"
+        "对正在进行的行凶等严重危及人身安全的暴力犯罪采取防卫，造成不法侵害人伤亡的，依法不属于防卫过当，"
+        "不负刑事责任。张那木拉事后主动报警并留场，也与制止侵害而非事后报复的立场一致。\n\n"
+        "综上，请依法认定张那木拉成立特殊防卫，作出无罪处理。\n\n"
+        "辩护人：E2E测试辩护人\n日期：以提交记录为准\n【起草结束】"
+    ),
+    "CR": (
+        "庭审质证应围绕监控完整性、四人所持凶器、后脑等要害部位受攻击、陈某倒地后周某仍持刀的动作，"
+        "以及报警记录的时间展开。公诉方若只以一死一伤证明故意伤害，尚未回应《刑法》第二十条第三款的"
+        "行凶、侵害持续性与特殊防卫规则，不能排除正当防卫结论。"
+    ),
+    "CRA": (
+        "二审应纠正一审以伤亡结果排除防卫的逻辑，依据《中华人民共和国刑法》第二十条第三款和指导案例144号，"
+        "复核多人持致命凶器攻击要害是否属于行凶、部分侵害人被制伏后剩余侵害是否继续。"
+        "监控与凶器证据证明危险未终止的，应撤销原判，宣告张那木拉无罪。"
+    ),
+}
+
+CASE_RESPONSES = {"case_3": CASE_3_RESPONSES}
+
 
 def _request(
     method: str,
@@ -87,9 +133,10 @@ def _request(
     return body if isinstance(body, dict) else {"data": body}
 
 
-def _stage_response(stage: str, prompt: str) -> str:
+def _stage_response(stage: str, prompt: str, case_id: str = "case_1") -> str:
     normalized = str(stage or "").upper()
-    base = TEST_RESPONSES.get(
+    responses = CASE_RESPONSES.get(str(case_id), TEST_RESPONSES)
+    base = responses.get(
         normalized,
         "请以已披露案件事实和现行有效法源为依据继续；对未披露事实明确保留，不虚构证据、程序或裁判结果。",
     )
@@ -201,7 +248,11 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
                 if not request_id or request_id in submitted:
                     continue
                 stage = str(pending.get("stage") or "").upper()
-                answer = _stage_response(stage, str(pending.get("prompt") or ""))
+                answer = _stage_response(
+                    stage,
+                    str(pending.get("prompt") or ""),
+                    case_id=args.case_id,
+                )
                 await asyncio.to_thread(
                     _request,
                     "POST",
@@ -235,6 +286,27 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
             )
             closed = closed or str(case_row.get("status") or "") == "closed"
 
+        if closed:
+            grace_deadline = time.monotonic() + args.post_close_seconds
+            while time.monotonic() < grace_deadline:
+                try:
+                    raw = await asyncio.wait_for(
+                        websocket.recv(),
+                        timeout=max(0.1, grace_deadline - time.monotonic()),
+                    )
+                except asyncio.TimeoutError:
+                    break
+                message = json.loads(raw)
+                kind = str(message.get("type") or message.get("event") or "unknown")
+                events[kind] += 1
+                if kind == "case_runtime_issue":
+                    runtime_issues.append(
+                        {
+                            key: message.get(key)
+                            for key in ("stage_label", "code", "message", "retryable", "blocking")
+                        }
+                    )
+
     elapsed = round(time.monotonic() - started_at, 3)
     timed_out = not closed and time.monotonic() >= deadline
     result = {
@@ -251,6 +323,7 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
         "state_changes": state_changes,
         "event_counts": dict(events),
         "runtime_issues": runtime_issues,
+        "post_close_agent_despawns": events["agent_despawn"],
         "evidence_boundary": (
             "real configured model/runtime execution; deterministic synthetic student inputs; "
             "not evidence of learning efficacy or expert grading validity"
@@ -270,6 +343,7 @@ def main() -> int:
     parser.add_argument("--email")
     parser.add_argument("--password")
     parser.add_argument("--timeout-seconds", type=int, default=2400)
+    parser.add_argument("--post-close-seconds", type=float, default=3.0)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     try:

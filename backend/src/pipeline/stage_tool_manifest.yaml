@@ -49,14 +49,10 @@ agent_type_defaults:
     - search_laws
     - search_yuandian_law
     - search_yuandian_law_detail
-    - load_lawyer_memory
-    - save_lawyer_memory
   prosecutor:
     - search_laws
     - search_yuandian_law
     - search_yuandian_law_detail
-    - load_lawyer_memory
-    - save_lawyer_memory
   receptionist: []
 
 stages:

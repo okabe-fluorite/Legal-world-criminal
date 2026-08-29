@@ -1,0 +1,57 @@
+{
+  "schema_version": "competition-case-e2e-audit-v1",
+  "generated_at": "2026-08-29T01:51:46.824227+00:00",
+  "case_id": "case_3",
+  "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+  "case_title": "指导案例144号：张那木拉正当防卫案",
+  "branch": "LC -> INV -> PR -> non_prosecution -> closed",
+  "closed": true,
+  "timed_out": false,
+  "elapsed_seconds": 378.969,
+  "submitted_independent_response_count": 30,
+  "stages_seen": ["LC", "INV", "PR"],
+  "state_changes": ["等待前台接待", "委托洽谈中", "侦查阶段", "审查起诉阶段", "已结案"],
+  "runtime_issue_count": 0,
+  "post_close_agent_despawns": 3,
+  "event_counts": {
+    "agent_spawn": 4,
+    "agent_move": 6,
+    "dialogue_update": 55,
+    "dialogue_gate_waiting": 52,
+    "dialogue_gate_accepted": 52,
+    "scenario_start": 3,
+    "scenario_end": 3,
+    "player_lawyer_input_required": 30,
+    "agent_despawn": 3
+  },
+  "learning_events": {
+    "count": 3,
+    "stages": ["LC", "INV", "PR"],
+    "long_term_profile_eligible": 3,
+    "adaptive_sent": 3
+  },
+  "profile_after_case": {
+    "event_count": 3,
+    "eligible_event_count": 3,
+    "knowledge_id": "CRIM_KP_7B01D1EBC00BC8ED",
+    "knowledge_name": "正当防卫与防卫过当",
+    "latest": "partial",
+    "evidence_status": "provisional",
+    "task_count": 3
+  },
+  "next_recommendation": {
+    "task_id": "GEN_FB1D3CC1DA91CA73E97C",
+    "knowledge_id": "CRIM_KP_7B01D1EBC00BC8ED",
+    "knowledge_name": "正当防卫与防卫过当",
+    "reason_code": "case_evidence_requires_reinforcement",
+    "answer_included": false,
+    "standard_evidence_ids": ["EVID_9CB6894B3E55465B19C6"]
+  },
+  "source_summary_sha256": "7277ADF21A8C167FF68D70F7EFF949687AE5CB2C3EBD4D2977CE2B0FFB748C97",
+  "boundaries": [
+    "configured real model/runtime execution with deterministic synthetic student inputs",
+    "proves engineering branch, LearningEvent delivery, profile update, and recommendation update",
+    "does not prove learning efficacy, formal grading validity, or expert legal correctness",
+    "external Yuandian tools were not configured; governed local 813-article corpus remained available"
+  ]
+}

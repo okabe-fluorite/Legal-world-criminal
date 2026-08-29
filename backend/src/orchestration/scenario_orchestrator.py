@@ -1829,6 +1829,44 @@ class ScenarioOrchestrator:
             if reserved_loc_id:
                 self._release_location(reserved_loc_id)
 
+    async def _return_agents_to_birth_and_despawn(self, agent_ids: list[str]) -> None:
+        """Return live sprites to their recorded birth point and remove them.
+
+        Case close choreography calls this for normal and early-termination
+        branches. Location reservations are released even when a sprite was
+        already absent; movement/despawn failures are surfaced after all other
+        participants receive cleanup.
+        """
+
+        if not self.map_engine:
+            return
+        normalized_ids = list(dict.fromkeys(str(value) for value in agent_ids if value))
+        normalized_set = set(normalized_ids)
+        for loc_id, occupant in list(self._occupied_locations.items()):
+            if occupant in normalized_set:
+                self._release_location(loc_id)
+
+        async def cleanup(agent_id: str) -> None:
+            states = getattr(self.map_engine, "_agent_states", {})
+            if agent_id not in states:
+                return
+            birth_loc_id = self._get_birth_location_for_agent(agent_id)
+            await self.map_engine.stand_agent(agent_id)
+            await self.map_engine.move_to_location(agent_id, birth_loc_id)
+            await self.map_engine.despawn_agent(agent_id)
+
+        results = await asyncio.gather(
+            *(cleanup(agent_id) for agent_id in normalized_ids),
+            return_exceptions=True,
+        )
+        failures = [
+            f"{agent_id}: {type(result).__name__}: {result}"
+            for agent_id, result in zip(normalized_ids, results)
+            if isinstance(result, Exception)
+        ]
+        if failures:
+            raise RuntimeError("case-close agent cleanup failed: " + "; ".join(failures))
+
     # ══════════════════════════════════════════════════════════
     #  等候队列管理
     # ══════════════════════════════════════════════════════════

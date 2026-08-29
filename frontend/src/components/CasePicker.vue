@@ -12,6 +12,10 @@ function cleanCause(cause: string | undefined): string {
   return (cause ?? "").replace(/\d+罪/g, "罪").trim();
 }
 
+function isCompetitionCase(entry: CasePickerEntry): boolean {
+  return entry.case_id === "case_3";
+}
+
 const dialogOpen = ref(false);
 const dialogEntry = ref<CasePickerEntry | null>(null);
 
@@ -53,6 +57,7 @@ async function onConfirm(mode: PlayerMode, caseId: string) {
         class="case"
         :class="{
           'case--selected': session.state.selectedCaseId === entry.case_id,
+          'case--competition': isCompetitionCase(entry),
         }"
         @click="openModeDialog(entry)"
       >
@@ -83,6 +88,12 @@ async function onConfirm(mode: PlayerMode, caseId: string) {
             <span v-if="entry.teacher_recheck_required" class="tag tag--accent">
               教师复核
             </span>
+            <span v-if="isCompetitionCase(entry)" class="tag case__competitionTag">
+              比赛标杆案 · 指导案例144号
+            </span>
+          </div>
+          <div v-if="isCompetitionCase(entry)" class="case__competitionRoute mono">
+            <span>多人持械</span><i>→</i><span>证据时间轴</span><i>→</i><span>特殊防卫</span><i>→</i><span>PR不起诉分支</span>
           </div>
         </div>
         <button
@@ -90,7 +101,7 @@ async function onConfirm(mode: PlayerMode, caseId: string) {
           :disabled="session.state.simulationRunning"
           @click.stop="openModeDialog(entry)"
         >
-          选择 →
+          {{ isCompetitionCase(entry) ? "进入标杆案 →" : "选择 →" }}
         </button>
       </article>
     </div>
@@ -186,6 +197,14 @@ async function onConfirm(mode: PlayerMode, caseId: string) {
 .case--selected::before {
   background: var(--accent);
 }
+.case--competition {
+  border-color: rgba(176, 138, 62, 0.52);
+  background:
+    linear-gradient(110deg, rgba(176, 138, 62, 0.08), transparent 45%),
+    linear-gradient(180deg, var(--ink-750), var(--ink-800));
+  box-shadow: inset 0 2px rgba(176, 138, 62, 0.26);
+}
+.case--competition::before { background: var(--accent-amber); }
 
 .case__tab {
   display: flex;
@@ -237,6 +256,21 @@ async function onConfirm(mode: PlayerMode, caseId: string) {
   color: var(--accent-amber);
   border-color: rgba(176, 138, 62, 0.35);
 }
+.case__competitionTag {
+  color: #ead8ad;
+  border-color: rgba(176, 138, 62, 0.58);
+  background: rgba(176, 138, 62, 0.08);
+}
+.case__competitionRoute {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-top: 9px;
+  color: var(--parchment-faint);
+  font-size: 0.56rem;
+}
+.case__competitionRoute i { color: var(--accent-amber); font-style: normal; }
 
 .case__start {
   align-self: center;

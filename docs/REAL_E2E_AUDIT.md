@@ -39,3 +39,7 @@
 - 当前掌握状态不是校准后的ORCDF概率；
 - 3个发布案例仍要求法学教师每学期复核；
 - 元典Key和大型案例向量索引未配置时，系统会明确显示对应工具失败/降级，但本地813条法条检索仍可用。
+
+## 2026-08-29比赛标杆案补充
+
+当前CaseBundle映射下已真实重跑`case_3`张那木拉特殊防卫案，走`LC→INV→PR→不起诉→结案`条件分支。修复CASE_CLOSED退场方法后，最终结果为378.969秒、30次独立回答、3个LearningEvent、3/3 adaptive sent、3/3 Agent退场、0 runtime issue；画像达到`provisional/partial`并生成同知识点补强任务。详见[`COMPETITION_CASE3_E2E.md`](COMPETITION_CASE3_E2E.md)。

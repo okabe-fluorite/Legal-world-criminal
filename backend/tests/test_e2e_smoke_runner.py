@@ -18,6 +18,18 @@ class E2ESmokeRunnerTests(unittest.TestCase):
         self.assertIn("《中华人民共和国刑法》第十四条、第十五条", body)
         self.assertNotIn("【起草结束】", body)
 
+    def test_case3_ds_response_matches_special_defense_bundle(self) -> None:
+        response = _stage_response("DS", "请提交完整辩护词", case_id="case_3")
+        body = extract_document_body(
+            response,
+            document_title="辩护词",
+            end_marker="【起草结束】",
+        )
+        self.assertIn("《中华人民共和国刑法》第二十条第三款", body)
+        self.assertIn("张那木拉", body)
+        self.assertIn("特殊防卫", body)
+        self.assertNotIn("吸毒", body)
+
 
 if __name__ == "__main__":
     unittest.main()

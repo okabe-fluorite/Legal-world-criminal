@@ -27,6 +27,7 @@ function confirm() {
 }
 
 const isCriminal = computed(() => props.caseEntry?.case_category === "criminal");
+const isCompetitionCase = computed(() => props.caseEntry?.case_id === "case_3");
 
 const modeOptions = computed<
   {
@@ -72,6 +73,17 @@ const modeOptions = computed<
           </header>
 
           <div class="rule"></div>
+
+          <section v-if="isCompetitionCase" class="competition-guide">
+            <span class="competition-guide__seal">演</span>
+            <div>
+              <p class="mode__kicker">COMPETITION SHOWCASE · REAL E2E BRANCH</p>
+              <h3>张那木拉特殊防卫 · 比赛标杆路线</h3>
+              <p>LC事实核验 → INV证据时间轴 → PR刑法第二十条/指导案例 → 检察机关采纳辩护意见、提前结案</p>
+              <div class="competition-guide__metrics mono"><span>真实E2E 379.0s</span><span>30次独立回答</span><span>3 LearningEvents</span><span>3/3 Agent退场</span><span>0 runtime issue</span></div>
+            </div>
+            <strong>审计快照</strong>
+          </section>
 
           <div class="modes">
             <button
@@ -221,6 +233,32 @@ const modeOptions = computed<
   gap: 14px;
   margin: 20px 0;
 }
+.competition-guide {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 11px 12px;
+  border: 1px solid rgba(176, 138, 62, 0.48);
+  background: linear-gradient(100deg, rgba(176, 138, 62, 0.09), transparent);
+}
+.competition-guide__seal {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  color: #ead8ad;
+  border: 1px solid var(--accent-amber);
+  box-shadow: inset 0 0 0 3px #271f10;
+  font-family: var(--font-display);
+  transform: rotate(-2deg);
+}
+.competition-guide h3 { margin: 0; font-size: .9rem; }
+.competition-guide p:not(.mode__kicker) { margin: 4px 0; color: var(--parchment-muted); font-size: .66rem; }
+.competition-guide__metrics { display: flex; flex-wrap: wrap; gap: 5px; }
+.competition-guide__metrics span { padding: 2px 5px; color: var(--parchment-dim); border: 1px solid var(--line); font-size: .54rem; }
+.competition-guide>strong { padding: 4px 6px; color: #e0a68d; border: 1px solid rgba(196,71,27,.4); font-size: .6rem; }
 
 .mode {
   position: relative;
