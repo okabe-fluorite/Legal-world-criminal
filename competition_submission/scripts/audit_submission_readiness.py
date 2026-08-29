@@ -42,6 +42,8 @@ def main() -> int:
     ethics_package_audit = read_json(SUBMISSION / "02-伦理与安全" / "伦理签署包_DRAFT" / "BUILD_AUDIT.json")
     video_review = read_json(SUBMISSION / "06-效果验证" / "视频审片包_DRAFT" / "MANIFEST.json")
     video_review_audit = read_json(SUBMISSION / "06-效果验证" / "视频审片包_DRAFT" / "BUILD_AUDIT.json")
+    effect_package = read_json(SUBMISSION / "06-效果验证" / "效果验证报告包_DRAFT" / "MANIFEST.json")
+    effect_package_audit = read_json(SUBMISSION / "06-效果验证" / "效果验证报告包_DRAFT" / "BUILD_AUDIT.json")
     typical = read_json(REPO / "docs" / "TYPICAL_QUESTION_EVALUATION.json")
     ppt_meta = read_json(ppt_report)
     web_meta = read_json(web_report)
@@ -61,6 +63,18 @@ def main() -> int:
         and video_qa.get("max_voice_speed_factor", 999) <= 1.1
         and video_audio_analysis.get("silence_over_threshold_count", 999) == 0
         and video_qa.get("duration_under_180_seconds") is True
+    )
+    effect_package_ready = (
+        effect_package_audit.get("public_pdf_pages") == 5
+        and effect_package_audit.get("private_pdf_pages") == 2
+        and effect_package_audit.get("source_count") == 11
+        and effect_package_audit.get("secret_scan", {}).get("passed") is True
+        and not effect_package_audit.get("required_public_missing")
+        and not effect_package_audit.get("forbidden_positive_hits")
+        and not effect_package_audit.get("required_private_missing")
+        and effect_package.get("evidence_levels", {}).get("L2") == "expert review pending"
+        and effect_package.get("evidence_levels", {}).get("L3") == "real participant count 0"
+        and effect_package.get("evidence_levels", {}).get("L4") == "not conducted"
     )
 
     tracked_clean = subprocess.run(
@@ -195,9 +209,25 @@ def main() -> int:
         {
             "id": "effect_report",
             "requirement": "效果验证报告",
-            "status": "draft_ready",
-            "evidence": ["competition_submission/06-效果验证/效果验证报告_DRAFT.md"],
-            "boundary": "L1软件证据完成；L2专家/L3用户待补；不声称L4学习效果",
+            "status": "draft_ready" if effect_package_ready else "failed",
+            "evidence": [
+                "competition_submission/06-效果验证/效果验证报告包_MANIFEST_DRAFT.md",
+                "competition_submission/06-效果验证/效果验证报告包_DRAFT/MANIFEST.json",
+                "competition_submission/06-效果验证/效果验证报告包_DRAFT/BUILD_AUDIT.json",
+            ],
+            "detail": {
+                "report_sha256": effect_package.get("report_sha256"),
+                "evidence_index_sha256": effect_package.get("evidence_index_sha256"),
+                "public_pdf_pages": effect_package_audit.get("public_pdf_pages"),
+                "private_pdf_pages": effect_package_audit.get("private_pdf_pages"),
+                "source_count": effect_package_audit.get("source_count"),
+                "evidence_levels": effect_package.get("evidence_levels"),
+                "required_approver_count": effect_package.get("required_approver_count"),
+                "real_approval_count": effect_package.get("real_approval_count"),
+                "report_review_complete": effect_package.get("report_review_complete"),
+                "report_approved": effect_package.get("report_approved"),
+            },
+            "boundary": "L1软件证据按列明范围完成；L2专家、L3真实用户、L4学习效果仍未完成；报告真实批准0/3",
         },
         {
             "id": "ethics",

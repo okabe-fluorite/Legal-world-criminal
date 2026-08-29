@@ -1,0 +1,24 @@
+{
+  "schema": "effect-report-package-build-audit-v1",
+  "public_pdf_pages": 5,
+  "private_pdf_pages": 2,
+  "source_count": 11,
+  "required_public_missing": [],
+  "forbidden_positive_hits": [],
+  "required_private_missing": [],
+  "secret_scan": {
+    "hits": [],
+    "passed": true
+  },
+  "evidence_levels": {
+    "L1": "software evidence available within listed scope",
+    "L2": "expert review pending",
+    "L3": "real participant count 0",
+    "L4": "not conducted"
+  },
+  "required_approver_count": 3,
+  "real_approval_count": 0,
+  "report_review_complete": false,
+  "report_approved": false,
+  "evidence_boundary": "Generated DRAFT and blank approval form only; no L2-L4 result or human approval is fabricated"
+}

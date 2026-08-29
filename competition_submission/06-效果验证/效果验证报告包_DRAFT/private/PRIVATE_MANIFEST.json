@@ -1,0 +1,12 @@
+{
+  "schema": "effect-report-stage-manifest-v1",
+  "stage": "private_report_approval",
+  "files": [
+    {
+      "path": "private/效果验证报告批准表_私密.pdf",
+      "bytes": 115240,
+      "sha256": "ed06f6090b2d5a39a96fbb1debddabe5ef3b31f4ea5f799417cf71e1c57175d3"
+    }
+  ],
+  "boundary": "Blank three-role approval form; completed signatures stay offline"
+}

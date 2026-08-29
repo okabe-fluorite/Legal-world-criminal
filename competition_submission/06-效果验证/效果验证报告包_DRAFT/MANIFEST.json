@@ -1,0 +1,75 @@
+{
+  "schema": "effect-report-package-manifest-v1",
+  "source_git_commit": "54326efa5431520df4f49e54e6f1da4ded7a07cd",
+  "package_build_date": "2026-08-30",
+  "report_sha256": "fe4bb091f549115272b645b380084554cf429be0e0efec53ab437caf096d3518",
+  "evidence_index_sha256": "48ff649b8366fa16e4a43d6564fec32d677cb4f97b2208a5bbc37ff4cbc9d5ba",
+  "files": [
+    {
+      "path": "BUILD_AUDIT.json",
+      "bytes": 742,
+      "sha256": "536c5af898f9d540b025093b3ee2d623b4a0ff9925dc0575d690417e1e4647fb"
+    },
+    {
+      "path": "README.md",
+      "bytes": 523,
+      "sha256": "88d36564a995e21a4795f04a585ea25bf8f0068959ad85ab62bed2bb55db75f3"
+    },
+    {
+      "path": "private/PRIVATE_MANIFEST.json",
+      "bytes": 383,
+      "sha256": "2b8826d3c6188e601ebbeedfe30defd235a57bd3bc10fcd4e8f4162083fd9532"
+    },
+    {
+      "path": "private/效果验证报告批准表_私密.pdf",
+      "bytes": 115240,
+      "sha256": "ed06f6090b2d5a39a96fbb1debddabe5ef3b31f4ea5f799417cf71e1c57175d3"
+    },
+    {
+      "path": "public/EVIDENCE_INDEX.json",
+      "bytes": 2903,
+      "sha256": "48ff649b8366fa16e4a43d6564fec32d677cb4f97b2208a5bbc37ff4cbc9d5ba"
+    },
+    {
+      "path": "public/PUBLIC_MANIFEST.json",
+      "bytes": 535,
+      "sha256": "51d3f0722c08a88e7d8531d433b2c7cb4ad0b53032c2f32457d4c3e0ea40741c"
+    },
+    {
+      "path": "public/星火智学效果验证报告_DRAFT.pdf",
+      "bytes": 255907,
+      "sha256": "fe4bb091f549115272b645b380084554cf429be0e0efec53ab437caf096d3518"
+    },
+    {
+      "path": "效果报告批准页包_DRAFT.zip",
+      "bytes": 112652,
+      "sha256": "088d8aacd019aa3de680dbcd6148ed6b6dec33ce6d632458ad263ae82e88b78b"
+    },
+    {
+      "path": "效果报告批准页包_DRAFT.zip.sha256.txt",
+      "bytes": 102,
+      "sha256": "c042f5b5477ec8c42bd0ff15555757512817bf4628b1e6c210ce38b80ae34e6c"
+    },
+    {
+      "path": "效果验证报告公开包_DRAFT.zip",
+      "bytes": 251375,
+      "sha256": "3b4e1d0959a1cd4e3876fa3fadc111c5978808f6e12ac331b06df32654ffd1c5"
+    },
+    {
+      "path": "效果验证报告公开包_DRAFT.zip.sha256.txt",
+      "bytes": 105,
+      "sha256": "ddb1b790af52a2ae04243001d47abc2f86d1ea7cd16ba444f0d6421696f3baa9"
+    }
+  ],
+  "evidence_levels": {
+    "L1": "software evidence available within listed scope",
+    "L2": "expert review pending",
+    "L3": "real participant count 0",
+    "L4": "not conducted"
+  },
+  "required_approver_count": 3,
+  "real_approval_count": 0,
+  "report_review_complete": false,
+  "report_approved": false,
+  "evidence_boundary": "Evidence-indexed report DRAFT; no missing expert, user, learning-effect or approval evidence is fabricated"
+}
