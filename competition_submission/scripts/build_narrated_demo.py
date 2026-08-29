@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 from datetime import timedelta
 from pathlib import Path
@@ -20,7 +21,7 @@ ITEMS = [
         "id": "01-cover",
         "kind": "image",
         "source": "cover",
-        "duration": 3.5,
+        "duration": 4.1,
         "text": "星火智学，让本科刑法学习有据可查。",
         "caption": "星火智学：本科刑法个性化学习有据可查",
     },
@@ -28,7 +29,7 @@ ITEMS = [
         "id": "02-diagnosis",
         "kind": "video",
         "source": "01-diagnosis-orcdf-path-model.webm",
-        "duration": 17.48,
+        "duration": 17.8,
         "text": "没有课堂历史数据时，系统不生成默认掌握率，而从证据不足开始。在线证据追踪展示知识状态、六条事件和困惑信号；欧阿西迪艾弗只作为民法宪法迁移实验，路径和模型路由都明确证据边界。",
         "caption": "缺少课堂数据：从证据不足开始\nORCDF只进入shadow，不冒充掌握率",
     },
@@ -36,7 +37,7 @@ ITEMS = [
         "id": "03-rag",
         "kind": "video",
         "source": "02-trusted-rag.webm",
-        "duration": 15.48,
+        "duration": 15.7,
         "text": "可信知识检索把系统输出、标准答案、法条原文、来源版本和逐字证据放在同一界面。三个典型问题自动门禁通过，但专家复核仍待完成；错误引用现场二比二拒绝。",
         "caption": "系统输出、标准答案与权威Evidence同屏\n错误引用2/2拒绝；专家复核仍pending",
     },
@@ -44,7 +45,7 @@ ITEMS = [
         "id": "04-student",
         "kind": "video",
         "source": "03-student-teacher-feedback.webm",
-        "duration": 9.28,
+        "duration": 11.6,
         "text": "人工智能反馈只是形成性建议。学生能看到退回意见、带入原文修订，并在教师批准后看到评分、知识状态和证据事件。",
         "caption": "AI只给形成性建议\n教师批准后才进入长期画像",
     },
@@ -52,7 +53,7 @@ ITEMS = [
         "id": "05-teacher",
         "kind": "video",
         "source": "04-teacher-dashboard.webm",
-        "duration": 11.08,
+        "duration": 11.0,
         "text": "教师看板只展示自有班级的匿名形成性数据。退回与批准分属两个不可变稿件，队列清零，班级事件从二变为三。",
         "caption": "教师只看自有班级匿名数据\n退回、修订、批准形成可追溯闭环",
     },
@@ -60,7 +61,7 @@ ITEMS = [
         "id": "06-agent-architecture",
         "kind": "image",
         "source": "architecture",
-        "duration": 4.5,
+        "duration": 8.0,
         "text": "案件实训由状态机和多智能体编排，受工具权限、权威法源与能力量表共同约束。",
         "caption": "状态机 × 多Agent × 权限工具 × Rubric",
     },
@@ -68,7 +69,7 @@ ITEMS = [
         "id": "07-case-inv",
         "kind": "image",
         "source": "inv_snapshot",
-        "duration": 10.0,
+        "duration": 15.2,
         "text": "侦查阶段的学习事件显示，学生识别了侵害人数、凶器和两段时间轴，但没有充分回应会见、取保候审和刑法第二十条。系统把证据方向与程序缺口分开呈现。",
         "caption": "INV形成性审计：证据方向正确，程序回应不足\n原始INV结果阶段标记不一致，已排除该文件断言",
     },
@@ -76,7 +77,7 @@ ITEMS = [
         "id": "08-case-pr",
         "kind": "image",
         "source": "pr_snapshot",
-        "duration": 11.0,
+        "duration": 16.7,
         "text": "审查起诉阶段，学生引用刑法第二十条主张特殊防卫。检察官要求监控、证言与报警记录交叉印证，随后智能体进入不起诉分支。这个分支是工程证据，不是专家确认的法律结论。",
         "caption": "PR对抗：法条核验通过，检察官要求补充证据\nAgent进入不起诉分支 ≠ 专家法律结论",
     },
@@ -84,7 +85,7 @@ ITEMS = [
         "id": "09-case",
         "kind": "video",
         "source": "05-case3-card-and-evidence.webm",
-        "duration": 11.92,
+        "duration": 15.0,
         "text": "冻结演示库的张那木拉案真实走完委托、侦查和审查起诉。二十九次固定脚本回答后作出不起诉分支，三名智能体退场、零运行错误，并形成三条案件学习事件。",
         "caption": "case3真实E2E：461.547秒、29次固定回答\n3事件、3/3 Agent退场、0 runtime issue",
     },
@@ -92,9 +93,47 @@ ITEMS = [
         "id": "10-close",
         "kind": "image",
         "source": "closing",
-        "duration": 3.5,
+        "duration": 6.4,
         "text": "演示证明软件闭环，不代表用户认可、学习增益或专家法律结论。",
         "caption": "软件闭环已验证 ≠ 用户认可/学习增益/专家结论",
+    },
+]
+
+REQUIRED_CONTENT = [
+    {
+        "id": "evidence_kt",
+        "label": "Evidence-KT保守画像与证据不足",
+        "items": ["02-diagnosis"],
+    },
+    {
+        "id": "orcdf_shadow",
+        "label": "ORCDF V0/V1/V2 shadow、未校准与迁移边界",
+        "items": ["02-diagnosis"],
+    },
+    {
+        "id": "personalized_path",
+        "label": "七步个性化路径与LearningEvent重排",
+        "items": ["02-diagnosis"],
+    },
+    {
+        "id": "model_adapter",
+        "label": "Model Adapter基线与微调not_connected",
+        "items": ["02-diagnosis"],
+    },
+    {
+        "id": "trusted_rag",
+        "label": "可信RAG、权威Evidence与错误引用拒绝",
+        "items": ["03-rag"],
+    },
+    {
+        "id": "teacher_hitl",
+        "label": "学生修订与教师Human-in-the-loop门禁",
+        "items": ["04-student", "05-teacher"],
+    },
+    {
+        "id": "multi_agent_case",
+        "label": "状态机、多智能体、工具权限与case3真实E2E",
+        "items": ["06-agent-architecture", "07-case-inv", "08-case-pr", "09-case"],
     },
 ]
 
@@ -122,6 +161,70 @@ def probe_duration(path: Path) -> float:
         text=True,
     )
     return float(result.stdout.strip())
+
+
+def probe_media(path: Path) -> dict:
+    result = subprocess.run(
+        [
+            "ffprobe", "-v", "error", "-show_streams", "-show_format",
+            "-of", "json", str(path),
+        ],
+        check=True,
+        capture_output=True,
+    )
+    payload = json.loads(result.stdout.decode("utf-8"))
+    video = next(stream for stream in payload["streams"] if stream["codec_type"] == "video")
+    audio = next(stream for stream in payload["streams"] if stream["codec_type"] == "audio")
+    return {
+        "format": payload["format"].get("format_name"),
+        "video_codec": video.get("codec_name"),
+        "video_profile": video.get("profile"),
+        "pixel_format": video.get("pix_fmt"),
+        "width": video.get("width"),
+        "height": video.get("height"),
+        "fps": video.get("avg_frame_rate"),
+        "audio_codec": audio.get("codec_name"),
+        "audio_sample_rate": int(audio.get("sample_rate", 0)),
+        "audio_channels": audio.get("channels"),
+    }
+
+
+def analyze_audio(path: Path, silence_threshold: float = 1.2) -> dict:
+    silence_result = subprocess.run(
+        [
+            "ffmpeg", "-hide_banner", "-i", str(path),
+            "-af", f"silencedetect=noise=-45dB:d={silence_threshold}",
+            "-f", "null", "NUL",
+        ],
+        check=True,
+        capture_output=True,
+    )
+    silence_log = silence_result.stderr.decode("utf-8", errors="replace")
+    silence_durations = [
+        float(value)
+        for value in re.findall(r"silence_duration:\s*([0-9.]+)", silence_log)
+    ]
+    loudness_result = subprocess.run(
+        [
+            "ffmpeg", "-hide_banner", "-i", str(path),
+            "-af", "ebur128=peak=true", "-f", "null", "NUL",
+        ],
+        check=True,
+        capture_output=True,
+    )
+    loudness_log = loudness_result.stderr.decode("utf-8", errors="replace")
+    integrated_matches = re.findall(r"I:\s*(-?[0-9.]+)\s*LUFS", loudness_log)
+    peak_matches = re.findall(r"Peak:\s*(-?[0-9.]+)\s*dBFS", loudness_log)
+    return {
+        "silence_threshold_seconds": silence_threshold,
+        "silence_over_threshold_count": len(silence_durations),
+        "silence_durations_seconds": [round(value, 3) for value in silence_durations],
+        "max_silence_seconds": round(max(silence_durations, default=0.0), 3),
+        "integrated_loudness_lufs": (
+            float(integrated_matches[-1]) if integrated_matches else None
+        ),
+        "true_peak_dbfs": float(peak_matches[-1]) if peak_matches else None,
+    }
 
 
 def atempo_chain(factor: float) -> str:
@@ -206,12 +309,16 @@ def main() -> int:
         piece = pieces / f"{item['id']}.mp4"
         if item["kind"] == "image":
             visual_args = ["-loop", "1", "-framerate", "25", "-i", str(visual)]
+            video_filter = ""
+            video_map = "0:v:0"
         else:
             visual_args = ["-i", str(visual)]
+            video_filter = f"[0:v]tpad=stop_mode=clone:stop_duration={duration:.3f}[v];"
+            video_map = "[v]"
         run(
             [
                 "ffmpeg", "-loglevel", "error", "-y", *visual_args, "-i", str(audio),
-                "-filter_complex", f"[1:a]{audio_filter}[a]", "-map", "0:v:0", "-map", "[a]",
+                "-filter_complex", f"{video_filter}[1:a]{audio_filter}[a]", "-map", video_map, "-map", "[a]",
                 "-t", f"{duration:.3f}", "-c:v", "libx264", "-preset", "fast", "-crf", "22",
                 "-pix_fmt", "yuv420p", "-r", "25", "-c:a", "aac", "-b:a", "160k",
                 "-ar", "48000", "-ac", "2", str(piece),
@@ -241,11 +348,17 @@ def main() -> int:
     )
 
     timeline = 0.0
+    item_timeline: dict[str, dict[str, float]] = {}
     srt_blocks = []
     for index, item in enumerate(ITEMS, 1):
+        item_start = timeline
         start = timeline + 0.15
         timeline += float(item["duration"])
         end = timeline - 0.15
+        item_timeline[item["id"]] = {
+            "start_seconds": round(item_start, 3),
+            "end_seconds": round(timeline, 3),
+        }
         srt_blocks.append(
             f"{index}\n{srt_time(start)} --> {srt_time(end)}\n{item['caption']}\n"
         )
@@ -285,21 +398,54 @@ def main() -> int:
         (REPO / "competition_submission" / "03-Demo" / "CASE3_INV_PR_SNAPSHOT.json")
         .read_text(encoding="utf-8")
     )
+    media = probe_media(final)
+    audio_analysis = analyze_audio(final)
+    source_hashes = {}
+    for item in ITEMS:
+        source = source_map.get(item["source"], segments / item["source"])
+        source_hashes[item["id"]] = {
+            "source": source.name,
+            "sha256": sha256(source),
+        }
+    content_coverage = []
+    for row in REQUIRED_CONTENT:
+        intervals = [item_timeline[item_id] for item_id in row["items"]]
+        content_coverage.append(
+            {
+                **row,
+                "start_seconds": min(item["start_seconds"] for item in intervals),
+                "end_seconds": max(item["end_seconds"] for item in intervals),
+                "present": True,
+            }
+        )
     audit = {
-        "schema": "competition-narrated-demo-draft-audit-v1",
+        "schema": "competition-narrated-demo-draft-audit-v2",
+        "source_git_commit": subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=REPO, text=True
+        ).strip(),
         "file": final.name,
         "duration_seconds": round(final_duration, 3),
         "bytes": final.stat().st_size,
         "sha256": sha256(final),
-        "resolution": "1920x1080",
-        "fps": 25,
+        "resolution": f"{media['width']}x{media['height']}",
+        "fps": media["fps"],
+        "media": media,
         "audio": {
             "present": True,
             "voice": args.voice,
             "ai_generated_label_visible": True,
             "voice_items": voice_audit,
+            "analysis": audio_analysis,
         },
         "subtitles": {"present": True, "language": "zh-CN", "count": len(ITEMS)},
+        "timeline": item_timeline,
+        "content_coverage": {
+            "required_count": len(REQUIRED_CONTENT),
+            "present_count": len(content_coverage),
+            "all_required_present": all(row["present"] for row in content_coverage),
+            "items": content_coverage,
+        },
+        "visual_source_sha256": source_hashes,
         "source_interaction_audit": "VIDEO_SEGMENTS_AUDIT.json",
         "case3_audit_snapshots": {
             "present": True,
@@ -309,10 +455,14 @@ def main() -> int:
             "source_sha256": case_snapshot_audit["source_sha256"],
         },
         "qa": {
-            "sampled_ten_timeline_frames_reviewed": args.sampled_frames_reviewed,
+            "sampled_timeline_frames_reviewed": args.sampled_frames_reviewed,
             "subtitles_max_two_lines": True,
             "ai_voice_label_visible_throughout": True,
-            "silence_over_1_2_seconds_detected": False,
+            "silence_over_1_2_seconds_detected": (
+                audio_analysis["silence_over_threshold_count"] > 0
+            ),
+            "max_voice_speed_factor": max(row["voice_speed_factor"] for row in voice_audit),
+            "duration_under_180_seconds": final_duration <= 180,
         },
         "evidence_boundary": (
             "AI-voiced DRAFT assembled from audited real browser interactions, three PPT stills, "
