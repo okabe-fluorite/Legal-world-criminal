@@ -1,9 +1,9 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-29T13:09:36.782984+00:00",
-  "git_commit": "e66782dc4015e1a4c82ff66babcc496346a3ff48",
+  "generated_at": "2026-08-29T15:21:28.708249+00:00",
+  "git_commit": "980f15344318d24211b717e25f8419da87d8b330",
   "tracked_worktree_clean_before_audit": true,
-  "untracked_user_material_count": 7,
+  "untracked_user_material_count": 5,
   "checks": [
     {
       "id": "demo_docs",
@@ -23,9 +23,9 @@
         "competition_submission\\04-作品方案\\guizang\\qa\\pptx-report.json"
       ],
       "detail": {
-        "bytes": 1483911,
+        "bytes": 1484486,
         "slides": 12,
-        "max_render_mae": 0.095
+        "max_render_mae": 0.0956
       },
       "boundary": "仍名为DRAFT；真实用户/专家状态待替换"
     },
@@ -39,10 +39,10 @@
       ],
       "detail": {
         "real_segment_seconds": 65.24,
-        "draft_seconds": 76.84,
+        "draft_seconds": 97.84,
         "draft_resolution": "1920x1080"
       },
-      "boundary": "AI配音DRAFT尚未团队批准；缺已标识case3 INV/PR对抗快照"
+      "boundary": "AI配音DRAFT已含去标识case3 INV/PR审计快照，尚未团队完整审片与最终批准"
     },
     {
       "id": "reproducible_code",
