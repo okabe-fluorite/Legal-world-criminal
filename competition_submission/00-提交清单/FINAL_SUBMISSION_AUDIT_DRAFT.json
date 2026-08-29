@@ -1,7 +1,7 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-29T18:23:37.998701+00:00",
-  "git_commit": "7eb7f2c7bff98c68568eddb37f044088d047245f",
+  "generated_at": "2026-08-29T18:56:29.261139+00:00",
+  "git_commit": "a8d6688098ce578fbadc2269f0383024120cec96",
   "tracked_worktree_clean_before_audit": true,
   "untracked_user_material_count": 5,
   "checks": [
@@ -129,9 +129,20 @@
       "requirement": "伦理与安全合规声明",
       "status": "signature_pending",
       "evidence": [
-        "competition_submission/02-伦理与安全/伦理与安全合规声明_DRAFT.md"
+        "competition_submission/02-伦理与安全/伦理签署包_MANIFEST_DRAFT.md",
+        "competition_submission/02-伦理与安全/伦理签署包_DRAFT/MANIFEST.json",
+        "competition_submission/02-伦理与安全/伦理签署包_DRAFT/BUILD_AUDIT.json"
       ],
-      "boundary": "尚未团队负责人/指导教师签字"
+      "detail": {
+        "pdf_count": 3,
+        "privacy_separation_passed": true,
+        "secret_scan_passed": true,
+        "required_signature_count": 3,
+        "real_signature_count": 0,
+        "signature_complete": false,
+        "institutional_ethics_approval_claimed": false
+      },
+      "boundary": "公开声明与私密签署材料已就绪，但真实签名仍为0/3；团队签署不等于机构伦理审批或学校授权"
     },
     {
       "id": "ai_label",
