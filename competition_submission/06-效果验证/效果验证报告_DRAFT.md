@@ -15,7 +15,7 @@
 - ORCDF shadow：真实MOOCCubeX训练；同47题V0/V1/V2 AUC为0.7272/0.7489/0.7528；只支持受控预测比较。
 - 可信RAG：三个典型问题自动门禁3/3，错误引用2/2拒绝；不等于专家准确率。
 - 教师闭环：测试脚本操作合成账号完成退回→原文修订→批准；同稿单决定、单事件；浏览器事件2→3。该结果不是目标用户试用。
-- 标杆案件：LC→INV→PR→不起诉→结案，378.969秒；测试脚本提供30次固定独立回答（非30名真人、非用户证据）；3个LearningEvent、3/3 Agent退场、0 runtime issue。
+- 标杆案件冻结演示库：LC→INV→PR→不起诉→结案，461.547秒；测试脚本提供29次固定回答（非29名真人、非用户证据）；3个case LearningEvent、3/3 Agent退场、0 runtime issue。
 - Model Adapter：四任务路由可见；当前基线OpenCode/DeepSeek；微调端点`not_connected`。
 
 | 机制 | 权威证据文件 | 版本/日期 |
@@ -23,7 +23,7 @@
 | 认知诊断/ORCDF/路径/模型路由 | `docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md` | 核心代码`265e4e7`；2026-08-29复核 |
 | 三个典型问题 | `docs/TYPICAL_QUESTION_EVALUATION.json` | 文件内生成时间与来源SHA；专家pending |
 | 教师退回—修订—批准 | `frontend/scripts/smoke-teacher-dashboard.mjs` | 核心闭环`0fe990e`后持续回归 |
-| case3真实E2E | `docs/COMPETITION_CASE3_E2E.json` | 源摘要SHA `7277ADF2…`；核心代码`c6e9e9b` |
+| case3冻结演示E2E | `competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json` | 源commit与backup manifest SHA见文件；24项源/恢复语义审计通过 |
 | Guizang PPT | `competition_submission/04-作品方案/guizang/qa/report.json` | 材料commit`a3a77e8`；2026-08-29 |
 
 ## 3. L2三题内容验证

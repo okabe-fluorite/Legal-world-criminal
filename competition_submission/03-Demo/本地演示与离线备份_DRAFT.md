@@ -80,13 +80,13 @@ npm run smoke:teacher
 cd ..
 ```
 
-再让同一学生账号运行case3真实E2E；该步骤通常约6—7分钟，输入是测试脚本固定回答，不是用户数据：
+再让同一学生账号运行case3真实E2E；冻结演示库本次耗时461.547秒，建议预留8—10分钟，输入是测试脚本固定回答，不是用户数据：
 
 ```powershell
 uv run --isolated --with-requirements requirements.lock.txt -- python backend/scripts/run_player_e2e_smoke.py --case-id case_3 --email "demo-student@example.com" --password "<同一强密码>" --reuse-account --output competition_submission/offline_backup/final-demo-work/case3-e2e-summary.json
 ```
 
-预期：教师队列清零，原稿保留退回决定、修订稿保留批准决定；同一学生拥有教师批准主观事件和case3 LC/INV/PR事件；case3 closed、runtime issue 0、Agent退场3。失败时不得冻结。
+预期：教师队列清零，原稿保留退回决定、修订稿保留批准决定；同一学生拥有教师批准主观事件和case3 LC/INV/PR事件；case3 closed、runtime issue 0、Agent退场3。固定回答次数可能随Agent对话分支变化，必须以本次summary为准，不得写成用户人数。失败时不得冻结。
 
 停止三个服务后，对冻结状态做自动语义审计：
 
@@ -120,7 +120,7 @@ npm run smoke:teacher
 npm run smoke:case
 ```
 
-`smoke:teacher`包含真实模型调用，耗时较长；`smoke:case`只验证比赛案件入口和审计标签，不重跑378.969秒完整E2E。通过范围包括console/page/HTTP/request错误0及脚本末尾的业务断言；教师闭环还需确认队列清零、事件2→3。
+`smoke:teacher`包含真实模型调用，耗时较长；`smoke:case`只验证比赛案件入口和审计标签，不重跑461.547秒完整E2E。通过范围包括console/page/HTTP/request错误0及脚本末尾的业务断言；教师闭环还需确认队列清零、事件2→3。
 
 ## 5. 离线备份
 

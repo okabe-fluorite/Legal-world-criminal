@@ -1,7 +1,7 @@
 {
   "slides": 12,
   "all_1600x900": true,
-  "max_mean_abs_error": 0.095,
+  "max_mean_abs_error": 0.0951,
   "rows": [
     {
       "slide": 1,
@@ -29,7 +29,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.095
+      "mean_abs_error": 0.0951
     },
     {
       "slide": 3,
@@ -71,7 +71,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0442
+      "mean_abs_error": 0.0436
     },
     {
       "slide": 6,
@@ -85,7 +85,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0586
+      "mean_abs_error": 0.0584
     },
     {
       "slide": 7,
@@ -113,7 +113,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.067
+      "mean_abs_error": 0.0669
     },
     {
       "slide": 9,
@@ -127,7 +127,7 @@
         1600,
         900
       ],
-      "mean_abs_error": 0.0488
+      "mean_abs_error": 0.0491
     },
     {
       "slide": 10,

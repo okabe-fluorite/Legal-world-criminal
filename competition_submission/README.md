@@ -12,6 +12,8 @@
 | `04-作品方案/` | Guizang网页PPT与PPTX预览 | 已生成DRAFT |
 | `06-效果验证/` | 170秒视频脚本、专家/用户表、效果报告 | DRAFT，真实证据待填 |
 
+本地`offline_backup/final-demo/`已生成但不进入Git：它含演示密码哈希，仅供团队离线保管。可公开的去标识审计摘要为`03-Demo/FROZEN_DEMO_AUDIT.json`，源备份与空目录恢复各24项语义检查均通过。
+
 ## 不得删除的证据边界
 
 - MOOCCubeX民法/宪法ORCDF是`shadow/实验`，不是刑法课堂实时掌握率。
