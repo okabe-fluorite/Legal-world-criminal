@@ -1,7 +1,7 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-29T16:37:58.048334+00:00",
-  "git_commit": "6090ffd94daadf577067fb4a7667e8490c5ac115",
+  "generated_at": "2026-08-29T17:59:21.294530+00:00",
+  "git_commit": "a41ddd9671f15f42dffd08a508d474b6374db540",
   "tracked_worktree_clean_before_audit": true,
   "untracked_user_material_count": 5,
   "checks": [
@@ -84,9 +84,13 @@
         "automated_gate_pass_count": 3,
         "all_expert_reviews_complete": false,
         "generated_at": "2026-08-28T16:17:02.490918+00:00",
-        "suite_sha256": "3b5f896c63fb6e207c59c5039876c8f35d6a823eeeb36ba7b2b0dc73c71180c2"
+        "suite_sha256": "3b5f896c63fb6e207c59c5039876c8f35d6a823eeeb36ba7b2b0dc73c71180c2",
+        "expert_package_source_commit": "6deb1b8ff79cec011139c4bd038a63375a8a9188",
+        "expert_package_pdf_count": 8,
+        "expert_package_blinding_passed": true,
+        "expert_package_secret_scan_passed": true
       },
-      "boundary": "自动门禁不等于专家准确率"
+      "boundary": "A/B两阶段PDF审核包已就绪；自动门禁不等于专家准确率，真实专家仍未审核或签字"
     },
     {
       "id": "target_users",
