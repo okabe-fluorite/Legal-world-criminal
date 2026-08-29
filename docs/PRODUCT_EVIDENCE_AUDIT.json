@@ -1,7 +1,7 @@
 {
   "schema_version": "product-evidence-audit-v1",
-  "generated_at": "2026-08-28T15:40:11.101686+00:00",
-  "git_commit": "265e4e73115ab4ad73ff15772bbb8bd34d298bb2",
+  "generated_at": "2026-08-29T00:53:23.298785+00:00",
+  "git_commit": "96bca394baec00e3be654b41defab6cb31105db8",
   "protocol": {
     "seed": 20260827,
     "network_calls": 0,

@@ -226,6 +226,14 @@ teaching/
 - 模型页只展示脱敏路由；小模型未接入时必须显示`not_connected`，不得宣称已完成LoRA/SFT
 - `smoke-cognitive-dashboard.mjs`在1500×980验证10知识、2事件、3版本、48格矩阵、7路径节点、4模型路由及0私有/网络错误
 
+### 比赛可信RAG与三个典型问题
+
+- `backend/evaluation/typical_questions.json`冻结罪刑法定/从旧兼从轻、特殊防卫、抢劫罪构成3题及标准要点/必需Evidence
+- `run_typical_question_evaluation.py`让模型只读受治理Sources，独立做JSON、要点、source scope和逐字quote门禁；`--reuse-report`可免模型重审已有输出
+- `TYPICAL_QUESTION_EVALUATION.{json,md}`当前自动门禁3/3，但专家复核必须保持pending、`verified_accurate=false`，不得称为专家准确率
+- 顶部“可信RAG”并列展示系统输出、标准答案、权威法条/指导案例、版本/SHA和模型引用；错误引用按钮真实调用citation audit，不能使用前端假结果
+- `smoke-trusted-rag.mjs`验证3题来源/引用、错误引用2/2拒绝和0私有/网络错误
+
 ### 受治理AI分层解惑
 
 - `learning_support_sessions`保存学生私有两步会话：确定性诊断追问→学生回答→受治理四层解释；同ID幂等/冲突、跨学生403

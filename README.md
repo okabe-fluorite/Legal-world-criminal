@@ -107,6 +107,8 @@ EvidencePack中的检索相关性和coverage只是待语义审核候选，不等
 
 顶部“认知诊断”是比赛展示核心页：在线Evidence-KT保守画像与学生事件时间线、ORCDF V0/V1/V2真实shadow实验、选择/短答/案件/角色互换七步路径和四任务Model Adapter路由集中展示。ORCDF明确来自MOOCCubeX民法/宪法、mastery未校准且不进入当前刑法学生画像；微调未连接时显示`not_connected`。展示口径、来源SHA和浏览器脚本见[`docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md`](docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md)。
 
+顶部“可信RAG”对应赛题内容质量硬要求：罪刑法定/从旧兼从轻、特殊防卫、抢劫罪构成3题均保存真实OpenCode基线输出、标准答案、权威法条/指导案例、版本/SHA、模型逐字引用和要点门禁；错误条号/伪造引文可现场调用后端拦截。当前自动门禁3/3，但法学专家复核仍为`pending`且`verified_accurate=false`，不能写成专家确认准确率。报告见[`docs/TYPICAL_QUESTION_EVALUATION.md`](docs/TYPICAL_QUESTION_EVALUATION.md)，复跑命令为`python backend/scripts/run_typical_question_evaluation.py --live-model --model-config <path>`，免模型复审可用`--reuse-report`。
+
 困惑入账后可进入“AI分层解惑”：系统先提出诊断追问，学生说明自己的理解后，才返回规范原文、白话解释、事实适用、争议边界和下一动作。模型引用必须来自当前KnowledgeCard标准Evidence并通过条号/逐字片段门禁；失败自动使用确定性fallback，低置信度标记教师复核。解惑不计分、不生成LearningEvent、不更新长期掌握，详见[`docs/GOVERNED_LEARNING_SUPPORT.md`](docs/GOVERNED_LEARNING_SUPPORT.md)。
 
 同一自主学习卷宗现提供13个主观任务：10个知识点短答和3个CaseBundle角色互换。模型任务`subjective_scoring`只形成修改建议，低置信度、坏结构、学生引用失败或越界Evidence均弃权；高置信度也必须进入任课教师匿名复核队列。只有教师批准并给出0—1分与`mastered/partial/missing`判定后，才生成`teacher_reviewed_subjective_assessment`进入画像；退回/拒绝不入画像。学生可在“我的复核台账”查看教师结论，退回稿一键带入原文修订；同一稿件只允许一次教师决定和一次画像事件。契约、API、真实浏览器闭环与证据边界见[`docs/SUBJECTIVE_TASK_REVIEW.md`](docs/SUBJECTIVE_TASK_REVIEW.md)。
