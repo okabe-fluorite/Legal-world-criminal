@@ -4,23 +4,23 @@
   "files": [
     {
       "path": "public/U01_U02去标识汇总模板.pdf",
-      "bytes": 95624,
-      "sha256": "56db04ba930fcb398f91160748768af2fcf366b46fd8e2d107d9f201a462c7c5"
+      "bytes": 94184,
+      "sha256": "493936059a77b5c01dd56145e704d82cc3718e2e3d229c285c55b4dd2b7e4cc0"
     },
     {
       "path": "public/U01_去标识试用记录.pdf",
-      "bytes": 178657,
-      "sha256": "592d6e472dad6db50be34c54ca15ff3d0d2c56366d391816b8bc53998f5f81c5"
+      "bytes": 177092,
+      "sha256": "d1fd3aaa141704e1ce12251debf7b0bf5d43347b750f3f9fa066a71144ae6972"
     },
     {
       "path": "public/U02_去标识试用记录.pdf",
-      "bytes": 178659,
-      "sha256": "5f7870e33e99610dde9a82846787d2611cdfbc6ef1a7a5a355d452ccb0e33934"
+      "bytes": 177092,
+      "sha256": "72d0c876da35a0ef323d54bb0c1712002ff5d26c474fce0760b068ef799b9c78"
     },
     {
       "path": "public/统一试用主持脚本.pdf",
-      "bytes": 171617,
-      "sha256": "c160dd02f972720c17da1dd2beb3ef685266d67099932e3f6c41c5e205ba597e"
+      "bytes": 171746,
+      "sha256": "58269615cf40e5d6b68611a7310f0a0e49f3d9aae4d49360b520fccada097141"
     }
   ],
   "boundary": "Blank de-identified forms only; real participant results are not yet present"

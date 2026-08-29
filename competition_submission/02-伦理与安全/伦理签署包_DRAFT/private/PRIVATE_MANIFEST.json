@@ -1,0 +1,12 @@
+{
+  "schema": "ethics-signature-stage-manifest-v1",
+  "stage": "private_signature_sheet",
+  "files": [
+    {
+      "path": "private/伦理声明签署页_私密.pdf",
+      "bytes": 117399,
+      "sha256": "4ff4e14a6489c726fc0d41fca34dd76e6c04f2b973faaae3dd50faa0e6cbf826"
+    }
+  ],
+  "boundary": "Offline private storage only; do not commit completed signatures"
+}

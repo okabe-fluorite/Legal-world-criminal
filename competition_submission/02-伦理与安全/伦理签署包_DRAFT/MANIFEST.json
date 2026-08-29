@@ -1,0 +1,73 @@
+{
+  "schema": "ethics-signature-package-manifest-v1",
+  "source_git_commit": "db616bc42aedbd79325edd5f13b2a16875a9c5ae",
+  "package_build_date": "2026-08-30",
+  "law_manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7",
+  "legal_currency_checked_at": "2026-08-29T23:53:58+08:00",
+  "legal_currency_passed": 5,
+  "expert_review_complete": false,
+  "real_participant_count": 0,
+  "video_status": "DRAFT",
+  "files": [
+    {
+      "path": "BUILD_AUDIT.json",
+      "bytes": 1507,
+      "sha256": "213b75260c80899f5cb69a717a2de9bf1c68a74937dbbd533ce55fffd8805ee6"
+    },
+    {
+      "path": "README.md",
+      "bytes": 640,
+      "sha256": "5440d19d48969cf2d2aecb00e7f177495ba3efc7011f57f79611fcafa08fadd3"
+    },
+    {
+      "path": "private/PRIVATE_MANIFEST.json",
+      "bytes": 379,
+      "sha256": "5796bafdf8f853e00d2488e5280e1b7dc9e51c024b98c779a24baaf3f6baa791"
+    },
+    {
+      "path": "private/伦理声明签署页_私密.pdf",
+      "bytes": 117399,
+      "sha256": "4ff4e14a6489c726fc0d41fca34dd76e6c04f2b973faaae3dd50faa0e6cbf826"
+    },
+    {
+      "path": "public/PUBLIC_MANIFEST.json",
+      "bytes": 550,
+      "sha256": "43c605babefe35325f337554dd2d6685099f433a46477f9b4bf10eb6527fdca9"
+    },
+    {
+      "path": "public/伦理与安全合规声明正文.pdf",
+      "bytes": 299729,
+      "sha256": "01e7064f62f1cb332e15f91a7e8e84d681735853f0a6803064794e7577e4b5e0"
+    },
+    {
+      "path": "public/签署前核对清单.pdf",
+      "bytes": 168229,
+      "sha256": "30e6bfd9e539f780ca9f381d65beed530f7da6611281928da6bc3e06196af4e8"
+    },
+    {
+      "path": "公开伦理声明包_DRAFT.zip",
+      "bytes": 457385,
+      "sha256": "7975fb9763ee1cb08b4a4c608c2036432fb539b813261cdb73d395b6b3f0a8c3"
+    },
+    {
+      "path": "公开伦理声明包_DRAFT.zip.sha256.txt",
+      "bytes": 99,
+      "sha256": "e58bdf34dfe5f6877c8b0d2fabfd01a45e6627b6363b52d20af89e96e9533852"
+    },
+    {
+      "path": "私密签署页包_DRAFT.zip",
+      "bytes": 115114,
+      "sha256": "813cf2d9599c1d912d862a82b23c07fe1e53849bd151fb2d775b43ec1a3317c1"
+    },
+    {
+      "path": "私密签署页包_DRAFT.zip.sha256.txt",
+      "bytes": 96,
+      "sha256": "bdfb168bed4e9b1843a6ef1282008ce7dbdf713d1bdc7ec517955b6ae4d5e81f"
+    }
+  ],
+  "required_signature_count": 3,
+  "real_signature_count": 0,
+  "signature_complete": false,
+  "institutional_ethics_approval_claimed": false,
+  "evidence_boundary": "Blank team responsibility signing materials; not institutional ethics approval, school authorization or proof that pending external validations are complete"
+}

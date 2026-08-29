@@ -4,13 +4,13 @@
   "files": [
     {
       "path": "private/U01_知情同意书_私密.pdf",
-      "bytes": 163449,
-      "sha256": "2b650ddefd7928ef58f4c926ce161462e1e6f337422bfaf41c900293b4890ea7"
+      "bytes": 162054,
+      "sha256": "b4203f8902ca2245aa7db56b76349522bec37c83fb991b5881da6f12bbfff06d"
     },
     {
       "path": "private/U02_知情同意书_私密.pdf",
-      "bytes": 163450,
-      "sha256": "9132339f6b4e311885b911a8ff4ee2513d61ceebf066731d8dc553c47f1bb13e"
+      "bytes": 162055,
+      "sha256": "c21626e321b58da309fc0c2c61def709f234edb54e1f857219ecfdbff7482ef6"
     }
   ],
   "boundary": "Private offline storage only; never include in public competition attachments"

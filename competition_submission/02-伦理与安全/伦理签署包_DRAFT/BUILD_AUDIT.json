@@ -1,0 +1,47 @@
+{
+  "schema": "ethics-signature-package-build-audit-v1",
+  "pdf_count": 3,
+  "pdf_pages": {
+    "public/伦理与安全合规声明正文.pdf": 4,
+    "public/签署前核对清单.pdf": 2,
+    "private/伦理声明签署页_私密.pdf": 1
+  },
+  "public_package": {
+    "zip_entries": [
+      "public/PUBLIC_MANIFEST.json",
+      "public/伦理与安全合规声明正文.pdf",
+      "public/签署前核对清单.pdf"
+    ],
+    "private_field_hits": [],
+    "privacy_separation_passed": true
+  },
+  "private_package": {
+    "zip_entries": [
+      "private/PRIVATE_MANIFEST.json",
+      "private/伦理声明签署页_私密.pdf"
+    ]
+  },
+  "required_public_boundary_missing": [],
+  "required_private_fields_missing": [],
+  "secret_scan": {
+    "patterns": [
+      "api_key",
+      "PRIVATE KEY",
+      "sk-",
+      "D:\\Code\\",
+      "source_response_sha256"
+    ],
+    "hits": [],
+    "passed": true
+  },
+  "stage_manifest_checks": {
+    "PUBLIC_MANIFEST.json:public/伦理与安全合规声明正文.pdf": true,
+    "PUBLIC_MANIFEST.json:public/签署前核对清单.pdf": true,
+    "PRIVATE_MANIFEST.json:private/伦理声明签署页_私密.pdf": true
+  },
+  "required_signature_count": 3,
+  "real_signature_count": 0,
+  "signature_complete": false,
+  "institutional_ethics_approval_claimed": false,
+  "evidence_boundary": "Prepared blank signing materials only; no person, signature, institutional approval or release authorization is fabricated"
+}
