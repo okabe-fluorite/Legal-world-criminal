@@ -33,6 +33,7 @@ def main() -> int:
     frozen = read_json(SUBMISSION / "03-Demo" / "FROZEN_DEMO_AUDIT.json")
     segments = read_json(SUBMISSION / "03-Demo" / "VIDEO_SEGMENTS_AUDIT.json")
     narrated = read_json(SUBMISSION / "03-Demo" / "NARRATED_VIDEO_DRAFT_AUDIT.json")
+    legal_currency = read_json(SUBMISSION / "03-Demo" / "LEGAL_SOURCE_CURRENCY_AUDIT.json")
     typical = read_json(REPO / "docs" / "TYPICAL_QUESTION_EVALUATION.json")
     ppt_meta = read_json(ppt_report)
     web_meta = read_json(web_report)
@@ -77,6 +78,34 @@ def main() -> int:
             "status": "passed",
             "evidence": ["requirements.lock.txt", "frontend/package-lock.json", "docs/MODEL_ADAPTER.md", "competition_submission/scripts/"],
             "boundary": "私密模型配置不入库",
+        },
+        {
+            "id": "legal_source_currency",
+            "requirement": "演示关键法源现行有效且可追溯",
+            "status": "passed" if (
+                legal_currency.get("result") == "PASS_WITH_SCOPE_LIMITATIONS"
+                and legal_currency.get("target_article_count") == 5
+                and legal_currency.get("target_article_pass_count") == 5
+                and legal_currency.get("local_corpus_integrity", {})
+                .get("criminal_law_output", {})
+                .get("hash_match") is True
+                and legal_currency.get("local_corpus_integrity", {})
+                .get("criminal_procedure_law_output", {})
+                .get("hash_match") is True
+                and legal_currency.get("local_corpus_integrity", {})
+                .get("official_download_artifacts", {})
+                .get("all_manifest_hashes_matched") is True
+            ) else "failed",
+            "evidence": [
+                "competition_submission/03-Demo/LEGAL_SOURCE_CURRENCY_AUDIT.json",
+                "competition_submission/03-Demo/LEGAL_SOURCE_CURRENCY_AUDIT.md",
+            ],
+            "detail": {
+                "target_articles": legal_currency.get("target_article_count"),
+                "passed": legal_currency.get("target_article_pass_count"),
+                "checked_at": legal_currency.get("checked_at"),
+            },
+            "boundary": "仅覆盖5条演示关键法条；法条文本现行不等于case3适法结论已获专家确认",
         },
         {
             "id": "three_questions",
