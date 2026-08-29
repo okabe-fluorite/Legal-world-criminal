@@ -44,6 +44,8 @@ def main() -> int:
     video_review_audit = read_json(SUBMISSION / "06-效果验证" / "视频审片包_DRAFT" / "BUILD_AUDIT.json")
     effect_package = read_json(SUBMISSION / "06-效果验证" / "效果验证报告包_DRAFT" / "MANIFEST.json")
     effect_package_audit = read_json(SUBMISSION / "06-效果验证" / "效果验证报告包_DRAFT" / "BUILD_AUDIT.json")
+    public_package = read_json(SUBMISSION / "07-公开提交包_DRAFT" / "MANIFEST.json")
+    public_package_audit = read_json(SUBMISSION / "07-公开提交包_DRAFT" / "BUILD_AUDIT.json")
     typical = read_json(REPO / "docs" / "TYPICAL_QUESTION_EVALUATION.json")
     ppt_meta = read_json(ppt_report)
     web_meta = read_json(web_report)
@@ -263,6 +265,38 @@ def main() -> int:
             "evidence": ["competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json"],
             "detail": {"source_checks": frozen.get("semantic_audit", {}).get("source_check_count"), "restore_checks": frozen.get("semantic_audit", {}).get("restore_check_count"), "synthetic_users": frozen.get("identity_boundary", {}).get("user_count")},
             "boundary": "私密备份含演示密码哈希，不入Git，仅团队离线保管",
+        },
+        {
+            "id": "public_submission_package",
+            "requirement": "公开提交DRAFT包可解压且不含私密材料",
+            "status": "passed" if (
+                public_package_audit.get("crc_passed") is True
+                and public_package_audit.get("under_100_mb") is True
+                and public_package_audit.get("private_material_included") is False
+                and public_package_audit.get("source_code_scan", {}).get("passed") is True
+                and public_package_audit.get("public_material_scan", {}).get("passed") is True
+                and not public_package_audit.get("source_code_scan", {}).get("required_entries_missing")
+                and public_package.get("ready_for_final_submission") is False
+            ) else "failed",
+            "evidence": [
+                "competition_submission/07-公开提交包_DRAFT/MANIFEST.json",
+                "competition_submission/07-公开提交包_DRAFT/BUILD_AUDIT.json",
+                "competition_submission/07-公开提交包_DRAFT/README_DRAFT.md",
+            ],
+            "detail": {
+                "package_file": public_package_audit.get("package_file"),
+                "package_bytes": public_package_audit.get("package_bytes"),
+                "package_sha256": public_package_audit.get("package_sha256"),
+                "package_entry_count": public_package_audit.get("package_entry_count"),
+                "source_entry_count": public_package_audit.get("source_code_scan", {}).get("entry_count"),
+                "source_required_entry_count": public_package_audit.get("source_code_scan", {}).get("required_entry_count"),
+                "source_required_missing": public_package_audit.get("source_code_scan", {}).get("required_entries_missing"),
+                "private_path_hits": len(public_package_audit.get("source_code_scan", {}).get("private_path_hits") or []),
+                "secret_token_hits": len(public_package_audit.get("source_code_scan", {}).get("secret_token_hits") or []),
+                "original_sensitive_value_hits": len(public_package_audit.get("source_code_scan", {}).get("original_sensitive_value_hits") or []),
+                "private_material_included": public_package_audit.get("private_material_included"),
+            },
+            "boundary": "公开ZIP仍为DRAFT；已排除私密签署、同意书、数据库和离线备份，人工待办完成后必须重新构建",
         },
     ]
 

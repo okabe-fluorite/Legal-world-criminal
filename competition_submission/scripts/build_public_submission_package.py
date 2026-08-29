@@ -158,8 +158,6 @@ def public_materials() -> dict[str, Path]:
         "03-效果验证/EVIDENCE_INDEX.json": SUBMISSION / "06-效果验证" / "效果验证报告包_DRAFT" / "public" / "EVIDENCE_INDEX.json",
         "04-伦理与安全/伦理与安全合规声明正文.pdf": SUBMISSION / "02-伦理与安全" / "伦理签署包_DRAFT" / "public" / "伦理与安全合规声明正文.pdf",
         "04-伦理与安全/签署前核对清单.pdf": SUBMISSION / "02-伦理与安全" / "伦理签署包_DRAFT" / "public" / "签署前核对清单.pdf",
-        "06-公开审计/FINAL_SUBMISSION_AUDIT_DRAFT.json": SUBMISSION / "00-提交清单" / "FINAL_SUBMISSION_AUDIT_DRAFT.json",
-        "06-公开审计/FINAL_SUBMISSION_AUDIT_DRAFT.md": SUBMISSION / "00-提交清单" / "FINAL_SUBMISSION_AUDIT_DRAFT.md",
         "06-公开审计/NARRATED_VIDEO_DRAFT_AUDIT.json": SUBMISSION / "03-Demo" / "NARRATED_VIDEO_DRAFT_AUDIT.json",
         "06-公开审计/LEGAL_SOURCE_CURRENCY_AUDIT.json": SUBMISSION / "03-Demo" / "LEGAL_SOURCE_CURRENCY_AUDIT.json",
         "06-公开审计/LEGAL_SOURCE_CURRENCY_AUDIT.md": SUBMISSION / "03-Demo" / "LEGAL_SOURCE_CURRENCY_AUDIT.md",
