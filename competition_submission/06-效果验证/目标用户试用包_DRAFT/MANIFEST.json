@@ -1,0 +1,86 @@
+{
+  "schema": "target-user-trial-package-manifest-v1",
+  "source_git_commit": "74037f7c89c9683a1897550e5e6e50d712b463cb",
+  "package_build_date": "2026-08-30",
+  "participants_preallocated": [
+    "U01",
+    "U02"
+  ],
+  "law_manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7",
+  "files": [
+    {
+      "path": "BUILD_AUDIT.json",
+      "bytes": 1933,
+      "sha256": "c79ac15a2ae486bb45b0f4ba3e5efffa9f038ecbf39db49ed9f4cc0d86a69da0"
+    },
+    {
+      "path": "README.md",
+      "bytes": 689,
+      "sha256": "0df1e104e60d48fcace581aedf76b9b6e5d6a81fe641d7cc017ad9c099d6a2ec"
+    },
+    {
+      "path": "private/PRIVATE_MANIFEST.json",
+      "bytes": 570,
+      "sha256": "ac953aafb035b18bfabbf4af704c811f779e6d6e5af4066d2ba5d2bee1b14bb3"
+    },
+    {
+      "path": "private/U01_知情同意书_私密.pdf",
+      "bytes": 163449,
+      "sha256": "2b650ddefd7928ef58f4c926ce161462e1e6f337422bfaf41c900293b4890ea7"
+    },
+    {
+      "path": "private/U02_知情同意书_私密.pdf",
+      "bytes": 163450,
+      "sha256": "9132339f6b4e311885b911a8ff4ee2513d61ceebf066731d8dc553c47f1bb13e"
+    },
+    {
+      "path": "public/PUBLIC_MANIFEST.json",
+      "bytes": 926,
+      "sha256": "0162dc0905a643c8954df1b9ad8c6a24ea5232b09cda13ac3c42f7c639108380"
+    },
+    {
+      "path": "public/U01_U02去标识汇总模板.pdf",
+      "bytes": 95624,
+      "sha256": "56db04ba930fcb398f91160748768af2fcf366b46fd8e2d107d9f201a462c7c5"
+    },
+    {
+      "path": "public/U01_去标识试用记录.pdf",
+      "bytes": 178657,
+      "sha256": "592d6e472dad6db50be34c54ca15ff3d0d2c56366d391816b8bc53998f5f81c5"
+    },
+    {
+      "path": "public/U02_去标识试用记录.pdf",
+      "bytes": 178659,
+      "sha256": "5f7870e33e99610dde9a82846787d2611cdfbc6ef1a7a5a355d452ccb0e33934"
+    },
+    {
+      "path": "public/统一试用主持脚本.pdf",
+      "bytes": 171617,
+      "sha256": "c160dd02f972720c17da1dd2beb3ef685266d67099932e3f6c41c5e205ba597e"
+    },
+    {
+      "path": "去标识试用记录包_DRAFT.zip",
+      "bytes": 608320,
+      "sha256": "b3973b0bed41f9aef9e87d704b50abe14530144155678f57c50a978219b9ccac"
+    },
+    {
+      "path": "去标识试用记录包_DRAFT.zip.sha256.txt",
+      "bytes": 102,
+      "sha256": "e8465a5166bfe1085815bd6c5e296757dcb8681b492cec3a59e7edc2321d0bc9"
+    },
+    {
+      "path": "私密知情同意书包_DRAFT.zip",
+      "bytes": 319691,
+      "sha256": "ba010c869664942f242885af2fc1c345b61b7693ec5225e1f02c6eaf085a8c4a"
+    },
+    {
+      "path": "私密知情同意书包_DRAFT.zip.sha256.txt",
+      "bytes": 102,
+      "sha256": "bf30ef0cccf272f12aeeecf990b4c93ef60de13de6904dcfac8d9dfd6f14474a"
+    }
+  ],
+  "private_public_separation": true,
+  "real_participant_count": 0,
+  "trial_records_complete": false,
+  "evidence_boundary": "Prepared blank execution materials; no real participant evidence exists until signed consents and completed de-identified records are returned"
+}

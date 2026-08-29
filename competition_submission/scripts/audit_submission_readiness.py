@@ -36,6 +36,8 @@ def main() -> int:
     legal_currency = read_json(SUBMISSION / "03-Demo" / "LEGAL_SOURCE_CURRENCY_AUDIT.json")
     expert_package = read_json(SUBMISSION / "06-效果验证" / "专家审核包_DRAFT" / "MANIFEST.json")
     expert_package_audit = read_json(SUBMISSION / "06-效果验证" / "专家审核包_DRAFT" / "BUILD_AUDIT.json")
+    user_trial_package = read_json(SUBMISSION / "06-效果验证" / "目标用户试用包_DRAFT" / "MANIFEST.json")
+    user_trial_audit = read_json(SUBMISSION / "06-效果验证" / "目标用户试用包_DRAFT" / "BUILD_AUDIT.json")
     typical = read_json(REPO / "docs" / "TYPICAL_QUESTION_EVALUATION.json")
     ppt_meta = read_json(ppt_report)
     web_meta = read_json(web_report)
@@ -131,8 +133,21 @@ def main() -> int:
             "id": "target_users",
             "requirement": "至少2名真实目标用户试用记录",
             "status": "pending_external",
-            "evidence": ["competition_submission/06-效果验证/目标用户知情同意书_DRAFT.md", "competition_submission/06-效果验证/目标用户统一试用主持脚本_DRAFT.md", "competition_submission/06-效果验证/目标用户试用记录表_DRAFT.md"],
-            "boundary": "只有模板，无真实参与者记录",
+            "evidence": [
+                "competition_submission/06-效果验证/目标用户试用包_MANIFEST_DRAFT.md",
+                "competition_submission/06-效果验证/目标用户试用包_DRAFT/MANIFEST.json",
+                "competition_submission/06-效果验证/目标用户试用包_DRAFT/BUILD_AUDIT.json",
+            ],
+            "detail": {
+                "participants_preallocated": user_trial_package.get("participants_preallocated"),
+                "pdf_count": user_trial_audit.get("pdf_count"),
+                "private_public_separation": user_trial_package.get("private_public_separation"),
+                "privacy_separation_passed": user_trial_audit.get("public_package", {}).get("privacy_separation_passed"),
+                "secret_scan_passed": user_trial_audit.get("secret_scan", {}).get("passed"),
+                "real_participant_count": user_trial_package.get("real_participant_count"),
+                "trial_records_complete": user_trial_package.get("trial_records_complete"),
+            },
+            "boundary": "U01/U02标准化试用材料已就绪，但只是空白表；真实参与者仍为0，不能写成用户验证完成",
         },
         {
             "id": "effect_report",

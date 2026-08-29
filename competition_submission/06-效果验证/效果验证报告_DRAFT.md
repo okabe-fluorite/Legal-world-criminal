@@ -25,6 +25,7 @@
 | 认知诊断/ORCDF/路径/模型路由 | `docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md` | 2026-08-29复核；页面明确MOOCCubeX迁移与未校准边界 |
 | 三个典型问题 | `docs/TYPICAL_QUESTION_EVALUATION.json` | 2026-08-29生成；suite SHA `3b5f896c...1180c2`；专家pending |
 | 专家A/B审核材料 | `competition_submission/06-效果验证/专家审核包_DRAFT/MANIFEST.json`、`BUILD_AUDIT.json` | 8份PDF、21页；A包盲审隔离与秘密扫描通过；真实专家仍未审核 |
+| 目标用户试用材料 | `competition_submission/06-效果验证/目标用户试用包_DRAFT/MANIFEST.json`、`BUILD_AUDIT.json` | 6份PDF、11页；私密/公开隔离通过；U01/U02仅预分配，真实参与者仍为0 |
 | 关键法源时效 | `competition_submission/03-Demo/LEGAL_SOURCE_CURRENCY_AUDIT.json` | 2026-08-29 23:53 UTC+8；5/5通过 |
 | 教师退回—修订—批准 | `competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json` | 合成账号；浏览器事件2→3；源/恢复各24项语义审计通过 |
 | case3冻结演示E2E | `competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json`、`CASE3_INV_PR_SNAPSHOT.json` | 461.547秒、29次固定脚本回答、0 runtime issue；不起诉分支非专家结论 |

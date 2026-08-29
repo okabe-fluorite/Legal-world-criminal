@@ -1,0 +1,27 @@
+{
+  "schema": "target-user-trial-stage-manifest-v1",
+  "stage": "deidentified_trial_records",
+  "files": [
+    {
+      "path": "public/U01_U02去标识汇总模板.pdf",
+      "bytes": 95624,
+      "sha256": "56db04ba930fcb398f91160748768af2fcf366b46fd8e2d107d9f201a462c7c5"
+    },
+    {
+      "path": "public/U01_去标识试用记录.pdf",
+      "bytes": 178657,
+      "sha256": "592d6e472dad6db50be34c54ca15ff3d0d2c56366d391816b8bc53998f5f81c5"
+    },
+    {
+      "path": "public/U02_去标识试用记录.pdf",
+      "bytes": 178659,
+      "sha256": "5f7870e33e99610dde9a82846787d2611cdfbc6ef1a7a5a355d452ccb0e33934"
+    },
+    {
+      "path": "public/统一试用主持脚本.pdf",
+      "bytes": 171617,
+      "sha256": "c160dd02f972720c17da1dd2beb3ef685266d67099932e3f6c41c5e205ba597e"
+    }
+  ],
+  "boundary": "Blank de-identified forms only; real participant results are not yet present"
+}
