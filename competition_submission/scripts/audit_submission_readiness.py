@@ -327,6 +327,7 @@ def main() -> int:
         f"- 最终提交就绪：**{'是' if audit['ready_for_final_submission'] else '否'}**",
         f"- 外部待补：`{', '.join(external_pending) or '无'}`",
         f"- 内部待批准：`{', '.join(internal_pending) or '无'}`",
+        "- 真实人员执行入口：`competition_submission/00-提交清单/真实人员完成操作单.md`",
         "",
         "| 要求 | 状态 | 证据边界 |",
         "|---|---|---|",
