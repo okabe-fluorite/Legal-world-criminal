@@ -1,0 +1,27 @@
+{
+  "schema": "expert-review-stage-manifest-v1",
+  "stage": "B_difference_review_after_A_lock",
+  "files": [
+    {
+      "path": "B/automatic_gate_report.pdf",
+      "bytes": 123903,
+      "sha256": "8a993505c9057a1c25c369bc896ff4cfccf6437b629fa0c0a5a282b3d5477145"
+    },
+    {
+      "path": "B/source_manifest.json",
+      "bytes": 5404,
+      "sha256": "9ef035d17736ccd13852f904e6bc992a83d44949966e7de431b53198b1dfbacc"
+    },
+    {
+      "path": "B/standard_answers.pdf",
+      "bytes": 154708,
+      "sha256": "e669c00a909d4c8ede9a0c32676b7f33d0b39ebc633798214a65d45785a1aeda"
+    },
+    {
+      "path": "B/独立法学专家差异复核表_B阶段.pdf",
+      "bytes": 91452,
+      "sha256": "77f53fc53852a166b0920d68549e3a467b07eca6d599c85d3d0f20ceb5fe8c6d"
+    }
+  ],
+  "boundary": "Disclose only after the signed Stage A form is locked and hashed"
+}

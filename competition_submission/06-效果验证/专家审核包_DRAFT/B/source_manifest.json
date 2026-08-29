@@ -1,0 +1,124 @@
+{
+  "schema": "expert-review-source-manifest-v1",
+  "source_git_commit": "6deb1b8ff79cec011139c4bd038a63375a8a9188",
+  "evaluation_generated_at": "2026-08-28T16:17:02.490918+00:00",
+  "suite_sha256": "3b5f896c63fb6e207c59c5039876c8f35d6a823eeeb36ba7b2b0dc73c71180c2",
+  "law_manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7",
+  "case_bundle_manifest_sha256": "881e1a3d53d0e75f02677f45cd2bcaa0a97ab69197e7fb9342112f2bb18a2e93",
+  "cases": [
+    {
+      "case_id": "TQ01_RETROACTIVITY",
+      "title": "罪刑法定与从旧兼从轻",
+      "run_status": "model_completed",
+      "model_route": {
+        "task": "learning_support",
+        "provider": "primary",
+        "model_name": "deepseek-v4-flash",
+        "api_base": "https://opencode.ai"
+      },
+      "sources": [
+        {
+          "source_id": "CARD_CRIM_KP_467B1D9FCFABDA50",
+          "source_type": "teacher_gated_knowledge_card",
+          "title": "罪刑法定原则",
+          "article_ref": "课程口径",
+          "authority": "本科刑法试点知识卡",
+          "version": "e71ed2945c64c02da92390f22bcf5affa6956d76be2cc745d860fc6f353f9676"
+        },
+        {
+          "source_id": "EVID_884FC4550E1F5A30DACE",
+          "source_type": "法律条文",
+          "title": "中华人民共和国刑法",
+          "article_ref": "第十二条",
+          "authority": "法律",
+          "version": "npc-flk-2026-02-26-xingfa-amendment-12",
+          "source_url": "https://flk.npc.gov.cn/",
+          "source_bundle_sha256": "42ab93f764e3dd0c0f2479db94f5e6e4b73455317cc5dfc2ad47e003fc005875"
+        }
+      ]
+    },
+    {
+      "case_id": "TQ02_SPECIAL_DEFENSE",
+      "title": "正当防卫与特殊防卫",
+      "run_status": "model_completed",
+      "model_route": {
+        "task": "learning_support",
+        "provider": "primary",
+        "model_name": "deepseek-v4-flash",
+        "api_base": "https://opencode.ai"
+      },
+      "sources": [
+        {
+          "source_id": "CARD_CRIM_KP_7B01D1EBC00BC8ED",
+          "source_type": "teacher_gated_knowledge_card",
+          "title": "正当防卫与防卫过当",
+          "article_ref": "课程口径",
+          "authority": "本科刑法试点知识卡",
+          "version": "04a0b42bdf56ad87ea8f9fa390ffe7de44cc9893a322d3745ee5e0499a5e56d8"
+        },
+        {
+          "source_id": "EVID_9CB6894B3E55465B19C6",
+          "source_type": "法律条文",
+          "title": "中华人民共和国刑法",
+          "article_ref": "第二十条",
+          "authority": "法律",
+          "version": "npc-flk-2026-02-26-xingfa-amendment-12",
+          "source_url": "https://flk.npc.gov.cn/",
+          "source_bundle_sha256": "42ab93f764e3dd0c0f2479db94f5e6e4b73455317cc5dfc2ad47e003fc005875"
+        },
+        {
+          "source_id": "CASE_GUIDE_CRIM_CASE_BCE041E195C8247BC179",
+          "source_type": "guiding_case_point",
+          "title": "指导案例144号：张那木拉正当防卫案",
+          "article_ref": "CLI.C.310492973",
+          "authority": "最高人民法院",
+          "version": "a1e5451b91fa20afaa7ce3af4d6568d14f1f4516de9ae4e1a3d3dcfd90dd868b",
+          "source_url": "https://www.pkulaw.com/pfnl/c05aeed05a57db0a40aebdcacb83e71eb063d8af69afebdfbdfb.html",
+          "local_source_sha256": "9adbb8422dd50f38ccf0e740d4fd325857b96628021410deaac1f2f8ecf98bbe"
+        }
+      ]
+    },
+    {
+      "case_id": "TQ03_ROBBERY_ELEMENTS",
+      "title": "抢劫罪基本构成",
+      "run_status": "model_completed",
+      "model_route": {
+        "task": "learning_support",
+        "provider": "primary",
+        "model_name": "deepseek-v4-flash",
+        "api_base": "https://opencode.ai"
+      },
+      "sources": [
+        {
+          "source_id": "CARD_CRIM_KP_DB1E1940114B4C0F",
+          "source_type": "teacher_gated_knowledge_card",
+          "title": "抢劫罪的基本构成",
+          "article_ref": "课程口径",
+          "authority": "本科刑法试点知识卡",
+          "version": "dacec9ac2ac9d2ef855f0c8cb8b46ed1826e6cf0b771a4b39be8cf11d2c44587"
+        },
+        {
+          "source_id": "EVID_739F98E83E2A8E71CE61",
+          "source_type": "法律条文",
+          "title": "中华人民共和国刑法",
+          "article_ref": "第二百六十三条",
+          "authority": "法律",
+          "version": "npc-flk-2026-02-26-xingfa-amendment-12",
+          "source_url": "https://flk.npc.gov.cn/",
+          "source_bundle_sha256": "42ab93f764e3dd0c0f2479db94f5e6e4b73455317cc5dfc2ad47e003fc005875"
+        },
+        {
+          "source_id": "CASE_GUIDE_CRIM_CASE_954A8D8D6B0CDB221B08",
+          "source_type": "guiding_case_point",
+          "title": "指导案例14号：董某某、宋某某抢劫案",
+          "article_ref": "CLI.C.1181156",
+          "authority": "最高人民法院",
+          "version": "03c48567aee0ae80ec47d5169bebf5d9033cd3f61db5aa2b7e74c99f4c6c7e1f",
+          "source_url": "https://www.pkulaw.com/pfnl/a25051f3312b07f3c7372a2b9f8389df6d57579b3a2ac3a2bdfb.html",
+          "local_source_sha256": "bb81033074de77cbe170a258baa307428db6ee1e9e8ed72d5d3eb231cd2fe6ed"
+        }
+      ]
+    }
+  ],
+  "security_boundary": "API keys, configured booleans, private paths and response hashes are excluded"
+}

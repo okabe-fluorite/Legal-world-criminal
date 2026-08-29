@@ -1,0 +1,27 @@
+{
+  "schema": "expert-review-stage-manifest-v1",
+  "stage": "A_blinded_independent_review",
+  "files": [
+    {
+      "path": "A/TQ01_question_output_sources.pdf",
+      "bytes": 158701,
+      "sha256": "2ce83aa5bdeb9004ae4c903fa40a5ce64e7e5bdb8231782e49cc8e6946a73fe8"
+    },
+    {
+      "path": "A/TQ02_question_output_sources.pdf",
+      "bytes": 198357,
+      "sha256": "87ecb80bed6dc9f3e6cb37711fa33c3d1c8524ad3bc1535afdf4d5b9da75e083"
+    },
+    {
+      "path": "A/TQ03_question_output_sources.pdf",
+      "bytes": 200917,
+      "sha256": "f7d8e2ae475d30afbcd5da9a313eef5eeffebae2a162a1438194a811e1feff32"
+    },
+    {
+      "path": "A/独立法学专家审核表_A阶段.pdf",
+      "bytes": 167488,
+      "sha256": "1af4b905082d19a0e26d25c8d9cadee7f14f27031173d0d5f6a9fe45eb4ea088"
+    }
+  ],
+  "boundary": "No draft standard answer, required-point audit, automatic gate result or expert conclusion is included"
+}

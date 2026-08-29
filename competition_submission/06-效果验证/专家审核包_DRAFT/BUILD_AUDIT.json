@@ -1,0 +1,65 @@
+{
+  "schema": "expert-review-package-build-audit-v1",
+  "pdf_count": 8,
+  "pdf_pages": {
+    "A/TQ01_question_output_sources.pdf": 2,
+    "A/TQ02_question_output_sources.pdf": 3,
+    "A/TQ03_question_output_sources.pdf": 3,
+    "A/独立法学专家审核表_A阶段.pdf": 5,
+    "B/standard_answers.pdf": 3,
+    "B/automatic_gate_report.pdf": 3,
+    "B/独立法学专家差异复核表_B阶段.pdf": 1,
+    "revision/专家整改复签记录.pdf": 1
+  },
+  "a_stage": {
+    "zip_entries": [
+      "A/A_MANIFEST.json",
+      "A/TQ01_question_output_sources.pdf",
+      "A/TQ02_question_output_sources.pdf",
+      "A/TQ03_question_output_sources.pdf",
+      "A/独立法学专家审核表_A阶段.pdf"
+    ],
+    "forbidden_blinding_hits": [],
+    "blinding_passed": true
+  },
+  "b_stage": {
+    "zip_entries": [
+      "B/B_MANIFEST.json",
+      "B/automatic_gate_report.pdf",
+      "B/source_manifest.json",
+      "B/standard_answers.pdf",
+      "B/独立法学专家差异复核表_B阶段.pdf",
+      "revision/专家整改复签记录.pdf"
+    ]
+  },
+  "secret_scan": {
+    "patterns": [
+      "api_key_configured",
+      "source_response_sha256",
+      "PRIVATE KEY",
+      "sk-",
+      "D:\\Code\\"
+    ],
+    "hits": [],
+    "passed": true
+  },
+  "stage_manifest_checks": {
+    "A_MANIFEST.json:A/TQ01_question_output_sources.pdf": true,
+    "A_MANIFEST.json:A/TQ02_question_output_sources.pdf": true,
+    "A_MANIFEST.json:A/TQ03_question_output_sources.pdf": true,
+    "A_MANIFEST.json:A/独立法学专家审核表_A阶段.pdf": true,
+    "B_MANIFEST.json:B/automatic_gate_report.pdf": true,
+    "B_MANIFEST.json:B/source_manifest.json": true,
+    "B_MANIFEST.json:B/standard_answers.pdf": true,
+    "B_MANIFEST.json:B/独立法学专家差异复核表_B阶段.pdf": true
+  },
+  "required_text_checks": {
+    "A/独立法学专家审核表_A阶段.pdf": true,
+    "B/standard_answers.pdf": true,
+    "B/automatic_gate_report.pdf": true,
+    "B/独立法学专家差异复核表_B阶段.pdf": true,
+    "revision/专家整改复签记录.pdf": true
+  },
+  "expert_review_complete": false,
+  "evidence_boundary": "Build and QA only; no expert conclusion, signature or publication approval is created"
+}

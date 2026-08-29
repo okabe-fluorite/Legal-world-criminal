@@ -34,6 +34,8 @@ def main() -> int:
     segments = read_json(SUBMISSION / "03-Demo" / "VIDEO_SEGMENTS_AUDIT.json")
     narrated = read_json(SUBMISSION / "03-Demo" / "NARRATED_VIDEO_DRAFT_AUDIT.json")
     legal_currency = read_json(SUBMISSION / "03-Demo" / "LEGAL_SOURCE_CURRENCY_AUDIT.json")
+    expert_package = read_json(SUBMISSION / "06-效果验证" / "专家审核包_DRAFT" / "MANIFEST.json")
+    expert_package_audit = read_json(SUBMISSION / "06-效果验证" / "专家审核包_DRAFT" / "BUILD_AUDIT.json")
     typical = read_json(REPO / "docs" / "TYPICAL_QUESTION_EVALUATION.json")
     ppt_meta = read_json(ppt_report)
     web_meta = read_json(web_report)
@@ -118,8 +120,12 @@ def main() -> int:
                 "all_expert_reviews_complete": typical.get("all_expert_reviews_complete"),
                 "generated_at": typical.get("generated_at"),
                 "suite_sha256": typical.get("suite_sha256"),
+                "expert_package_source_commit": expert_package.get("source_git_commit"),
+                "expert_package_pdf_count": expert_package_audit.get("pdf_count"),
+                "expert_package_blinding_passed": expert_package_audit.get("a_stage", {}).get("blinding_passed"),
+                "expert_package_secret_scan_passed": expert_package_audit.get("secret_scan", {}).get("passed"),
             },
-            "boundary": "自动门禁不等于专家准确率",
+            "boundary": "A/B两阶段PDF审核包已就绪；自动门禁不等于专家准确率，真实专家仍未审核或签字",
         },
         {
             "id": "target_users",
