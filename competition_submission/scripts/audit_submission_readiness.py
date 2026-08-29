@@ -43,6 +43,23 @@ def main() -> int:
     typical = read_json(REPO / "docs" / "TYPICAL_QUESTION_EVALUATION.json")
     ppt_meta = read_json(ppt_report)
     web_meta = read_json(web_report)
+    video_qa = narrated.get("qa", {})
+    video_audio_analysis = narrated.get("audio", {}).get("analysis", {})
+    video_content = narrated.get("content_coverage", {})
+    video_passed = (
+        narrated.get("duration_seconds", 999) <= 180
+        and narrated.get("resolution") == "1920x1080"
+        and narrated.get("audio", {}).get("present") is True
+        and narrated.get("audio", {}).get("ai_generated_label_visible") is True
+        and narrated.get("subtitles", {}).get("present") is True
+        and narrated.get("subtitles", {}).get("count") == 10
+        and video_content.get("required_count") == 7
+        and video_content.get("present_count") == 7
+        and video_content.get("all_required_present") is True
+        and video_qa.get("max_voice_speed_factor", 999) <= 1.1
+        and video_audio_analysis.get("silence_over_threshold_count", 999) == 0
+        and video_qa.get("duration_under_180_seconds") is True
+    )
 
     tracked_clean = subprocess.run(
         ["git", "diff", "--quiet"], cwd=REPO, check=False
@@ -73,9 +90,26 @@ def main() -> int:
         {
             "id": "video",
             "requirement": "3分钟以内真实交互演示视频",
-            "status": "draft_ready",
+            "status": "draft_ready" if video_passed else "failed",
             "evidence": ["competition_submission/03-Demo/VIDEO_SEGMENTS_AUDIT.json", "competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json"],
-            "detail": {"real_segment_seconds": segments.get("segment_total_duration_seconds"), "draft_seconds": narrated.get("duration_seconds"), "draft_resolution": narrated.get("resolution")},
+            "detail": {
+                "source_git_commit": narrated.get("source_git_commit"),
+                "real_segment_seconds": segments.get("segment_total_duration_seconds"),
+                "draft_seconds": narrated.get("duration_seconds"),
+                "draft_bytes": narrated.get("bytes"),
+                "draft_sha256": narrated.get("sha256"),
+                "draft_resolution": narrated.get("resolution"),
+                "video_codec": narrated.get("media", {}).get("video_codec"),
+                "audio_codec": narrated.get("media", {}).get("audio_codec"),
+                "content_coverage": f"{video_content.get('present_count')}/{video_content.get('required_count')}",
+                "all_required_content_present": video_content.get("all_required_present"),
+                "max_voice_speed_factor": video_qa.get("max_voice_speed_factor"),
+                "silence_over_1_2_seconds": video_audio_analysis.get("silence_over_threshold_count"),
+                "integrated_loudness_lufs": video_audio_analysis.get("integrated_loudness_lufs"),
+                "true_peak_dbfs": video_audio_analysis.get("true_peak_dbfs"),
+                "ai_voice_label_visible": narrated.get("audio", {}).get("ai_generated_label_visible"),
+                "subtitle_count": narrated.get("subtitles", {}).get("count"),
+            },
             "boundary": "AI配音DRAFT已含去标识case3 INV/PR审计快照，尚未团队完整审片与最终批准",
         },
         {
