@@ -1,7 +1,7 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-29T21:04:22.402920+00:00",
-  "git_commit": "e71d3564bce2fa8a0b23ee6c8349f36a767d00d6",
+  "generated_at": "2026-08-29T21:56:02.176336+00:00",
+  "git_commit": "1fab43a1db3a8e09b55a97b10c2a966b6589401b",
   "tracked_worktree_clean_before_audit": true,
   "untracked_user_material_count": 5,
   "checks": [
@@ -206,6 +206,30 @@
         "synthetic_users": 2
       },
       "boundary": "私密备份含演示密码哈希，不入Git，仅团队离线保管"
+    },
+    {
+      "id": "public_submission_package",
+      "requirement": "公开提交DRAFT包可解压且不含私密材料",
+      "status": "passed",
+      "evidence": [
+        "competition_submission/07-公开提交包_DRAFT/MANIFEST.json",
+        "competition_submission/07-公开提交包_DRAFT/BUILD_AUDIT.json",
+        "competition_submission/07-公开提交包_DRAFT/README_DRAFT.md"
+      ],
+      "detail": {
+        "package_file": "星火智学_XH-202620_公开提交包_DRAFT.zip",
+        "package_bytes": 27646254,
+        "package_sha256": "76e491773aa93b0809012406f6394b512be78bd640de7dbe7a2c309897604eec",
+        "package_entry_count": 20,
+        "source_entry_count": 396,
+        "source_required_entry_count": 11,
+        "source_required_missing": [],
+        "private_path_hits": 0,
+        "secret_token_hits": 0,
+        "original_sensitive_value_hits": 0,
+        "private_material_included": false
+      },
+      "boundary": "公开ZIP仍为DRAFT；已排除私密签署、同意书、数据库和离线备份，人工待办完成后必须重新构建"
     }
   ],
   "external_pending": [
