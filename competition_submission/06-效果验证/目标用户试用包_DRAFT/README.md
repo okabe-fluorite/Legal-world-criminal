@@ -1,6 +1,6 @@
 # 目标用户试用材料包（DRAFT）
 
-构建commit：`db616bc42aedbd79325edd5f13b2a16875a9c5ae`
+构建commit：`313d2fab804d2526cf4625cf603b4ff5845c63ee`
 
 ## 使用顺序
 

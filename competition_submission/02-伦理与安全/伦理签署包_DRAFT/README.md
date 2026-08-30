@@ -1,6 +1,6 @@
 # 伦理与安全签署材料包（DRAFT）
 
-构建commit：`2c8a3efa703547498f043d89a50329b928a04dbc`
+构建commit：`313d2fab804d2526cf4625cf603b4ff5845c63ee`
 
 1. 团队先复核`public/伦理与安全合规声明正文.pdf`。
 2. 逐项完成`public/签署前核对清单.pdf`；未通过项必须先整改。

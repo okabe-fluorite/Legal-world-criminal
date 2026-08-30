@@ -1,6 +1,6 @@
 {
   "schema": "target-user-trial-package-manifest-v1",
-  "source_git_commit": "db616bc42aedbd79325edd5f13b2a16875a9c5ae",
+  "source_git_commit": "313d2fab804d2526cf4625cf603b4ff5845c63ee",
   "package_build_date": "2026-08-30",
   "participants_preallocated": [
     "U01",
@@ -16,67 +16,67 @@
     {
       "path": "README.md",
       "bytes": 689,
-      "sha256": "67ce8dfe346339910b966e8250f5e4a7d4a6be3058ff23f0e509329f4375b7b2"
+      "sha256": "9ca980409c4b4cbff5a6876304452ef82e1b3034977477ed66d13f1b52b4ea3f"
     },
     {
       "path": "private/PRIVATE_MANIFEST.json",
       "bytes": 570,
-      "sha256": "b5fb0c98f013f3f27da400b13459587627b53c40ec40067f403d863378f29acc"
+      "sha256": "c4915f87834d2afe30e965cc1ff08510cb691cab3d9f77e78d1b64c5d3e88a92"
     },
     {
       "path": "private/U01_知情同意书_私密.pdf",
-      "bytes": 162054,
-      "sha256": "b4203f8902ca2245aa7db56b76349522bec37c83fb991b5881da6f12bbfff06d"
+      "bytes": 162053,
+      "sha256": "6f99999e6c4dd6f733b404b18e7846ba391ee3f3f7e2facdd99b5b864b27caad"
     },
     {
       "path": "private/U02_知情同意书_私密.pdf",
       "bytes": 162055,
-      "sha256": "c21626e321b58da309fc0c2c61def709f234edb54e1f857219ecfdbff7482ef6"
+      "sha256": "82577aee025d02a23d7b6bb0c96f38a6cbf3f948c0fbdaa1a5332172408a0956"
     },
     {
       "path": "public/PUBLIC_MANIFEST.json",
       "bytes": 926,
-      "sha256": "464f6223c746ab1f0fec1e07792b54f4a2c16ead8f4c75aba1b08ca4ab8879d0"
+      "sha256": "e896d85fcca5e6a8cfa9b15f3f192608572498360050efd0d88fedcfa06d0363"
     },
     {
       "path": "public/U01_U02去标识汇总模板.pdf",
       "bytes": 94184,
-      "sha256": "493936059a77b5c01dd56145e704d82cc3718e2e3d229c285c55b4dd2b7e4cc0"
+      "sha256": "d0430cdb3353424e16649495bd87b8f37e25f98b425893789e48c25cfb4a6133"
     },
     {
       "path": "public/U01_去标识试用记录.pdf",
-      "bytes": 177092,
-      "sha256": "d1fd3aaa141704e1ce12251debf7b0bf5d43347b750f3f9fa066a71144ae6972"
+      "bytes": 177095,
+      "sha256": "5585212b253a4f55be7f525cbf930f348fe3ce5646dbe71e74e7604cbabee6fd"
     },
     {
       "path": "public/U02_去标识试用记录.pdf",
-      "bytes": 177092,
-      "sha256": "72d0c876da35a0ef323d54bb0c1712002ff5d26c474fce0760b068ef799b9c78"
+      "bytes": 177095,
+      "sha256": "b4f93ee4b23bc4ebf62d385a20cd7e0a7d447a28a6106cfc96f82cbd12cc25bb"
     },
     {
       "path": "public/统一试用主持脚本.pdf",
-      "bytes": 171746,
-      "sha256": "58269615cf40e5d6b68611a7310f0a0e49f3d9aae4d49360b520fccada097141"
+      "bytes": 171744,
+      "sha256": "3d59beac294204b60afaab5d7376ada7e7e3f5f69b8f943cbb78f16dd57841d1"
     },
     {
       "path": "去标识试用记录包_DRAFT.zip",
-      "bytes": 603558,
-      "sha256": "8675380401463a2743b2534ac3e8c3f23887f41545bf8122ebe31b16cca5e2ef"
+      "bytes": 603552,
+      "sha256": "74f24b73403acebca4118d4b9d87f4609f9fe67f016c28b4b5f789de1f043b4e"
     },
     {
       "path": "去标识试用记录包_DRAFT.zip.sha256.txt",
       "bytes": 102,
-      "sha256": "ce3fa08833bfa2c6f6d5f6bec828292455d7f3b512bf198a3786c7ac9e215e9c"
+      "sha256": "284b9df64d03640a874c5d8ad23f130cf035518d89e8b440e6e30e04351395cc"
     },
     {
       "path": "私密知情同意书包_DRAFT.zip",
-      "bytes": 316935,
-      "sha256": "69f65afbfa6cd078001e132a295994edb00657f18fec6404998ad6b87b409eaf"
+      "bytes": 316939,
+      "sha256": "4c5b27f5da042eae41bd13617372cd7e9a1f79503c68196201e71c8a4dfde4d2"
     },
     {
       "path": "私密知情同意书包_DRAFT.zip.sha256.txt",
       "bytes": 102,
-      "sha256": "c49a6af04b139277da9a8749673abc282e60bd6e72bab990a66eef91db3bfbff"
+      "sha256": "20ef0f5d3cead65fc6d418796a8c58a7f92a781c69131aab0474ab1c1511bf6e"
     }
   ],
   "private_public_separation": true,

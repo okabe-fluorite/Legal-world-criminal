@@ -1,6 +1,6 @@
 # 三题独立法学专家审核包（DRAFT）
 
-构建来源：`6deb1b8ff79cec011139c4bd038a63375a8a9188`
+构建来源：`313d2fab804d2526cf4625cf603b4ff5845c63ee`
 
 模型路由：`primary / deepseek-v4-flash / learning_support`
 三题自动门禁：`3/3`，但专家仍未完成。

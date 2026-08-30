@@ -1,6 +1,6 @@
 {
   "schema": "expert-review-package-manifest-v1",
-  "source_git_commit": "6deb1b8ff79cec011139c4bd038a63375a8a9188",
+  "source_git_commit": "313d2fab804d2526cf4625cf603b4ff5845c63ee",
   "package_build_date": "2026-08-30",
   "evaluation_report": {
     "path": "docs/TYPICAL_QUESTION_EVALUATION.json",
@@ -63,7 +63,7 @@
     {
       "path": "B/B_MANIFEST.json",
       "bytes": 886,
-      "sha256": "287f8b4f1e06a400c9a52be07ba595bf9963383c5ea63e8a35a15ee832eba387"
+      "sha256": "156536d1aff65ee2e60867e50764cbccd2a9614818de95f258e3e54071edcb2e"
     },
     {
       "path": "B/automatic_gate_report.pdf",
@@ -73,7 +73,7 @@
     {
       "path": "B/source_manifest.json",
       "bytes": 5404,
-      "sha256": "9ef035d17736ccd13852f904e6bc992a83d44949966e7de431b53198b1dfbacc"
+      "sha256": "832ddc97e48d023a9d70840dcfdb9d2a89b957e8d74531c4c00acac610459736"
     },
     {
       "path": "B/standard_answers.pdf",
@@ -92,18 +92,18 @@
     },
     {
       "path": "B阶段_差异核对包_DRAFT.zip",
-      "bytes": 431500,
-      "sha256": "ba3975dcff18ba1a86fca2a88ff95ae24727d0a10cf4343a3968886ed56928ff"
+      "bytes": 431497,
+      "sha256": "b036c271b86039c26d30b1a42c615e31920b6edeec66747a2b1f317211e9b2bb"
     },
     {
       "path": "B阶段_差异核对包_DRAFT.zip.sha256.txt",
       "bytes": 101,
-      "sha256": "44fa1f20c6e27733e2393f2f5a97b731467fa71f4a71add8644cff4d8d865d10"
+      "sha256": "3a3a6ebb0b50acc65935b908ace86df4ebdec60cf31c6520412ee33076d00695"
     },
     {
       "path": "README.md",
       "bytes": 987,
-      "sha256": "2f261daf041033e917a91219d817724414a36e730d74ed5c82ab830fb27e4cb8"
+      "sha256": "0c6a140a4fada0e136105ec8d50b7049de2c4df4853795e2ba03084cad3ab9e6"
     },
     {
       "path": "revision/专家整改复签记录.pdf",

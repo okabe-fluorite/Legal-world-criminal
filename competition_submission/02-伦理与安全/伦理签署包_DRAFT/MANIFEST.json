@@ -1,6 +1,6 @@
 {
   "schema": "ethics-signature-package-manifest-v1",
-  "source_git_commit": "2c8a3efa703547498f043d89a50329b928a04dbc",
+  "source_git_commit": "313d2fab804d2526cf4625cf603b4ff5845c63ee",
   "package_build_date": "2026-08-30",
   "law_manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7",
   "legal_currency_checked_at": "2026-08-29T23:53:58+08:00",
@@ -17,52 +17,52 @@
     {
       "path": "README.md",
       "bytes": 640,
-      "sha256": "931e90651ca2d0c9c9df4665a6cc0da0f296522beaf7aa5c92dddedc5134aa5b"
+      "sha256": "c2278c6179b94f1f0e2b7d9ccc07909908b84382e1fadcdb01ea5381cfe457d1"
     },
     {
       "path": "private/PRIVATE_MANIFEST.json",
       "bytes": 379,
-      "sha256": "876374ca3de580f726bd916e0230b7dde1dafb62d00a0115eb23df25824cdb70"
+      "sha256": "650fa4b56a828d7dad205ffc9bccb96d644e407c012f6750a3d0e6b5400d8242"
     },
     {
       "path": "private/伦理声明签署页_私密.pdf",
-      "bytes": 117399,
-      "sha256": "6dfaaccdf66d253ca72616d3a0f95871364141dcded2016be9fe4581eb4054de"
+      "bytes": 117396,
+      "sha256": "61662b32c9af903952800baa45d3667156c9a7998a326afff8bed1bc7f7048ed"
     },
     {
       "path": "public/PUBLIC_MANIFEST.json",
       "bytes": 550,
-      "sha256": "d9277346faf860ea14b019f040dec9d044b7d21f149f25d044b797a04a0928d9"
+      "sha256": "2ac0719daa06d6ebd9a2e88c4024170dd7cc819ada6c3786d98d333484d5425e"
     },
     {
       "path": "public/伦理与安全合规声明正文.pdf",
-      "bytes": 299727,
-      "sha256": "859d837731f150e85c013808b97b09676b3d7c3c16e03ce1e9550774e60233f5"
+      "bytes": 299724,
+      "sha256": "240e311941e6cf2ae054e758e12e9248d9f23636dfa4265f4eee32332c917d8f"
     },
     {
       "path": "public/签署前核对清单.pdf",
-      "bytes": 168229,
-      "sha256": "9ae5261eaa197e5d19b818eaefb2c271b8dc58eeb4cf881f0c8f980c02cc9417"
+      "bytes": 168227,
+      "sha256": "db3a220df906fca55fb42b910d88c7d6451b95f594b3da133f29728bfd70b002"
     },
     {
       "path": "公开伦理声明包_DRAFT.zip",
-      "bytes": 457379,
-      "sha256": "1d1d660d731a135e71f6a8bab60cbb4a6e6d552ec754555cc16440b3e0ee50f9"
+      "bytes": 457375,
+      "sha256": "b58840ebfc904e4574e34c0a818f1d0e29b95ffde75fb07b50a5eb93279d7335"
     },
     {
       "path": "公开伦理声明包_DRAFT.zip.sha256.txt",
       "bytes": 99,
-      "sha256": "100481397625b411881ec6542f4f7ac4c43eb5fa05d250caa92e84643396df42"
+      "sha256": "ac63b1decf28e458b9a45290d0d4e776238483bb402b6661328f6fd5c293c384"
     },
     {
       "path": "私密签署页包_DRAFT.zip",
-      "bytes": 115114,
-      "sha256": "52b172ad3cbea0e7eac73fde1de8d3267f3beacf0c6339329331bb1e888595e9"
+      "bytes": 115104,
+      "sha256": "595d0b113ad8a0f00e9a7a53e464a50e740f0772cae3663c7f4305759e64d0c1"
     },
     {
       "path": "私密签署页包_DRAFT.zip.sha256.txt",
       "bytes": 96,
-      "sha256": "bd2980f8a33b6851772bbe6e832ec6e7760d2d3b78e5c12a6cdd1b962e30015c"
+      "sha256": "edc5bb4ca5e22271c616a4604cfd2b6f9361403dc6f77163229bb87a9f682082"
     }
   ],
   "required_signature_count": 3,

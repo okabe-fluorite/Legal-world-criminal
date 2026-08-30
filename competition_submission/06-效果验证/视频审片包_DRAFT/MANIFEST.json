@@ -1,6 +1,6 @@
 {
   "schema": "video-review-package-manifest-v1",
-  "source_git_commit": "d2d20a65a58fa072aca8a073c1ba4eed1f940831",
+  "source_git_commit": "313d2fab804d2526cf4625cf603b4ff5845c63ee",
   "package_build_date": "2026-08-30",
   "video_sha256": "682e463ecc03cf71a8b3ff4f43c4df3cbda1f780832eba99b25cbe1f392fd19e",
   "video_duration_seconds": 121.6,

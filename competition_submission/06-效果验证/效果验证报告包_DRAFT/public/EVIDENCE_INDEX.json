@@ -1,6 +1,6 @@
 {
   "schema": "effect-report-evidence-index-v1",
-  "source_git_commit": "840d656e779947df9f6c8b74eab4f8cab873bcae",
+  "source_git_commit": "313d2fab804d2526cf4625cf603b4ff5845c63ee",
   "sources": [
     {
       "id": "frozen",
@@ -60,25 +60,25 @@
       "id": "expert",
       "path": "competition_submission/06-效果验证/专家审核包_DRAFT/MANIFEST.json",
       "bytes": 4411,
-      "sha256": "0ada278db8ec9eb58dc7e15f1812793df2451004dac37e2cc1e2c06c8cc94148"
+      "sha256": "0967f280548918cc03588c6c6130f2d05c9fb2c357be8069cf25b48ee78eb1a7"
     },
     {
       "id": "users",
       "path": "competition_submission/06-效果验证/目标用户试用包_DRAFT/MANIFEST.json",
       "bytes": 3049,
-      "sha256": "126ec70ee0f2051b84225e36cb25ef50834d2bac4125356cc96c9ae9dd57c3d3"
+      "sha256": "abc655d0e5679d98e2e8738c1f0423fbbeb749ea197e4cb72f864e4d079de746"
     },
     {
       "id": "ethics",
       "path": "competition_submission/02-伦理与安全/伦理签署包_DRAFT/MANIFEST.json",
       "bytes": 2677,
-      "sha256": "ede4f4e5a3c0c68a0a547b44301eacc954966f838f0b93979d55a21263d8f88d"
+      "sha256": "02d23eba313a8247e7b19b560be20b08e77dfc3c3ddf8fb888a36660df236e5f"
     },
     {
       "id": "video_review",
       "path": "competition_submission/06-效果验证/视频审片包_DRAFT/MANIFEST.json",
       "bytes": 2438,
-      "sha256": "f1a75251a0168904849cadd469767d984e4799a5865ebc59a7e4572ab49e03ab"
+      "sha256": "7079bc0279b452192eb77195cae6661a028ef282d98e55ad9d4873ddd6898cc3"
     }
   ],
   "evidence_levels": {

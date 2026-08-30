@@ -1,6 +1,6 @@
 {
   "schema": "xh-202620-public-submission-draft-manifest-v1",
-  "source_git_commit": "83a569e4e7de833c1efb3e10e6e3c782573bc042",
+  "source_git_commit": "313d2fab804d2526cf4625cf603b4ff5845c63ee",
   "package_build_date": "2026-08-30",
   "files": [
     {
@@ -16,27 +16,27 @@
     {
       "path": "03-效果验证/EVIDENCE_INDEX.json",
       "bytes": 3331,
-      "sha256": "d55be8f33b0a859d341be2613568beb0476345bc8c0553519619b92ad65debfd"
+      "sha256": "6754ccdc0640696420427e88a6c1df7afc41e5b282cbc12efc6aba363ba253bd"
     },
     {
       "path": "03-效果验证/星火智学效果验证报告_DRAFT.pdf",
       "bytes": 266871,
-      "sha256": "695780f24a374403ab034505d3c8ef0b95721f106b40c6ec367531eea989426c"
+      "sha256": "e9a36e228dd58f5ed1f4f68f0a5342cb40c4cb7fbb676d782a7aec4282bc5860"
     },
     {
       "path": "04-伦理与安全/伦理与安全合规声明正文.pdf",
-      "bytes": 299727,
-      "sha256": "859d837731f150e85c013808b97b09676b3d7c3c16e03ce1e9550774e60233f5"
+      "bytes": 299724,
+      "sha256": "240e311941e6cf2ae054e758e12e9248d9f23636dfa4265f4eee32332c917d8f"
     },
     {
       "path": "04-伦理与安全/签署前核对清单.pdf",
-      "bytes": 168229,
-      "sha256": "9ae5261eaa197e5d19b818eaefb2c271b8dc58eeb4cf881f0c8f980c02cc9417"
+      "bytes": 168227,
+      "sha256": "db3a220df906fca55fb42b910d88c7d6451b95f594b3da133f29728bfd70b002"
     },
     {
       "path": "05-代码/LegalWorld-星火智学-源码_DRAFT.zip",
-      "bytes": 14740537,
-      "sha256": "2f0b26095baed500eb5f6b7b460837a276be078f6a028784c7e83f12dceab48e"
+      "bytes": 14745135,
+      "sha256": "a035bf88d7771bee84c4dbd400d814e443983ddfa4525262db605478d2035e2f"
     },
     {
       "path": "06-公开审计/25帧视觉接触表.png",
@@ -105,8 +105,8 @@
     }
   ],
   "source_code": {
-    "entry_count": 406,
-    "sha256": "2f0b26095baed500eb5f6b7b460837a276be078f6a028784c7e83f12dceab48e",
+    "entry_count": 407,
+    "sha256": "a035bf88d7771bee84c4dbd400d814e443983ddfa4525262db605478d2035e2f",
     "sanitized_env": true
   },
   "pending": {

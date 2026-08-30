@@ -1,6 +1,6 @@
 {
   "schema": "expert-review-source-manifest-v1",
-  "source_git_commit": "6deb1b8ff79cec011139c4bd038a63375a8a9188",
+  "source_git_commit": "313d2fab804d2526cf4625cf603b4ff5845c63ee",
   "evaluation_generated_at": "2026-08-28T16:17:02.490918+00:00",
   "suite_sha256": "3b5f896c63fb6e207c59c5039876c8f35d6a823eeeb36ba7b2b0dc73c71180c2",
   "law_manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7",

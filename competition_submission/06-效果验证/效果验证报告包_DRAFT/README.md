@@ -1,6 +1,6 @@
 # 效果验证报告包（DRAFT）
 
-报告SHA：`695780f24a374403ab034505d3c8ef0b95721f106b40c6ec367531eea989426c`
+报告SHA：`e9a36e228dd58f5ed1f4f68f0a5342cb40c4cb7fbb676d782a7aec4282bc5860`
 
 1. 公开PDF按L1-L4区分证据，不把自动化与演示数据写成学习效果。
 2. 内容、数据、教学三名复核人核对PDF和EVIDENCE_INDEX.json。
