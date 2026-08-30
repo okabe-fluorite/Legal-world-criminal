@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-label="刑法学科数据治理流程">
+<rect width="1600" height="900" fill="#0b0d0d"/>
+<style>
+  .title{font:700 46px 'Microsoft YaHei UI','Noto Sans SC',sans-serif;fill:#f1eadc}
+  .kicker{font:600 16px Consolas,monospace;letter-spacing:3px;fill:#86a9b4}
+  .box{fill:#141817;stroke:#52656a;stroke-width:2}
+  .formal{fill:#172018;stroke:#7f9f73;stroke-width:3}
+  .candidate{fill:#201b12;stroke:#b08a3e;stroke-width:2;stroke-dasharray:8 6}
+  .num{font:300 44px 'Microsoft YaHei UI','Noto Sans SC',sans-serif;fill:#f1eadc}
+  .head{font:600 21px 'Microsoft YaHei UI','Noto Sans SC',sans-serif;fill:#f1eadc}
+  .body{font:400 17px 'Microsoft YaHei UI','Noto Sans SC',sans-serif;fill:#b7b3aa}
+  .meta{font:500 14px Consolas,monospace;fill:#82949a}
+  .arrow{stroke:#789dac;stroke-width:3;fill:none;marker-end:url(#a)}
+</style>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#789dac"/></marker></defs>
+<text x="80" y="82" class="kicker">GOVERNED LEGAL DATA · READ-ONLY SNAPSHOT · 2026-08-31</text>
+<text x="80" y="145" class="title">4,173候选材料，不等于4,173条高质量数据</text>
+
+<rect x="80" y="235" width="245" height="360" class="box"/>
+<text x="105" y="292" class="num">4,173</text><text x="105" y="328" class="head">本地文件库存</text>
+<text x="105" y="374" class="body">1,511 原始文档</text><text x="105" y="408" class="body">2,024 派生文本</text>
+<text x="105" y="442" class="body">30 压缩归档</text><text x="105" y="476" class="body">缓存 / 脚本 / 汇总隔离</text>
+<text x="105" y="535" class="meta">SHA-256 · ROLE · LAYER</text>
+
+<rect x="400" y="235" width="245" height="360" class="box"/>
+<text x="425" y="292" class="num">8/8</text><text x="425" y="328" class="head">确定性治理门禁</text>
+<text x="425" y="374" class="body">来源角色与目录分层</text><text x="425" y="408" class="body">精确哈希与重复组</text>
+<text x="425" y="442" class="body">机关 / 日期候选</text><text x="425" y="476" class="body">隐私 / 再分发风险</text>
+<text x="425" y="535" class="meta">MODEL CALLS = 0</text>
+
+<rect x="720" y="220" width="250" height="175" class="formal"/>
+<text x="745" y="275" class="num">813</text><text x="745" y="312" class="head">正式L1规范法源</text>
+<text x="745" y="350" class="body">刑法505 + 刑诉法308</text><text x="745" y="377" class="meta">PUBLISHED GOVERNED RAG</text>
+<rect x="720" y="420" width="250" height="175" class="candidate"/>
+<text x="745" y="472" class="num">20 + 27</text><text x="745" y="509" class="head">L2解释 / L3案例候选</text>
+<text x="745" y="547" class="body">效力、来源、许可、隐私待审</text><text x="745" y="574" class="meta">NOT FORMAL EVIDENCE</text>
+
+<rect x="1045" y="235" width="220" height="360" class="box"/>
+<text x="1070" y="292" class="num">22</text><text x="1070" y="328" class="head">课程正式Evidence</text>
+<text x="1070" y="374" class="body">条号 + 逐字quote</text><text x="1070" y="408" class="body">版本 + 时效 + SHA</text>
+<text x="1070" y="442" class="body">10 KnowledgeCards</text><text x="1070" y="476" class="body">3 CaseBundles / 9证据</text>
+<text x="1070" y="535" class="meta">87 LINKS · TEACHER GATE</text>
+
+<rect x="1340" y="235" width="180" height="360" class="box"/>
+<text x="1365" y="292" class="head">技术消费者</text>
+<text x="1365" y="348" class="body">EvidencePack</text><text x="1365" y="388" class="body">可信RAG</text>
+<text x="1365" y="428" class="body">结构化推理</text><text x="1365" y="468" class="body">LegalEduEval</text>
+<text x="1365" y="508" class="body">四典型场景</text><text x="1365" y="548" class="meta">NO CAUSAL CLAIM</text>
+
+<path d="M325 415 H390" class="arrow"/><path d="M645 415 H705" class="arrow"/>
+<path d="M970 315 H1030" class="arrow"/><path d="M970 505 C1010 505 1005 470 1030 450" class="arrow"/>
+<path d="M1265 415 H1325" class="arrow"/>
+
+<rect x="80" y="690" width="1440" height="105" fill="#111413" stroke="#354044"/>
+<text x="105" y="731" class="head">证据边界</text>
+<text x="105" y="768" class="body">4173是混合文件库存；只有813条为当前正式规范法源。L2/L3标题命中只是教师审核候选，不证明现行有效、法律蕴含或可再分发。</text>
+<text x="80" y="850" class="meta">corpus_inventory.json · governed_source_manifest.json · source_rejection_log.jsonl · knowledge_evidence_links.jsonl · DATASET_CARD.md</text>
+</svg>

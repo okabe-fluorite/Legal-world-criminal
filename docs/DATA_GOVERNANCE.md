@@ -1,5 +1,39 @@
 # 案例与法源治理
 
+## 2026-08-31：4,173文件候选库存与四层法学底座
+
+本地`laws`目录的4,173个文件是混合库存，不是4,173条训练样本或高质量法源。当前实盘为：
+
+- 1,458 DOCX、53 DOC、2,616 TXT、30 ZIP及脚本/缓存等；“530”是案例文本数量，不是DOC数量；
+- 1,511个原始来源文档、2,024个派生文本、61个汇总文本、30个归档、545个运维文件和2个缓存；
+- 正式L1规范法源仍只有刑法505条和刑诉法308条，共813条；
+- 围绕10个KnowledgeCard和3个CaseBundle发现20个L2司法解释候选、27个L3案例候选，均保持`candidate_requires_legal_review`；
+- 案例候选还需来源、许可、再分发和个人信息审核，不因标题命中自动进入RAG或训练Gold。
+
+可复现构建：
+
+```powershell
+$env:EDUBRAIN_LAWS_ROOT = "<本机laws目录>"
+.\.venv\Scripts\python.exe -X utf8 backend\scripts\build_governed_legal_source_inventory.py `
+  --laws-root $env:EDUBRAIN_LAWS_ROOT `
+  --snapshot-date 2026-08-31
+
+cd backend
+..\.venv\Scripts\python.exe -X utf8 -m unittest tests.test_legal_source_governance -v
+```
+
+公开产物位于`data_governance/`：
+
+- `corpus_inventory.json`：4173个文件的相对路径、SHA、角色、层级、重复组、来源/日期候选和治理决定；
+- `governed_source_manifest.json`：813正式法源、课程层、L2/L3候选及准入策略；
+- `source_rejection_log.jsonl`：归档、脚本、缓存、汇总、重复和范围外来源的拒绝/隔离记录；
+- `knowledge_evidence_links.jsonl`：10知识点/3案例与正式Evidence及待审候选链接；
+- `DATASET_CARD.md`：范围、用途、限制、更新和许可边界；
+- `DATA_GOVERNANCE_FLOW.svg`：PPT/视频可用的16:9技术图；
+- `DATA_GOVERNANCE_AUDIT.json`：8项确定性门禁和全部产物SHA。
+
+构建过程模型调用0、源文件修改0。标题、日期和机关字段只是候选元数据，不等于法律效力结论；正式课堂前仍须重新核验时效。
+
 ## 数据分层
 
 - `dataset/criminal_case_dataset.json`：历史原始解析/增强结果，仅供审计与修复，禁止直接进入学生端。

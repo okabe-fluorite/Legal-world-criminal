@@ -84,6 +84,8 @@ Compose包含PostgreSQL、后端、自适应服务和Nginx前端。前端容器�
 
 离线法条库共813条：刑法505条（2020官方正文精确合并修正案十二）与刑诉法308条（2018第三次修正）。来源批次、原件SHA、输出SHA、版本和隔离源记录在`backend/legal_corpus/processed/law_corpus_manifest.json`。旧PDF语料漏掉刑法第二百条，含第三方署名的“2024最新版”也已隔离，均不得覆盖生产语料。重建与每学期复核要求见[`docs/DATA_GOVERNANCE.md`](docs/DATA_GOVERNANCE.md)。
 
+外部`laws`目录已建立只读文件级治理库存：4,173个混合文件全部计算SHA并按原始文档/派生文本/归档/运维/缓存分层；813条正式法源不会被候选量替代。围绕10知识点和3案例筛出20个司法解释、27个案例待审候选，均未提升为正式Evidence。产物与16:9技术图见[`data_governance/DATASET_CARD.md`](data_governance/DATASET_CARD.md)和[`data_governance/DATA_GOVERNANCE_FLOW.svg`](data_governance/DATA_GOVERNANCE_FLOW.svg)。
+
 ## 受治理课程内容与EvidencePack
 
 当前课程内容已冻结为10个KnowledgeCard、30个TaskItem、22个Evidence目录项和30条Q边。30道题的法条引用已从旧第三方路径重绑到上述受治理刑法快照；公开任务与adaptive推荐不会返回`answer_private`、`rationale_private`或`misconceptions_private`。

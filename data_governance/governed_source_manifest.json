@@ -1,0 +1,687 @@
+{
+  "schema_version": "criminal-law-governed-source-manifest-v1",
+  "snapshot_date": "2026-08-31",
+  "formal_normative_layer": {
+    "status": "published_governed_rag",
+    "article_count": 813,
+    "documents": {
+      "xingfa": {
+        "article_count": 505,
+        "version_as_of": "2024-03-01",
+        "amended_article_refs": [
+          "第一百六十五条",
+          "第一百六十六条",
+          "第一百六十九条",
+          "第三百八十七条",
+          "第三百九十条",
+          "第三百九十一条",
+          "第三百九十三条"
+        ],
+        "source_bundle_sha256": "42ab93f764e3dd0c0f2479db94f5e6e4b73455317cc5dfc2ad47e003fc005875",
+        "source_artifacts": [
+          {
+            "role": "official_consolidated_base",
+            "path": "raw_data/法律/国家法律法规数据库_批量下载_20260226_141154/中华人民共和国刑法_20201226.docx",
+            "sha256": "282fee49f12b6420a1a5ecde4ea2aa58b0e496e566cf959378bd1f8edb53f5e6",
+            "promulgated_date": "2020-12-26"
+          },
+          {
+            "role": "official_amendment",
+            "path": "raw_data/法律/国家法律法规数据库_批量下载_20260226_141135/中华人民共和国刑法修正案（十二）_20231229.docx",
+            "sha256": "ee51fc72c880c8ed4456ec50196498da6b16bab2430ad63229d408b247ce20c4",
+            "promulgated_date": "2023-12-29",
+            "effective_date": "2024-03-01"
+          }
+        ]
+      },
+      "xingsufa": {
+        "article_count": 308,
+        "version_as_of": "2018-10-26",
+        "source_bundle_sha256": "739b1f4665a502c17e8c6842b830efcaa87ae3864b4f269dfca04328b63f750b",
+        "source_artifacts": [
+          {
+            "role": "official_consolidated_text",
+            "path": "raw_data/法律/国家法律法规数据库_批量下载_20260226_141154/中华人民共和国刑事诉讼法_20181026.docx",
+            "sha256": "6810ffec97e23afcf5e5e0605f6f15c38299e0acb70c55d77c3c5a1882d954a7",
+            "promulgated_date": "2018-10-26"
+          }
+        ]
+      }
+    },
+    "quarantined_sources": [
+      {
+        "path": "raw_data/法律/中华人民共和国刑法（2024年最新版）.docx",
+        "sha256": "0233a79ebedd779a5593dc04808c040e5eec6678fc6b128f45561e6130f0043f",
+        "reason": "contains third-party publisher contamination; not used as legal authority"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "刑法",
+        "path": "backend/legal_corpus/processed/xingfa.jsonl",
+        "articles": 505,
+        "sha256": "a718b37c6c9d97347018c72e44c0b1b886cd0599bf2ac0bf3c4b45e6ebe37b43"
+      },
+      {
+        "name": "刑事诉讼法",
+        "path": "backend/legal_corpus/processed/xingsufa.jsonl",
+        "articles": 308,
+        "sha256": "bf2826df2ead8039eddd8193feb5047a62b391949f3c8c0726e8857c0b77fa50"
+      }
+    ],
+    "manifest_path": "backend/legal_corpus/processed/law_corpus_manifest.json",
+    "manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7"
+  },
+  "course_layer": {
+    "knowledge_cards": 10,
+    "task_items": 30,
+    "subjective_tasks": 13,
+    "evidence_items": 22,
+    "case_bundles": 3,
+    "case_evidence_items": 9,
+    "status": "pilot_teacher_gate_recheck_each_term"
+  },
+  "candidate_layers": {
+    "L2_judicial": {
+      "count": 20,
+      "status": "candidate_requires_legal_review",
+      "items": [
+        {
+          "path": "output_judicial/最高人民检察院关于对涉嫌盗窃的不满十六周岁未成年人采取刑事拘留强制措施是否违法问题的批复.txt",
+          "title_candidate": "最高人民检察院关于对涉嫌盗窃的不满十六周岁未成年人采取刑事拘留强制措施是否违法问题的批复",
+          "sha256": "20347b62437dc015c439db42c57dfe1f2ad9e93ec7a7ca403e4406982575f508",
+          "issuing_authority_candidate": "最高人民检察院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_B81F51ACC84055A4"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院++最高人民检察院关于办理强奸、猥亵未成年人刑事案件适用法律若干问题的解释.txt",
+          "title_candidate": "最高人民法院、最高人民检察院关于办理强奸、猥亵未成年人刑事案件适用法律若干问题的解释",
+          "sha256": "3392a3789244eea2ada2865ac609a1303ad13c1949a99bbf6610b8542d687593",
+          "issuing_authority_candidate": "最高人民法院、最高人民检察院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_B81F51ACC84055A4"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院、最高人民检察院关于办理与盗窃、抢劫、诈骗、抢夺机动车相关刑事案件具体应用法律若干问题的解释.txt",
+          "title_candidate": "最高人民法院、最高人民检察院关于办理与盗窃、抢劫、诈骗、抢夺机动车相关刑事案件具体应用法律若干问题的解释",
+          "sha256": "f99869c7aff4394d7642b950811db3bc3aca322d60e7885dc706da97ecbaa2bd",
+          "issuing_authority_candidate": "最高人民法院、最高人民检察院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_DB1E1940114B4C0F"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院、最高人民检察院关于对死刑判决提出上诉的被告人在上诉期满后宣判前提出撤回上诉人民法院是否准许的批复.txt",
+          "title_candidate": "最高人民法院、最高人民检察院关于对死刑判决提出上诉的被告人在上诉期满后宣判前提出撤回上诉人民法院是否准许的批复",
+          "sha256": "9ede87f00c8e143a2952d399e4bc365de280833cccae9fe354fff7196c7bfacf",
+          "issuing_authority_candidate": "最高人民法院、最高人民检察院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_A9EE556B77025221"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于在执行附加刑剥夺政治权利期间犯新罪应如何处理的批复.txt",
+          "title_candidate": "最高人民法院关于在执行附加刑剥夺政治权利期间犯新罪应如何处理的批复",
+          "sha256": "bcba6111d9656039269cc2b0c34ac3bcb95805d0c41ba90a63c9959887489a09",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_A9EE556B77025221"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于审理单位犯罪案件对其直接负责的主管人员和其他直接责任人员是否区分主犯、从犯问题的批复.txt",
+          "title_candidate": "最高人民法院关于审理单位犯罪案件对其直接负责的主管人员和其他直接责任人员是否区分主犯、从犯问题的批复",
+          "sha256": "c23142dfdc20c4695be252661262b81b3bd63baee9b6d0e0b946bcf4b6287f14",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_07D38E1BC70F5155"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于审理抢劫案件具体应用法律若干问题的解释.txt",
+          "title_candidate": "最高人民法院关于审理抢劫案件具体应用法律若干问题的解释",
+          "sha256": "3a9de127d78849bc15bcbbe421da95567c97fe94ca42018ff73bcaf732871fca",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_DB1E1940114B4C0F"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于审理未成年人刑事案件具体应用法律若干问题的解释.txt",
+          "title_candidate": "最高人民法院关于审理未成年人刑事案件具体应用法律若干问题的解释",
+          "sha256": "992df0f99d432cea58e3dc2bc16644385621f17a8b77ad6c3a37e47ef41321c0",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_B81F51ACC84055A4"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于审理编造、故意传播虚假恐怖信息刑事案件适用法律若干问题的解释.txt",
+          "title_candidate": "最高人民法院关于审理编造、故意传播虚假恐怖信息刑事案件适用法律若干问题的解释",
+          "sha256": "e7c259730c023d593e7a20c5b89ff808ab5ae56a5cce425b63fe5b323503eae1",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于审理贪污、职务侵占案件如何认定共同犯罪几个问题的解释.txt",
+          "title_candidate": "最高人民法院关于审理贪污、职务侵占案件如何认定共同犯罪几个问题的解释",
+          "sha256": "4b33b455da4afa5875d6fdcdec835f89a93104e2e56aa172c0db8835ee7e06b9",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_07D38E1BC70F5155"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于对怀孕妇女在羁押期间自然流产审判时是否可以适用死刑问题的批复.txt",
+          "title_candidate": "最高人民法院关于对怀孕妇女在羁押期间自然流产审判时是否可以适用死刑问题的批复",
+          "sha256": "a3f3588fcac0494dabd4f2cf0e14ebf6eccff512147d6a0c58f323cdcc4575a1",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_A9EE556B77025221"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于对故意伤害、盗窃等严重破坏社会秩序的犯罪分子能否附加剥夺政治权利问题的批复.txt",
+          "title_candidate": "最高人民法院关于对故意伤害、盗窃等严重破坏社会秩序的犯罪分子能否附加剥夺政治权利问题的批复",
+          "sha256": "51775bf838b3823e5c4336bf36f4187d2c6c5f18d6bc6198bfa986e41bf41d19",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于对被判处死刑的被告人未提出上诉、共同犯罪的部分被告人或者附带民事诉讼原告人提出上诉的案件应适用何种程序审理的批复.txt",
+          "title_candidate": "最高人民法院关于对被判处死刑的被告人未提出上诉、共同犯罪的部分被告人或者附带民事诉讼原告人提出上诉的案件应适用何种程序审理的批复",
+          "sha256": "7f7d35e6579cfd16817c9b116e1d2af38ceca39b27c36f4da07ae660ec1b6268",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_07D38E1BC70F5155",
+            "CRIM_KP_A9EE556B77025221"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于抢劫过程中故意杀人案件如何定罪问题的批复.txt",
+          "title_candidate": "最高人民法院关于抢劫过程中故意杀人案件如何定罪问题的批复",
+          "sha256": "16d53242669c6a11a5a81f27dcafa0c5fc0353759d1ea71a8553cf25e18c0664",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3",
+            "CRIM_KP_DB1E1940114B4C0F"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于死刑复核及执行程序中保障当事人合法权益的若干规定.txt",
+          "title_candidate": "最高人民法院关于死刑复核及执行程序中保障当事人合法权益的若干规定",
+          "sha256": "12e9d1cafeccd715ffb087c1c0f3d7d4240939c7f169661e98e8e7704b1b0477",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_A9EE556B77025221"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于死刑缓期执行限制减刑案件审理程序若干问题的规定.txt",
+          "title_candidate": "最高人民法院关于死刑缓期执行限制减刑案件审理程序若干问题的规定",
+          "sha256": "4c1287dc6fc13a5a02169b19d2b2af2ae3c034a64b74c6f4e07c06897ada6cd9",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_A9EE556B77025221"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院关于统一行使死刑案件核准权有关问题的决定.txt",
+          "title_candidate": "最高人民法院关于统一行使死刑案件核准权有关问题的决定",
+          "sha256": "36e8afed4c3e2f00318bfe5df09e645d18c07373179a207e82aba72a1bffc7df",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_A9EE556B77025221"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院研究室关于如何理解“审判的时候怀孕的妇女不适用死刑”问题的电话答复.txt",
+          "title_candidate": "最高人民法院研究室关于如何理解“审判的时候怀孕的妇女不适用死刑”问题的电话答复",
+          "sha256": "ad80386cbcdfe9cfae78d7f87f0f788009a53ddd98372267dcc2cd738ca71d9b",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_A9EE556B77025221"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院研究室关于对在绑架勒索犯罪过程中对同一受害人又有抢劫行为应如何定罪问题的答复.txt",
+          "title_candidate": "最高人民法院研究室关于对在绑架勒索犯罪过程中对同一受害人又有抢劫行为应如何定罪问题的答复",
+          "sha256": "86b048fdccc8c2241106ecbbc9a038e87d24cf04eb96c4350f2994e528d0206e",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_DB1E1940114B4C0F"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        },
+        {
+          "path": "output_judicial/最高人民法院行政审判庭关于乡治安室工作人员执行职务中故意伤害当事人造成的损害乡人民政府应否承担责任问题的电话答复.txt",
+          "title_candidate": "最高人民法院行政审判庭关于乡治安室工作人员执行职务中故意伤害当事人造成的损害乡人民政府应否承担责任问题的电话答复",
+          "sha256": "4572d5ba756ce59112a5cda3617d90ce822dda067c11ce939af7deeb1a85c345",
+          "issuing_authority_candidate": "最高人民法院",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "effective_status": "unknown_requires_review",
+          "redistribution_risk": "source_terms_and_exact_item_provenance_require_review"
+        }
+      ]
+    },
+    "L3_cases": {
+      "count": 27,
+      "status": "candidate_requires_legal_and_redistribution_review",
+      "items": [
+        {
+          "path": "output_cases/指导性案例225号 江某某正当防卫案(FBM-CLI.C.551665653).txt",
+          "title_candidate": "指导性案例225号 江某某正当防卫案",
+          "sha256": "2146742ec1b49a4730977a1ac29526fdc91ab517b8a56b3d84d0ce700e7d2507",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_7B01D1EBC00BC8ED"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/指导性案例226号 陈某某、刘某某故意伤害、虐待...(FBM-CLI.C.551665654).txt",
+          "title_candidate": "指导性案例226号 陈某某、刘某某故意伤害、虐待",
+          "sha256": "97781eb3b370a0647e3777dc8491022f23b41285f250bc514c02c0183600c27f",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/指导案例12号 李飞故意杀人案(FBM-CLI.C.877359).txt",
+          "title_candidate": "指导案例12号 李飞故意杀人案",
+          "sha256": "b84a536f6c14d5c4eb8ab80ae3cb775aed9996f64e53fd03b49e4c079ece5080",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/指导案例144号 张那木拉正当防卫案(FBM-CLI.C.310492973).txt",
+          "title_candidate": "指导案例144号 张那木拉正当防卫案",
+          "sha256": "55b8c180aa29ac4f103e4671f290bdb55b186030df5fe16036417777c404ff7e",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_7B01D1EBC00BC8ED"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/指导案例147号 张永明、毛伟明、张鹭故意损毁名...(FBM-CLI.C.310492979).txt",
+          "title_candidate": "指导案例147号 张永明、毛伟明、张鹭故意损毁名",
+          "sha256": "cb0d5855c9d1095b189ef2115b43248dc3d342a7f0bf9b508343e3524e95f38a",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/指导案例14号 董某某、宋某某抢劫案(FBM-CLI.C.1181156).txt",
+          "title_candidate": "指导案例14号 董某某、宋某某抢劫案",
+          "sha256": "aba98e768303b869a8bb9919fa0f16097a61e42ea54d33e8b6a96a40d5e97a05",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_DB1E1940114B4C0F"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/指导案例187号 吴强等敲诈勒索、抢劫、故意伤害...(FBM-CLI.C.501452576).txt",
+          "title_candidate": "指导案例187号 吴强等敲诈勒索、抢劫、故意伤害",
+          "sha256": "5a97bc080e028ca349fa8535724aaf66e4a4c4909a0e86ff48d195954b5030c9",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3",
+            "CRIM_KP_DB1E1940114B4C0F"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/指导案例4号 王志才故意杀人案(FBM-CLI.C.514016).txt",
+          "title_candidate": "指导案例4号 王志才故意杀人案",
+          "sha256": "eb2b01ca8fa479a46b3ea7bff162d1ffc116bfb7b45f21e3cf82afd5cf7214b2",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/指导案例93号 于欢故意伤害案(FBM-CLI.C.11292326).txt",
+          "title_candidate": "指导案例93号 于欢故意伤害案",
+          "sha256": "5adf2fc255d72c2b4e394d943e568914f4b1cff8f2e97d197f43a0fc4034acfc",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第103号 胡某某抢劫案(FBM-CLI.C.312345806).txt",
+          "title_candidate": "检例第103号 胡某某抢劫案",
+          "sha256": "d90ef4f4301bf782ea48ceb6aa7401e24eef1e7e85594b54b148c2abd9dd461e",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_DB1E1940114B4C0F"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第178号 王某等人故意伤害等犯罪二审抗诉案(FBM-CLI.C.523863416).txt",
+          "title_candidate": "检例第178号 王某等人故意伤害等犯罪二审抗诉案",
+          "sha256": "99439a1395ab8d7cacfc25582d3ad89e050992f86549027b66cd545ae78bc8f1",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第17号 陈邓昌抢劫、盗窃，付志强盗窃案(FBM-CLI.C.3313036).txt",
+          "title_candidate": "检例第17号 陈邓昌抢劫、盗窃，付志强盗窃案",
+          "sha256": "bdbb28bc9c1b645167eb88b922fa447afbfbda6672f8964c34a65c86eeb6a65b",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_DB1E1940114B4C0F"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第180号 李某抢劫、强奸、强制猥亵二审抗诉...(FBM-CLI.C.523873142).txt",
+          "title_candidate": "检例第180号 李某抢劫、强奸、强制猥亵二审抗诉",
+          "sha256": "56489266a66d4cc21d3f31644b244c76bd8d6ee1462ee5ee3cbf792a00ff7729",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_DB1E1940114B4C0F"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第18号 郭明先参加黑社会性质组织、故意杀...(FBM-CLI.C.3313037).txt",
+          "title_candidate": "检例第18号 郭明先参加黑社会性质组织、故意杀",
+          "sha256": "de67673657560c92a97ab1326fe4b88f9ba1afeda421685d876b5247e76402e3",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第19号 张某、沈某某等七人抢劫案(FBM-CLI.C.3313038).txt",
+          "title_candidate": "检例第19号 张某、沈某某等七人抢劫案",
+          "sha256": "049cbebbcdb10b0e4171374a6c5f07d8a28381d1212fe8cf14875db8ed27c367",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_DB1E1940114B4C0F"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第20号 马世龙（抢劫）核准追诉案(FBM-CLI.C.6233358).txt",
+          "title_candidate": "检例第20号 马世龙（抢劫）核准追诉案",
+          "sha256": "f7c4cf1c2d8755131f0c24233bf80f79963344b84f51d34a8eee67811a81cbac",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_B81F51ACC84055A4",
+            "CRIM_KP_DB1E1940114B4C0F"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第217号 曾某甲等人故意伤害纠正遗漏同案犯...(FBM-CLI.C.551788897).txt",
+          "title_candidate": "检例第217号 曾某甲等人故意伤害纠正遗漏同案犯",
+          "sha256": "df73b64c8a9900c1844e2e063c2b0a72b1c149f603565e7afa8ab4103ac15fba",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第21号 丁国山等（故意伤害）核准追诉案(FBM-CLI.C.6233359).txt",
+          "title_candidate": "检例第21号 丁国山等（故意伤害）核准追诉案",
+          "sha256": "89d9d2259012228b9a714e8ead4a4dfbb1452608c155cdaf6bfa9fcd582ca28d",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3",
+            "CRIM_KP_B81F51ACC84055A4"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第22号 杨菊云（故意杀人）不核准追诉案(FBM-CLI.C.6233360).txt",
+          "title_candidate": "检例第22号 杨菊云（故意杀人）不核准追诉案",
+          "sha256": "c5c9d6ba47584474bebe89a51cdfe789f2a41880b07ca5bc4923630c7bdbd731",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3",
+            "CRIM_KP_B81F51ACC84055A4"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第232号 张某方、李某香故意损毁文物案(FBM-CLI.C.558583191).txt",
+          "title_candidate": "检例第232号 张某方、李某香故意损毁文物案",
+          "sha256": "5fbc44671bfefaa9bda36426c327b3ed54d511a9308fdfa3f671fcc34b013c09",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第23号 蔡金星、陈国辉等（抢劫）不核准追...(FBM-CLI.C.6233361).txt",
+          "title_candidate": "检例第23号 蔡金星、陈国辉等（抢劫）不核准追",
+          "sha256": "50e95eaf98e2dc1335f79ab933a1e67215b499cc28522d64cc8896d8f2fe9184",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_DB1E1940114B4C0F"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第45号 陈某正当防卫案(FBM-CLI.C.67337486).txt",
+          "title_candidate": "检例第45号 陈某正当防卫案",
+          "sha256": "2943ee3a692cc8d84ae8c1b65f73d063ac8cdca0bd0356a59c4aed1af67264e9",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_7B01D1EBC00BC8ED"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第46号 朱凤山故意伤害(防卫过当)案(FBM-CLI.C.67337483).txt",
+          "title_candidate": "检例第46号 朱凤山故意伤害(防卫过当)案",
+          "sha256": "160d86d274a67a0c40fb5fa5eededc23c3ea53a34018384850e1f8fbde534364",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3",
+            "CRIM_KP_7B01D1EBC00BC8ED"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第47号 于海明正当防卫案(FBM-CLI.C.67337485).txt",
+          "title_candidate": "检例第47号 于海明正当防卫案",
+          "sha256": "6afc383f092aa546eb6bb8d62196d2a853475917b58ca6daef7fcdfa626474fb",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_7B01D1EBC00BC8ED"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第48号 侯雨秋正当防卫案(FBM-CLI.C.67337484).txt",
+          "title_candidate": "检例第48号 侯雨秋正当防卫案",
+          "sha256": "0294993121d2592455e25668ded70d36ed48d2388eeee2fbf41042c933e2b54d",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_7B01D1EBC00BC8ED"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第82号 钱某故意伤害案(FBM-CLI.C.120468325).txt",
+          "title_candidate": "检例第82号 钱某故意伤害案",
+          "sha256": "fbd590f3dfb0eb3cae4b6e92ddb26e0525450ded5e2ccf9066fde5d52024998c",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        },
+        {
+          "path": "output_cases/检例第9号 李泽强编造、故意传播虚假恐怖信息...(FBM-CLI.C.1414355).txt",
+          "title_candidate": "检例第9号 李泽强编造、故意传播虚假恐怖信息",
+          "sha256": "ca2df77db85394ccfc5c76d9b4f3c87d89f9b4ef9bc420df9544abad8b0ed952",
+          "issuing_authority_candidate": "case_issuing_authority_requires_review",
+          "date_candidate": null,
+          "related_knowledge_ids": [
+            "CRIM_KP_2DD5C021746121C3"
+          ],
+          "privacy_risk": "case_personal_information_review_required",
+          "redistribution_risk": "third_party_case_redistribution_review_required"
+        }
+      ]
+    }
+  },
+  "admission_policy": {
+    "formal_evidence_required_fields": [
+      "source_title",
+      "article_ref",
+      "quote",
+      "source_url",
+      "effective_status",
+      "source_bundle_sha256",
+      "review_status"
+    ],
+    "candidate_does_not_imply": [
+      "current legal validity",
+      "legal entailment",
+      "permission to redistribute",
+      "teacher Gold status"
+    ],
+    "review_before_real_classroom_term": true
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "schema_version": "criminal-law-data-governance-audit-v1",
+  "snapshot_date": "2026-08-31",
+  "counts": {
+    "inventory_files": 4173,
+    "inventory_bytes": 255164821,
+    "formal_articles": 813,
+    "formal_source_artifacts": 3,
+    "knowledge_cards": 10,
+    "formal_course_evidence": 22,
+    "case_bundles": 3,
+    "case_evidence": 9,
+    "L2_candidates": 20,
+    "L3_candidates": 27,
+    "rejection_or_isolation_records": 4123,
+    "knowledge_evidence_links": 87,
+    "duplicate_groups": 0
+  },
+  "gates": {
+    "all_files_have_sha256": true,
+    "no_absolute_inventory_paths": true,
+    "formal_article_count_813": true,
+    "formal_source_hashes_match": true,
+    "all_knowledge_cards_have_formal_links": true,
+    "candidate_links_not_promoted": true,
+    "raw_source_read_only": true,
+    "model_calls_zero": true
+  },
+  "execution_counts": {
+    "model_calls": 0,
+    "source_files_modified": 0
+  },
+  "files": [
+    {
+      "path": "data_governance/corpus_inventory.json",
+      "bytes": 5375490,
+      "sha256": "5d1945122a99f2cef8c689feac8cf445a0dc5402614cae4fa1b9623036f71fbc"
+    },
+    {
+      "path": "data_governance/governed_source_manifest.json",
+      "bytes": 38216,
+      "sha256": "529ea34595c604b6eeb84d741fa3ada28341bbc5c0b8e011937efde91f8c1055"
+    },
+    {
+      "path": "data_governance/source_rejection_log.jsonl",
+      "bytes": 1750166,
+      "sha256": "1557f93b35c7b576f595d38cc186e890f94d7eb4dfd39f813bafd932ab36d331"
+    },
+    {
+      "path": "data_governance/knowledge_evidence_links.jsonl",
+      "bytes": 53537,
+      "sha256": "522b0cccd1e8dc370837aca7984d074ac71e2d99661c8021b278b2c8f4a8211a"
+    },
+    {
+      "path": "data_governance/DATASET_CARD.md",
+      "bytes": 2675,
+      "sha256": "6b24193052726e60fcfb352310b912f2f102c2902d9b0cececb3256e04b6fa20"
+    },
+    {
+      "path": "data_governance/DATA_GOVERNANCE_FLOW.svg",
+      "bytes": 4590,
+      "sha256": "9f16e69f0a72e69137ca05ac304c83709f5f07ab774cfab6cbdb088f3ac7e76b"
+    }
+  ],
+  "boundaries": [
+    "inventory candidates are not a training set",
+    "L2/L3 matches require legal, validity, provenance, privacy and redistribution review",
+    "formal legal validity remains limited to the existing governed manifest snapshot",
+    "software audit is not expert legal approval or classroom-effect evidence"
+  ]
+}
