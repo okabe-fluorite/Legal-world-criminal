@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 import zipfile
@@ -47,10 +48,12 @@ SOURCES = {
     "frozen": SUBMISSION / "03-Demo" / "FROZEN_DEMO_AUDIT.json",
     "legal": SUBMISSION / "03-Demo" / "LEGAL_SOURCE_CURRENCY_AUDIT.json",
     "video": SUBMISSION / "03-Demo" / "NARRATED_VIDEO_DRAFT_AUDIT.json",
+    "rehearsal": SUBMISSION / "03-Demo" / "THREE_ROUTE_REHEARSAL_AUDIT.json",
     "web_ppt": SUBMISSION / "04-作品方案" / "guizang" / "qa" / "report.json",
     "pptx": SUBMISSION / "04-作品方案" / "guizang" / "qa" / "pptx-report.json",
     "typical": REPO / "docs" / "TYPICAL_QUESTION_EVALUATION.json",
     "cognitive": REPO / "docs" / "COGNITIVE_DIAGNOSIS_SHOWCASE.md",
+    "media": REPO / "docs" / "MULTIMODAL_AVATAR_ARCHITECTURE.md",
     "expert": SUBMISSION / "06-效果验证" / "专家审核包_DRAFT" / "MANIFEST.json",
     "users": SUBMISSION / "06-效果验证" / "目标用户试用包_DRAFT" / "MANIFEST.json",
     "ethics": SUBMISSION / "02-伦理与安全" / "伦理签署包_DRAFT" / "MANIFEST.json",
@@ -91,6 +94,7 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
     frozen = data["frozen"]
     legal = data["legal"]
     video = data["video"]
+    rehearsal = data["rehearsal"]
     typical = data["typical"]
     expert = data["expert"]
     users = data["users"]
@@ -116,7 +120,7 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
         row_table(
             ("层级", "要回答的问题", "当前证据", "当前结论"),
             [
-                ("L1 软件机制", "功能是否按契约运行", "自动化、浏览器、真实配置E2E、媒体QA", "已验证到本报告列明范围"),
+                ("L1 软件机制", "功能是否按契约运行", "自动化、三案例浏览器彩排、真实配置E2E、媒体QA", "已验证到本报告列明范围"),
                 ("L2 法学内容", "三题结论和边界是否可靠", "自动门禁3/3；A/B专家包", "自动门禁通过，真实专家未审核"),
                 ("L3 用户可用性", "目标用户能否理解并完成任务", "U01/U02标准化空白材料", "真实参与者0人，无用户结论"),
                 ("L4 学习效果", "是否提高保持、迁移或成绩", "前后测、延迟测、对照实验", "尚未开展，不作效果声称"),
@@ -136,6 +140,7 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
                 ("ORCDF shadow", "同47题AUC V0/V1/V2=0.7272/0.7489/0.7528", "数据来自MOOCCubeX民法/宪法；不可用主范围比较Q矩阵优劣"),
                 ("七步路径", "薄弱点、先修、选择、主观、案件、角色互换、复习", "候选排序，不宣称因果最优"),
                 ("Model Adapter", "OpenCode/DeepSeek基线；四任务统一路由", "微调not_connected，不称LoRA/SFT完成"),
+                ("知识图/媒体", "10节点、10条先修边、6步论证模板；私有上传与浏览器朗读可用", "云ASR/TTS/Avatar未接入未验收；媒体不进入画像"),
                 ("可信RAG", f"三题自动门禁{typical['automated_gate_pass_count']}/{typical['case_count']}；错误引用2/2拒绝", "自动门禁不等于专家准确率"),
                 ("教师HITL", "退回-原文修订-批准；同稿单决定、单事件", "合成账号浏览器闭环，不是用户试用"),
                 ("case3 Agent", f"{frozen['case3_e2e']['elapsed_seconds']}秒、{frozen['case3_e2e']['fixed_response_count']}次固定回答、3/3 Agent退场、0错误", "不是29名用户；不起诉分支非专家结论"),
@@ -150,8 +155,9 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
             [
                 ("冻结演示库", f"源{frozen['semantic_audit']['source_check_count']}/24、恢复{frozen['semantic_audit']['restore_check_count']}/24", "备份恢复语义一致", "真实课堂稳定性"),
                 ("关键法条", f"{legal['target_article_pass_count']}/{legal['target_article_count']}", "5条来源、版本、文本一致", "全量法库或具体适法正确"),
+                ("三案例彩排", f"{rehearsal['routes_passed']}/{rehearsal['route_count']}、{rehearsal['duration_seconds']}秒、浏览器错误{rehearsal['browser_error_total']}", "同一本地栈三条UI路线可重复", "真实用户认可或学习效果"),
                 ("网页PPT", f"12页、浏览器错误{web_errors}、溢出0", "主要视口可用", "目标用户可用性"),
-                ("PowerPoint", f"12页、最大回渲染误差{pptx['max_mean_abs_error']}", "Office渲染稳定", "内容专家认可"),
+                ("PPTX", "12页、CRC通过、全幅嵌入图与浏览器QA逐页一致", "PPTX结构和视觉源一致", "本轮PowerPoint COM重渲染未执行；内容专家认可"),
                 ("演示视频", f"{video['duration_seconds']}秒、7/7、{video['qa']['max_voice_speed_factor']}×、静音{video['audio']['analysis']['silence_over_threshold_count']}", "≤180秒、内容覆盖、媒体门禁", "团队批准或用户认可"),
             ],
             [31, 45, 50, 45],
@@ -314,8 +320,13 @@ def main() -> int:
     private_sha.write_text(f"{sha256(private_zip)}  {private_zip.name}\n", encoding="utf-8")
     public_text = pdf_text(report_path)
     private_text = pdf_text(approval_path)
-    required_public = ["L1 软件机制", "L2 法学内容", "L3 用户可用性", "L4 学习效果", "真实参与者0人", "不作效果声称", "不支持的结论", "微调not_connected", "专家状态", "PENDING"]
+    required_public = ["L1 软件机制", "L2 法学内容", "L3 用户可用性", "L4 学习效果", "真实参与者0人", "不作效果声称", "不支持的结论", "微调not_connected", "专家状态", "PENDING", "三案例彩排", "云ASR/TTS/Avatar未接入未验收"]
     missing_public = [value for value in required_public if value not in public_text]
+    compact_public = re.sub(r"\s+", "", public_text)
+    required_compact = ["PowerPointCOM重渲染未执行"]
+    missing_public.extend(
+        value for value in required_compact if value not in compact_public
+    )
     forbidden_positive = ["专家准确率100%", "学习效果已验证", "显著提升成绩", "真实用户已完成", "已完成LoRA/SFT"]
     positive_hits = [value for value in forbidden_positive if value in public_text]
     required_private = ["内容复核人", "数据复核人", "教学复核人", "三人一致最终结论", "不得批准为“学习效果最终报告”"]

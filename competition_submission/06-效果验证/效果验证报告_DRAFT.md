@@ -16,9 +16,11 @@
 - 可信RAG：三个典型问题自动门禁3/3，错误引用2/2拒绝；不等于专家准确率。
 - 法源时效：演示关键的《刑法》第三条、第十二条、第二十条、第二百六十三条及《刑诉法》第一百七十七条5/5与官方文本一致；只覆盖5条，不等于全量法库已逐条完成2026年时效复核。
 - 教师闭环：测试脚本操作合成账号完成退回→原文修订→批准；同稿单决定、单事件；浏览器事件2→3。该结果不是目标用户试用。
+- 三案例统一彩排：认知/路径/适配器、三个可信RAG问题、教师HITL三条真实UI路线在同一SQLite+adaptive+Vite栈3/3通过，总计107.25秒，console/page/HTTP/request错误均为0；仍是合成账号软件证据。
 - 标杆案件冻结演示库：LC→INV→PR→不起诉→结案，461.547秒；测试脚本提供29次固定回答（非29名真人、非用户证据）；case3产生3个阶段LearningEvent、3/3 Agent退场、0 runtime issue。
 - Model Adapter：四任务路由可见；当前基线OpenCode/DeepSeek；微调端点`not_connected`。
-- 比赛材料：Guizang PPT 12页，浏览器四类错误为0，PowerPoint实机回渲染12/12为1600×900；121.6秒1080p AI配音视频覆盖七项强制技术，最大语速1.037倍且未检出超过1.2秒静音，但仍为DRAFT并待团队完整审片。
+- 知识图与媒体：10节点/10条先修边来自受治理KnowledgeCard，六步论证图是模板；私有上传和浏览器朗读可用，云ASR/TTS/Avatar未接入未验收，媒体不进入LearningEvent或画像。
+- 比赛材料：Guizang PPT 12页，浏览器四类错误为0；PPTX CRC通过且每页全幅嵌入图与最终浏览器QA PNG逐页一致，但本轮未执行新的PowerPoint COM重渲染；121.6秒1080p AI配音视频覆盖七项强制技术，最大语速1.037倍且未检出超过1.2秒静音，仍为DRAFT并待团队完整审片。
 
 | 机制 | 权威证据文件 | 版本/日期 |
 |---|---|---|
@@ -29,8 +31,9 @@
 | 伦理与安全签署材料 | `competition_submission/02-伦理与安全/伦理签署包_DRAFT/MANIFEST.json`、`BUILD_AUDIT.json` | 3份PDF、7页；公开/私密隔离通过；真实签名仍为0/3，不称机构伦理审批 |
 | 关键法源时效 | `competition_submission/03-Demo/LEGAL_SOURCE_CURRENCY_AUDIT.json` | 2026-08-29 23:53 UTC+8；5/5通过 |
 | 教师退回—修订—批准 | `competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json` | 合成账号；浏览器事件2→3；源/恢复各24项语义审计通过 |
+| 三案例统一浏览器彩排 | `competition_submission/03-Demo/THREE_ROUTE_REHEARSAL_AUDIT.json`、`.md` | 3/3、107.25秒、浏览器四类错误0、服务全部停止；合成账号 |
 | case3冻结演示E2E | `competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json`、`CASE3_INV_PR_SNAPSHOT.json` | 461.547秒、29次固定脚本回答、0 runtime issue；不起诉分支非专家结论 |
-| Guizang PPT | `competition_submission/04-作品方案/guizang/qa/report.json`、`pptx-report.json` | 材料commit`0e863fb`；12页；浏览器四类错误为0；最大回渲染误差0.0953 |
+| Guizang PPT | `competition_submission/04-作品方案/guizang/qa/report.json`、`pptx-report.json` | 12页；浏览器四类错误为0；PPTX CRC/全幅/逐页图片一致性通过；PowerPoint COM重渲染未执行 |
 | 演示视频DRAFT | `competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json` | 121.6秒、1920×1080；SHA `682e463e...2fd19e`；七项技术7/7、AI配音标识可见 |
 | 团队审片材料 | `competition_submission/06-效果验证/视频审片包_DRAFT/MANIFEST.json`、`BUILD_AUDIT.json` | 25帧接触表、技术PDF与三角色批准表已就绪；真实批准仍为0/3 |
 
@@ -40,9 +43,10 @@
 |---|---:|---|---|
 | 冻结演示库语义审计 | 源24/24、恢复24/24 | 备份与恢复后的演示语义一致 | 真实课堂稳定性或学习效果 |
 | case3真实配置E2E | 461.547秒、3阶段、3/3 Agent退场、0 runtime issue | 固定输入下状态机与模型链路可完成 | 29名用户、专家适法意见或成功率 |
+| 三案例统一浏览器彩排 | 3/3、107.25秒、四类浏览器错误0 | 同一本地栈可顺序执行认知/RAG/教师三条UI路线 | 真实用户、专家结论或学习效果 |
 | 典型问题自动门禁 | 3/3；错误引用2/2拒绝 | 结构、标准要点、允许来源与逐字quote门禁通过 | 独立专家准确率 |
 | 关键法条时效 | 5/5 | 5条目标法条的来源、版本和文本一致 | 全量法库时效或具体案件适法正确 |
-| Guizang网页/PPT | 12页；Web四类错误0；PPT回渲染12/12 | 主要展示视口可用且Office渲染稳定 | 目标用户可用性 |
+| Guizang网页/PPTX | 12页；Web四类错误0；CRC/全幅/逐页图片一致 | 主要展示视口与交付PPTX视觉源一致 | PowerPoint COM重渲染、目标用户可用性 |
 | AI配音视频DRAFT | 121.6秒、1920×1080 | 已形成180秒以内、七项技术7/7的可审片草案 | 团队最终批准或真实用户认可 |
 
 ## 3. L2三题内容验证
@@ -80,5 +84,5 @@
 
 | 日期 | 变更 | 证据文件 | 复核人 |
 |---|---|---|---|
-| 2026-08-30 | 同步PPT实机QA、5/5法源审计、case3与视频DRAFT证据索引 | 本报告第2节列示文件 | `[待团队复核]` |
+| 2026-08-30 | 同步三案例3/3彩排、PPTX v2一致性、知识图/媒体边界、5/5法源、case3与视频DRAFT证据索引 | 本报告第2节列示文件 | `[待团队复核]` |
 | `[填写]` | `[填写]` | `[填写]` | `[填写]` |
