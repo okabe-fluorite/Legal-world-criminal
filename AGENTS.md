@@ -243,6 +243,14 @@ teaching/
 - 顶部“可信RAG”并列展示系统输出、标准答案、权威法条/指导案例、版本/SHA和模型引用；错误引用按钮真实调用citation audit，不能使用前端假结果
 - `smoke-trusted-rag.mjs`验证3题来源/引用、错误引用2/2拒绝和0私有/网络错误
 
+### Evidence约束结构化法律推理
+
+- `schemas/legal-reasoning-v1.schema.json`冻结Issue、带来源路径的Fact、Rule/Evidence、要件Application、Counterargument、Conclusion、Uncertainty和AI安全标识。
+- `backend/src/legal_reasoning/gate.py`执行模型无关确定性门禁：CaseBundle/阶段/内容哈希绑定、Evidence范围、标题/条号、逐字quote、`student_visible`事实路径、必要要件、反方、结论强度、可靠弃权和提示注入canary。
+- 首个冻结纵向切片使用指导案例144号张那木拉正当防卫案CR阶段与刑法第二十条；不得读取`teacher_reference_private`作为学生事实。
+- `run_legal_reasoning_gate_audit.py`当前固定1个正例和6个负例，模型/网络调用均为0；通过门禁只证明结构与Evidence纪律，不证明法律蕴含、专家准确率或教师Gold。
+- `CRIMINAL_LAW_2024_VERSION_AUDIT`确认“截至2024-03-01”版本口径和修正案十二七处修改正确；本地“2024年最新版”因缺条、正文差异和第三方标记仅作交叉校验源，正式505条仍由官方2020正文+官方修正案十二确定性合并。
+
 ### 受治理AI分层解惑
 
 - `learning_support_sessions`保存学生私有两步会话：确定性诊断追问→学生回答→受治理四层解释；同ID幂等/冲突、跨学生403

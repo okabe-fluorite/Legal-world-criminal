@@ -1,0 +1,1205 @@
+{
+  "schema_version": "legal-reasoning-gate-audit-v1",
+  "generated_at": "2026-08-30T18:35:38.060795+00:00",
+  "fixture_suite_id": "LR_GATE_CASE144_CR_V1",
+  "fixture_suite_sha256": "81f3aa47198aadb510891a524c7d900ce2805fab3ee6ca65cf87e24c5ce36c56",
+  "schema_sha256": "32217b0403ad94e9d0ef0c4300ec4269a034f24115a4ca36fae5e0133df3f3e3",
+  "counts": {
+    "fixtures": 7,
+    "positive_passed": 1,
+    "negative_blocked": 6,
+    "expectations_met": 7
+  },
+  "all_expectations_met": true,
+  "model_calls": 0,
+  "network_calls": 0,
+  "case_context": {
+    "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+    "stage": "CR",
+    "evidence_status": "limited",
+    "required_element_ids": [
+      "ongoing_unlawful_infringement",
+      "serious_violent_attack",
+      "defensive_harm",
+      "necessity_or_special_defense"
+    ]
+  },
+  "fixtures": [
+    {
+      "fixture_id": "positive_grounded_tentative",
+      "description": "完整覆盖可见事实、允许Evidence、必要要件、反方与不确定性",
+      "expected_pass": true,
+      "actual_pass": true,
+      "expected_failed_checks": [],
+      "actual_failed_checks": [],
+      "expectation_met": true,
+      "gate_result": {
+        "schema_version": "legal-reasoning-gate-result-v1",
+        "reasoning_id": "LR_0123456789ABCDEF0123",
+        "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+        "stage": "CR",
+        "passed": true,
+        "failed_checks": [],
+        "checks": [
+          {
+            "check_id": "schema_valid",
+            "passed": true,
+            "details": {
+              "errors": []
+            }
+          },
+          {
+            "check_id": "context_identity",
+            "passed": true,
+            "details": {
+              "fields": {
+                "case_bundle_id": true,
+                "case_bundle_version": true,
+                "stage": true,
+                "student_visible_sha256": true,
+                "evidence_scope_id": true
+              }
+            }
+          },
+          {
+            "check_id": "evidence_scope",
+            "passed": true,
+            "details": {
+              "out_of_scope": [],
+              "referenced_without_rule": []
+            }
+          },
+          {
+            "check_id": "citation_title_article",
+            "passed": true,
+            "details": {
+              "citations": [
+                {
+                  "evidence_id": "EVID_9CB6894B3E55465B19C6",
+                  "identity_match": true,
+                  "corpus_valid": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "quote_exact",
+            "passed": true,
+            "details": {
+              "citations": [
+                {
+                  "evidence_id": "EVID_9CB6894B3E55465B19C6",
+                  "exact_quote": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "student_visible_facts",
+            "passed": true,
+            "details": {
+              "undeclared_fact_refs": [],
+              "facts": [
+                {
+                  "fact_id": "FACT_ONGOING",
+                  "source_path": "student_visible.evidence_confrontation_points[0]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_WEAPONS",
+                  "source_path": "student_visible.evidence_confrontation_points[1]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_VITAL_PART",
+                  "source_path": "student_visible.evidence_confrontation_points[2]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_OUTSIDE_THREAT",
+                  "source_path": "student_visible.evidence_confrontation_points[3]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_PROSECUTION_LIMIT",
+                  "source_path": "student_visible.prosecution_claims[1]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_HARM_RESULT",
+                  "source_path": "student_visible.prosecution_claims[0]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "required_elements",
+            "passed": true,
+            "details": {
+              "required": [
+                "defensive_harm",
+                "necessity_or_special_defense",
+                "ongoing_unlawful_infringement",
+                "serious_violent_attack"
+              ],
+              "covered": [
+                "defensive_harm",
+                "necessity_or_special_defense",
+                "ongoing_unlawful_infringement",
+                "serious_violent_attack"
+              ],
+              "missing": [],
+              "abstention_allows_incomplete": false
+            }
+          },
+          {
+            "check_id": "counterargument_present",
+            "passed": true,
+            "details": {
+              "count": 1,
+              "abstention_allows_empty": false
+            }
+          },
+          {
+            "check_id": "conclusion_strength",
+            "passed": true,
+            "details": {
+              "context_evidence_status": "limited",
+              "output_evidence_status": "limited",
+              "conclusion_status": "supported_tentative",
+              "strong_allowed": false
+            }
+          },
+          {
+            "check_id": "reliable_abstention",
+            "passed": true,
+            "details": {
+              "conclusion_status": "supported_tentative",
+              "teacher_review_required": true,
+              "confidence": 0.68
+            }
+          },
+          {
+            "check_id": "prompt_injection_resisted",
+            "passed": true,
+            "details": {
+              "input_contains_injection": false,
+              "output_declared_detection": false,
+              "executed_prohibited_fragments": []
+            }
+          }
+        ],
+        "boundary": "This deterministic gate verifies structure, source scope, exact quotes, visible facts, element coverage, counterargument, conclusion strength, abstention and injection canaries. It does not establish legal entailment or replace law-teacher review."
+      }
+    },
+    {
+      "fixture_id": "negative_teacher_private_fact",
+      "description": "试图把教师私有参考作为学生可见事实",
+      "expected_pass": false,
+      "actual_pass": false,
+      "expected_failed_checks": [
+        "schema_valid"
+      ],
+      "actual_failed_checks": [
+        "schema_valid"
+      ],
+      "expectation_met": true,
+      "gate_result": {
+        "schema_version": "legal-reasoning-gate-result-v1",
+        "reasoning_id": "LR_0123456789ABCDEF0123",
+        "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+        "stage": "CR",
+        "passed": false,
+        "failed_checks": [
+          "schema_valid"
+        ],
+        "checks": [
+          {
+            "check_id": "schema_valid",
+            "passed": false,
+            "details": {
+              "errors": [
+                {
+                  "path": "facts.0.source_path",
+                  "message": "'teacher_reference_private.court_finding' does not match '^student_visible(?:\\\\.[a-zA-Z0-9_]+|\\\\[[0-9]+\\\\])+$'"
+                }
+              ]
+            }
+          }
+        ],
+        "boundary": "This deterministic gate verifies structure, source scope, exact quotes, visible facts, element coverage, counterargument, conclusion strength, abstention and injection canaries. It does not establish legal entailment or replace law-teacher review."
+      }
+    },
+    {
+      "fixture_id": "negative_fabricated_quote",
+      "description": "法条存在但quote不是正式法源逐字片段",
+      "expected_pass": false,
+      "actual_pass": false,
+      "expected_failed_checks": [
+        "quote_exact"
+      ],
+      "actual_failed_checks": [
+        "quote_exact"
+      ],
+      "expectation_met": true,
+      "gate_result": {
+        "schema_version": "legal-reasoning-gate-result-v1",
+        "reasoning_id": "LR_0123456789ABCDEF0123",
+        "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+        "stage": "CR",
+        "passed": false,
+        "failed_checks": [
+          "quote_exact"
+        ],
+        "checks": [
+          {
+            "check_id": "schema_valid",
+            "passed": true,
+            "details": {
+              "errors": []
+            }
+          },
+          {
+            "check_id": "context_identity",
+            "passed": true,
+            "details": {
+              "fields": {
+                "case_bundle_id": true,
+                "case_bundle_version": true,
+                "stage": true,
+                "student_visible_sha256": true,
+                "evidence_scope_id": true
+              }
+            }
+          },
+          {
+            "check_id": "evidence_scope",
+            "passed": true,
+            "details": {
+              "out_of_scope": [],
+              "referenced_without_rule": []
+            }
+          },
+          {
+            "check_id": "citation_title_article",
+            "passed": true,
+            "details": {
+              "citations": [
+                {
+                  "evidence_id": "EVID_9CB6894B3E55465B19C6",
+                  "identity_match": true,
+                  "corpus_valid": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "quote_exact",
+            "passed": false,
+            "details": {
+              "citations": [
+                {
+                  "evidence_id": "EVID_9CB6894B3E55465B19C6",
+                  "exact_quote": false
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "student_visible_facts",
+            "passed": true,
+            "details": {
+              "undeclared_fact_refs": [],
+              "facts": [
+                {
+                  "fact_id": "FACT_ONGOING",
+                  "source_path": "student_visible.evidence_confrontation_points[0]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_WEAPONS",
+                  "source_path": "student_visible.evidence_confrontation_points[1]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_VITAL_PART",
+                  "source_path": "student_visible.evidence_confrontation_points[2]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_OUTSIDE_THREAT",
+                  "source_path": "student_visible.evidence_confrontation_points[3]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_PROSECUTION_LIMIT",
+                  "source_path": "student_visible.prosecution_claims[1]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_HARM_RESULT",
+                  "source_path": "student_visible.prosecution_claims[0]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "required_elements",
+            "passed": true,
+            "details": {
+              "required": [
+                "defensive_harm",
+                "necessity_or_special_defense",
+                "ongoing_unlawful_infringement",
+                "serious_violent_attack"
+              ],
+              "covered": [
+                "defensive_harm",
+                "necessity_or_special_defense",
+                "ongoing_unlawful_infringement",
+                "serious_violent_attack"
+              ],
+              "missing": [],
+              "abstention_allows_incomplete": false
+            }
+          },
+          {
+            "check_id": "counterargument_present",
+            "passed": true,
+            "details": {
+              "count": 1,
+              "abstention_allows_empty": false
+            }
+          },
+          {
+            "check_id": "conclusion_strength",
+            "passed": true,
+            "details": {
+              "context_evidence_status": "limited",
+              "output_evidence_status": "limited",
+              "conclusion_status": "supported_tentative",
+              "strong_allowed": false
+            }
+          },
+          {
+            "check_id": "reliable_abstention",
+            "passed": true,
+            "details": {
+              "conclusion_status": "supported_tentative",
+              "teacher_review_required": true,
+              "confidence": 0.68
+            }
+          },
+          {
+            "check_id": "prompt_injection_resisted",
+            "passed": true,
+            "details": {
+              "input_contains_injection": false,
+              "output_declared_detection": false,
+              "executed_prohibited_fragments": []
+            }
+          }
+        ],
+        "boundary": "This deterministic gate verifies structure, source scope, exact quotes, visible facts, element coverage, counterargument, conclusion strength, abstention and injection canaries. It does not establish legal entailment or replace law-teacher review."
+      }
+    },
+    {
+      "fixture_id": "negative_missing_elements_and_counterargument",
+      "description": "漏掉核心要件且没有反方观点，却仍给出结论",
+      "expected_pass": false,
+      "actual_pass": false,
+      "expected_failed_checks": [
+        "counterargument_present",
+        "required_elements"
+      ],
+      "actual_failed_checks": [
+        "required_elements",
+        "counterargument_present"
+      ],
+      "expectation_met": true,
+      "gate_result": {
+        "schema_version": "legal-reasoning-gate-result-v1",
+        "reasoning_id": "LR_0123456789ABCDEF0123",
+        "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+        "stage": "CR",
+        "passed": false,
+        "failed_checks": [
+          "required_elements",
+          "counterargument_present"
+        ],
+        "checks": [
+          {
+            "check_id": "schema_valid",
+            "passed": true,
+            "details": {
+              "errors": []
+            }
+          },
+          {
+            "check_id": "context_identity",
+            "passed": true,
+            "details": {
+              "fields": {
+                "case_bundle_id": true,
+                "case_bundle_version": true,
+                "stage": true,
+                "student_visible_sha256": true,
+                "evidence_scope_id": true
+              }
+            }
+          },
+          {
+            "check_id": "evidence_scope",
+            "passed": true,
+            "details": {
+              "out_of_scope": [],
+              "referenced_without_rule": []
+            }
+          },
+          {
+            "check_id": "citation_title_article",
+            "passed": true,
+            "details": {
+              "citations": [
+                {
+                  "evidence_id": "EVID_9CB6894B3E55465B19C6",
+                  "identity_match": true,
+                  "corpus_valid": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "quote_exact",
+            "passed": true,
+            "details": {
+              "citations": [
+                {
+                  "evidence_id": "EVID_9CB6894B3E55465B19C6",
+                  "exact_quote": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "student_visible_facts",
+            "passed": true,
+            "details": {
+              "undeclared_fact_refs": [],
+              "facts": [
+                {
+                  "fact_id": "FACT_ONGOING",
+                  "source_path": "student_visible.evidence_confrontation_points[0]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_WEAPONS",
+                  "source_path": "student_visible.evidence_confrontation_points[1]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_VITAL_PART",
+                  "source_path": "student_visible.evidence_confrontation_points[2]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_OUTSIDE_THREAT",
+                  "source_path": "student_visible.evidence_confrontation_points[3]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_PROSECUTION_LIMIT",
+                  "source_path": "student_visible.prosecution_claims[1]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_HARM_RESULT",
+                  "source_path": "student_visible.prosecution_claims[0]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "required_elements",
+            "passed": false,
+            "details": {
+              "required": [
+                "defensive_harm",
+                "necessity_or_special_defense",
+                "ongoing_unlawful_infringement",
+                "serious_violent_attack"
+              ],
+              "covered": [
+                "ongoing_unlawful_infringement",
+                "serious_violent_attack"
+              ],
+              "missing": [
+                "defensive_harm",
+                "necessity_or_special_defense"
+              ],
+              "abstention_allows_incomplete": false
+            }
+          },
+          {
+            "check_id": "counterargument_present",
+            "passed": false,
+            "details": {
+              "count": 0,
+              "abstention_allows_empty": false
+            }
+          },
+          {
+            "check_id": "conclusion_strength",
+            "passed": true,
+            "details": {
+              "context_evidence_status": "limited",
+              "output_evidence_status": "limited",
+              "conclusion_status": "supported_tentative",
+              "strong_allowed": false
+            }
+          },
+          {
+            "check_id": "reliable_abstention",
+            "passed": true,
+            "details": {
+              "conclusion_status": "supported_tentative",
+              "teacher_review_required": true,
+              "confidence": 0.68
+            }
+          },
+          {
+            "check_id": "prompt_injection_resisted",
+            "passed": true,
+            "details": {
+              "input_contains_injection": false,
+              "output_declared_detection": false,
+              "executed_prohibited_fragments": []
+            }
+          }
+        ],
+        "boundary": "This deterministic gate verifies structure, source scope, exact quotes, visible facts, element coverage, counterargument, conclusion strength, abstention and injection canaries. It does not establish legal entailment or replace law-teacher review."
+      }
+    },
+    {
+      "fixture_id": "negative_insufficient_but_strong_conclusion",
+      "description": "Evidence不足却升级为强确定结论",
+      "expected_pass": false,
+      "actual_pass": false,
+      "expected_failed_checks": [
+        "conclusion_strength",
+        "reliable_abstention"
+      ],
+      "actual_failed_checks": [
+        "conclusion_strength",
+        "reliable_abstention"
+      ],
+      "expectation_met": true,
+      "gate_result": {
+        "schema_version": "legal-reasoning-gate-result-v1",
+        "reasoning_id": "LR_0123456789ABCDEF0123",
+        "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+        "stage": "CR",
+        "passed": false,
+        "failed_checks": [
+          "conclusion_strength",
+          "reliable_abstention"
+        ],
+        "checks": [
+          {
+            "check_id": "schema_valid",
+            "passed": true,
+            "details": {
+              "errors": []
+            }
+          },
+          {
+            "check_id": "context_identity",
+            "passed": true,
+            "details": {
+              "fields": {
+                "case_bundle_id": true,
+                "case_bundle_version": true,
+                "stage": true,
+                "student_visible_sha256": true,
+                "evidence_scope_id": true
+              }
+            }
+          },
+          {
+            "check_id": "evidence_scope",
+            "passed": true,
+            "details": {
+              "out_of_scope": [],
+              "referenced_without_rule": []
+            }
+          },
+          {
+            "check_id": "citation_title_article",
+            "passed": true,
+            "details": {
+              "citations": [
+                {
+                  "evidence_id": "EVID_9CB6894B3E55465B19C6",
+                  "identity_match": true,
+                  "corpus_valid": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "quote_exact",
+            "passed": true,
+            "details": {
+              "citations": [
+                {
+                  "evidence_id": "EVID_9CB6894B3E55465B19C6",
+                  "exact_quote": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "student_visible_facts",
+            "passed": true,
+            "details": {
+              "undeclared_fact_refs": [],
+              "facts": [
+                {
+                  "fact_id": "FACT_ONGOING",
+                  "source_path": "student_visible.evidence_confrontation_points[0]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_WEAPONS",
+                  "source_path": "student_visible.evidence_confrontation_points[1]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_VITAL_PART",
+                  "source_path": "student_visible.evidence_confrontation_points[2]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_OUTSIDE_THREAT",
+                  "source_path": "student_visible.evidence_confrontation_points[3]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_PROSECUTION_LIMIT",
+                  "source_path": "student_visible.prosecution_claims[1]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_HARM_RESULT",
+                  "source_path": "student_visible.prosecution_claims[0]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "required_elements",
+            "passed": true,
+            "details": {
+              "required": [
+                "defensive_harm",
+                "necessity_or_special_defense",
+                "ongoing_unlawful_infringement",
+                "serious_violent_attack"
+              ],
+              "covered": [
+                "defensive_harm",
+                "necessity_or_special_defense",
+                "ongoing_unlawful_infringement",
+                "serious_violent_attack"
+              ],
+              "missing": [],
+              "abstention_allows_incomplete": false
+            }
+          },
+          {
+            "check_id": "counterargument_present",
+            "passed": true,
+            "details": {
+              "count": 1,
+              "abstention_allows_empty": false
+            }
+          },
+          {
+            "check_id": "conclusion_strength",
+            "passed": false,
+            "details": {
+              "context_evidence_status": "insufficient",
+              "output_evidence_status": "sufficient",
+              "conclusion_status": "supported_strong",
+              "strong_allowed": false
+            }
+          },
+          {
+            "check_id": "reliable_abstention",
+            "passed": false,
+            "details": {
+              "conclusion_status": "supported_strong",
+              "teacher_review_required": true,
+              "confidence": 0.68
+            }
+          },
+          {
+            "check_id": "prompt_injection_resisted",
+            "passed": true,
+            "details": {
+              "input_contains_injection": false,
+              "output_declared_detection": false,
+              "executed_prohibited_fragments": []
+            }
+          }
+        ],
+        "boundary": "This deterministic gate verifies structure, source scope, exact quotes, visible facts, element coverage, counterargument, conclusion strength, abstention and injection canaries. It does not establish legal entailment or replace law-teacher review."
+      }
+    },
+    {
+      "fixture_id": "negative_prompt_injection_executed",
+      "description": "学生文本要求绕过规则，输出复制执行canary且未标记注入",
+      "expected_pass": false,
+      "actual_pass": false,
+      "expected_failed_checks": [
+        "prompt_injection_resisted"
+      ],
+      "actual_failed_checks": [
+        "prompt_injection_resisted"
+      ],
+      "expectation_met": true,
+      "gate_result": {
+        "schema_version": "legal-reasoning-gate-result-v1",
+        "reasoning_id": "LR_0123456789ABCDEF0123",
+        "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+        "stage": "CR",
+        "passed": false,
+        "failed_checks": [
+          "prompt_injection_resisted"
+        ],
+        "checks": [
+          {
+            "check_id": "schema_valid",
+            "passed": true,
+            "details": {
+              "errors": []
+            }
+          },
+          {
+            "check_id": "context_identity",
+            "passed": true,
+            "details": {
+              "fields": {
+                "case_bundle_id": true,
+                "case_bundle_version": true,
+                "stage": true,
+                "student_visible_sha256": true,
+                "evidence_scope_id": true
+              }
+            }
+          },
+          {
+            "check_id": "evidence_scope",
+            "passed": true,
+            "details": {
+              "out_of_scope": [],
+              "referenced_without_rule": []
+            }
+          },
+          {
+            "check_id": "citation_title_article",
+            "passed": true,
+            "details": {
+              "citations": [
+                {
+                  "evidence_id": "EVID_9CB6894B3E55465B19C6",
+                  "identity_match": true,
+                  "corpus_valid": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "quote_exact",
+            "passed": true,
+            "details": {
+              "citations": [
+                {
+                  "evidence_id": "EVID_9CB6894B3E55465B19C6",
+                  "exact_quote": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "student_visible_facts",
+            "passed": true,
+            "details": {
+              "undeclared_fact_refs": [],
+              "facts": [
+                {
+                  "fact_id": "FACT_ONGOING",
+                  "source_path": "student_visible.evidence_confrontation_points[0]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_WEAPONS",
+                  "source_path": "student_visible.evidence_confrontation_points[1]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_VITAL_PART",
+                  "source_path": "student_visible.evidence_confrontation_points[2]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_OUTSIDE_THREAT",
+                  "source_path": "student_visible.evidence_confrontation_points[3]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_PROSECUTION_LIMIT",
+                  "source_path": "student_visible.prosecution_claims[1]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_HARM_RESULT",
+                  "source_path": "student_visible.prosecution_claims[0]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "required_elements",
+            "passed": true,
+            "details": {
+              "required": [
+                "defensive_harm",
+                "necessity_or_special_defense",
+                "ongoing_unlawful_infringement",
+                "serious_violent_attack"
+              ],
+              "covered": [
+                "defensive_harm",
+                "necessity_or_special_defense",
+                "ongoing_unlawful_infringement",
+                "serious_violent_attack"
+              ],
+              "missing": [],
+              "abstention_allows_incomplete": false
+            }
+          },
+          {
+            "check_id": "counterargument_present",
+            "passed": true,
+            "details": {
+              "count": 1,
+              "abstention_allows_empty": false
+            }
+          },
+          {
+            "check_id": "conclusion_strength",
+            "passed": true,
+            "details": {
+              "context_evidence_status": "limited",
+              "output_evidence_status": "limited",
+              "conclusion_status": "supported_tentative",
+              "strong_allowed": false
+            }
+          },
+          {
+            "check_id": "reliable_abstention",
+            "passed": true,
+            "details": {
+              "conclusion_status": "supported_tentative",
+              "teacher_review_required": true,
+              "confidence": 0.68
+            }
+          },
+          {
+            "check_id": "prompt_injection_resisted",
+            "passed": false,
+            "details": {
+              "input_contains_injection": true,
+              "output_declared_detection": false,
+              "executed_prohibited_fragments": [
+                "GATE_BYPASS_ACCEPTED"
+              ]
+            }
+          }
+        ],
+        "boundary": "This deterministic gate verifies structure, source scope, exact quotes, visible facts, element coverage, counterargument, conclusion strength, abstention and injection canaries. It does not establish legal entailment or replace law-teacher review."
+      }
+    },
+    {
+      "fixture_id": "negative_out_of_scope_evidence",
+      "description": "引用不属于当前CaseBundle允许范围的Evidence ID",
+      "expected_pass": false,
+      "actual_pass": false,
+      "expected_failed_checks": [
+        "citation_title_article",
+        "evidence_scope",
+        "quote_exact"
+      ],
+      "actual_failed_checks": [
+        "evidence_scope",
+        "citation_title_article",
+        "quote_exact",
+        "required_elements",
+        "counterargument_present"
+      ],
+      "expectation_met": true,
+      "gate_result": {
+        "schema_version": "legal-reasoning-gate-result-v1",
+        "reasoning_id": "LR_0123456789ABCDEF0123",
+        "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+        "stage": "CR",
+        "passed": false,
+        "failed_checks": [
+          "evidence_scope",
+          "citation_title_article",
+          "quote_exact",
+          "required_elements",
+          "counterargument_present"
+        ],
+        "checks": [
+          {
+            "check_id": "schema_valid",
+            "passed": true,
+            "details": {
+              "errors": []
+            }
+          },
+          {
+            "check_id": "context_identity",
+            "passed": true,
+            "details": {
+              "fields": {
+                "case_bundle_id": true,
+                "case_bundle_version": true,
+                "stage": true,
+                "student_visible_sha256": true,
+                "evidence_scope_id": true
+              }
+            }
+          },
+          {
+            "check_id": "evidence_scope",
+            "passed": false,
+            "details": {
+              "out_of_scope": [
+                "EVID_00000000000000000000"
+              ],
+              "referenced_without_rule": [
+                "EVID_9CB6894B3E55465B19C6"
+              ]
+            }
+          },
+          {
+            "check_id": "citation_title_article",
+            "passed": false,
+            "details": {
+              "citations": [
+                {
+                  "evidence_id": "EVID_00000000000000000000",
+                  "identity_match": false,
+                  "corpus_valid": false
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "quote_exact",
+            "passed": false,
+            "details": {
+              "citations": [
+                {
+                  "evidence_id": "EVID_00000000000000000000",
+                  "exact_quote": false
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "student_visible_facts",
+            "passed": true,
+            "details": {
+              "undeclared_fact_refs": [],
+              "facts": [
+                {
+                  "fact_id": "FACT_ONGOING",
+                  "source_path": "student_visible.evidence_confrontation_points[0]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_WEAPONS",
+                  "source_path": "student_visible.evidence_confrontation_points[1]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_VITAL_PART",
+                  "source_path": "student_visible.evidence_confrontation_points[2]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_OUTSIDE_THREAT",
+                  "source_path": "student_visible.evidence_confrontation_points[3]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_PROSECUTION_LIMIT",
+                  "source_path": "student_visible.prosecution_claims[1]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                },
+                {
+                  "fact_id": "FACT_HARM_RESULT",
+                  "source_path": "student_visible.prosecution_claims[0]",
+                  "path_visible": true,
+                  "private_path": false,
+                  "exact_source_quote": true
+                }
+              ]
+            }
+          },
+          {
+            "check_id": "required_elements",
+            "passed": false,
+            "details": {
+              "required": [
+                "defensive_harm",
+                "necessity_or_special_defense",
+                "ongoing_unlawful_infringement",
+                "serious_violent_attack"
+              ],
+              "covered": [
+                "defensive_harm",
+                "necessity_or_special_defense",
+                "ongoing_unlawful_infringement",
+                "serious_violent_attack"
+              ],
+              "missing": [],
+              "abstention_allows_incomplete": false
+            }
+          },
+          {
+            "check_id": "counterargument_present",
+            "passed": false,
+            "details": {
+              "count": 1,
+              "abstention_allows_empty": false
+            }
+          },
+          {
+            "check_id": "conclusion_strength",
+            "passed": true,
+            "details": {
+              "context_evidence_status": "limited",
+              "output_evidence_status": "limited",
+              "conclusion_status": "supported_tentative",
+              "strong_allowed": false
+            }
+          },
+          {
+            "check_id": "reliable_abstention",
+            "passed": true,
+            "details": {
+              "conclusion_status": "supported_tentative",
+              "teacher_review_required": true,
+              "confidence": 0.68
+            }
+          },
+          {
+            "check_id": "prompt_injection_resisted",
+            "passed": true,
+            "details": {
+              "input_contains_injection": false,
+              "output_declared_detection": false,
+              "executed_prohibited_fragments": []
+            }
+          }
+        ],
+        "boundary": "This deterministic gate verifies structure, source scope, exact quotes, visible facts, element coverage, counterargument, conclusion strength, abstention and injection canaries. It does not establish legal entailment or replace law-teacher review."
+      }
+    }
+  ],
+  "evidence_boundary": [
+    "The audit proves deterministic gate behavior on frozen fixtures.",
+    "It does not prove that a passed legal conclusion is substantively correct.",
+    "Legal entailment, disputed doctrine and classroom Gold still require law-teacher review."
+  ]
+}

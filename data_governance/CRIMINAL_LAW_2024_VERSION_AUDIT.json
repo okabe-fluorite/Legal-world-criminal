@@ -1,0 +1,166 @@
+{
+  "schema_version": "criminal-law-consolidation-audit-v1",
+  "audit_date": "2026-08-31",
+  "question": "Can the labelled 2024 consolidation replace the governed official build?",
+  "official_version_chain": {
+    "base": "中华人民共和国刑法（2020-12-26国家法律法规数据库快照）",
+    "amendment": "中华人民共和国刑法修正案（十二）（2023-12-29通过）",
+    "amendment_effective_from": "2024-03-01",
+    "result_version_as_of": "2024-03-01",
+    "online_verification": [
+      "https://www.npc.gov.cn/npc/c2/c30834/202401/t20240103_434056.html",
+      "https://www.npc.gov.cn/c2/c30834/202403/t20240301_434965.html"
+    ]
+  },
+  "sources": {
+    "reference": {
+      "path": "raw_data/法律/中华人民共和国刑法（2024年最新版）.docx",
+      "sha256": "0233a79ebedd779a5593dc04808c040e5eec6678fc6b128f45561e6130f0043f",
+      "label_year_is_plausible": true
+    },
+    "official_base": {
+      "path": "raw_data/法律/国家法律法规数据库_批量下载_20260226_141154/中华人民共和国刑法_20201226.docx",
+      "sha256": "282fee49f12b6420a1a5ecde4ea2aa58b0e496e566cf959378bd1f8edb53f5e6"
+    },
+    "official_amendment_12": {
+      "path": "raw_data/法律/国家法律法规数据库_批量下载_20260226_141135/中华人民共和国刑法修正案（十二）_20231229.docx",
+      "sha256": "ee51fc72c880c8ed4456ec50196498da6b16bab2430ad63229d408b247ce20c4"
+    }
+  },
+  "comparison": {
+    "official_article_count": 505,
+    "reference_article_count": 504,
+    "same_article_ref_set": false,
+    "missing_article_refs": [
+      "第一百九十九条"
+    ],
+    "extra_article_refs": [],
+    "exact_after_heading_and_watermark_cleanup": 493,
+    "punctuation_only_difference_count": 3,
+    "remaining_difference_count": 12,
+    "differences": [
+      {
+        "article_ref": "第一百二十条之一",
+        "category": "punctuation_only",
+        "official_clean_sha256": "9bd2510c6c3b7a7663c8c033d08f92f10ebff9d1e983058aca2cd9a5bbffa524",
+        "reference_clean_sha256": "930aa8203cc489a9f2382f00ea5815614c91262aab7630d87031fe6c6e38b3ba",
+        "official_length": 179,
+        "reference_length": 180
+      },
+      {
+        "article_ref": "第一百六十二条之一",
+        "category": "content_difference",
+        "official_clean_sha256": "06370ea589737466522cf9824144eca46151bda458ab6dc41ed5064c3d33fdc5",
+        "reference_clean_sha256": "43fe0725f5705143fc68e85112e9155fdf9b673d2b1647a0b7b8bf1fb65ea85d",
+        "official_length": 120,
+        "reference_length": 120
+      },
+      {
+        "article_ref": "第一百九十条",
+        "category": "content_difference",
+        "official_clean_sha256": "e6e55fb9946ff06e5bddd7e10324fc0e21f4e13670f5512ae808ee2fc03fd0bd",
+        "reference_clean_sha256": "4afb51b5ce31117a9a717cf51fe3d326891f9c4818da7bb90fe23dc50f18c9dd",
+        "official_length": 184,
+        "reference_length": 99
+      },
+      {
+        "article_ref": "第一百九十九条",
+        "category": "missing_article",
+        "official_clean_sha256": "0796c14e2b5046ca4cb4a62d0c324ee06cdf478859ca2dc137554a6d8c17526f",
+        "reference_clean_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "official_length": 4,
+        "reference_length": 0
+      },
+      {
+        "article_ref": "第二百三十六条",
+        "category": "punctuation_only",
+        "official_clean_sha256": "c670e15258ad3221bc745016f3184db8dd976764236634e04efee9bb9d4289b7",
+        "reference_clean_sha256": "5655d4611d46fce5cc2c0f0e535e2a23cb8d31dcd70900d681405ba8bcf69f72",
+        "official_length": 207,
+        "reference_length": 208
+      },
+      {
+        "article_ref": "第二百九十九条",
+        "category": "content_difference",
+        "official_clean_sha256": "f1a7095c055c545312c77121cebc01a81bf012f1fd572515b0f38f5d8d6aafe0",
+        "reference_clean_sha256": "325f58d9dea35d1b8e9816a4f5a174e005cc5b04b116bd02bc22c7e11e0c5699",
+        "official_length": 132,
+        "reference_length": 131
+      },
+      {
+        "article_ref": "第三百三十四条之一",
+        "category": "content_difference",
+        "official_clean_sha256": "d2a95681a7e144909cb90cc149788aed3effa87d519c2e3ace0c6d2a640907b9",
+        "reference_clean_sha256": "d103cf4b6ffe688de135c3a8404c1889589547ee0d9f135733fa21797800efe9",
+        "official_length": 120,
+        "reference_length": 119
+      },
+      {
+        "article_ref": "第三百四十七条",
+        "category": "content_difference",
+        "official_clean_sha256": "26b5e2d5604145a4872011a6c71420d7f2bb3f2f397768f4c7019b0db87e48f2",
+        "reference_clean_sha256": "1cdd34316506579a6090900d398a909ab24f40ef5d09294b2fccb0492db697e8",
+        "official_length": 511,
+        "reference_length": 511
+      },
+      {
+        "article_ref": "第三百四十八条",
+        "category": "content_difference",
+        "official_clean_sha256": "4857f9ad93defddc74935c290242862de9f41a8100994cc7fe2b1c7ee9150ce0",
+        "reference_clean_sha256": "9e76987b2bb1a26745da2851d45e6795cf411d19e374074b11f1de5b1258ae47",
+        "official_length": 154,
+        "reference_length": 154
+      },
+      {
+        "article_ref": "第三百五十七条",
+        "category": "content_difference",
+        "official_clean_sha256": "b9a14596dd812ca39845d48786cfd32dd4bf4770ceaa8007cb59231fea5e5409",
+        "reference_clean_sha256": "9e07e8023bd64793992897138a94d3524ec38c6074cf1ded72d3845de3cc86a7",
+        "official_length": 108,
+        "reference_length": 108
+      },
+      {
+        "article_ref": "第三百八十九条",
+        "category": "content_difference",
+        "official_clean_sha256": "8294de89bfbf29b21fbdff399d4880660dd373e0f13b674b5308702d21eeb616",
+        "reference_clean_sha256": "b1fea29e304b57912e953f4ba915fd34b6eca2a51e3e2ac8195a919ad599f499",
+        "official_length": 128,
+        "reference_length": 127
+      },
+      {
+        "article_ref": "第四百五十二条",
+        "category": "punctuation_only",
+        "official_clean_sha256": "5333c63bd13677c562b6d83ba73391e044a51e8a5693934ab3789c919ca2bae1",
+        "reference_clean_sha256": "bd575dcf3dbd7600679ba690ed579b32c9265849faeea743c049154a2a821138",
+        "official_length": 167,
+        "reference_length": 167
+      }
+    ]
+  },
+  "publisher_marker_counts": {
+    "中国刑事辩护网提供": 12,
+    "华律网": 0,
+    "找法网": 0
+  },
+  "amendment_12_article_matches": {
+    "第一百六十五条": true,
+    "第一百六十六条": true,
+    "第一百六十九条": true,
+    "第三百八十七条": true,
+    "第三百九十条": true,
+    "第三百九十一条": true,
+    "第三百九十三条": true
+  },
+  "all_seven_amendment_12_articles_match": true,
+  "decision": {
+    "formal_evidence_admitted": false,
+    "classification": "2024_consolidation_reference_with_content_defects",
+    "reason": "The 2024 date is valid and all seven Amendment XII replacements match, but the file is not a clean article-complete official consolidation.",
+    "formal_source_remains": "deterministic merge of the official 2020 Criminal Law text and official Amendment XII"
+  },
+  "evidence_boundary": [
+    "A correct version year does not by itself establish exact article integrity.",
+    "Publisher markers and content differences block direct quote use.",
+    "The reference remains useful for cross-checking Amendment XII incorporation."
+  ]
+}
