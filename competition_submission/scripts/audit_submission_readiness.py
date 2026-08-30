@@ -75,6 +75,13 @@ def main() -> int:
     video_review_audit = read_json(SUBMISSION / "06-效果验证" / "视频审片包_DRAFT" / "BUILD_AUDIT.json")
     effect_package = read_json(SUBMISSION / "06-效果验证" / "效果验证报告包_DRAFT" / "MANIFEST.json")
     effect_package_audit = read_json(SUBMISSION / "06-效果验证" / "效果验证报告包_DRAFT" / "BUILD_AUDIT.json")
+    effect_evidence_index = read_json(
+        SUBMISSION
+        / "06-效果验证"
+        / "效果验证报告包_DRAFT"
+        / "public"
+        / "EVIDENCE_INDEX.json"
+    )
     public_package = read_json(SUBMISSION / "07-公开提交包_DRAFT" / "MANIFEST.json")
     public_package_audit = read_json(SUBMISSION / "07-公开提交包_DRAFT" / "BUILD_AUDIT.json")
     typical = read_json(REPO / "docs" / "TYPICAL_QUESTION_EVALUATION.json")
@@ -134,7 +141,13 @@ def main() -> int:
     effect_package_ready = (
         effect_package_audit.get("public_pdf_pages") == 5
         and effect_package_audit.get("private_pdf_pages") == 2
-        and effect_package_audit.get("source_count") == 11
+        and effect_package_audit.get("source_count") == 13
+        and {"rehearsal", "media"}.issubset(
+            {
+                str(source.get("id") or "")
+                for source in effect_evidence_index.get("sources") or []
+            }
+        )
         and effect_package_audit.get("secret_scan", {}).get("passed") is True
         and not effect_package_audit.get("required_public_missing")
         and not effect_package_audit.get("forbidden_positive_hits")
