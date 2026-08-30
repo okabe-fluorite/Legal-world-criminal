@@ -86,6 +86,7 @@ tmp-*
 tmp_*
 temp_*.py
 .codex-artifacts/
+output/playwright/
 .superpowers/
 
 # Optional local tools or benchmarks

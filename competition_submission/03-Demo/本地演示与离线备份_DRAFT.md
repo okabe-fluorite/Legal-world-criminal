@@ -132,6 +132,23 @@ py competition_submission/scripts/backup_demo_state.py --runtime competition_sub
 
 脚本使用SQLite backup API合并已提交WAL页，同时备份主库、adaptive库、sandboxes、case3脱敏E2E与三题JSON；非`example.com`账号会使操作失败。备份manifest含Git commit、文件大小和SHA-256，且明确数据库含演示密码哈希，只能团队离线保管。
 
+## 三案例统一浏览器彩排
+
+停止已经运行的本地服务后，可用同一个SQLite + adaptive + Vite栈顺序验证三条比赛演示路线：
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 competition_submission\scripts\run_three_route_rehearsal.py `
+  --model-config "E:\guabangjieshuai\EduBrain\.env.example"
+```
+
+彩排包含：
+
+1. 认知诊断、ORCDF shadow、七步路径、知识/论证图及Model/Media Adapter；
+2. 三个典型问题、权威Evidence和2/2错误引用拒绝；
+3. 主观稿进入教师门禁、退回原文修订、再次提交、批准后唯一画像事件。
+
+机器结果写入`THREE_ROUTE_REHEARSAL_AUDIT.json/.md`；截图和服务日志写入Git忽略的`output/playwright/competition-rehearsal/`。彩排账号和学生输入均为合成演示数据，不能替代真实目标用户、独立法学专家或学习效果证据。
+
 在另一空目录验证恢复，不覆盖当前运行库：
 
 ```powershell
