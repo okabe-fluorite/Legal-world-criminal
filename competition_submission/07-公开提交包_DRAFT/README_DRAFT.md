@@ -1,6 +1,6 @@
 # 星火智学 XH-202620 公开提交包（DRAFT）
 
-源码commit：`43c22fdc7b24dc1a4ba68ce9349a037b7f7336a7`
+源码commit：`83a569e4e7de833c1efb3e10e6e3c782573bc042`
 
 本包包含源码、PPT、121.6秒AI配音视频DRAFT、效果验证报告、伦理正文和公开审计。源码ZIP中的`.env.example`已自动脱敏，所有Key、密码、JWT、数据库URL和角色邮箱字段为空。
 
