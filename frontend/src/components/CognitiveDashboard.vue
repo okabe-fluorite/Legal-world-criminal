@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { api } from "../lib/api";
 import { ORCDF_SHADOW } from "../data/orcdfShadow";
+import AITutor from "./AITutor.vue";
 import type {
   AdaptiveKnowledgeEvidence,
   AdaptiveRecommendationResponse,
@@ -208,6 +209,11 @@ const pathNodes = computed(() => {
       reason: "完成后重新请求路径，不预写固定结论",
     },
   ];
+});
+const pathTutorSpeech = computed(() => {
+  const first = pathNodes.value[0];
+  if (!first) return "";
+  return `当前下一步围绕${first.title}。${first.detail}。推荐依据来自当前Evidence事件、先修关系和已完成任务；这是一条可解释候选路径，不是因果最优证明。`;
 });
 const relevantRoutes = computed(() => {
   const tasks = ["subjective_scoring", "learning_support", "teaching_judge", "response_assist"];
@@ -495,6 +501,7 @@ onUnmounted(() => {
 
         <template v-else-if="tab === 'path'">
           <section class="path-hero"><div><p class="kicker mono">POLICY · {{ adaptive?.policy_version ?? 'evidence-aware-v1' }}</p><h3>从证据薄弱点到下一条LearningEvent</h3><p>算法排序任务，AI只解释和执行；每次完成后重新计算，不预写“最优路径”。</p></div><button @click="emit('openJourney')">进入当前推荐任务 →</button></section>
+          <div class="path-tutor"><AITutor context="path" :speech-text="pathTutorSpeech" compact /></div>
           <section class="path-map">
             <article v-for="(node, index) in pathNodes" :key="node.no" :class="[`path-node--${node.status}`]">
               <span class="path-no mono">{{ node.no }}</span><div class="path-card"><p class="kicker mono">{{ node.type }}</p><h3>{{ node.title }}</h3><span>{{ node.detail }}</span><footer>{{ node.reason }}</footer></div><div v-if="index < pathNodes.length - 1" class="path-connector"><i></i><span>证据更新</span></div>
@@ -591,6 +598,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.path-tutor{margin-top:14px}
 .cog-layer{position:fixed;inset:0;z-index:1360;padding:18px;background:radial-gradient(circle at 75% 8%,rgba(66,111,128,.15),transparent 32%),radial-gradient(circle at 8% 82%,rgba(176,138,62,.1),transparent 30%),rgba(4,4,3,.93);backdrop-filter:blur(13px)}
 .cog-board{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;color:var(--parchment);border:1px solid rgba(100,139,153,.46);background:linear-gradient(135deg,#151815,#090b0a 72%);box-shadow:0 40px 110px #000d}
 .cog-head{min-height:82px;display:grid;grid-template-columns:minmax(300px,1fr) auto minmax(250px,1fr) 38px;align-items:center;gap:18px;padding:12px 18px 12px 23px;border-bottom:1px solid rgba(100,139,153,.32);background:linear-gradient(180deg,rgba(25,30,28,.98),rgba(12,15,14,.98))}.cog-brand{display:flex;align-items:center;gap:13px}.cog-seal{width:47px;height:47px;display:grid;place-items:center;color:#dce9ec;border:1px solid #789dac;box-shadow:inset 0 0 0 3px #142025;font-family:var(--font-display);font-size:1.08rem;font-weight:800;transform:rotate(-2deg)}.kicker{margin:0 0 3px;color:#87aebb;font-size:.61rem;letter-spacing:.16em}.cog-brand h2{font-size:1.28rem}.cog-tabs{display:flex;border:1px solid var(--line-strong)}.cog-tabs button{padding:9px 13px;color:var(--parchment-dim);border:0;border-right:1px solid var(--line);background:transparent;font-family:var(--font-display);font-size:.75rem;cursor:pointer}.cog-tabs button:last-child{border:0}.cog-tabs button.active{color:#e5eff0;background:rgba(100,139,153,.16);box-shadow:inset 0 -2px #87aebb}.cog-badges{display:flex;justify-content:flex-end;gap:6px}.cog-badges span{padding:4px 6px;color:var(--parchment-faint);border:1px solid var(--line);font-size:.6rem}.cog-close{width:36px;height:36px;color:var(--parchment-muted);border:1px solid var(--line-strong);background:transparent;font-size:1.35rem;cursor:pointer}

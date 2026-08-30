@@ -85,6 +85,12 @@ try {
   await page.getByText("2/2 已拒绝", { exact: true }).waitFor();
   const badRows = await page.locator(".bad-audit-result article").count();
   if (badRows !== 2) throw new Error(`Expected 2 rejected citation rows, received ${badRows}`);
+  const evidenceTutor = page.locator(".evidence-tutor .ai-tutor");
+  await evidenceTutor.waitFor();
+  const evidenceTutorText = await evidenceTutor.innerText();
+  if (!evidenceTutorText.includes("AI助教·形成性反馈") || !evidenceTutorText.includes("引用不能直接采信")) {
+    throw new Error(`Evidence tutor incomplete: ${evidenceTutorText}`);
+  }
   await page.screenshot({ path: path.join(artifactDir, "04-bad-citation-gate.png"), fullPage: false });
 
   const privateLeaks = await dialog.evaluate((body) => {
@@ -98,6 +104,7 @@ try {
     automated_gate: "3/3",
     expert_review: "pending",
     rejected_bad_citations: badRows,
+    evidence_tutor: evidenceTutorText,
     private_leaks: privateLeaks,
     console_errors: consoleErrors,
     page_errors: pageErrors,

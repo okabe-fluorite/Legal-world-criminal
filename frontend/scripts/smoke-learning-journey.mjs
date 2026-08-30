@@ -86,7 +86,7 @@ try {
   await page.getByRole("button", { name: "归入证据账本" }).click();
   await page.getByText("困惑已进入证据账本，后续任务会优先回应。").waitFor();
 
-  let learningSupport = { tested: false, source: "not_requested", layers: 0 };
+  let learningSupport = { tested: false, source: "not_requested", layers: 0, tutor: false };
   if (process.env.JOURNEY_TEST_SUPPORT === "1") {
     await page.getByRole("button", { name: /开始分层解惑/ }).click();
     await page.getByRole("dialog", { name: "AI分层解惑" }).waitFor();
@@ -96,13 +96,34 @@ try {
     await page.getByRole("button", { name: /生成分层解释/ }).click();
     await page.getByText("规范原文", { exact: true }).waitFor({ timeout: 210000 });
     const diagnosisText = await page.locator(".diagnosis-strip").innerText();
+    const tutor = page.locator(".support-main .ai-tutor");
+    await tutor.waitFor();
+    const tutorText = await tutor.innerText();
+    const tutorButtonLocator = tutor.getByRole("button", { name: "朗读本段" });
+    const tutorButton = await tutorButtonLocator.isVisible();
+    let mouthAnimation = "not_requested";
+    if (process.env.JOURNEY_TEST_TUTOR_SPEECH === "1") {
+      const idleSource = await tutor.locator("img").getAttribute("src");
+      await tutorButtonLocator.click();
+      await tutor.getByRole("button", { name: "停止朗读" }).waitFor({ timeout: 10000 });
+      await page.waitForTimeout(190);
+      const speakingSource = await tutor.locator("img").getAttribute("src");
+      if (!speakingSource || speakingSource === idleSource) {
+        throw new Error(`Tutor mouth did not switch: ${idleSource} -> ${speakingSource}`);
+      }
+      mouthAnimation = "verified_state_switch";
+      await tutor.getByRole("button", { name: "停止朗读" }).click();
+    }
     learningSupport = {
       tested: true,
       source: diagnosisText.includes("DETERMINISTIC FALLBACK")
         ? "deterministic_fallback"
         : "llm_governed_evidence",
       layers: await page.locator(".layer-card").count(),
+      tutor: tutorText.includes("AI助教·形成性反馈") && tutorButton,
+      mouth_animation: mouthAnimation,
     };
+    if (!learningSupport.tutor) throw new Error(`Learning tutor incomplete: ${tutorText}`);
     await page.screenshot({ path: supportScreenshotPath, fullPage: false });
     await page.getByRole("button", { name: "关闭分层解惑" }).click();
   }

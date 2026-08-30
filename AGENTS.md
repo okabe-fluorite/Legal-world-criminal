@@ -234,6 +234,9 @@ teaching/
 - 浏览器`SpeechSynthesis`是真实本地朗读fallback，不生成下载资产、不冒充讯飞调用
 - ASR/OCR/数字人输出默认不创建LearningEvent、不评分、不更新画像；自定义数字人需要肖像同意，所有合成输出保留AI标识
 - `smoke-cognitive-dashboard.mjs`现验证10知识节点、10先修边、6论证节点、5媒体能力、私有上传和TTS/ASR/Avatar真实状态，且0私有/网络错误
+- `AITutor.vue`实现原创轻量2D助教四态（闭嘴/半开/张嘴/眨眼）、CSS呼吸/微摆/随机眨眼和浏览器朗读嘴形；只在分层解惑、Evidence警告、路径解释出现，固定“AI助教·形成性反馈”。
+- 四张最终WebP均为768×960真透明`yuva420p`，资产manifest保存SHA；它不是Live2D Cubism，也不是已接通的讯飞虚拟人。
+- `media/providers/iflytek.py`记录Apache-2.0参考SDK的IAT/LFASR/RTASR/TTS/OCR/HMAC客户端边界；凭据存在仍为not_connected，SDK未vendored、Adapter未调用云端。
 
 ### 比赛可信RAG与三个典型问题
 

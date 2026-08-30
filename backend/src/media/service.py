@@ -11,6 +11,7 @@ from uuid import uuid4
 from sqlalchemy.orm import Session
 
 from src.core.models import MediaAssetRecord, MediaJobRecord, User
+from .providers import build_iflytek_provider_catalog
 
 
 MAX_ASSET_BYTES = 15 * 1024 * 1024
@@ -101,10 +102,12 @@ class MediaService:
 
     def capabilities(self) -> dict[str, Any]:
         xfyun_credentials = _env_present("XFYUN_APP_ID", "XFYUN_API_KEY", "XFYUN_API_SECRET")
+        xfyun_reference = build_iflytek_provider_catalog()
         azure_credentials = _env_present("AZURE_SPEECH_KEY", "AZURE_SPEECH_REGION")
         local_asr_slot = bool(str(os.getenv("SIMLAW_FASTER_WHISPER_MODEL", "")).strip())
         return {
             "schema_version": "simlaw-media-capabilities-v1",
+            "provider_reference_catalog": {"iflytek": xfyun_reference},
             "job_statuses": list(JOB_STATUSES),
             "capabilities": [
                 {

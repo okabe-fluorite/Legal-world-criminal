@@ -1,0 +1,30 @@
+{
+  "schema_version": "lightweight-2d-tutor-assets-v1",
+  "character_id": "simlaw-original-ai-tutor-v1",
+  "generated_at": "2026-08-31",
+  "generation_mode": "OpenAI built-in image generation and background extraction",
+  "identity": {
+    "original_character": true,
+    "real_person_likeness": false,
+    "role": "AI助教·形成性反馈",
+    "forbidden_claim": "Live2D Cubism model"
+  },
+  "canvas": {"width": 768, "height": 960, "pixel_format": "yuva420p"},
+  "states": [
+    {"state": "idle", "file": "tutor-idle.webp", "bytes": 110370, "sha256": "23146025539ec7e2cfc03ddfdac8daffc855880f59535199c65efdc791981d37"},
+    {"state": "mouth_half", "file": "tutor-mouth-half.webp", "bytes": 94110, "sha256": "2a33941ad6507ed7f29ef8d52eb4b826c763b9612f277658b15311379fdc64e6"},
+    {"state": "mouth_open", "file": "tutor-mouth-open.webp", "bytes": 88424, "sha256": "8667600202d5c47a2dbf494073a34ad0735a6212af37025b701d03a72f008786"},
+    {"state": "blink", "file": "tutor-blink.webp", "bytes": 98438, "sha256": "5072b9c1d07ab5519ad4ee4f2238fd342d16c8a6354dc6a8a4583ad2377c98cb"}
+  ],
+  "prompt_summary": [
+    "Original gender-neutral young Chinese law AI tutor, waist-up, navy and parchment palette, no robe, gavel, logo or text.",
+    "Identity-preserving variants change only closed/half-open/open mouth or blink state.",
+    "Background extraction requires genuine alpha; all final files are mechanically normalized to one canvas."
+  ],
+  "allowed_contexts": ["governed_learning_support", "evidence_warning", "path_explanation"],
+  "learning_boundary": {
+    "creates_learning_event": false,
+    "formal_grading_eligible": false,
+    "browser_speech_is_cloud_tts": false
+  }
+}

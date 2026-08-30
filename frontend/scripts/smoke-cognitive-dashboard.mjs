@@ -95,6 +95,16 @@ try {
   await page.getByRole("button", { name: "个性化路径" }).click();
   await page.getByText("从证据薄弱点到下一条LearningEvent", { exact: true }).waitFor();
   const pathNodes = await page.locator(".path-map article").count();
+  const pathTutor = page.locator(".path-tutor .ai-tutor");
+  await pathTutor.waitFor();
+  const pathTutorLabel = await pathTutor.innerText();
+  const pathTutorImage = await pathTutor.locator("img").evaluate((image) => ({
+    naturalWidth: image.naturalWidth,
+    naturalHeight: image.naturalHeight,
+  }));
+  if (!pathTutorLabel.includes("AI助教·形成性反馈") || pathTutorImage.naturalWidth !== 768) {
+    throw new Error(`Path tutor incomplete: ${pathTutorLabel} ${JSON.stringify(pathTutorImage)}`);
+  }
   if (pathNodes !== 7) throw new Error(`Expected 7 path nodes, received ${pathNodes}`);
   await page.screenshot({ path: path.join(artifactDir, "03-personal-path.png"), fullPage: false });
 
@@ -154,6 +164,7 @@ try {
     orcdf_versions: versions,
     heatmap_cells: heatCells,
     path_nodes: pathNodes,
+    path_tutor: { label: pathTutorLabel, image: pathTutorImage },
     knowledge_graph_nodes: knowledgeNodes,
     knowledge_graph_edges: knowledgeEdges,
     argument_template_nodes: argumentNodes,

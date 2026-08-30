@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import { api } from "../lib/api";
 import type { LearningSupportSeed, LearningSupportSession } from "../lib/types";
+import AITutor from "./AITutor.vue";
 
 const props = defineProps<{ seed: LearningSupportSeed }>();
 const emit = defineEmits<{ close: []; retryTask: [] }>();
@@ -34,6 +35,15 @@ const layerRows = computed(() => {
     { no: "03", key: "application", label: "事实适用", content: result.value.layers.application.content },
     { no: "04", key: "dispute", label: "争议边界", content: result.value.layers.dispute.content },
   ];
+});
+const tutorSpeech = computed(() => {
+  if (!result.value) return "";
+  return [
+    `关于${props.seed.knowledgeName}，先看规范原文。${result.value.layers.norm.content}`,
+    `白话解释：${result.value.layers.plain.content}`,
+    `事实适用：${result.value.layers.application.content}`,
+    `争议边界：${result.value.layers.dispute.content}`,
+  ].join(" ");
 });
 
 async function createSession(): Promise<void> {
@@ -110,6 +120,7 @@ onMounted(() => void createSession());
         </aside>
 
         <main class="support-main">
+          <AITutor context="support" :speech-text="tutorSpeech" compact />
           <div v-if="loading" class="support-loading">
             <span class="support-seal">析</span>
             <p>正在读取KnowledgeCard与标准Evidence……</p>
@@ -215,6 +226,7 @@ onMounted(() => void createSession());
 .support-boundary b { color:var(--accent); font-family:var(--font-display); font-size:.75rem; }
 .support-boundary p { margin:5px 0 0; color:var(--parchment-faint); font-size:.66rem; line-height:1.55; }
 .support-main { min-height:0; overflow-y:auto; padding:28px clamp(22px,4vw,52px) 46px; }
+.support-main > :deep(.ai-tutor) { margin-bottom:16px; }
 .support-loading,.support-error { min-height:420px; display:grid; place-content:center; justify-items:center; gap:14px; text-align:center; color:var(--parchment-muted); }
 .confusion-quote { padding:13px 16px; border-left:2px solid var(--accent-amber); background:rgba(176,138,62,.055); }
 .confusion-quote blockquote { margin:5px 0 0; color:var(--parchment-muted); font-size:.86rem; }
