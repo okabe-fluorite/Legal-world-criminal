@@ -1383,16 +1383,16 @@
     </div>
     <div class="timeline-h" style="margin-top:5vh;margin-bottom:10vh">
       <div class="tl-row" style="grid-template-columns:repeat(7,1fr)">
-        <div class="th-node up accent"><span class="dot"></span><div class="label"><span class="yr">01</span><span class="name">薄弱点</span><span class="desc">Evidence-KT</span></div></div>
-        <div class="th-node down"><span class="dot"></span><div class="label"><span class="yr">02</span><span class="name">先修知识</span><span class="desc">必要时回退</span></div></div>
-        <div class="th-node up"><span class="dot"></span><div class="label"><span class="yr">03</span><span class="name">选择题</span><span class="desc">确定性判分</span></div></div>
-        <div class="th-node down"><span class="dot"></span><div class="label"><span class="yr">04</span><span class="name">主观短答</span><span class="desc">AI形成性</span></div></div>
-        <div class="th-node up"><span class="dot"></span><div class="label"><span class="yr">05</span><span class="name">案件实训</span><span class="desc">多Agent</span></div></div>
-        <div class="th-node down"><span class="dot"></span><div class="label"><span class="yr">06</span><span class="name">角色互换</span><span class="desc">迁移规则</span></div></div>
-        <div class="th-node up accent"><span class="dot"></span><div class="label"><span class="yr">07</span><span class="name">间隔复习</span><span class="desc">下一事件重排</span></div></div>
+        <div class="th-node up accent"><span class="dot"></span><div class="label"><span class="yr">01</span><span class="name">薄弱点</span><span class="desc" style="font-size:16px;font-weight:500">Evidence-KT</span></div></div>
+        <div class="th-node down"><span class="dot"></span><div class="label"><span class="yr">02</span><span class="name">先修知识</span><span class="desc" style="font-size:16px;font-weight:500">必要时回退</span></div></div>
+        <div class="th-node up"><span class="dot"></span><div class="label"><span class="yr">03</span><span class="name">选择题</span><span class="desc" style="font-size:16px;font-weight:500">确定性判分</span></div></div>
+        <div class="th-node down"><span class="dot"></span><div class="label"><span class="yr">04</span><span class="name">主观短答</span><span class="desc" style="font-size:16px;font-weight:500">AI形成性</span></div></div>
+        <div class="th-node up"><span class="dot"></span><div class="label"><span class="yr">05</span><span class="name">案件实训</span><span class="desc" style="font-size:16px;font-weight:500">多Agent</span></div></div>
+        <div class="th-node down"><span class="dot"></span><div class="label"><span class="yr">06</span><span class="name">角色互换</span><span class="desc" style="font-size:16px;font-weight:500">迁移规则</span></div></div>
+        <div class="th-node up accent"><span class="dot"></span><div class="label"><span class="yr">07</span><span class="name">间隔复习</span><span class="desc" style="font-size:16px;font-weight:500">下一事件重排</span></div></div>
       </div>
     </div>
-    <div class="t-meta" style="position:absolute;left:5vw;bottom:8.4vh">算法排序任务；大模型只解释或执行。它是可解释候选路径，不宣称因果最优。</div>
+    <div class="t-meta" style="position:absolute;left:5vw;right:5vw;bottom:8.4vh;display:flex;justify-content:space-between;gap:2vw;font-weight:500"><span>算法排序任务；大模型只解释或执行，不宣称因果最优。</span><span>知识DAG快照：10节点 / 10条先修边 · 论证模板：6步契约 · 结论须过Evidence门禁</span></div>
   </div>
 </section>
 
@@ -1455,15 +1455,15 @@
 <!-- 10 · S05 Three Layers -->
 <section class="slide dark" data-layout="S05" data-animate="stack-build">
   <div class="canvas-card">
-    <div class="chrome-min"><div class="l">09 · MODEL ADAPTER</div><div class="r">10 / 12</div></div>
+    <div class="chrome-min"><div class="l">09 · MODEL + MEDIA ADAPTER</div><div class="r">10 / 12</div></div>
     <div data-anim="line" style="display:flex;flex-direction:column;gap:1.4vh">
-      <div class="t-meta">ROUTE TASKS · REPLACE ENDPOINTS</div>
-      <h2 style="font-family:var(--sans),var(--sans-zh);font-weight:200;font-size:min(5.8vw,10.2vh);line-height:.96;letter-spacing:-.035em">业务页面不随模型更换</h2>
+      <div class="t-meta">TEXT TASKS · MEDIA JOBS · REPLACE PROVIDERS</div>
+      <h2 style="font-family:var(--sans),var(--sans-zh);font-weight:200;font-size:min(5.2vw,9.2vh);line-height:.96;letter-spacing:-.035em">统一适配层连接任务与Provider</h2>
     </div>
-    <div class="stack-row" style="margin-top:7vh;padding-bottom:var(--nav-safe-bottom)">
-      <article class="stack-block b-grey"><div class="layer-nb">LAYER 01 · TASKS</div><div><div class="layer-ttl">四个教学任务</div><p class="layer-desc">subjective_scoring<br>learning_support<br>teaching_judge<br>response_assist</p></div><div class="layer-tag">页面只认任务契约</div></article>
-      <article class="stack-block b-accent"><div class="layer-nb">LAYER 02 · ADAPTER</div><div><div class="layer-ttl">统一OpenAI兼容路由</div><p class="layer-desc">Prompt / Few-shot / 可信RAG / fallback按任务选择；Key与私有URL不进入前端。</p></div><div class="layer-tag">当前基线：OpenCode / DeepSeek</div></article>
-      <article class="stack-block" style="background:var(--paper);color:var(--ink)"><div class="layer-nb">LAYER 03 · ENDPOINTS</div><div><div class="layer-ttl">微调端点可替换</div><p class="layer-desc">RAG+微调只有通过独立金标准、引用忠实度和专家复核后才可接入。</p></div><div class="layer-tag">SMALL MODEL · NOT_CONNECTED</div></article>
+    <div class="stack-row" style="margin-top:5vh;padding-bottom:var(--nav-safe-bottom)">
+      <article class="stack-block b-grey"><div class="layer-nb">LAYER 01 · TASKS</div><div><div class="layer-ttl">文本模型任务：4类</div><p class="layer-desc">媒体接口：ASR / Vision / TTS / Avatar<br>契约已定义 · 云端未接入</p></div><div class="layer-tag">页面只认版本化契约</div></article>
+      <article class="stack-block b-accent"><div class="layer-nb">LAYER 02 · ADAPTER</div><div><div class="layer-ttl">双适配总线</div><p class="layer-desc" style="font-weight:500;color:rgba(255,255,255,.92)">模型按任务路由；媒体按JWT、SHA与幂等状态流转。Key和私有路径不进入前端。</p></div><div class="layer-tag">OPENCODE优先 · PROVIDER-NEUTRAL</div></article>
+      <article class="stack-block" style="background:var(--paper);color:var(--ink)"><div class="layer-nb">LAYER 03 · PROVIDERS</div><div><div class="layer-ttl">基线可用，增强能力诚实降级</div><p class="layer-desc">浏览器朗读与私有上传可用；云ASR/TTS/Avatar需授权和独立验收，媒体结果不进入画像。</p></div><div class="layer-tag">云媒体 PROVIDERS · NOT_CONNECTED</div></article>
     </div>
   </div>
 </section>
@@ -1497,18 +1497,18 @@
         <div data-anim="manifesto" style="display:flex;flex-direction:column;gap:2vh;position:relative;z-index:1">
           <div class="t-meta" style="color:rgba(255,255,255,.78);letter-spacing:.22em">MANIFESTO</div>
           <h2 class="kpi-thin" style="font-family:var(--sans),var(--sans-zh);font-size:min(7vw,12.5vh);line-height:.94;letter-spacing:-.03em;font-weight:200;color:#fff">可运行<br>不等于<br><span style="font-style:italic;font-weight:300">已验证</span></h2>
-          <div class="t-body" style="color:rgba(255,255,255,.84);max-width:34ch">以真实证据收敛作品，不用演示数据冒充课堂效果。</div>
+          <div class="t-body" style="color:rgba(255,255,255,.84);max-width:38ch">以真实证据收敛作品<br>不用演示数据冒充课堂效果。</div>
         </div>
         <div data-anim="signature" style="border-top:1px solid rgba(255,255,255,.24);padding-top:2vh;position:relative;z-index:1"><div class="t-meta" style="color:rgba(255,255,255,.64)">本科刑法 → 法考 / 考研 → 其他法学课程</div></div>
       </div>
       <div class="half" style="padding:5.6vh 3.6vw 4.4vh;justify-content:space-between">
         <div class="chrome-min"><div class="l">READINESS</div><div class="r">03 FACTS</div></div>
         <ol class="takeaway-list" style="list-style:none;display:flex;flex-direction:column;gap:0">
-          <li style="display:grid;grid-template-columns:auto 1fr;gap:2vw;padding:2.4vh 0;border-top:1px solid var(--border-subtle)"><div style="font-family:var(--sans);font-weight:200;font-size:min(4.2vw,7.5vh)">01</div><div><h3 style="font-weight:400;font-size:max(20px,1.7vw);margin-bottom:.8vh">技术闭环已完成</h3><p class="t-body-sm">RAG、Agent、Evidence-KT、ORCDF shadow、路径、教师门禁与Model Adapter均有真实软件证据。</p></div></li>
-          <li style="display:grid;grid-template-columns:auto 1fr;gap:2vw;padding:2.4vh 0;border-top:1px solid var(--border-subtle)"><div style="font-family:var(--sans);font-weight:200;font-size:min(4.2vw,7.5vh)">02</div><div><h3 style="font-weight:400;font-size:max(20px,1.7vw);margin-bottom:.8vh">两类真实证据待补</h3><p class="t-body-sm">至少2名目标用户试用记录；独立法学专家对3个典型问题的审核意见。</p></div></li>
-            <li style="display:grid;grid-template-columns:auto 1fr;gap:2vw;padding:2.4vh 0;border-top:1px solid var(--border-subtle);border-bottom:2px solid var(--accent)"><div style="font-family:var(--sans);font-weight:200;font-size:min(4.2vw,7.5vh);color:var(--accent)">03</div><div><h3 style="font-weight:400;font-size:max(20px,1.7vw);margin-bottom:.8vh;color:var(--accent)">视频DRAFT已生成</h3><p class="t-body-sm">121.6秒1080p覆盖七项技术+INV/PR审计+AI配音/字幕；待团队完整审片和最终批准。</p></div></li>
+          <li style="display:grid;grid-template-columns:74px 1fr;gap:2vw;padding:2.4vh 0;border-top:1px solid var(--border-subtle)"><div style="font-family:var(--sans);font-weight:200;font-size:min(4.2vw,7.5vh)">01</div><div><h3 style="font-weight:400;font-size:max(20px,1.7vw);margin-bottom:.8vh">P0可运行闭环已完成</h3><p class="t-body-sm">P1知识DAG与媒体接口契约/降级路径已实现；云ASR/TTS/Avatar未接入、未验收。</p></div></li>
+          <li style="display:grid;grid-template-columns:74px 1fr;gap:2vw;padding:2.4vh 0;border-top:1px solid var(--border-subtle)"><div style="font-family:var(--sans);font-weight:200;font-size:min(4.2vw,7.5vh)">02</div><div><h3 style="font-weight:400;font-size:max(20px,1.7vw);margin-bottom:.8vh">两类真实证据待补</h3><p class="t-body-sm">至少2名目标用户试用记录；独立法学专家对3个典型问题的审核意见。</p></div></li>
+            <li style="display:grid;grid-template-columns:74px 1fr;gap:2vw;padding:2.4vh 0;border-top:1px solid var(--border-subtle);border-bottom:2px solid var(--accent)"><div style="font-family:var(--sans);font-weight:200;font-size:min(4.2vw,7.5vh);color:var(--accent)">03</div><div><h3 style="font-weight:400;font-size:max(20px,1.7vw);margin-bottom:.8vh;color:var(--accent)">视频DRAFT已生成</h3><p class="t-body-sm">121.6秒1080p覆盖七项技术+INV/PR审计+AI配音/字幕；待团队完整审片和最终批准。</p></div></li>
         </ol>
-        <div class="t-meta" style="text-align:right">AI生成内容已标识 · END OF DECK</div>
+        <div class="t-meta" style="text-align:right;margin-bottom:3.2vh">AI生成内容已标识 · END OF DECK</div>
       </div>
     </div>
   </div>

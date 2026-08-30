@@ -1,175 +1,22 @@
 {
+  "schema": "guizang-pptx-full-bleed-image-audit-v2",
   "slides": 12,
+  "pptx_bytes": 1501286,
+  "pptx_sha256": "9717389ec3c4728508594d6926574a52cdde8887418411afe47a577f5d49564d",
+  "under_100_mb": true,
+  "zip_crc_passed": true,
+  "all_one_picture": true,
+  "all_full_bleed": true,
   "all_1600x900": true,
-  "max_mean_abs_error": 0.0953,
-  "rows": [
-    {
-      "slide": 1,
-      "source": "slide-01.png",
-      "render": "幻灯片1.PNG",
-      "source_size": [
-        1600,
-        900
-      ],
-      "render_size": [
-        1600,
-        900
-      ],
-      "mean_abs_error": 0.0347
-    },
-    {
-      "slide": 2,
-      "source": "slide-02.png",
-      "render": "幻灯片2.PNG",
-      "source_size": [
-        1600,
-        900
-      ],
-      "render_size": [
-        1600,
-        900
-      ],
-      "mean_abs_error": 0.0953
-    },
-    {
-      "slide": 3,
-      "source": "slide-03.png",
-      "render": "幻灯片3.PNG",
-      "source_size": [
-        1600,
-        900
-      ],
-      "render_size": [
-        1600,
-        900
-      ],
-      "mean_abs_error": 0.0405
-    },
-    {
-      "slide": 4,
-      "source": "slide-04.png",
-      "render": "幻灯片4.PNG",
-      "source_size": [
-        1600,
-        900
-      ],
-      "render_size": [
-        1600,
-        900
-      ],
-      "mean_abs_error": 0.0495
-    },
-    {
-      "slide": 5,
-      "source": "slide-05.png",
-      "render": "幻灯片5.PNG",
-      "source_size": [
-        1600,
-        900
-      ],
-      "render_size": [
-        1600,
-        900
-      ],
-      "mean_abs_error": 0.0445
-    },
-    {
-      "slide": 6,
-      "source": "slide-06.png",
-      "render": "幻灯片6.PNG",
-      "source_size": [
-        1600,
-        900
-      ],
-      "render_size": [
-        1600,
-        900
-      ],
-      "mean_abs_error": 0.0589
-    },
-    {
-      "slide": 7,
-      "source": "slide-07.png",
-      "render": "幻灯片7.PNG",
-      "source_size": [
-        1600,
-        900
-      ],
-      "render_size": [
-        1600,
-        900
-      ],
-      "mean_abs_error": 0.031
-    },
-    {
-      "slide": 8,
-      "source": "slide-08.png",
-      "render": "幻灯片8.PNG",
-      "source_size": [
-        1600,
-        900
-      ],
-      "render_size": [
-        1600,
-        900
-      ],
-      "mean_abs_error": 0.0663
-    },
-    {
-      "slide": 9,
-      "source": "slide-09.png",
-      "render": "幻灯片9.PNG",
-      "source_size": [
-        1600,
-        900
-      ],
-      "render_size": [
-        1600,
-        900
-      ],
-      "mean_abs_error": 0.0494
-    },
-    {
-      "slide": 10,
-      "source": "slide-10.png",
-      "render": "幻灯片10.PNG",
-      "source_size": [
-        1600,
-        900
-      ],
-      "render_size": [
-        1600,
-        900
-      ],
-      "mean_abs_error": 0.0742
-    },
-    {
-      "slide": 11,
-      "source": "slide-11.png",
-      "render": "幻灯片11.PNG",
-      "source_size": [
-        1600,
-        900
-      ],
-      "render_size": [
-        1600,
-        900
-      ],
-      "mean_abs_error": 0.0612
-    },
-    {
-      "slide": 12,
-      "source": "slide-12.png",
-      "render": "幻灯片12.PNG",
-      "source_size": [
-        1600,
-        900
-      ],
-      "render_size": [
-        1600,
-        900
-      ],
-      "mean_abs_error": 0.0798
-    }
-  ]
+  "all_embedded_images_match_qa_png": true,
+  "web_qa_report_sha256": "8073f1f937c7ca2053af0bb3c4594095b7f5069b9420e371752c4c0a460fe1d4",
+  "web_qa": {
+    "overflow_count": 0,
+    "image_failures": 0,
+    "console_errors": 0,
+    "page_errors": 0,
+    "failed_requests": 0
+  },
+  "powerpoint_com_render_performed": false,
+  "render_note": "The deck contains one 1600x900 full-bleed image per slide. Each embedded image is byte-identical to its browser-QA PNG. PowerPoint COM rendering was unavailable in the automated environment, so this audit does not claim a fresh application-level re-render."
 }
