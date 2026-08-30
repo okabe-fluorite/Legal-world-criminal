@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 from datetime import datetime, timezone
@@ -19,6 +20,34 @@ def read_json(path: Path) -> dict:
 
 def git_output(*args: str) -> str:
     return subprocess.check_output(["git", *args], cwd=REPO, text=True).strip()
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def repo_relative(path: Path) -> str:
+    return path.resolve().relative_to(REPO.resolve()).as_posix()
+
+
+def tracked_worktree_clean_excluding(paths: list[Path]) -> bool:
+    """Check tracked state while ignoring this audit's generated outputs."""
+
+    exclusions = [f":(exclude){repo_relative(path)}" for path in paths]
+    pathspecs = [".", *exclusions]
+    worktree_clean = subprocess.run(
+        ["git", "diff", "--quiet", "--", *pathspecs], cwd=REPO, check=False
+    ).returncode == 0
+    index_clean = subprocess.run(
+        ["git", "diff", "--cached", "--quiet", "--", *pathspecs],
+        cwd=REPO,
+        check=False,
+    ).returncode == 0
+    return worktree_clean and index_clean
 
 
 def main() -> int:
@@ -49,6 +78,40 @@ def main() -> int:
     typical = read_json(REPO / "docs" / "TYPICAL_QUESTION_EVALUATION.json")
     ppt_meta = read_json(ppt_report)
     web_meta = read_json(web_report)
+    web_qa = {
+        "overflow": sum(
+            len(row.get("overflow") or []) for row in web_meta.get("slides") or []
+        ),
+        "console_errors": len(web_meta.get("consoleErrors") or []),
+        "page_errors": len(web_meta.get("pageErrors") or []),
+        "failed_requests": len(web_meta.get("failedRequests") or []),
+    }
+    ppt_v2 = ppt_meta.get("schema") == "guizang-pptx-full-bleed-image-audit-v2"
+    ppt_integrity_passed = (
+        ppt.is_file()
+        and ppt.stat().st_size < 100 * 1024 * 1024
+        and ppt_meta.get("slides") == 12
+        and (
+            (
+                ppt_v2
+                and ppt_meta.get("pptx_bytes") == ppt.stat().st_size
+                and ppt_meta.get("pptx_sha256") == sha256(ppt)
+                and ppt_meta.get("under_100_mb") is True
+                and ppt_meta.get("zip_crc_passed") is True
+                and ppt_meta.get("all_one_picture") is True
+                and ppt_meta.get("all_full_bleed") is True
+                and ppt_meta.get("all_1600x900") is True
+                and ppt_meta.get("all_embedded_images_match_qa_png") is True
+                and ppt_meta.get("web_qa_report_sha256") == sha256(web_report)
+                and all(value == 0 for value in web_qa.values())
+            )
+            or (
+                not ppt_v2
+                and ppt_meta.get("all_1600x900") is True
+                and isinstance(ppt_meta.get("max_mean_abs_error"), (int, float))
+            )
+        )
+    )
     video_qa = narrated.get("qa", {})
     video_audio_analysis = narrated.get("audio", {}).get("analysis", {})
     video_content = narrated.get("content_coverage", {})
@@ -79,11 +142,9 @@ def main() -> int:
         and effect_package.get("evidence_levels", {}).get("L4") == "not conducted"
     )
 
-    tracked_clean = subprocess.run(
-        ["git", "diff", "--quiet"], cwd=REPO, check=False
-    ).returncode == 0 and subprocess.run(
-        ["git", "diff", "--cached", "--quiet"], cwd=REPO, check=False
-    ).returncode == 0
+    json_path = args.json.resolve()
+    md_path = args.markdown.resolve()
+    tracked_clean = tracked_worktree_clean_excluding([json_path, md_path])
     untracked = [
         line[3:] for line in git_output("status", "--short").splitlines()
         if line.startswith("?? ")
@@ -100,10 +161,28 @@ def main() -> int:
         {
             "id": "ppt",
             "requirement": "100MB以内作品方案PPT",
-            "status": "passed" if ppt.is_file() and ppt.stat().st_size < 100 * 1024 * 1024 and ppt_meta.get("slides") == 12 else "failed",
+            "status": "passed" if ppt_integrity_passed else "failed",
             "evidence": [str(ppt.relative_to(REPO)), str(ppt_report.relative_to(REPO))],
-            "detail": {"bytes": ppt.stat().st_size, "slides": ppt_meta.get("slides"), "max_render_mae": ppt_meta.get("max_mean_abs_error")},
-            "boundary": "仍名为DRAFT；真实用户/专家状态待替换",
+            "detail": {
+                "schema": ppt_meta.get("schema", "legacy"),
+                "bytes": ppt.stat().st_size,
+                "sha256": sha256(ppt),
+                "slides": ppt_meta.get("slides"),
+                "zip_crc_passed": ppt_meta.get("zip_crc_passed"),
+                "all_full_bleed": ppt_meta.get("all_full_bleed"),
+                "embedded_images_match_qa": ppt_meta.get(
+                    "all_embedded_images_match_qa_png"
+                ),
+                "browser_qa": web_qa,
+                "powerpoint_com_render_performed": ppt_meta.get(
+                    "powerpoint_com_render_performed"
+                ),
+                "legacy_max_render_mae": ppt_meta.get("max_mean_abs_error"),
+            },
+            "boundary": (
+                "仍名为DRAFT；全幅嵌入图与浏览器QA逐页一致，但本轮未执行新的PowerPoint COM重渲染；"
+                "真实用户/专家状态待替换"
+            ),
         },
         {
             "id": "video",
@@ -312,10 +391,8 @@ def main() -> int:
         "external_pending": external_pending,
         "internal_pending": internal_pending,
         "ready_for_final_submission": not external_pending and not internal_pending and all(row["status"] == "passed" for row in checks),
-        "web_ppt_qa": {"overflow": sum(len(row.get("overflow") or []) for row in web_meta.get("slides") or []), "console_errors": len(web_meta.get("consoleErrors") or []), "page_errors": len(web_meta.get("pageErrors") or []), "failed_requests": len(web_meta.get("failedRequests") or [])},
+        "web_ppt_qa": web_qa,
     }
-    json_path = args.json.resolve()
-    md_path = args.markdown.resolve()
     json_path.parent.mkdir(parents=True, exist_ok=True)
     json_path.write_text(json.dumps(audit, ensure_ascii=False, indent=2), encoding="utf-8")
 
