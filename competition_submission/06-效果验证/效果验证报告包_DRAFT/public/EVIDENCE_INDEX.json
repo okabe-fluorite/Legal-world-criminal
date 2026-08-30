@@ -1,6 +1,6 @@
 {
   "schema": "effect-report-evidence-index-v1",
-  "source_git_commit": "54326efa5431520df4f49e54e6f1da4ded7a07cd",
+  "source_git_commit": "840d656e779947df9f6c8b74eab4f8cab873bcae",
   "sources": [
     {
       "id": "frozen",
@@ -21,16 +21,22 @@
       "sha256": "7baf68482053824d4365d144646d7c8504e8bfef57319b64fad06c4141272927"
     },
     {
+      "id": "rehearsal",
+      "path": "competition_submission/03-Demo/THREE_ROUTE_REHEARSAL_AUDIT.json",
+      "bytes": 6438,
+      "sha256": "821c8cd5d7d490bfaded8d98e85654d1fc1913b8ddc02ab94bbb74b3700b6335"
+    },
+    {
       "id": "web_ppt",
       "path": "competition_submission/04-作品方案/guizang/qa/report.json",
-      "bytes": 5934,
-      "sha256": "0b191f9c36dc02df3f97c4a2210eb4328d3c6155c5d5747a685d5a784ff0fe2b"
+      "bytes": 5912,
+      "sha256": "8073f1f937c7ca2053af0bb3c4594095b7f5069b9420e371752c4c0a460fe1d4"
     },
     {
       "id": "pptx",
       "path": "competition_submission/04-作品方案/guizang/qa/pptx-report.json",
-      "bytes": 3199,
-      "sha256": "10e0f069696ca1f7eaa44c788720e92802108b14a02d93550cd72b0b51ed2a01"
+      "bytes": 910,
+      "sha256": "caef06849e2f07f9f92015135958a7f77d3a6ac2b70be0844fc204438151692c"
     },
     {
       "id": "typical",
@@ -41,8 +47,14 @@
     {
       "id": "cognitive",
       "path": "docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md",
-      "bytes": 4735,
-      "sha256": "f28d87b4f170303b3c19b86c53d471d60271f2364eedf7ff0a4d549f115e7cbc"
+      "bytes": 6036,
+      "sha256": "3aedf9e763c456d99952feb50f453efa646114f8d581de153c077e2b4e6ce3c8"
+    },
+    {
+      "id": "media",
+      "path": "docs/MULTIMODAL_AVATAR_ARCHITECTURE.md",
+      "bytes": 7828,
+      "sha256": "59fd79f260ab94ec2b8ae9d1f43cf6ffcfc72f0efb7019e7f5b9771fda7b1ace"
     },
     {
       "id": "expert",

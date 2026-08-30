@@ -2,7 +2,7 @@
   "schema": "effect-report-package-build-audit-v1",
   "public_pdf_pages": 5,
   "private_pdf_pages": 2,
-  "source_count": 11,
+  "source_count": 13,
   "required_public_missing": [],
   "forbidden_positive_hits": [],
   "required_private_missing": [],

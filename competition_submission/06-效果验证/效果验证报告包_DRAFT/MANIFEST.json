@@ -1,64 +1,64 @@
 {
   "schema": "effect-report-package-manifest-v1",
-  "source_git_commit": "54326efa5431520df4f49e54e6f1da4ded7a07cd",
+  "source_git_commit": "840d656e779947df9f6c8b74eab4f8cab873bcae",
   "package_build_date": "2026-08-30",
-  "report_sha256": "fe4bb091f549115272b645b380084554cf429be0e0efec53ab437caf096d3518",
-  "evidence_index_sha256": "48ff649b8366fa16e4a43d6564fec32d677cb4f97b2208a5bbc37ff4cbc9d5ba",
+  "report_sha256": "695780f24a374403ab034505d3c8ef0b95721f106b40c6ec367531eea989426c",
+  "evidence_index_sha256": "d55be8f33b0a859d341be2613568beb0476345bc8c0553519619b92ad65debfd",
   "files": [
     {
       "path": "BUILD_AUDIT.json",
       "bytes": 742,
-      "sha256": "536c5af898f9d540b025093b3ee2d623b4a0ff9925dc0575d690417e1e4647fb"
+      "sha256": "5a20d2412f2207e3259a5da3725d5add690cb9a9a7296a048ff6ca651286637c"
     },
     {
       "path": "README.md",
       "bytes": 523,
-      "sha256": "88d36564a995e21a4795f04a585ea25bf8f0068959ad85ab62bed2bb55db75f3"
+      "sha256": "d13ac9326d68dfaab926456eea78b54ebf89246c38e678e6d92878b88c1b944e"
     },
     {
       "path": "private/PRIVATE_MANIFEST.json",
       "bytes": 383,
-      "sha256": "2b8826d3c6188e601ebbeedfe30defd235a57bd3bc10fcd4e8f4162083fd9532"
+      "sha256": "3a160d1995afc3d86f2478448950166956e39d6e57c10213acffd0325b5ffc3b"
     },
     {
       "path": "private/效果验证报告批准表_私密.pdf",
-      "bytes": 115240,
-      "sha256": "ed06f6090b2d5a39a96fbb1debddabe5ef3b31f4ea5f799417cf71e1c57175d3"
+      "bytes": 115241,
+      "sha256": "977d31c653cec09ea238e016f5faa2c41fb4c42801cde953bdfba8dab10069c2"
     },
     {
       "path": "public/EVIDENCE_INDEX.json",
-      "bytes": 2903,
-      "sha256": "48ff649b8366fa16e4a43d6564fec32d677cb4f97b2208a5bbc37ff4cbc9d5ba"
+      "bytes": 3331,
+      "sha256": "d55be8f33b0a859d341be2613568beb0476345bc8c0553519619b92ad65debfd"
     },
     {
       "path": "public/PUBLIC_MANIFEST.json",
       "bytes": 535,
-      "sha256": "51d3f0722c08a88e7d8531d433b2c7cb4ad0b53032c2f32457d4c3e0ea40741c"
+      "sha256": "165d25348a84c74efb259a50e3d10671ac7bcf3f3e1575bd379f32d68833b1f9"
     },
     {
       "path": "public/星火智学效果验证报告_DRAFT.pdf",
-      "bytes": 255907,
-      "sha256": "fe4bb091f549115272b645b380084554cf429be0e0efec53ab437caf096d3518"
+      "bytes": 266871,
+      "sha256": "695780f24a374403ab034505d3c8ef0b95721f106b40c6ec367531eea989426c"
     },
     {
       "path": "效果报告批准页包_DRAFT.zip",
-      "bytes": 112652,
-      "sha256": "088d8aacd019aa3de680dbcd6148ed6b6dec33ce6d632458ad263ae82e88b78b"
+      "bytes": 112659,
+      "sha256": "6fe49ea7c22e9238cb8cb2d89f3ee804592a62e9c247548952133fdf317b335f"
     },
     {
       "path": "效果报告批准页包_DRAFT.zip.sha256.txt",
       "bytes": 102,
-      "sha256": "c042f5b5477ec8c42bd0ff15555757512817bf4628b1e6c210ce38b80ae34e6c"
+      "sha256": "f36737f61364c0c014bfc208427caf71506e2fdf0d1bb9a536696b6f8998d990"
     },
     {
       "path": "效果验证报告公开包_DRAFT.zip",
-      "bytes": 251375,
-      "sha256": "3b4e1d0959a1cd4e3876fa3fadc111c5978808f6e12ac331b06df32654ffd1c5"
+      "bytes": 262169,
+      "sha256": "3b5dcff567b2e69dcc23556c9af8272b85be540c6780f1e5f404dab38ec8e78a"
     },
     {
       "path": "效果验证报告公开包_DRAFT.zip.sha256.txt",
       "bytes": 105,
-      "sha256": "ddb1b790af52a2ae04243001d47abc2f86d1ea7cd16ba444f0d6421696f3baa9"
+      "sha256": "cf6493d474b4b42e3707603d4d483cacc9dd8e3021aed8a9a9f841986efbc1f5"
     }
   ],
   "evidence_levels": {
