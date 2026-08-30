@@ -66,6 +66,7 @@ from src.human_eval.routes import create_human_eval_router
 from src.teacher.routes import create_teacher_router
 from src.learning_support.routes import create_learning_support_router
 from src.subjective.routes import create_subjective_router
+from src.media.routes import create_media_router
 from src.orchestration.case_fsm import CaseStateMachine
 from src.orchestration.agent_registry import AgentRegistry
 from src.orchestration.scenario_orchestrator import ScenarioOrchestrator
@@ -965,6 +966,25 @@ app.include_router(
     create_subjective_router(
         current_user_dependency=_get_current_user,
         session_dependency=_db_session_dependency,
+    )
+)
+
+
+def _media_storage_root(session, current_user: User) -> Path:
+    sandbox = _require_user_sandbox(session, current_user)
+    storage_value = str(sandbox.storage_root or "").strip()
+    if not storage_value:
+        raise HTTPException(status_code=503, detail="Sandbox storage is unavailable")
+    root = Path(storage_value).resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+app.include_router(
+    create_media_router(
+        current_user_dependency=_get_current_user,
+        session_dependency=_db_session_dependency,
+        storage_root_provider=_media_storage_root,
     )
 )
 

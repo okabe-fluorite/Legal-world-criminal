@@ -378,3 +378,59 @@ class SubjectiveReviewRecord(Base):
     payload_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
     learning_event_id: Mapped[str] = mapped_column(String(96), nullable=False, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+
+class MediaAssetRecord(Base):
+    """Student-owned private media asset metadata.
+
+    The binary stays below the user's sandbox root.  Only a relative storage
+    key is persisted so API responses and database exports do not disclose a
+    host filesystem path.
+    """
+
+    __tablename__ = "media_assets"
+
+    asset_id: Mapped[str] = mapped_column(String(96), primary_key=True)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=False, index=True
+    )
+    purpose: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
+    media_type: Mapped[str] = mapped_column(String(16), nullable=False)
+    content_type: Mapped[str] = mapped_column(String(128), nullable=False)
+    original_name: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
+    content_sha256: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    storage_key: Mapped[str] = mapped_column(String(512), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="active")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+
+class MediaJobRecord(Base):
+    """Idempotent provider job without mastery or grading side effects."""
+
+    __tablename__ = "media_jobs"
+
+    job_id: Mapped[str] = mapped_column(String(96), primary_key=True)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=False, index=True
+    )
+    job_type: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
+    asset_id: Mapped[str | None] = mapped_column(
+        String(96), ForeignKey("media_assets.asset_id"), nullable=True, index=True
+    )
+    provider_requested: Mapped[str] = mapped_column(String(64), nullable=False, default="auto")
+    provider_resolved: Mapped[str] = mapped_column(String(64), nullable=False, default="none")
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="not_connected")
+    request_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    request_summary_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+    result_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    error_code: Mapped[str] = mapped_column(String(64), nullable=False, default="")
+    error_message: Mapped[str] = mapped_column(String(1000), nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+    )
