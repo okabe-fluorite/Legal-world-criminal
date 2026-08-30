@@ -54,6 +54,31 @@ def repo_relative(path: Path) -> str:
         return resolved.name
 
 
+def sanitize_result_paths(value: Any, key: str = "") -> Any:
+    """Convert local artifact paths in child smoke output to public relative paths."""
+
+    if isinstance(value, dict):
+        return {
+            str(child_key): sanitize_result_paths(child_value, str(child_key))
+            for child_key, child_value in value.items()
+        }
+    if isinstance(value, list):
+        return [sanitize_result_paths(item, key) for item in value]
+    path_keys = {
+        "artifact_dir",
+        "screenshot",
+        "analytics_screenshot",
+        "student_subjective_screenshot",
+        "subjective_queue_screenshot",
+        "subjective_dialog_screenshot",
+        "subjective_after_screenshot",
+        "student_teacher_feedback_screenshot",
+    }
+    if key in path_keys and isinstance(value, str) and value:
+        return repo_relative(Path(value))
+    return value
+
+
 def port_open(port: int) -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.settimeout(0.3)
@@ -246,7 +271,7 @@ def run_route(spec: dict[str, Any], base_env: dict[str, str]) -> dict[str, Any]:
         check=False,
     )
     duration = round(time.monotonic() - started, 3)
-    payload = parse_last_json(result.stdout, result.stderr)
+    payload = sanitize_result_paths(parse_last_json(result.stdout, result.stderr))
     failures = list(spec["validate"](payload))
     if result.returncode != 0:
         failures.append(f"browser script exit code {result.returncode}")
