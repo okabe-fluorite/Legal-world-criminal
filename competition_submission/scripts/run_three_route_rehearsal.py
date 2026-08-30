@@ -137,7 +137,9 @@ def validate_rag(payload: dict[str, Any]) -> list[str]:
         failures.append("automated question gate is not 3/3")
     if payload.get("expert_review") != "pending":
         failures.append("expert review boundary is not pending")
-    if len(payload.get("rejected_bad_citations") or []) != 2:
+    rejected = payload.get("rejected_bad_citations")
+    rejected_count = rejected if isinstance(rejected, int) else len(rejected or [])
+    if rejected_count != 2:
         failures.append("bad citation rejection is not 2/2")
     if not zero_browser_errors(payload):
         failures.append("browser/private error arrays are not empty")
