@@ -1,0 +1,120 @@
+{
+  "schema_version": "legal-edu-eval-run-report-v1",
+  "generated_at": "2026-08-30T19:00:13.159461+00:00",
+  "dataset_id": "LegalEduEval-v1-candidate",
+  "dataset_status": "candidate_requires_legal_review",
+  "dataset_counts": {
+    "items": 100,
+    "by_type": {
+      "issue_subsumption": 25,
+      "law_source_qa": 25,
+      "pro_con_reasoning": 20,
+      "safety_abstention": 15,
+      "teaching_feedback": 15
+    },
+    "by_split": {
+      "dev": 30,
+      "test": 70
+    },
+    "source_families": 10,
+    "cross_split_family_overlap": 0
+  },
+  "candidates": {
+    "E0_base_model": {
+      "status": "pending",
+      "metrics": {
+        "response_count": 0,
+        "coverage_of_100": 0.0,
+        "schema_success_rate": null,
+        "evidence_scope_rate": null,
+        "exact_quote_rate": null,
+        "forbidden_output_pass_rate": null,
+        "abstention_behavior_rate": null,
+        "automatic_gate_rate": null,
+        "mean_required_point_coverage": null,
+        "latency_ms_mean": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "cost_total": null,
+        "human_score": "pending",
+        "by_task_type": {},
+        "error_counts": {}
+      },
+      "responses": []
+    },
+    "E1_prompt_few_shot": {
+      "status": "pending",
+      "metrics": {
+        "response_count": 0,
+        "coverage_of_100": 0.0,
+        "schema_success_rate": null,
+        "evidence_scope_rate": null,
+        "exact_quote_rate": null,
+        "forbidden_output_pass_rate": null,
+        "abstention_behavior_rate": null,
+        "automatic_gate_rate": null,
+        "mean_required_point_coverage": null,
+        "latency_ms_mean": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "cost_total": null,
+        "human_score": "pending",
+        "by_task_type": {},
+        "error_counts": {}
+      },
+      "responses": []
+    },
+    "E2_trusted_rag": {
+      "status": "pending",
+      "metrics": {
+        "response_count": 0,
+        "coverage_of_100": 0.0,
+        "schema_success_rate": null,
+        "evidence_scope_rate": null,
+        "exact_quote_rate": null,
+        "forbidden_output_pass_rate": null,
+        "abstention_behavior_rate": null,
+        "automatic_gate_rate": null,
+        "mean_required_point_coverage": null,
+        "latency_ms_mean": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "cost_total": null,
+        "human_score": "pending",
+        "by_task_type": {},
+        "error_counts": {}
+      },
+      "responses": []
+    },
+    "E3_rag_finetuned_model": {
+      "status": "pending_model_delivery",
+      "metrics": {
+        "response_count": 0,
+        "coverage_of_100": 0.0,
+        "schema_success_rate": null,
+        "evidence_scope_rate": null,
+        "exact_quote_rate": null,
+        "forbidden_output_pass_rate": null,
+        "abstention_behavior_rate": null,
+        "automatic_gate_rate": null,
+        "mean_required_point_coverage": null,
+        "latency_ms_mean": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "cost_total": null,
+        "human_score": "pending",
+        "by_task_type": {},
+        "error_counts": {}
+      },
+      "responses": []
+    }
+  },
+  "expert_review_status": "pending",
+  "learning_effect_status": "not_evaluated",
+  "boundary": [
+    "automatic keyword and citation gates are not semantic legal correctness",
+    "all benchmark items remain candidate_requires_legal_review and not_gold",
+    "missing model columns remain pending and are never filled with simulated scores",
+    "this benchmark does not measure student learning gain"
+  ]
+}

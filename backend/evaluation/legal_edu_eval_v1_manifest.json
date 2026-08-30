@@ -1,0 +1,57 @@
+{
+  "schema_version": "legal-edu-eval-manifest-v1",
+  "dataset_id": "LegalEduEval-v1-candidate",
+  "status": "candidate_requires_legal_review",
+  "gold_status": "not_gold",
+  "counts": {
+    "items": 100,
+    "by_type": {
+      "issue_subsumption": 25,
+      "law_source_qa": 25,
+      "pro_con_reasoning": 20,
+      "safety_abstention": 15,
+      "teaching_feedback": 15
+    },
+    "by_split": {
+      "dev": 30,
+      "test": 70
+    },
+    "source_families": 10,
+    "cross_split_family_overlap": 0
+  },
+  "files": {
+    "legal_edu_eval_v1.jsonl": {
+      "sha256": "643d1ed6e1d9066e777d228363d6d406c8d9707fb4c3c6620481878719aa8a37",
+      "bytes": 297275
+    },
+    "legal-edu-eval-item-v1.schema.json": {
+      "sha256": "0ceb5f5f4fc88c26b2727bc865aa0af8372170eeb6daff3340a2df6809519489",
+      "bytes": 4384
+    }
+  },
+  "source_method_audit": {
+    "LawBench": "reuse task taxonomy and abstention-rate idea only; do not import old predictions or assume current-law Gold",
+    "LexEval": "reuse cognitive taxonomy and runner organization only; do not import 3GB model outputs",
+    "MSLR-Bench": "reuse IRAC/FRC and failure-analysis ideas only; insider-trading administrative cases are not criminal-law classroom Gold",
+    "EduBrain": "reuse leakage, teacher-gate, hash, failure-isolation and evidence-boundary lessons"
+  },
+  "evaluation_matrix": {
+    "E0_base_model": "pending",
+    "E1_prompt_few_shot": "pending",
+    "E2_trusted_rag": "pending",
+    "E3_rag_finetuned_model": "pending_model_delivery"
+  },
+  "data_separation": {
+    "intended_use": "evaluation_only_not_for_training",
+    "split_unit": "source_family_id",
+    "training_manifest_check_required": true,
+    "known_overlap_risk": "25 issue/subsumption candidates are derived from governed product TaskItems; if a candidate model trained on those TaskItems or close variants, mark the affected results contaminated and replace them with independently authored teacher-reviewed items"
+  },
+  "limits": [
+    "all 100 items are candidates, not law-teacher Gold",
+    "required keyword points are machine checks, not semantic legal correctness",
+    "source-family split prevents direct family leakage but does not prove absence of pretraining contamination",
+    "expert scores and learning effects remain pending",
+    "training contamination must be checked against the delivered model data manifest"
+  ]
+}

@@ -251,6 +251,15 @@ teaching/
 - `run_legal_reasoning_gate_audit.py`当前固定1个正例和6个负例，模型/网络调用均为0；通过门禁只证明结构与Evidence纪律，不证明法律蕴含、专家准确率或教师Gold。
 - `CRIMINAL_LAW_2024_VERSION_AUDIT`确认“截至2024-03-01”版本口径和修正案十二七处修改正确；本地“2024年最新版”因缺条、正文差异和第三方标记仅作交叉校验源，正式505条仍由官方2020正文+官方修正案十二确定性合并。
 
+### LegalEduEval-v1候选评测
+
+- `backend/evaluation/legal_edu_eval_v1.jsonl`当前恰有100题候选：法源25、涵摄25、正反20、教学15、安全15；全部为`candidate_requires_legal_review/not_gold`。
+- dev/test按`source_family_id`成组切分为30/70，跨split来源家族重叠为0；不允许将100题回流训练。
+- `run_legal_edu_eval_v1.py`不调用模型，只评分任意Adapter导出的response JSONL；缺失E0/E1/E2保持pending，队友模型E3未交付时为pending_model_delivery。
+- 25道涵摄题由现有受治理TaskItem派生；队友训练manifest若包含同源题或近似改写，必须把相应测试标记污染并更换独立教师命题。
+- 自动指标包括Schema、required point、Evidence scope、逐字quote、禁止输出和应弃权行为；人工Rubric、专家分和学习效果全部保持pending。
+- LawBench/LexEval/MSLR-Bench仅借鉴任务分类、Runner、IRAC/FRC和失败分析，不复制旧模型输出或把外部答案作为刑法Gold。
+
 ### 受治理AI分层解惑
 
 - `learning_support_sessions`保存学生私有两步会话：确定性诊断追问→学生回答→受治理四层解释；同ID幂等/冲突、跨学生403
