@@ -5,6 +5,8 @@
 # Guizang逐页截图可由qa_screenshots.mjs复现；只保留总览和结构化报告
 /04-作品方案/guizang/qa/screens/
 /04-作品方案/guizang/qa/pptx-render*/
+/04-作品方案/guizang-tech-v2/qa/screens/
+/04-作品方案/guizang-tech-v2/qa/pptx-render/
 
 # 视频审片25帧可由build_video_review_package.py复现；只提交接触表和审计
 /06-效果验证/视频审片包_DRAFT/frames/

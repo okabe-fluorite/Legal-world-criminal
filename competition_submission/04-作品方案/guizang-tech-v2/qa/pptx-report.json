@@ -1,0 +1,157 @@
+{
+  "schema_version": "guizang-tech-v2-pptx-render-audit-v1",
+  "pptx": "星火智学_作品方案_技术主线V2_DRAFT.pptx",
+  "pptx_bytes": 1350090,
+  "pptx_sha256": "ed8b4214c5d753c34970a94007dea3daa423095741daa4fbdacfdd6cc76a4404",
+  "slides": 12,
+  "rendered_slides": 12,
+  "under_100_mb": true,
+  "max_mean_absolute_pixel_difference": 0.094646,
+  "rows": [
+    {
+      "slide": 1,
+      "source": "slide-01.png",
+      "rendered": "幻灯片1.PNG",
+      "size": [
+        1600,
+        900
+      ],
+      "mean_absolute_pixel_difference": 0.023334,
+      "source_sha256": "f6635ea4d540b24b587cb83717c1acea5935173d51d3842cd173081e1943a6a5",
+      "rendered_sha256": "d5c6c548cf90b68d81db3cdb1da0dba8d82bdda0a21397c470d0489039f8ce2d"
+    },
+    {
+      "slide": 2,
+      "source": "slide-02.png",
+      "rendered": "幻灯片2.PNG",
+      "size": [
+        1600,
+        900
+      ],
+      "mean_absolute_pixel_difference": 0.083925,
+      "source_sha256": "277688443daef13b02a0884db6f22626038c6e07bd14ef4b0cd6779d911bb5c4",
+      "rendered_sha256": "eb7e4c1f38010fea829c6c11f191f84d431e0f173e7abce9cb6af1f089a66ed1"
+    },
+    {
+      "slide": 3,
+      "source": "slide-03.png",
+      "rendered": "幻灯片3.PNG",
+      "size": [
+        1600,
+        900
+      ],
+      "mean_absolute_pixel_difference": 0.063858,
+      "source_sha256": "ce0a999950a0060a1cb1563daebbf8c31f99a3f97f964be55a79bf9f4ae8b681",
+      "rendered_sha256": "4c72bb8fd71fd00ca33483e264f4263668bec027f0397fb8969080a35890a03e"
+    },
+    {
+      "slide": 4,
+      "source": "slide-04.png",
+      "rendered": "幻灯片4.PNG",
+      "size": [
+        1600,
+        900
+      ],
+      "mean_absolute_pixel_difference": 0.032479,
+      "source_sha256": "aec29850a541eddb31f2e7d9e4180efa3c8d4b77cb6f61b85f53a83d11009caa",
+      "rendered_sha256": "22eaa95debe4256600da10035f8d811e8e4f3b6030bbc726f956b08c209359ba"
+    },
+    {
+      "slide": 5,
+      "source": "slide-05.png",
+      "rendered": "幻灯片5.PNG",
+      "size": [
+        1600,
+        900
+      ],
+      "mean_absolute_pixel_difference": 0.08144,
+      "source_sha256": "29d09e4a6784690805aa9c6ef68bc8bae4ce16852d629e5956fa5aa10b91ba4a",
+      "rendered_sha256": "4691cd23b5927aa59719ca4cb648dd2492f88efd78ffaa258129becc0d104903"
+    },
+    {
+      "slide": 6,
+      "source": "slide-06.png",
+      "rendered": "幻灯片6.PNG",
+      "size": [
+        1600,
+        900
+      ],
+      "mean_absolute_pixel_difference": 0.058651,
+      "source_sha256": "aec1a1b1efaa57aecb897d55bfdd873a0b912fcf6ac01f9a856641c25f65db0e",
+      "rendered_sha256": "23f87a9eff55296e7e217860e5fea6f6921dcdfa0feab9a140a781646e13bb4d"
+    },
+    {
+      "slide": 7,
+      "source": "slide-07.png",
+      "rendered": "幻灯片7.PNG",
+      "size": [
+        1600,
+        900
+      ],
+      "mean_absolute_pixel_difference": 0.058154,
+      "source_sha256": "fa913775db1eda2e126beb8501b1c6d7466609b8c22628e1e1fbe5250e89fc5c",
+      "rendered_sha256": "be2c1cfc9e868cd972b7cd82a4f3792dca2d2dc48ceff94526cd892197c3252f"
+    },
+    {
+      "slide": 8,
+      "source": "slide-08.png",
+      "rendered": "幻灯片8.PNG",
+      "size": [
+        1600,
+        900
+      ],
+      "mean_absolute_pixel_difference": 0.05078,
+      "source_sha256": "57934191b172ea4b9ee1a5d582ef0baabda086fde30a3552317906f57b500e0b",
+      "rendered_sha256": "60cd2dbe3e1aaa60fdb7be5eafaed61d80735e7399a95a6e2ab1f5a544923b8d"
+    },
+    {
+      "slide": 9,
+      "source": "slide-09.png",
+      "rendered": "幻灯片9.PNG",
+      "size": [
+        1600,
+        900
+      ],
+      "mean_absolute_pixel_difference": 0.06616,
+      "source_sha256": "b0286bf327237156ad7726e076a24e5c1d7d283a544e4831d33b757c8ec9043b",
+      "rendered_sha256": "ba6db1cb3c52bc7e6af69af5553b8d9ee6c8c75a64d8e53348ca743c8f21e068"
+    },
+    {
+      "slide": 10,
+      "source": "slide-10.png",
+      "rendered": "幻灯片10.PNG",
+      "size": [
+        1600,
+        900
+      ],
+      "mean_absolute_pixel_difference": 0.094646,
+      "source_sha256": "01d82efffd496400e72a8ef421ad8ee749b2dafd25cd701ca1b9c5d2b304b459",
+      "rendered_sha256": "f44af44680e13ae7e304d9f1323c4857827d8b45b94b2f4c80d0d585ceba9f55"
+    },
+    {
+      "slide": 11,
+      "source": "slide-11.png",
+      "rendered": "幻灯片11.PNG",
+      "size": [
+        1600,
+        900
+      ],
+      "mean_absolute_pixel_difference": 0.04788,
+      "source_sha256": "6c287794157f66cd9e31388b86737cb29737f98f007775102ba422c444c9f275",
+      "rendered_sha256": "cc94e2c3a2597381be65a9b17970bb43e320b5125ae7aed1e282d9b22e183de0"
+    },
+    {
+      "slide": 12,
+      "source": "slide-12.png",
+      "rendered": "幻灯片12.PNG",
+      "size": [
+        1600,
+        900
+      ],
+      "mean_absolute_pixel_difference": 0.087359,
+      "source_sha256": "6bc619b5af17d4a71dab6831e192f681eb854d86f6d0814d8f6ae32a87817a6e",
+      "rendered_sha256": "6451ee86385f468d7efb17f5e97f46b8a8cae961abe9458ffa196afe1133e924"
+    }
+  ],
+  "overview": "pptx-overview.png"
+}

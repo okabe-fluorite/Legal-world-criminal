@@ -12,6 +12,10 @@
 | `04-作品方案/` | Guizang网页PPT与PPTX预览 | 已生成DRAFT |
 | `06-效果验证/` | 170秒视频脚本、专家/用户表、效果报告 | DRAFT，真实证据待填 |
 
+`04-作品方案/guizang-tech-v2/`为不覆盖旧稿的技术主线V2：12页瑞士IKB网页PPT、PowerPoint回渲染审计和1.35MB PPTX，叙事改为数据治理→Evidence推理→LegalEduEval→Agent消融→四场景验证。ORCDF外展只保留一条受控同47题结论，不平铺三版本。
+
+`06-效果验证/170秒技术主线视频脚本_V2_DRAFT.md`与`技术主线机器证据增量报告_V2_DRAFT.md`同步新证据；当前121.6秒视频仍是旧叙事DRAFT，未冒充已完成V2录制。
+
 本地`offline_backup/final-demo/`已生成但不进入Git：它含演示密码哈希，仅供团队离线保管。可公开的去标识审计摘要为`03-Demo/FROZEN_DEMO_AUDIT.json`，源备份与空目录恢复各24项语义检查均通过。
 
 已基于恢复库录制5段真实浏览器素材并合成65.2秒无声预演：原始视频继续留在Git忽略目录；公开时长、SHA、分辨率和0错误门禁见`03-Demo/VIDEO_SEGMENTS_AUDIT.json`。该预演不是最终配音成片，也不替代用户/专家证据。

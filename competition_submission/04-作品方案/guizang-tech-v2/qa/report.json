@@ -1,0 +1,233 @@
+{
+  "generatedAt": "2026-08-30T20:24:39.623Z",
+  "viewport": "1600x900",
+  "slides": [
+    {
+      "index": 1,
+      "screenshot": "qa/screens/slide-01.png",
+      "layout": "S01",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "星火智学可信刑法学习"
+    },
+    {
+      "index": 2,
+      "screenshot": "qa/screens/slide-02.png",
+      "layout": "S13",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "法律教学的难点，不是多生成一段话"
+    },
+    {
+      "index": 3,
+      "screenshot": "qa/screens/slide-03.png",
+      "layout": "S17",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "模型是基座证据链是骨架"
+    },
+    {
+      "index": 4,
+      "screenshot": "qa/screens/slide-04.png",
+      "layout": "S20",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "4,173份材料 ≠ 4,173条高质量数据"
+    },
+    {
+      "index": 5,
+      "screenshot": "qa/screens/slide-05.png",
+      "layout": "S05",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "训练由队友负责，接口与验收先冻结"
+    },
+    {
+      "index": 6,
+      "screenshot": "qa/screens/slide-06.png",
+      "layout": "S08",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "让法律推理可以被代码拒绝"
+    },
+    {
+      "index": 7,
+      "screenshot": "qa/screens/slide-07.png",
+      "layout": "S15",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "100题先把“怎么证明”固定下来"
+    },
+    {
+      "index": 8,
+      "screenshot": "qa/screens/slide-08.png",
+      "layout": "S11",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "Agent增加反方，也显著增加成本"
+    },
+    {
+      "index": 9,
+      "screenshot": "qa/screens/slide-09.png",
+      "layout": "S16",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [
+        {
+          "src": "images/09-rag-gate.png",
+          "complete": true,
+          "natural": [
+            1500,
+            980
+          ],
+          "rect": [
+            95.4197006225586,
+            293.6042175292969,
+            679.7408447265625,
+            264.4888000488281,
+            293.6042175292969,
+            775.1605453491211,
+            558.093017578125,
+            95.4197006225586
+          ]
+        },
+        {
+          "src": "images/09-case-pr.png",
+          "complete": true,
+          "natural": [
+            1920,
+            1080
+          ],
+          "rect": [
+            824.06884765625,
+            300.9560241699219,
+            681.1021728515625,
+            268.0898132324219,
+            300.9560241699219,
+            1505.1710205078125,
+            569.0458374023438,
+            824.06884765625
+          ]
+        }
+      ],
+      "title": "同一Evidence纪律进入真实交互"
+    },
+    {
+      "index": 10,
+      "screenshot": "qa/screens/slide-10.png",
+      "layout": "S21",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "无课堂历史数据，也能从第一题开始个性化"
+    },
+    {
+      "index": 11,
+      "screenshot": "qa/screens/slide-11.png",
+      "layout": "S22",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [
+        {
+          "src": "images/11-ai-tutor.png",
+          "complete": true,
+          "natural": [
+            1500,
+            980
+          ],
+          "rect": [
+            -10.75714111328125,
+            -3.3280029296875,
+            1621.51416015625,
+            501.656005859375,
+            -3.3280029296875,
+            1610.7570190429688,
+            498.3280029296875,
+            -10.75714111328125
+          ]
+        }
+      ],
+      "title": ""
+    },
+    {
+      "index": 12,
+      "screenshot": "qa/screens/slide-12.png",
+      "layout": "S10",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "可运行可核验不夸大"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": []
+}
