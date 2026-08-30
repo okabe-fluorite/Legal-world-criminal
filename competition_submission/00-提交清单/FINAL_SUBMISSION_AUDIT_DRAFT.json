@@ -1,7 +1,7 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-30T07:34:12.119837+00:00",
-  "git_commit": "e382ce3ea149f65af2ebd2104088beb602860a82",
+  "generated_at": "2026-08-30T07:49:31.493067+00:00",
+  "git_commit": "123d10b149f12a1da5c6f4854226f1f824502a61",
   "tracked_worktree_clean_before_audit": true,
   "untracked_user_material_count": 6,
   "checks": [
@@ -178,11 +178,11 @@
         "competition_submission/06-效果验证/效果验证报告包_DRAFT/BUILD_AUDIT.json"
       ],
       "detail": {
-        "report_sha256": "fe4bb091f549115272b645b380084554cf429be0e0efec53ab437caf096d3518",
-        "evidence_index_sha256": "48ff649b8366fa16e4a43d6564fec32d677cb4f97b2208a5bbc37ff4cbc9d5ba",
+        "report_sha256": "695780f24a374403ab034505d3c8ef0b95721f106b40c6ec367531eea989426c",
+        "evidence_index_sha256": "d55be8f33b0a859d341be2613568beb0476345bc8c0553519619b92ad65debfd",
         "public_pdf_pages": 5,
         "private_pdf_pages": 2,
-        "source_count": 11,
+        "source_count": 13,
         "evidence_levels": {
           "L1": "software evidence available within listed scope",
           "L2": "expert review pending",
@@ -253,8 +253,8 @@
       ],
       "detail": {
         "package_file": "星火智学_XH-202620_公开提交包_DRAFT.zip",
-        "package_bytes": 27712344,
-        "package_sha256": "02c81a4472ee05a31bfbeff5a81be52b0f61e868f765501ab4817779a260d758",
+        "package_bytes": 27723584,
+        "package_sha256": "e412afa187de2614b00bce83f1d04f488b41a9dc36a687ec22105e34290c703b",
         "package_entry_count": 22,
         "source_entry_count": 406,
         "source_required_entry_count": 11,
