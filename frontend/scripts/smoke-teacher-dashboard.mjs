@@ -125,6 +125,17 @@ async function login(email) {
   await page.getByRole("button", { name: "自主学习" }).waitFor({ state: "visible" });
 }
 
+async function waitForMetricPrefix(expected, timeoutMs = 60000) {
+  const deadline = Date.now() + timeoutMs;
+  let values = [];
+  while (Date.now() < deadline) {
+    values = await page.locator(".metric-strip b").allTextContents();
+    if (values.slice(0, expected.length).join(",") === expected.join(",")) return values;
+    await page.waitForTimeout(200);
+  }
+  throw new Error(`Unexpected teacher metrics after ${timeoutMs}ms: ${values.join(",")}`);
+}
+
 try {
   await page.goto(baseUrl, { waitUntil: "networkidle" });
   const subjectiveResponse =
@@ -189,10 +200,7 @@ try {
   await page.getByRole("button", { name: "加入班级" }).click();
   await page.getByText(/学生已加入班级/).waitFor();
 
-  const metricValues = await page.locator(".metric-strip b").allTextContents();
-  if (metricValues.slice(0, 5).join(",") !== "1,1,2,1,1") {
-    throw new Error(`Unexpected teacher metrics: ${metricValues.join(",")}`);
-  }
+  const metricValues = await waitForMetricPrefix(["1", "1", "2", "1", "1"]);
   const bodyText = await page.locator(".teacher-board").innerText();
   const privacyLeaks = [studentEmail, studentUserId, "teacher-smoke-private-confusion-note"].filter((value) =>
     value &&
