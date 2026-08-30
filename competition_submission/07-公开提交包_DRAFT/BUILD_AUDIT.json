@@ -1,11 +1,11 @@
 {
   "schema": "xh-202620-public-submission-draft-build-audit-v1",
-  "source_git_commit": "32b0633e2e71decca8228552f6b68a6b6ffdddd7",
+  "source_git_commit": "fce973d4ef5f1fb454f2bbf9095809af98ecc5a5",
   "package_file": "星火智学_XH-202620_公开提交包_DRAFT.zip",
-  "package_bytes": 27700582,
-  "package_sha256": "e7d9f60dc33c74054c79533be3474b02c01a999f756570591da7e9e9235c7459",
+  "package_bytes": 27701374,
+  "package_sha256": "ca580ac685c3f93fa732a874a32851142862317cf2cd43895be829f35ba95e5d",
   "package_entry_count": 20,
-  "total_uncompressed_bytes": 28041746,
+  "total_uncompressed_bytes": 28042465,
   "under_100_mb": true,
   "source_code_scan": {
     "entry_count": 405,

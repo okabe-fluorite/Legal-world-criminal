@@ -1,6 +1,6 @@
 {
   "schema": "xh-202620-public-submission-draft-manifest-v1",
-  "source_git_commit": "32b0633e2e71decca8228552f6b68a6b6ffdddd7",
+  "source_git_commit": "fce973d4ef5f1fb454f2bbf9095809af98ecc5a5",
   "package_build_date": "2026-08-30",
   "files": [
     {
@@ -35,8 +35,8 @@
     },
     {
       "path": "05-代码/LegalWorld-星火智学-源码_DRAFT.zip",
-      "bytes": 14731962,
-      "sha256": "1d70c31e279c5082a21a6163b6c5e0da82b8eed75ff2f1f8ba74f114cabfcbaa"
+      "bytes": 14732681,
+      "sha256": "49e9ec2102f65bd91f36702a545a6ee2da7ae388667f289449cc8f2f406535c3"
     },
     {
       "path": "06-公开审计/25帧视觉接触表.png",
@@ -96,7 +96,7 @@
   ],
   "source_code": {
     "entry_count": 405,
-    "sha256": "1d70c31e279c5082a21a6163b6c5e0da82b8eed75ff2f1f8ba74f114cabfcbaa",
+    "sha256": "49e9ec2102f65bd91f36702a545a6ee2da7ae388667f289449cc8f2f406535c3",
     "sanitized_env": true
   },
   "pending": {
