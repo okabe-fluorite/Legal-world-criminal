@@ -1,8 +1,8 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-30T06:56:31.631811+00:00",
-  "git_commit": "296bf5e6ab737d35e73b2a5b983aa35af25f7600",
-  "tracked_worktree_clean_before_audit": false,
+  "generated_at": "2026-08-30T07:04:04.631014+00:00",
+  "git_commit": "a391937a7d7b9d83e17eb31357a3e4d59ab6d956",
+  "tracked_worktree_clean_before_audit": true,
   "untracked_user_material_count": 6,
   "checks": [
     {
@@ -23,11 +23,23 @@
         "competition_submission\\04-作品方案\\guizang\\qa\\pptx-report.json"
       ],
       "detail": {
+        "schema": "guizang-pptx-full-bleed-image-audit-v2",
         "bytes": 1501286,
+        "sha256": "9717389ec3c4728508594d6926574a52cdde8887418411afe47a577f5d49564d",
         "slides": 12,
-        "max_render_mae": null
+        "zip_crc_passed": true,
+        "all_full_bleed": true,
+        "embedded_images_match_qa": true,
+        "browser_qa": {
+          "overflow": 0,
+          "console_errors": 0,
+          "page_errors": 0,
+          "failed_requests": 0
+        },
+        "powerpoint_com_render_performed": false,
+        "legacy_max_render_mae": null
       },
-      "boundary": "仍名为DRAFT；真实用户/专家状态待替换"
+      "boundary": "仍名为DRAFT；全幅嵌入图与浏览器QA逐页一致，但本轮未执行新的PowerPoint COM重渲染；真实用户/专家状态待替换"
     },
     {
       "id": "video",
@@ -218,8 +230,8 @@
       ],
       "detail": {
         "package_file": "星火智学_XH-202620_公开提交包_DRAFT.zip",
-        "package_bytes": 27700582,
-        "package_sha256": "e7d9f60dc33c74054c79533be3474b02c01a999f756570591da7e9e9235c7459",
+        "package_bytes": 27701374,
+        "package_sha256": "ca580ac685c3f93fa732a874a32851142862317cf2cd43895be829f35ba95e5d",
         "package_entry_count": 20,
         "source_entry_count": 405,
         "source_required_entry_count": 11,
