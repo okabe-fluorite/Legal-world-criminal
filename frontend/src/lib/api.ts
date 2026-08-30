@@ -10,6 +10,9 @@ import type {
   KnowledgeCatalogResponse,
   LearningEvent,
   LearningSupportSessionResponse,
+  MediaAsset,
+  MediaCapabilitiesResponse,
+  MediaJob,
   ModelCatalogResponse,
   PlayerAssistResponse,
   PlayerRequest,
@@ -48,7 +51,7 @@ async function request<T>(
   init: RequestInit = {},
 ): Promise<T> {
   const headers = new Headers(init.headers ?? {});
-  if (!headers.has("Content-Type") && init.body) {
+  if (!headers.has("Content-Type") && init.body && !(init.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
   const token = getToken();
@@ -214,6 +217,78 @@ export const api = {
 
   async typicalQuestionReport(): Promise<TypicalQuestionReport> {
     return request<TypicalQuestionReport>("/competition/typical-questions");
+  },
+
+  async mediaCapabilities(): Promise<MediaCapabilitiesResponse> {
+    return request<MediaCapabilitiesResponse>("/media/capabilities");
+  },
+
+  async uploadMediaAsset(
+    file: File,
+    purpose: "transcription" | "visual_context" | "avatar_source",
+  ): Promise<MediaAsset> {
+    const body = new FormData();
+    body.set("purpose", purpose);
+    body.set("file", file);
+    return request<MediaAsset>("/multimodal/assets", { method: "POST", body });
+  },
+
+  async startTranscription(payload: {
+    job_id: string;
+    asset_id: string;
+    language?: string;
+    hotwords?: string[];
+    provider?: string;
+  }): Promise<MediaJob> {
+    return request<MediaJob>("/multimodal/transcriptions", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async startVisualAnalysis(payload: {
+    job_id: string;
+    asset_id: string;
+    task: "ocr" | "argument_map_seed" | "case_material_summary";
+    provider?: string;
+  }): Promise<MediaJob> {
+    return request<MediaJob>("/multimodal/visual-analyses", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async synthesizeSpeech(payload: {
+    job_id: string;
+    text: string;
+    voice?: string;
+    audio_format?: "mp3" | "wav" | "opus";
+    provider?: string;
+    ai_generated_disclosure?: boolean;
+  }): Promise<MediaJob> {
+    return request<MediaJob>("/speech/synthesis", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async renderAvatar(payload: {
+    job_id: string;
+    script: string;
+    avatar_id?: string;
+    voice?: string;
+    provider?: string;
+    ai_generated_disclosure?: boolean;
+    likeness_consent_confirmed?: boolean;
+  }): Promise<MediaJob> {
+    return request<MediaJob>("/avatar/renders", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async mediaJob(jobId: string): Promise<MediaJob> {
+    return request<MediaJob>(`/media/jobs/${encodeURIComponent(jobId)}`);
   },
 
   async auditKnowledgeCitations(citations: Array<{

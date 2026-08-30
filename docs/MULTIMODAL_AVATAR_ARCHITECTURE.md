@@ -1,0 +1,118 @@
+# 多模态、语音与数字人架构及API
+
+## 当前真实状态
+
+| 能力 | 优先级 | 当前状态 | 可运行证据 |
+|---|---|---|---|
+| 私有音频/图片上传 | P1 | `implemented` | JWT用户隔离、≤15MB、类型白名单、SHA-256、sandbox相对存储 |
+| ASR短音频转写 | P1 | `interface_reserved / not_connected` | 创建持久化幂等任务；无Provider时不生成文本 |
+| 图像OCR/论证种子 | P1 | `interface_reserved / not_connected` | 视觉分析任务契约已冻结 |
+| 服务端TTS | P1 | `interface_reserved / not_connected` | TTS任务、AI标识和状态查询已冻结 |
+| 浏览器本地朗读 | P1 fallback | `implemented_on_client` | `SpeechSynthesis`现场真实朗读；不生成下载资产 |
+| 数字人渲染 | P2 | `external_provider_required / not_connected` | 异步任务、AI标识、肖像同意门禁已冻结 |
+| 实时WebRTC语音 | Beta后 | `deferred` | 当前HTTP异步切片不引入房间/TURN/媒体集群 |
+
+接口存在不代表厂商能力已经连接。能力页会同时展示`implementation_status`和`connection_status`，Provider未验证时必须显示`not_connected`。
+
+## 推荐架构
+
+```text
+浏览器麦克风/图片/教学文本
+        │
+        ▼
+JWT + 类型/大小/AI标识/肖像同意门禁
+        │
+        ├── 私有资产服务 ── SHA-256 ── 用户sandbox
+        │
+        └── Media Job Service ── SQLite幂等任务
+                  │
+                  ▼
+           Provider Registry
+        ┌─────────┼────────────┐
+        │         │            │
+      讯飞      本地ASR       Azure Avatar
+    ASR/TTS/人   可选fallback    替代Provider
+        │         │            │
+        └─────────┴────────────┘
+                  │
+                  ▼
+ not_connected / queued / running / succeeded / failed / needs_review
+                  │
+                  ▼
+       交互结果（默认不生成LearningEvent）
+                  │
+       规则校验或教师审核后才可晋级候选证据
+```
+
+P1比赛版使用HTTP异步任务足够展示上传、状态、降级和安全边界。若Beta阶段确需双向实时语音，再在Provider层外增加LiveKit/WebRTC房间；不能让实时媒体层直接调用adaptive画像。
+
+## 已冻结API
+
+| 方法 | 路径 | 作用 | 无Provider行为 |
+|---|---|---|---|
+| GET | `/api/media/capabilities` | secret-free能力与Provider目录 | 返回真实状态 |
+| POST | `/api/multimodal/assets` | multipart私有音频/图片上传 | 上传仍可用 |
+| GET | `/api/multimodal/assets/{asset_id}` | 当前用户资产元数据 | 跨用户404 |
+| POST | `/api/multimodal/transcriptions` | 创建ASR任务 | 持久化`not_connected` |
+| GET | `/api/multimodal/transcriptions/{job_id}` | 查询ASR任务 | 返回已有状态 |
+| POST | `/api/multimodal/visual-analyses` | OCR/论证种子/材料摘要任务 | 持久化`not_connected` |
+| GET | `/api/multimodal/visual-analyses/{job_id}` | 查询视觉任务 | 返回已有状态 |
+| POST | `/api/speech/synthesis` | 创建TTS任务 | 持久化`not_connected` |
+| GET | `/api/speech/jobs/{job_id}` | 查询TTS任务 | 返回已有状态 |
+| POST | `/api/avatar/renders` | 创建数字人任务 | 持久化`not_connected` |
+| GET | `/api/avatar/renders/{job_id}` | 查询数字人任务 | 返回已有状态 |
+| GET | `/api/media/jobs/{job_id}` | 通用任务查询 | 跨用户404 |
+
+同一`job_id`和同一请求返回`duplicate`；同ID改请求返回409。写接口在返回前显式提交事务，避免“上传已返回、紧接着的转写查不到资产”的竞态。
+
+## Provider选择
+
+### 首选：讯飞
+
+- 流式听写官方WebAPI使用WebSocket，短会话最长60秒，支持8k/16k、16bit单声道PCM/Speex，普通话/英文另支持MP3；适合语音快问快答。官方文档：[语音听写（流式版）](https://www.xfyun.cn/doc/asr/voicedictation/API.html)。
+- 在线TTS使用`wss://tts-api.xfyun.cn/v2/tts`，需要`APPID/APIKey/APISecret`，单次文本小于8000字节；旧HTTP普通版不应作为新实现。官方文档：[在线语音合成](https://www.xfyun.cn/doc/tts/online_tts/API.html)。
+- 国内超拟人数字人公开资料目前更偏Android SDK；全球实时云接口还要求授权`avatar_id`和`vcn`。官方资料：[超拟人数字人交互SDK](https://www.xfyun.cn/doc/spark/Virtual_interaction.html)、[Virtual Human realtime API](https://global.xfyun.cn/doc/vms/virtualhuman/API.html)。
+
+推荐原因：契合赛事生态、中国网络路径更现实、ASR/TTS能力完整。风险：数字人授权和Web端形态需要单独确认，不能仅有通用星火Key就宣称可用。
+
+### 本地ASR候选：faster-whisper
+
+`faster-whisper`为MIT许可，可使用CPU/GPU量化，适合作为可选离线ASR；但模型文件、首次下载、中文法律热词和现场性能必须在目标电脑实测。官方仓库：[SYSTRAN/faster-whisper](https://github.com/SYSTRAN/faster-whisper)。当前只保留配置槽，不宣称模型已下载。
+
+### 数字人替代：Azure Speech Avatar
+
+Azure支持批量异步和实时Avatar，标准视频Avatar可输出1080p/25fps；需要Speech/Foundry资源、区域和密钥，并按活跃时长或输出时长计费。官方文档：[Avatar overview](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/text-to-speech-avatar/what-is-text-to-speech-avatar)、[Realtime synthesis](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/text-to-speech-avatar/real-time-synthesis-avatar)。适合作为替代Provider，不适合作为中国比赛现场唯一链路。
+
+### 实时媒体层：LiveKit（后置）
+
+LiveKit官方支持WebRTC、STT→LLM→TTS流水线、打断/轮次检测和Provider插件，并可自托管。官方文档：[Agents](https://docs.livekit.io/agents/)、[Realtime media and data](https://docs.livekit.io/frontends/build/media-data/)。当前纵向切片不需要引入房间、TURN、令牌和媒体服务；只有当“实时口语对话”成为验收项时再接入。
+
+## 服务端配置槽
+
+```dotenv
+XFYUN_APP_ID=
+XFYUN_API_KEY=
+XFYUN_API_SECRET=
+XFYUN_AVATAR_ID=
+XFYUN_AVATAR_VCN=
+AZURE_SPEECH_KEY=
+AZURE_SPEECH_REGION=
+SIMLAW_FASTER_WHISPER_MODEL=
+```
+
+出现这些变量只表示“配置槽或凭据存在”，不表示适配器已经通过调用验证。能力目录永远不返回密钥值。
+
+## 数据与教学边界
+
+- 原始媒体只保存在当前用户私有sandbox，数据库仅保存相对storage key；API不返回主机绝对路径。
+- ASR、OCR、TTS和Avatar任务不创建LearningEvent，不更新LearnerProfile，不进入正式评分。
+- 若未来需要把转写变成主观题答案，必须让学生确认文本；若需要作为长期画像证据，还需引用审查、Rubric或教师审核。
+- 自定义数字人必须确认肖像/声音授权；所有合成音视频必须显著标识AI生成。
+- 原始媒体、Provider输出和密钥不得提交Git；公开包继续执行路径、密钥和私密材料扫描。
+
+## 分阶段实施
+
+1. **当前提交版（已完成）。**私有上传、任务台账、能力页、本地朗读降级、知识/论证图、真实`not_connected`展示。
+2. **有讯飞授权后。**实现`xfyun_asr`和`xfyun_tts`两个适配器，固定短音频样本、法律热词、延迟和失败降级测试；先不接数字人。
+3. **P2可选。**确认数字人产品形态、API授权、标准角色和费用后，只把审核通过文本交给Avatar Provider；现场保留2D静态角色+TTS降级。
+4. **Beta后。**真实学生同意与课堂口语需求成立时，再评估LiveKit/WebRTC、长录音转写、数据保留期限和教师转写审核队列。

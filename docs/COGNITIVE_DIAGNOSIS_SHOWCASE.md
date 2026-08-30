@@ -2,7 +2,7 @@
 
 比赛展示版在学生顶部新增“认知诊断”入口，将原本分散的在线画像、实验结果、路径规划和模型路由组织成一个可在3分钟视频中连续展示的驾驶舱。
 
-## 四个视图
+## 六个视图
 
 ### 1. 在线诊断
 
@@ -48,13 +48,25 @@
 
 节点来自当前KnowledgeCard、Recommendation、SubjectiveTask和CasePicker，不是写死的“最优路径”。算法负责排序；大模型只解释或执行任务。完成按钮直接回到现有自主学习卷宗。
 
-### 4. 模型路由
+### 4. 知识图与论证图
+
+知识图直接读取10张受治理KnowledgeCard的`prerequisite_ids`，当前形成10个节点和10条先修边；不调用LLM补边。当前诊断/推荐目标使用绿色边框标记。
+
+论证图以“争点→关键事实→受治理证据→学生主张→AI对抗质询→核验与复盘”组织案件交互。它是模板，不是学生已产生的论证证据，也不会生成LearningEvent。
+
+### 5. 模型路由
 
 模型页读取脱敏`GET /api/model/catalog`，显示`subjective_scoring`、`learning_support`、`teaching_judge`和`response_assist`。
 
 当前基线模型、provider与端点主机按真实配置显示；API Key和URL私有路径不进入响应。没有配置`SIMLAW_SMALL_MODEL_*`时显示“微调端点已预留·当前未连接”和`not_connected`，不得宣称完成LoRA/SFT。
 
 四段对比路线固定为基础模型→Prompt/Few-shot→可信RAG→RAG+微调。未来接入通过独立金标准的模型只替换任务路由，不修改学生页面。
+
+### 6. 多模态与数字人
+
+媒体页展示私有资产、ASR、视觉、TTS和数字人五项能力，区分`implemented`、`interface_reserved`和`not_connected`。浏览器本地朗读是真实fallback；音频上传会进入当前用户私有sandbox并返回SHA-256。ASR、服务端TTS和数字人没有已验证Provider时只记录任务，不生成伪输出，也不创建LearningEvent。
+
+接口、讯飞/Azure/LiveKit选型、AI标识和肖像同意门禁见[`MULTIMODAL_AVATAR_ARCHITECTURE.md`](MULTIMODAL_AVATAR_ARCHITECTURE.md)。
 
 ## 可复现浏览器验证
 
@@ -65,17 +77,18 @@ cd frontend
 npm run smoke:cognitive
 ```
 
-脚本真实注册学生，完成1次选择题与1次困惑，再依次打开四个视图。比赛主视口1500×980结果：10个知识点、2条事件、3个ORCDF版本、48个真实热力格、7个路径节点、4个模型任务路由；私有字段、console/page/HTTP/request错误均为0。
+脚本真实注册学生，完成1次选择题与1次困惑，再依次打开六个视图。比赛主视口1500×980结果：10个知识点、2条事件、3个ORCDF版本、48个真实热力格、7个路径节点、10个知识图节点/10条先修边、6个论证模板节点、4个模型任务路由、5个媒体能力和3项私有上传证明；私有字段、console/page/HTTP/request错误均为0。
 
-四张截图写入Git忽略的`.codex-artifacts/cognitive-*/screens/`，可直接作为PPT和录屏构图参考。
+六张截图写入Git忽略的`.codex-artifacts/cognitive-dashboard/`，可直接作为PPT和录屏构图参考。
 
 ## 比赛映射
 
 - **视频第2段（15—45秒）**：在线Evidence-KT与ORCDF shadow；
 - **视频第3段（45—70秒）**：七步路径和“进入当前推荐任务”；
+- **视频第3段可选插入（约5秒）**：10节点先修DAG和论证模板；
 - **视频第7段（155—170秒）**：Model Adapter与微调`not_connected`边界；
-- **PPT第5/6/7/10页**：在线诊断、ORCDF、路径、模型路由；
+- **视频第7段可选插入（约4秒）**：多模态/数字人接口与`not_connected`诚实状态；
+- **PPT第5/6/7/10页**：在线诊断、ORCDF、路径/知识图、模型与媒体能力路由；
 - **评分项**：技术实现20、技术先进10、创意实用20、完成度10。
 
 仍需真实证据：当前页面和冒烟证明软件机制可运行，不证明刑法掌握校准、路径学习增益或用户认可；至少2名真实目标用户和3题准确性报告仍须单独完成。
-

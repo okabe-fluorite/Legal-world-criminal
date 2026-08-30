@@ -98,16 +98,52 @@ try {
   if (pathNodes !== 7) throw new Error(`Expected 7 path nodes, received ${pathNodes}`);
   await page.screenshot({ path: path.join(artifactDir, "03-personal-path.png"), fullPage: false });
 
+  await page.getByRole("button", { name: "知识 / 论证图" }).click();
+  await page.getByText("课程先修图与法律论证模板", { exact: true }).waitFor();
+  const knowledgeNodes = await page.locator(".knowledge-node").count();
+  const knowledgeEdges = await page.locator(".knowledge-edge").count();
+  const argumentNodes = await page.locator(".argument-chain article").count();
+  if (knowledgeNodes !== 10 || knowledgeEdges !== 10 || argumentNodes !== 6) {
+    throw new Error(
+      `Unexpected graph rendering: nodes=${knowledgeNodes} edges=${knowledgeEdges} argument=${argumentNodes}`,
+    );
+  }
+  await page.screenshot({ path: path.join(artifactDir, "04-knowledge-argument-graphs.png"), fullPage: false });
+
   await page.getByRole("button", { name: "模型路由" }).click();
   await page.getByText("基础模型 / Prompt / RAG / RAG+微调", { exact: true }).waitFor();
   const routeCards = await page.locator(".route-grid article").count();
   const modelText = await page.locator(".model-status").innerText();
   if (routeCards !== 4) throw new Error(`Expected 4 model routes, received ${routeCards}`);
-  await page.screenshot({ path: path.join(artifactDir, "04-model-routes.png"), fullPage: false });
+  await page.screenshot({ path: path.join(artifactDir, "05-model-routes.png"), fullPage: false });
+
+  await page.getByRole("button", { name: "多模态 / 数字人" }).click();
+  await page.getByText("多模态与数字人能力总线", { exact: true }).waitFor();
+  const mediaCapabilities = await page.locator(".media-capability-grid article").count();
+  if (mediaCapabilities !== 5) {
+    throw new Error(`Expected 5 media capabilities, received ${mediaCapabilities}`);
+  }
+  await page.getByRole("button", { name: "检查服务端TTS" }).click();
+  await page.getByText(/服务端TTS接口已真实调用/).waitFor();
+  await page.locator(".media-upload input").setInputFiles({
+    name: "criminal-law-quick-answer.wav",
+    mimeType: "audio/wav",
+    buffer: Buffer.concat([Buffer.from("RIFF"), Buffer.alloc(128)]),
+  });
+  await page.getByText(/上传已完成且私有保存/).waitFor();
+  const mediaProofRows = await page.locator(".media-proof div").count();
+  if (mediaProofRows !== 3) throw new Error(`Expected 3 media proof rows, received ${mediaProofRows}`);
+  await page.getByRole("button", { name: "调用预留接口验证状态" }).click();
+  await page.getByText(/数字人异步契约已真实调用/).waitFor();
+  const mediaStatus = await page.locator(".media-result").innerText();
+  if (!mediaStatus.includes("not_connected")) {
+    throw new Error(`Media provider boundary missing: ${mediaStatus}`);
+  }
+  await page.screenshot({ path: path.join(artifactDir, "06-media-capabilities.png"), fullPage: false });
 
   const privateLeaks = await page.locator(".cog-board").evaluate((body) => {
     const text = body.textContent || "";
-    return ["answer_private", "rationale_private", "api_key", "source_response_sha256"].filter(
+    return ["answer_private", "rationale_private", "api_key", "source_response_sha256", "storage_root"].filter(
       (key) => text.includes(key),
     );
   });
@@ -118,8 +154,14 @@ try {
     orcdf_versions: versions,
     heatmap_cells: heatCells,
     path_nodes: pathNodes,
+    knowledge_graph_nodes: knowledgeNodes,
+    knowledge_graph_edges: knowledgeEdges,
+    argument_template_nodes: argumentNodes,
     model_routes: routeCards,
     model_status: modelText,
+    media_capabilities: mediaCapabilities,
+    media_proof_rows: mediaProofRows,
+    media_status: mediaStatus,
     private_leaks: privateLeaks,
     console_errors: consoleErrors,
     page_errors: pageErrors,
@@ -150,4 +192,3 @@ try {
 } finally {
   await browser.close();
 }
-

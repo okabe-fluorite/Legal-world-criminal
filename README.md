@@ -107,6 +107,8 @@ EvidencePack中的检索相关性和coverage只是待语义审核候选，不等
 
 顶部“认知诊断”是比赛展示核心页：在线Evidence-KT保守画像与学生事件时间线、ORCDF V0/V1/V2真实shadow实验、选择/短答/案件/角色互换七步路径和四任务Model Adapter路由集中展示。ORCDF明确来自MOOCCubeX民法/宪法、mastery未校准且不进入当前刑法学生画像；微调未连接时显示`not_connected`。展示口径、来源SHA和浏览器脚本见[`docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md`](docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md)。
 
+认知驾驶舱同时提供真实KnowledgeCard先修图、法律论证脚手架和“多模态 / 数字人”能力页：10个知识节点/10条先修边不使用LLM补边；私有音频/图片上传会做JWT隔离、类型/大小检查和SHA-256；ASR、视觉、服务端TTS和Avatar接口已冻结，但当前没有已验证Provider，页面会显示`not_connected`且不生成LearningEvent。浏览器`SpeechSynthesis`只作真实本地朗读fallback。完整API、讯飞/Azure/LiveKit选型和证据边界见[`docs/MULTIMODAL_AVATAR_ARCHITECTURE.md`](docs/MULTIMODAL_AVATAR_ARCHITECTURE.md)，说明书逐项状态见[`docs/PRODUCT_SPEC_IMPLEMENTATION_MATRIX_V2.md`](docs/PRODUCT_SPEC_IMPLEMENTATION_MATRIX_V2.md)，上游代码级对照见[`docs/UPSTREAM_LEGALWORLD_COMPARISON.md`](docs/UPSTREAM_LEGALWORLD_COMPARISON.md)。
+
 顶部“可信RAG”对应赛题内容质量硬要求：罪刑法定/从旧兼从轻、特殊防卫、抢劫罪构成3题均保存真实OpenCode基线输出、标准答案、权威法条/指导案例、版本/SHA、模型逐字引用和要点门禁；错误条号/伪造引文可现场调用后端拦截。当前自动门禁3/3，但法学专家复核仍为`pending`且`verified_accurate=false`，不能写成专家确认准确率。报告见[`docs/TYPICAL_QUESTION_EVALUATION.md`](docs/TYPICAL_QUESTION_EVALUATION.md)，复跑命令为`python backend/scripts/run_typical_question_evaluation.py --live-model --model-config <path>`，免模型复审可用`--reuse-report`。
 
 困惑入账后可进入“AI分层解惑”：系统先提出诊断追问，学生说明自己的理解后，才返回规范原文、白话解释、事实适用、争议边界和下一动作。模型引用必须来自当前KnowledgeCard标准Evidence并通过条号/逐字片段门禁；失败自动使用确定性fallback，低置信度标记教师复核。解惑不计分、不生成LearningEvent、不更新长期掌握，详见[`docs/GOVERNED_LEARNING_SUPPORT.md`](docs/GOVERNED_LEARNING_SUPPORT.md)。

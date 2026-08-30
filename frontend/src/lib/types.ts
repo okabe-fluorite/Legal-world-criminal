@@ -924,3 +924,74 @@ export interface SkillCardSummary {
 export interface SkillCardDetail extends SkillCardSummary {
   content: string;
 }
+
+export interface MediaProviderOption {
+  provider_id: string;
+  credentials_present?: boolean;
+  authorization_present?: boolean;
+  model_slot_present?: boolean;
+  adapter_status: string;
+}
+
+export interface MediaCapability {
+  capability_id: string;
+  priority: "P1" | "P2" | string;
+  implementation_status: "implemented" | "interface_reserved" | string;
+  connection_status: "available" | "not_connected" | string;
+  endpoint: string;
+  modes?: string[];
+  limits?: { max_bytes?: number };
+  provider_options?: MediaProviderOption[];
+  client_fallback?: {
+    provider_id: string;
+    status: string;
+    downloadable_asset: boolean;
+  };
+}
+
+export interface MediaCapabilitiesResponse {
+  schema_version: string;
+  job_statuses: string[];
+  capabilities: MediaCapability[];
+  evidence_boundary: {
+    learning_event_created: false;
+    long_term_profile_eligible: false;
+    formal_grading_eligible: false;
+    promotion_rule: string;
+  };
+  privacy: Record<string, boolean | string>;
+}
+
+export interface MediaAsset {
+  schema_version: string;
+  asset_id: string;
+  purpose: string;
+  media_type: string;
+  content_type: string;
+  original_name: string;
+  size_bytes: number;
+  content_sha256: string;
+  storage_scope: "private_user_sandbox" | string;
+  status: string;
+  created_at?: string | null;
+}
+
+export interface MediaJob {
+  schema_version: string;
+  job_id: string;
+  job_type: "transcription" | "visual_analysis" | "speech_synthesis" | "avatar_render" | string;
+  asset_id?: string | null;
+  provider_requested: string;
+  provider_resolved: string;
+  status: "not_connected" | "queued" | "running" | "succeeded" | "failed" | "needs_review" | string;
+  request_summary: Record<string, unknown>;
+  result: Record<string, unknown> | null;
+  error: { code: string; message: string } | null;
+  evidence_eligibility: {
+    learning_event_created: false;
+    long_term_profile: false;
+    formal_grading: false;
+    reason: string;
+  };
+  job_status?: "inserted" | "duplicate" | string;
+}

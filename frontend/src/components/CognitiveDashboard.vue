@@ -8,12 +8,15 @@ import type {
   CasePickerEntry,
   EvidenceTimelineEvent,
   KnowledgeCard,
+  MediaAsset,
+  MediaCapabilitiesResponse,
+  MediaJob,
   ModelCatalogResponse,
   SubjectiveTask,
 } from "../lib/types";
 
 const emit = defineEmits<{ close: []; openJourney: [] }>();
-const tab = ref<"diagnosis" | "orcdf" | "path" | "models">("diagnosis");
+const tab = ref<"diagnosis" | "orcdf" | "path" | "graphs" | "models" | "media">("diagnosis");
 const loading = ref(true);
 const error = ref("");
 const adaptive = ref<AdaptiveRecommendationResponse | null>(null);
@@ -22,6 +25,14 @@ const timeline = ref<EvidenceTimelineEvent[]>([]);
 const subjectiveTasks = ref<SubjectiveTask[]>([]);
 const cases = ref<CasePickerEntry[]>([]);
 const modelCatalog = ref<ModelCatalogResponse | null>(null);
+const mediaCatalog = ref<MediaCapabilitiesResponse | null>(null);
+const mediaAsset = ref<MediaAsset | null>(null);
+const mediaJob = ref<MediaJob | null>(null);
+const mediaBusy = ref(false);
+const mediaMessage = ref("");
+const browserSpeechSupported = ref(false);
+const browserSpeaking = ref(false);
+const speechText = ref("正当防卫要求存在正在进行的不法侵害；本段为浏览器本地合成语音，不代表讯飞接口已连接。");
 
 const REASON_LABELS: Record<string, string> = {
   case_evidence_indicates_weakness: "案件证据提示薄弱，优先补强",
@@ -72,6 +83,62 @@ const targetKnowledge = computed(() => {
   return cards.value.find((card) => card.knowledge_id === recommendation?.knowledge_id)
     ?? knowledgeRows.value[0]?.card
     ?? null;
+});
+const knowledgeGraph = computed(() => {
+  const byId = new Map(cards.value.map((card) => [card.knowledge_id, card]));
+  const levelCache = new Map<string, number>();
+  const visiting = new Set<string>();
+  const levelOf = (id: string): number => {
+    if (levelCache.has(id)) return levelCache.get(id) ?? 0;
+    if (visiting.has(id)) return 0;
+    visiting.add(id);
+    const card = byId.get(id);
+    const parentLevels = (card?.prerequisite_ids ?? [])
+      .filter((parent) => byId.has(parent))
+      .map((parent) => levelOf(parent));
+    const level = parentLevels.length ? Math.max(...parentLevels) + 1 : 0;
+    visiting.delete(id);
+    levelCache.set(id, level);
+    return level;
+  };
+  const groups = new Map<number, KnowledgeCard[]>();
+  for (const card of cards.value) {
+    const level = levelOf(card.knowledge_id);
+    groups.set(level, [...(groups.get(level) ?? []), card]);
+  }
+  const positions = new Map<string, { x: number; y: number }>();
+  const nodes = [...groups.entries()].flatMap(([level, rows]) =>
+    rows.map((card, index) => {
+      const gap = rows.length > 1 ? 760 / (rows.length - 1) : 0;
+      const x = rows.length > 1 ? 120 + gap * index : 500;
+      const y = 65 + level * 128;
+      positions.set(card.knowledge_id, { x, y });
+      return { card, x, y, level };
+    }),
+  );
+  const edges = cards.value.flatMap((card) =>
+    card.prerequisite_ids
+      .filter((parent) => positions.has(parent) && positions.has(card.knowledge_id))
+      .map((parent) => ({
+        id: `${parent}:${card.knowledge_id}`,
+        from: positions.get(parent)!,
+        to: positions.get(card.knowledge_id)!,
+      })),
+  );
+  return { nodes, edges };
+});
+const argumentTemplate = computed(() => {
+  const target = targetKnowledge.value;
+  const recommendation = recommendations.value[0];
+  const caseRow = cases.value[0];
+  return [
+    { code: "ISSUE", title: "争点", detail: target?.canonical_name ?? "等待诊断目标", tone: "issue" },
+    { code: "FACT", title: "关键事实", detail: recommendation?.stem ?? recommendation?.question ?? "完成推荐任务后提取", tone: "fact" },
+    { code: "EVID", title: "受治理证据", detail: `${target?.standard_evidence_ids.length ?? 0}条Evidence · ${target?.law_article_refs.join(" / ") || "待检索"}`, tone: "evidence" },
+    { code: "CLAIM", title: "学生主张", detail: "由学生提交，不预生成标准结论", tone: "claim" },
+    { code: "CHAL", title: "对抗质询", detail: caseRow ? `${caseRow.title} · AI检查遗漏与反方观点` : "进入案件后生成", tone: "challenge" },
+    { code: "GATE", title: "核验与复盘", detail: "引用审查 + Rubric + 教师门禁", tone: "gate" },
+  ];
 });
 const pathNodes = computed(() => {
   const target = targetKnowledge.value;
@@ -191,17 +258,114 @@ function heatStyle(value: number): Record<string, string> {
   return { background: `rgba(${red}, ${green}, ${blue}, ${0.35 + normalized * 0.55})` };
 }
 
+function capabilityLabel(id: string): string {
+  const labels: Record<string, string> = {
+    private_asset_upload: "私有媒体上传",
+    speech_to_text: "语音识别 ASR",
+    vision_understanding: "图像理解 / OCR",
+    text_to_speech: "语音合成 TTS",
+    digital_human: "数字人渲染",
+  };
+  return labels[id] ?? id;
+}
+
+function newJobId(prefix: string): string {
+  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+}
+
+function readWithBrowserSpeech(): void {
+  if (!browserSpeechSupported.value) {
+    mediaMessage.value = "当前浏览器不支持SpeechSynthesis，本地朗读降级不可用。";
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(speechText.value);
+  utterance.lang = "zh-CN";
+  utterance.rate = 0.94;
+  utterance.onend = () => { browserSpeaking.value = false; };
+  utterance.onerror = () => {
+    browserSpeaking.value = false;
+    mediaMessage.value = "浏览器朗读失败；服务端TTS仍保持not_connected。";
+  };
+  browserSpeaking.value = true;
+  mediaMessage.value = "正在使用浏览器SpeechSynthesis本地降级；未调用讯飞或云端TTS。";
+  window.speechSynthesis.speak(utterance);
+}
+
+async function checkServerSpeech(): Promise<void> {
+  mediaBusy.value = true;
+  mediaMessage.value = "";
+  try {
+    mediaJob.value = await api.synthesizeSpeech({
+      job_id: newJobId("tts"),
+      text: speechText.value,
+      provider: "auto",
+      ai_generated_disclosure: true,
+    });
+    mediaMessage.value = "服务端TTS接口已真实调用；当前无已验证Provider，因此返回not_connected，未生成伪音频。";
+  } catch (reason) {
+    mediaMessage.value = reason instanceof Error ? reason.message : String(reason);
+  } finally {
+    mediaBusy.value = false;
+  }
+}
+
+async function checkAvatarInterface(): Promise<void> {
+  mediaBusy.value = true;
+  mediaMessage.value = "";
+  try {
+    mediaJob.value = await api.renderAvatar({
+      job_id: newJobId("avatar"),
+      script: speechText.value,
+      avatar_id: "standard_presenter",
+      provider: "auto",
+      ai_generated_disclosure: true,
+      likeness_consent_confirmed: false,
+    });
+    mediaMessage.value = "数字人异步契约已真实调用；当前Provider未授权，任务保持not_connected。";
+  } catch (reason) {
+    mediaMessage.value = reason instanceof Error ? reason.message : String(reason);
+  } finally {
+    mediaBusy.value = false;
+  }
+}
+
+async function handleAudioUpload(event: Event): Promise<void> {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+  mediaBusy.value = true;
+  mediaMessage.value = "正在写入当前用户私有sandbox并计算SHA-256……";
+  try {
+    mediaAsset.value = await api.uploadMediaAsset(file, "transcription");
+    mediaJob.value = await api.startTranscription({
+      job_id: newJobId("asr"),
+      asset_id: mediaAsset.value.asset_id,
+      language: "zh_cn",
+      hotwords: ["刑法", "正当防卫", "罪刑法定", "要件涵摄"],
+      provider: "auto",
+    });
+    mediaMessage.value = "上传已完成且私有保存；ASR Provider未连接，未生成或伪造转写文本。";
+  } catch (reason) {
+    mediaMessage.value = reason instanceof Error ? reason.message : String(reason);
+  } finally {
+    mediaBusy.value = false;
+    input.value = "";
+  }
+}
+
 async function load(): Promise<void> {
   loading.value = true;
   error.value = "";
   try {
-    const [catalog, adaptiveResult, timelineResult, subjective, caseResult, models] = await Promise.all([
+    const [catalog, adaptiveResult, timelineResult, subjective, caseResult, models, media] = await Promise.all([
       api.knowledgeCatalog(),
       api.adaptiveRecommendations(),
       api.adaptiveEvidenceTimeline(),
       api.subjectiveCatalog("review"),
       api.listCases(),
       api.modelCatalog(),
+      api.mediaCapabilities().catch(() => null),
     ]);
     cards.value = catalog.knowledge_cards;
     adaptive.value = adaptiveResult;
@@ -209,6 +373,7 @@ async function load(): Promise<void> {
     subjectiveTasks.value = subjective.tasks;
     cases.value = caseResult.cases;
     modelCatalog.value = models;
+    mediaCatalog.value = media;
   } catch (reason) {
     error.value = reason instanceof Error ? reason.message : String(reason);
   } finally {
@@ -222,9 +387,13 @@ function handleKeydown(event: KeyboardEvent): void {
 
 onMounted(() => {
   window.addEventListener("keydown", handleKeydown);
+  browserSpeechSupported.value = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
   void load();
 });
-onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeydown);
+  if (browserSpeechSupported.value) window.speechSynthesis.cancel();
+});
 </script>
 
 <template>
@@ -239,7 +408,9 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
           <button :class="{ active: tab === 'diagnosis' }" @click="tab = 'diagnosis'">在线诊断</button>
           <button :class="{ active: tab === 'orcdf' }" @click="tab = 'orcdf'">ORCDF SHADOW</button>
           <button :class="{ active: tab === 'path' }" @click="tab = 'path'">个性化路径</button>
+          <button :class="{ active: tab === 'graphs' }" @click="tab = 'graphs'">知识 / 论证图</button>
           <button :class="{ active: tab === 'models' }" @click="tab = 'models'">模型路由</button>
+          <button :class="{ active: tab === 'media' }" @click="tab = 'media'">多模态 / 数字人</button>
         </nav>
         <div class="cog-badges mono"><span>在线保守画像</span><span>实验结果隔离</span><span>AI内容已标识</span></div>
         <button class="cog-close" aria-label="关闭认知诊断" @click="emit('close')">×</button>
@@ -332,11 +503,87 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
           <section class="path-legend"><span><i class="current"></i>当前薄弱点</span><span><i class="ready"></i>可执行任务</span><span><i class="future"></i>完成后重排</span><p>选择题、教师批准主观题和案件Rubric可更新长期画像；困惑只改变优先级，不直接降低掌握。</p></section>
         </template>
 
-        <template v-else>
+        <template v-else-if="tab === 'graphs'">
+          <section class="graph-hero"><div><p class="kicker mono">GOVERNED DAG · ARGUMENT SCAFFOLD</p><h3>课程先修图与法律论证模板</h3><p>知识图直接来自10张审核KnowledgeCard；论证图是交互脚手架，不是学生既有证据。</p></div><div class="graph-counts"><span><b>{{ knowledgeGraph.nodes.length }}</b>知识节点</span><span><b>{{ knowledgeGraph.edges.length }}</b>先修关系</span><span><b>0</b>伪造结论</span></div></section>
+          <div class="graph-grid">
+            <section class="knowledge-graph-panel">
+              <header><div><p class="kicker mono">PREREQUISITE DAG · SOURCE OF TRUTH</p><h3>刑法课程轻量知识图</h3></div><span>KnowledgeCard.version bound</span></header>
+              <svg viewBox="0 0 1000 430" role="img" aria-label="刑法知识点先修关系图">
+                <defs><marker id="knowledge-arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" /></marker></defs>
+                <path v-for="edge in knowledgeGraph.edges" :key="edge.id" :d="`M ${edge.from.x} ${edge.from.y + 28} C ${edge.from.x} ${edge.from.y + 74}, ${edge.to.x} ${edge.to.y - 74}, ${edge.to.x} ${edge.to.y - 28}`" class="knowledge-edge" marker-end="url(#knowledge-arrow)" />
+                <g v-for="node in knowledgeGraph.nodes" :key="node.card.knowledge_id" :transform="`translate(${node.x},${node.y})`" :class="['knowledge-node', { target: node.card.knowledge_id === targetKnowledge?.knowledge_id }]">
+                  <rect x="-86" y="-28" width="172" height="56" rx="2" />
+                  <text y="-3" text-anchor="middle">{{ node.card.canonical_name }}</text>
+                  <text y="15" text-anchor="middle" class="node-law">{{ node.card.law_article_refs.slice(0, 2).join(' · ') || node.card.chapter }}</text>
+                </g>
+              </svg>
+              <footer><span>绿色边框：当前诊断/推荐目标</span><span>箭头：prerequisite → target</span><span>无LLM补边</span></footer>
+            </section>
+
+            <section class="argument-graph-panel">
+              <header><div><p class="kicker mono">FACT → EVIDENCE → RULE → CLAIM</p><h3>案件论证脚手架</h3></div><span>template_only</span></header>
+              <div class="argument-chain">
+                <article v-for="(node, index) in argumentTemplate" :key="node.code" :class="`argument--${node.tone}`"><span class="mono">{{ node.code }}</span><div><h4>{{ node.title }}</h4><p>{{ node.detail }}</p></div><i v-if="index < argumentTemplate.length - 1">→</i></article>
+              </div>
+              <footer><strong>边界：</strong>只有学生提交、引用核验、Rubric或教师决定形成的事件才可进入画像；这张图当前只组织交互，不生成LearningEvent。</footer>
+            </section>
+          </div>
+        </template>
+
+        <template v-else-if="tab === 'models'">
           <section class="model-hero"><div><p class="kicker mono">MODEL ADAPTER · ROUTE WITHOUT UI CHANGE</p><h3>基础模型 / Prompt / RAG / RAG+微调</h3><p>当前运行基线与预留微调端点分开显示；未连接时不生成模拟指标。</p></div><div class="model-status"><span :class="{ connected: modelCatalog?.small_model_enabled }"></span><strong>{{ modelCatalog?.small_model_enabled ? '微调端点已连接' : '微调端点已预留 · 当前未连接' }}</strong></div></section>
           <section class="route-grid"><article v-for="row in relevantRoutes" :key="row.task"><header><span>{{ row.task.slice(0, 2).toUpperCase() }}</span><div><p class="kicker mono">{{ row.task }}</p><h3>{{ row.route?.model_name || '未配置' }}</h3></div></header><dl><div><dt>当前provider</dt><dd>{{ row.route?.provider ?? 'none' }}</dd></div><div><dt>端点主机</dt><dd>{{ row.route?.api_base ?? 'not_configured' }}</dd></div><div><dt>当前基线端点</dt><dd :class="row.route?.configured ? 'ok' : 'off'">{{ row.route?.configured ? 'connected' : 'not_connected' }}</dd></div><div><dt>RAG+微调</dt><dd :class="row.smallConnected ? 'ok' : 'off'">{{ row.smallConnected ? 'connected' : 'not_connected' }}</dd></div></dl><footer>Key不返回前端 · URL私有路径已脱敏</footer></article></section>
           <section class="comparison-lane"><article><span>01</span><h3>基础模型</h3><p>只做离线基线，不直接给正式结论</p></article><i>→</i><article><span>02</span><h3>Prompt / Few-shot</h3><p>固定JSON、Rubric与拒答格式</p></article><i>→</i><article><span>03</span><h3>可信RAG</h3><p>权威法条、版本、Evidence门禁</p></article><i>→</i><article class="pending"><span>04</span><h3>RAG + 微调</h3><p>{{ modelCatalog?.small_model_enabled ? '独立金标准验收后灰度接管' : 'not_connected · 不宣称已完成LoRA/SFT' }}</p></article></section>
           <section class="model-boundary"><strong>验收门禁</strong><p>微调模型必须与基础/Prompt/RAG同条件比较格式遵循、引用忠实度、法学专家评分、拒答、延迟和成本；未通过时继续使用当前基线。</p><span class="mono">failover {{ modelCatalog?.failover.mode }} · {{ modelCatalog?.failover.circuit_seconds }}s circuit</span></section>
+        </template>
+
+        <template v-else>
+          <section class="media-hero">
+            <div><p class="kicker mono">P1 SPEECH / VISION · P2 AVATAR</p><h3>多模态与数字人能力总线</h3><p>资产上传、身份隔离和任务状态已落地；云Provider未接入时明确not_connected。</p></div>
+            <div class="media-truth"><span>接口已预留 ≠ 能力已完成</span><strong>LearningEvent 0</strong><small>需规则或教师门禁后晋级</small></div>
+          </section>
+
+          <section v-if="mediaCatalog" class="media-capability-grid">
+            <article v-for="row in mediaCatalog.capabilities" :key="row.capability_id" :class="{ ready: row.connection_status === 'available' }">
+              <header><span>{{ row.priority }}</span><div><p class="kicker mono">{{ row.capability_id }}</p><h3>{{ capabilityLabel(row.capability_id) }}</h3></div></header>
+              <dl>
+                <div><dt>实现</dt><dd>{{ row.implementation_status }}</dd></div>
+                <div><dt>连接</dt><dd :class="row.connection_status === 'available' ? 'ok' : 'off'">{{ row.connection_status }}</dd></div>
+                <div><dt>API</dt><dd>{{ row.endpoint }}</dd></div>
+              </dl>
+              <footer v-if="row.provider_options?.length"><span v-for="provider in row.provider_options" :key="provider.provider_id">{{ provider.provider_id }} · {{ provider.adapter_status }}</span></footer>
+              <footer v-else><span>{{ row.client_fallback?.provider_id ?? '本地确定性能力' }}</span></footer>
+            </article>
+          </section>
+          <section v-else class="media-missing"><strong>能力目录未加载</strong><p>核心诊断仍可运行；媒体能力不会被假设为已连接。</p></section>
+
+          <div class="media-lab-grid">
+            <section class="media-lab">
+              <header><div><p class="kicker mono">CLIENT FALLBACK · REAL BROWSER API</p><h3>语音快问快答朗读</h3></div><span :class="browserSpeechSupported ? 'ok' : 'off'">{{ browserSpeechSupported ? 'available' : 'unsupported' }}</span></header>
+              <textarea v-model="speechText" maxlength="2000" aria-label="待朗读文本"></textarea>
+              <div class="media-actions"><button :disabled="!browserSpeechSupported || browserSpeaking" @click="readWithBrowserSpeech">{{ browserSpeaking ? '正在朗读…' : '浏览器本地朗读' }}</button><button :disabled="mediaBusy" @click="checkServerSpeech">检查服务端TTS</button></div>
+              <p>浏览器SpeechSynthesis只作现场降级，不产生可下载音频，也不冒充讯飞调用。</p>
+            </section>
+
+            <section class="media-lab">
+              <header><div><p class="kicker mono">PRIVATE ASSET · HASHED</p><h3>课堂短音频转写入口</h3></div><span class="off">provider gate</span></header>
+              <label class="media-upload"><input type="file" accept="audio/wav,audio/mpeg,audio/mp3,audio/mp4,audio/webm,audio/ogg" :disabled="mediaBusy" @change="handleAudioUpload"><strong>选择≤15MB短音频</strong><span>私有sandbox · SHA-256 · JWT隔离</span></label>
+              <dl v-if="mediaAsset" class="media-proof"><div><dt>asset</dt><dd>{{ mediaAsset.asset_id }}</dd></div><div><dt>hash</dt><dd>{{ mediaAsset.content_sha256.slice(0, 20) }}…</dd></div><div><dt>scope</dt><dd>{{ mediaAsset.storage_scope }}</dd></div></dl>
+              <p>未接ASR时只保存资产与not_connected任务，不生成伪转写。</p>
+            </section>
+
+            <section class="media-lab avatar-lab">
+              <header><div><p class="kicker mono">P2 · EXTERNAL PROVIDER REQUIRED</p><h3>数字人异步渲染契约</h3></div><span class="off">not_connected</span></header>
+              <div class="avatar-flow"><span>审核文本</span><i>→</i><span>TTS / voice</span><i>→</i><span>Avatar render</span><i>→</i><span>AI显著标识</span></div>
+              <button :disabled="mediaBusy" @click="checkAvatarInterface">调用预留接口验证状态</button>
+              <p>推荐讯飞作为赛事主Provider，Azure作替代；自定义肖像必须确认授权。数字人只负责呈现，不参与评分或画像。</p>
+            </section>
+          </div>
+
+          <section v-if="mediaMessage || mediaJob" class="media-result">
+            <div><p class="kicker mono">HONEST RUNTIME RESULT</p><h3>{{ mediaMessage || '任务状态已更新' }}</h3></div>
+            <dl v-if="mediaJob"><div><dt>job</dt><dd>{{ mediaJob.job_id }}</dd></div><div><dt>type</dt><dd>{{ mediaJob.job_type }}</dd></div><div><dt>provider</dt><dd>{{ mediaJob.provider_resolved }}</dd></div><div><dt>status</dt><dd :class="mediaJob.status === 'succeeded' ? 'ok' : 'off'">{{ mediaJob.status }}</dd></div></dl>
+          </section>
         </template>
       </main>
     </section>
@@ -351,7 +598,9 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .diagnosis-hero,.path-hero,.model-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:22px;padding:0 0 17px;border-bottom:1px solid rgba(100,139,153,.34)}.diagnosis-hero h3,.path-hero h3,.model-hero h3,.shadow-banner h3{font-size:1.4rem}.diagnosis-hero>div>p:last-child,.path-hero>div>p:last-child,.model-hero>div>p:last-child,.shadow-banner div>p:last-child{margin:5px 0 0;color:var(--parchment-dim);font-size:.73rem}.hero-metrics{display:grid!important;grid-template-columns:repeat(4,112px);border:1px solid var(--line)}.hero-metrics div{padding:10px;text-align:center;border-right:1px solid var(--line)}.hero-metrics div:last-child{border:0}.hero-metrics b{display:block;font-family:var(--font-mono);font-size:1.15rem}.hero-metrics span{color:var(--parchment-faint);font-size:.63rem}.diagnosis-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:13px;margin-top:15px}.panel{min-width:0;padding:15px;border:1px solid var(--line);background:rgba(255,255,255,.016)}.panel>header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px}.panel>header h3{font-size:1rem}.panel>header>span{color:var(--parchment-faint);font-family:var(--font-mono);font-size:.62rem}.knowledge-panel{grid-row:span 2}.knowledge-table{display:grid;gap:4px}.knowledge-table article{display:grid;grid-template-columns:9px minmax(0,1fr) 42px 155px;align-items:center;gap:9px;padding:8px;border-bottom:1px solid var(--line)}.state-dot{width:7px;height:7px;background:#67665f}.state-dot--mastered{background:#85a878}.state-dot--partial{background:#b08a3e}.state-dot--missing{background:#c45b38}.state-dot--provisional{background:#789dac}.state-dot--insufficient{background:#585a56}.knowledge-table article>div:nth-child(2){min-width:0;display:grid}.knowledge-table strong{overflow:hidden;font-family:var(--font-display);font-size:.75rem;white-space:nowrap;text-overflow:ellipsis}.knowledge-table small{color:var(--parchment-faint);font-size:.59rem}.evidence-count{display:grid;text-align:center}.evidence-count b{font-size:.78rem}.evidence-count span{color:var(--parchment-faint);font-size:.5rem}.state-pill{padding:3px 5px;text-align:center;border:1px solid var(--line);font-size:.6rem}.state-pill--mastered{color:#b9d0ad;border-color:rgba(122,153,98,.42)}.state-pill--partial{color:#e0c187;border-color:rgba(176,138,62,.42)}.state-pill--missing{color:#e3a08b;border-color:rgba(196,71,27,.45)}.state-pill--provisional{color:#b9d2db;border-color:rgba(100,139,153,.46)}.state-pill--insufficient{color:var(--parchment-faint)}.timeline{list-style:none;margin:0;padding:0;display:grid}.timeline li{display:grid;grid-template-columns:26px 16px minmax(0,1fr) 66px;gap:7px;min-height:61px}.timeline-no{padding-top:2px;color:#789dac;font-size:.58rem}.timeline-line{position:relative}.timeline-line::before{content:"";position:absolute;left:7px;top:10px;bottom:-3px;width:1px;background:var(--line-strong)}.timeline li:last-child .timeline-line::before{bottom:40px}.timeline-line i{position:absolute;top:5px;left:3px;width:9px;height:9px;border:2px solid #789dac;background:#101412;transform:rotate(45deg)}.timeline strong{font-size:.75rem}.timeline p{margin:3px 0;color:var(--parchment-muted);font-size:.65rem}.timeline small{color:var(--parchment-faint);font-size:.54rem}.eligibility{align-self:start;padding:3px 4px;color:#d6a38d;border:1px solid rgba(196,71,27,.35);font-size:.55rem;text-align:center}.eligibility.yes{color:#b6cba9;border-color:rgba(122,153,98,.38)}.empty-evidence{min-height:220px;display:grid;place-content:center;justify-items:center;text-align:center;color:var(--parchment-faint)}.empty-evidence>span{font-family:var(--font-mono);font-size:2rem}.empty-evidence h4{margin:4px}.empty-evidence p{max-width:300px;font-size:.66rem}.signal-panel{display:grid;grid-template-columns:1fr 1fr;gap:13px}.signal-panel h3{font-size:.9rem}.signal-panel ul{list-style:none;margin:8px 0 0;padding:0}.signal-panel li{display:flex;justify-content:space-between;gap:8px;padding:5px 0;color:var(--parchment-muted);border-bottom:1px solid var(--line);font-size:.66rem}.signal-panel li b{color:#e0a076}.signal-panel footer{grid-column:1/-1;padding:8px 9px;border:1px dashed var(--line-strong)}.signal-panel footer strong{color:var(--accent);font-family:var(--font-display);font-size:.7rem}.signal-panel footer p{margin:3px 0 0;color:var(--parchment-faint);font-size:.61rem}
 .shadow-banner{display:grid;grid-template-columns:70px minmax(0,1fr) auto;align-items:center;gap:17px;padding:13px 16px;border:1px solid rgba(196,71,27,.48);background:linear-gradient(90deg,rgba(196,71,27,.09),transparent)}.shadow-banner>span{width:58px;height:58px;display:grid;place-items:center;color:#e5aa93;border:1px solid currentColor;font-family:var(--font-mono);font-size:.67rem;transform:rotate(-2deg)}.shadow-banner>strong{padding:6px 8px;color:#e1aa92;border:1px solid rgba(196,71,27,.42);font-size:.7rem}.orcdf-versions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}.orcdf-versions article{padding:14px;border:1px solid var(--line);background:rgba(255,255,255,.016)}.orcdf-versions article.version--llm{border-color:rgba(176,138,62,.42)}.orcdf-versions article.version--teacher{border-color:rgba(100,139,153,.5)}.orcdf-versions header{display:flex;align-items:center;gap:11px}.orcdf-versions header>span{width:38px;height:38px;display:grid;place-items:center;border:1px solid currentColor;font-family:var(--font-mono)}.orcdf-versions h3{font-size:.92rem}.orcdf-versions header p{margin:3px 0 0;color:var(--parchment-faint);font-size:.62rem}.orcdf-versions dl{margin:12px 0}.orcdf-versions dl div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);font-size:.65rem}.orcdf-versions dt{color:var(--parchment-faint)}.orcdf-versions dd{margin:0;text-align:right}.auc-track{height:5px;background:var(--line)}.auc-track i{display:block;height:100%;background:linear-gradient(90deg,#7f5945,#b08a3e,#789dac)}.orcdf-detail-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:12px}.bootstrap-rows{display:grid;gap:6px}.bootstrap-rows article{display:grid;grid-template-columns:70px 64px 1fr 62px;align-items:center;gap:7px;padding:7px;border-bottom:1px solid var(--line)}.bootstrap-rows strong{font-size:.7rem}.bootstrap-rows b{color:#acd09c;font-family:var(--font-mono)}.bootstrap-rows b.negative{color:#e3a08b}.bootstrap-rows span{color:var(--parchment-dim);font-size:.6rem}.bootstrap-rows em{color:var(--parchment-faint);font-size:.59rem;font-style:normal}.boundary-note{margin:10px 0 0;color:var(--parchment-faint);font-size:.61rem;line-height:1.5}.heatmap-scroll{overflow-x:auto}.heatmap{min-width:650px;display:grid;gap:3px;align-items:center}.heat-label{height:47px;display:flex;align-items:flex-end;color:var(--parchment-faint);font-size:.53rem;line-height:1.2;writing-mode:vertical-rl}.heatmap>strong{font-size:.59rem;font-weight:500}.heat-cell{padding:8px 3px;color:#f0e8da;text-align:center;font-size:.56rem}.generic-init{display:grid;grid-template-columns:1fr 120px 28px 120px minmax(220px,.8fr);align-items:center;gap:12px;margin-top:12px;padding:13px;border:1px solid rgba(122,153,98,.38);background:rgba(122,153,98,.035)}.generic-init h3{font-size:.92rem}.init-score{display:grid;text-align:center}.init-score span{color:var(--parchment-faint);font-size:.57rem}.init-score b{font-family:var(--font-mono);font-size:1.2rem}.init-arrow{color:#8eb184;text-align:center}.generic-init>p{margin:0;color:var(--parchment-dim);font-size:.63rem;line-height:1.5}.shadow-boundaries{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-top:10px}.shadow-boundaries p{margin:0;padding:6px 8px;color:var(--parchment-faint);border:1px dashed var(--line);font-size:.61rem}.shadow-boundaries p span{margin-right:6px;color:var(--accent)}.shadow-boundaries footer{grid-column:1/-1;color:var(--parchment-faint);font-size:.54rem;text-align:right}
 .path-hero button{padding:9px 14px;color:#e5efdf;border:1px solid rgba(122,153,98,.48);background:rgba(122,153,98,.08);font-family:var(--font-display);cursor:pointer}.path-map{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:20px;margin-top:30px}.path-map article{position:relative;min-width:0}.path-no{position:absolute;z-index:2;top:-13px;left:12px;padding:4px 6px;color:#89afba;border:1px solid rgba(100,139,153,.48);background:#111513;font-size:.6rem}.path-card{height:230px;display:flex;flex-direction:column;padding:22px 12px 12px;border:1px solid var(--line);background:linear-gradient(155deg,rgba(255,255,255,.026),transparent)}.path-card h3{font-size:.82rem;line-height:1.45}.path-card>span{margin-top:7px;color:var(--parchment-faint);font-size:.61rem;line-height:1.45}.path-card footer{margin-top:auto;padding-top:8px;color:var(--parchment-dim);border-top:1px dashed var(--line);font-size:.59rem;line-height:1.45}.path-node--current .path-card{border-color:rgba(196,71,27,.55);box-shadow:inset 0 3px var(--accent)}.path-node--ready .path-card{border-color:rgba(122,153,98,.44);box-shadow:inset 0 3px var(--accent-success)}.path-node--future .path-card{border-style:dashed}.path-node--locked .path-card{opacity:.48}.path-node--complete .path-card{border-color:rgba(100,139,153,.38)}.path-connector{position:absolute;z-index:3;top:104px;left:calc(100% + 2px);width:36px;display:grid;justify-items:center}.path-connector i{width:36px;height:1px;background:linear-gradient(90deg,#789dac,transparent)}.path-connector i::after{content:"";float:right;width:6px;height:6px;margin-top:-3px;border-top:1px solid #789dac;border-right:1px solid #789dac;transform:rotate(45deg)}.path-connector span{margin-top:6px;color:var(--parchment-faint);font-size:.48rem;writing-mode:vertical-rl}.path-legend{display:flex;align-items:center;gap:16px;margin-top:18px;padding:10px;border:1px solid var(--line)}.path-legend>span{display:flex;align-items:center;gap:5px;color:var(--parchment-dim);font-size:.62rem}.path-legend i{width:8px;height:8px;background:#666}.path-legend i.current{background:var(--accent)}.path-legend i.ready{background:var(--accent-success)}.path-legend i.future{background:#789dac}.path-legend p{margin:0 0 0 auto;color:var(--parchment-faint);font-size:.61rem}
+.graph-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(100,139,153,.34)}.graph-hero h3{font-size:1.4rem}.graph-hero>div>p:last-child{margin:5px 0 0;color:var(--parchment-dim);font-size:.73rem}.graph-counts{display:flex;border:1px solid var(--line)}.graph-counts span{min-width:100px;padding:9px 12px;color:var(--parchment-faint);border-right:1px solid var(--line);font-size:.6rem;text-align:center}.graph-counts span:last-child{border:0}.graph-counts b{display:block;color:var(--parchment);font-family:var(--font-mono);font-size:1.05rem}.graph-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(360px,.65fr);gap:12px;margin-top:14px}.knowledge-graph-panel,.argument-graph-panel{min-width:0;padding:14px;border:1px solid var(--line);background:rgba(255,255,255,.014)}.knowledge-graph-panel>header,.argument-graph-panel>header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.knowledge-graph-panel h3,.argument-graph-panel h3{font-size:.94rem}.knowledge-graph-panel>header>span,.argument-graph-panel>header>span{color:var(--parchment-faint);font-family:var(--font-mono);font-size:.55rem}.knowledge-graph-panel svg{width:100%;height:min(56vh,500px);min-height:390px;margin-top:8px;border:1px dashed var(--line);background:radial-gradient(circle,rgba(100,139,153,.14) 1px,transparent 1px) 0 0/18px 18px}.knowledge-edge{fill:none;stroke:rgba(120,157,172,.55);stroke-width:1.5}.knowledge-graph-panel marker path{fill:#789dac}.knowledge-node rect{fill:#121714;stroke:rgba(100,139,153,.62);stroke-width:1.2}.knowledge-node.target rect{fill:rgba(122,153,98,.1);stroke:#8cae7f;stroke-width:2}.knowledge-node text{fill:#ece2d1;font-family:var(--font-display);font-size:12px}.knowledge-node .node-law{fill:#82949a;font-family:var(--font-mono);font-size:8px}.knowledge-graph-panel>footer{display:flex;gap:12px;margin-top:8px;color:var(--parchment-faint);font-size:.56rem}.argument-chain{display:grid;gap:7px;margin-top:12px}.argument-chain article{position:relative;display:grid;grid-template-columns:44px 1fr;gap:9px;min-height:61px;padding:9px;border:1px solid var(--line)}.argument-chain article>span{align-self:start;padding:3px 4px;color:#a9c3cc;border:1px solid rgba(100,139,153,.45);font-size:.52rem;text-align:center}.argument-chain h4{font-size:.72rem}.argument-chain p{margin:3px 0 0;color:var(--parchment-faint);font-size:.57rem;line-height:1.45}.argument-chain i{position:absolute;right:13px;bottom:-13px;z-index:2;color:#789dac;font-style:normal;transform:rotate(90deg)}.argument--evidence,.argument--gate{border-color:rgba(122,153,98,.42)!important}.argument--challenge{border-color:rgba(196,71,27,.42)!important}.argument-graph-panel>footer{margin-top:10px;padding:8px;color:var(--parchment-faint);border:1px dashed var(--line-strong);font-size:.57rem;line-height:1.5}.argument-graph-panel>footer strong{color:#df9d84}
 .model-status{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--line)}.model-status span{width:8px;height:8px;background:var(--accent)}.model-status span.connected{background:var(--accent-success)}.model-status strong{font-size:.7rem}.route-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}.route-grid article{padding:14px;border:1px solid var(--line);background:rgba(255,255,255,.016)}.route-grid header{display:flex;align-items:center;gap:10px}.route-grid header>span{width:34px;height:34px;display:grid;place-items:center;color:#b9d2db;border:1px solid rgba(100,139,153,.42);font-family:var(--font-mono)}.route-grid h3{overflow:hidden;font-size:.86rem;white-space:nowrap;text-overflow:ellipsis}.route-grid dl{margin:13px 0}.route-grid dl div{display:grid;grid-template-columns:1fr minmax(0,1.3fr);gap:7px;padding:6px 0;border-bottom:1px solid var(--line);font-size:.61rem}.route-grid dt{color:var(--parchment-faint)}.route-grid dd{overflow:hidden;margin:0;text-align:right;white-space:nowrap;text-overflow:ellipsis}.route-grid dd.ok{color:#b7cba9}.route-grid dd.off{color:#df9e86}.route-grid footer{color:var(--parchment-faint);font-size:.57rem}.comparison-lane{display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr 28px 1fr;align-items:center;gap:7px;margin-top:14px}.comparison-lane article{min-height:115px;padding:13px;border:1px solid rgba(122,153,98,.38);background:rgba(122,153,98,.025)}.comparison-lane article.pending{border-style:dashed;border-color:rgba(196,71,27,.45)}.comparison-lane article>span{color:#789dac;font-family:var(--font-mono);font-size:.61rem}.comparison-lane h3{margin:5px 0;font-size:.85rem}.comparison-lane p{margin:0;color:var(--parchment-faint);font-size:.61rem;line-height:1.45}.comparison-lane>i{color:#789dac;text-align:center;font-style:normal}.model-boundary{display:grid;grid-template-columns:80px 1fr auto;align-items:center;gap:12px;margin-top:13px;padding:10px;border:1px dashed var(--line-strong)}.model-boundary strong{color:var(--accent);font-family:var(--font-display)}.model-boundary p{margin:0;color:var(--parchment-dim);font-size:.63rem}.model-boundary span{color:var(--parchment-faint);font-size:.55rem}
-@media(max-width:1180px){.cog-head{grid-template-columns:1fr auto 38px}.cog-badges{display:none}.diagnosis-grid{grid-template-columns:1fr}.knowledge-panel{grid-row:auto}.path-map{grid-template-columns:repeat(4,1fr)}.path-connector{display:none}.route-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:820px){.cog-layer{padding:0}.cog-head{grid-template-columns:1fr 38px;padding:10px 12px}.cog-tabs{grid-column:1/-1;grid-row:2;overflow-x:auto}.cog-tabs button{flex:1;white-space:nowrap}.cog-content{padding:16px 13px 40px}.diagnosis-hero,.path-hero,.model-hero{display:block}.hero-metrics{grid-template-columns:repeat(2,1fr);margin-top:12px}.orcdf-versions,.orcdf-detail-grid,.route-grid{grid-template-columns:1fr}.generic-init{grid-template-columns:1fr 1fr}.generic-init>div:first-child,.generic-init>p{grid-column:1/-1}.init-arrow{display:none}.path-map{grid-template-columns:repeat(2,1fr)}.comparison-lane{grid-template-columns:1fr}.comparison-lane>i{transform:rotate(90deg)}.model-boundary{grid-template-columns:1fr}.shadow-boundaries{grid-template-columns:1fr}.shadow-boundaries footer{grid-column:1}.signal-panel{grid-template-columns:1fr}.signal-panel footer{grid-column:1}.knowledge-table article{grid-template-columns:9px minmax(0,1fr) 38px}.state-pill{grid-column:2/-1}.timeline li{grid-template-columns:24px 14px minmax(0,1fr)}.eligibility{grid-column:3}.cog-brand h2{font-size:1.05rem}}
+.media-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(100,139,153,.34)}.media-hero h3{font-size:1.4rem}.media-hero>div>p:last-child{margin:5px 0 0;color:var(--parchment-dim);font-size:.73rem}.media-truth{display:grid;justify-items:end;gap:4px;padding:9px 11px;border:1px solid rgba(196,71,27,.45);background:rgba(196,71,27,.05)}.media-truth span{color:#e0a28b;font-family:var(--font-display);font-size:.72rem}.media-truth strong{font-family:var(--font-mono);font-size:.82rem}.media-truth small{color:var(--parchment-faint);font-size:.56rem}.media-capability-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:15px}.media-capability-grid article{min-width:0;padding:12px;border:1px dashed rgba(196,71,27,.42);background:rgba(255,255,255,.014)}.media-capability-grid article.ready{border-style:solid;border-color:rgba(122,153,98,.45)}.media-capability-grid header{display:flex;align-items:center;gap:8px}.media-capability-grid header>span{width:31px;height:31px;display:grid;place-items:center;color:#b7ced6;border:1px solid currentColor;font-family:var(--font-mono);font-size:.61rem}.media-capability-grid h3{font-size:.78rem}.media-capability-grid dl{margin:10px 0}.media-capability-grid dl div{display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px;padding:4px 0;border-bottom:1px solid var(--line);font-size:.57rem}.media-capability-grid dt{color:var(--parchment-faint)}.media-capability-grid dd{overflow:hidden;margin:0;text-align:right;white-space:nowrap;text-overflow:ellipsis}.media-capability-grid dd.ok,.media-lab .ok,.media-result dd.ok{color:#b8d0ac}.media-capability-grid dd.off,.media-lab .off,.media-result dd.off{color:#e0a087}.media-capability-grid footer{display:grid;gap:3px;color:var(--parchment-faint);font-size:.52rem}.media-missing{margin-top:15px;padding:13px;border:1px dashed var(--line-strong)}.media-missing p{margin:4px 0 0;color:var(--parchment-faint);font-size:.63rem}.media-lab-grid{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:11px;margin-top:14px}.media-lab{min-width:0;padding:14px;border:1px solid var(--line);background:rgba(255,255,255,.016)}.media-lab>header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.media-lab h3{font-size:.9rem}.media-lab>header>span{padding:3px 5px;border:1px solid currentColor;font-family:var(--font-mono);font-size:.56rem}.media-lab textarea{width:100%;min-height:96px;margin:11px 0 8px;padding:9px;color:var(--parchment);border:1px solid var(--line-strong);background:#0c0f0e;resize:vertical;font:inherit;font-size:.66rem;line-height:1.55}.media-actions{display:flex;gap:7px}.media-lab button,.media-upload{padding:8px 10px;color:var(--parchment);border:1px solid rgba(100,139,153,.5);background:rgba(100,139,153,.07);font-family:var(--font-display);font-size:.66rem;cursor:pointer}.media-lab button:disabled{opacity:.42;cursor:not-allowed}.media-lab>p{margin:9px 0 0;color:var(--parchment-faint);font-size:.58rem;line-height:1.5}.media-upload{display:grid;gap:4px;margin-top:12px;text-align:center}.media-upload input{position:absolute;width:1px;height:1px;opacity:0}.media-upload strong{font-size:.7rem}.media-upload span{color:var(--parchment-faint);font-size:.56rem}.media-proof{margin:9px 0 0}.media-proof div{display:grid;grid-template-columns:48px 1fr;gap:8px;padding:4px 0;border-bottom:1px solid var(--line);font-size:.56rem}.media-proof dt{color:var(--parchment-faint)}.media-proof dd{overflow:hidden;margin:0;text-align:right;white-space:nowrap;text-overflow:ellipsis}.avatar-flow{display:flex;align-items:center;justify-content:center;gap:6px;min-height:92px;margin:10px 0;padding:8px;border:1px dashed var(--line-strong)}.avatar-flow span{padding:5px 6px;color:var(--parchment-dim);border:1px solid var(--line);font-size:.56rem}.avatar-flow i{color:#789dac;font-style:normal}.avatar-lab>button{width:100%}.media-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(420px,.9fr);align-items:center;gap:16px;margin-top:12px;padding:11px 13px;border:1px solid rgba(176,138,62,.43);background:rgba(176,138,62,.035)}.media-result h3{font-size:.74rem}.media-result dl{display:grid;grid-template-columns:repeat(4,1fr);margin:0}.media-result dl div{min-width:0;padding:0 8px;border-left:1px solid var(--line)}.media-result dt{color:var(--parchment-faint);font-size:.52rem}.media-result dd{overflow:hidden;margin:2px 0 0;font-family:var(--font-mono);font-size:.58rem;white-space:nowrap;text-overflow:ellipsis}
+@media(max-width:1180px){.cog-head{grid-template-columns:1fr auto 38px}.cog-badges{display:none}.diagnosis-grid{grid-template-columns:1fr}.knowledge-panel{grid-row:auto}.path-map{grid-template-columns:repeat(4,1fr)}.path-connector{display:none}.route-grid{grid-template-columns:repeat(2,1fr)}.graph-grid{grid-template-columns:1fr}.media-capability-grid{grid-template-columns:repeat(3,1fr)}.media-lab-grid{grid-template-columns:1fr 1fr}.avatar-lab{grid-column:1/-1}}
+@media(max-width:820px){.cog-layer{padding:0}.cog-head{grid-template-columns:1fr 38px;padding:10px 12px}.cog-tabs{grid-column:1/-1;grid-row:2;overflow-x:auto}.cog-tabs button{flex:1;white-space:nowrap}.cog-content{padding:16px 13px 40px}.diagnosis-hero,.path-hero,.model-hero,.graph-hero,.media-hero{display:block}.graph-counts{margin-top:12px;overflow-x:auto}.media-truth{justify-items:start;margin-top:12px}.hero-metrics{grid-template-columns:repeat(2,1fr);margin-top:12px}.orcdf-versions,.orcdf-detail-grid,.route-grid,.media-capability-grid,.media-lab-grid{grid-template-columns:1fr}.avatar-lab{grid-column:auto}.generic-init{grid-template-columns:1fr 1fr}.generic-init>div:first-child,.generic-init>p{grid-column:1/-1}.init-arrow{display:none}.path-map{grid-template-columns:repeat(2,1fr)}.comparison-lane{grid-template-columns:1fr}.comparison-lane>i{transform:rotate(90deg)}.model-boundary,.media-result{grid-template-columns:1fr}.media-result dl{grid-template-columns:1fr 1fr}.shadow-boundaries{grid-template-columns:1fr}.shadow-boundaries footer{grid-column:1}.signal-panel{grid-template-columns:1fr}.signal-panel footer{grid-column:1}.knowledge-table article{grid-template-columns:9px minmax(0,1fr) 38px}.state-pill{grid-column:2/-1}.timeline li{grid-template-columns:24px 14px minmax(0,1fr)}.eligibility{grid-column:3}.cog-brand h2{font-size:1.05rem}.avatar-flow{flex-wrap:wrap}.knowledge-graph-panel{overflow-x:auto}.knowledge-graph-panel svg{min-width:760px}.knowledge-graph-panel>footer{min-width:760px}}
 </style>
