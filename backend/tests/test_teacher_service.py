@@ -6,11 +6,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
 
 from src.core.database import Base, create_database_engine, create_session_factory, get_db_session
-from src.core.models import LearnerProfileRecord, LearningEventRecord, User
+from src.core.models import CourseClassRecord, LearnerProfileRecord, LearningEventRecord, User
 from src.core.role_service import grant_user_role, resolve_user_role
 from src.teacher.routes import create_teacher_router
 from src.teacher.service import (
@@ -279,6 +279,47 @@ class TeacherServiceTests(unittest.TestCase):
         with TestClient(app) as client:
             response = client.get("/api/teacher/overview")
         self.assertEqual(response.status_code, 403)
+
+    def test_create_class_route_commits_before_response_cleanup(self) -> None:
+        """A follow-up analytics request must see the class immediately.
+
+        The dependency deliberately rolls back during cleanup.  Persistence
+        therefore proves the mutation route committed before returning, rather
+        than relying on FastAPI's post-response yield cleanup timing.
+        """
+
+        def session_dependency():
+            session = self.factory()
+            try:
+                yield session
+            finally:
+                session.rollback()
+                session.close()
+
+        def current_teacher(session=Depends(session_dependency)):
+            return session.get(User, "teacher-1")
+
+        app = FastAPI()
+        app.include_router(
+            create_teacher_router(
+                current_user_dependency=current_teacher,
+                session_dependency=session_dependency,
+                service=self.service,
+            )
+        )
+        with TestClient(app) as client:
+            created = client.post(
+                "/api/teacher/classes",
+                json={
+                    "course_id": "undergraduate-criminal-law",
+                    "name": "即时可见班级",
+                    "term": "2026秋",
+                },
+            )
+            self.assertEqual(created.status_code, 200, created.text)
+            class_id = created.json()["classroom"]["class_id"]
+        with get_db_session(self.factory) as observer:
+            self.assertIsNotNone(observer.get(CourseClassRecord, class_id))
 
 
 if __name__ == "__main__":

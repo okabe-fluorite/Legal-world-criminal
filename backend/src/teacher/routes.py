@@ -57,6 +57,14 @@ def create_teacher_router(
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
+    def mutate(session: Session, action):
+        result = call(action)
+        # Yield-dependency cleanup may commit after the response becomes
+        # visible. Commit mutation endpoints before returning so immediate
+        # list/analytics requests cannot race the write transaction.
+        session.commit()
+        return result
+
     @router.get("/overview")
     async def overview(
         current_user: User = Depends(current_user_dependency),
@@ -70,7 +78,8 @@ def create_teacher_router(
         current_user: User = Depends(current_user_dependency),
         session: Session = Depends(session_dependency),
     ):
-        return call(
+        return mutate(
+            session,
             lambda: runtime.create_class(
                 session=session,
                 teacher=current_user,
@@ -87,7 +96,8 @@ def create_teacher_router(
         current_user: User = Depends(current_user_dependency),
         session: Session = Depends(session_dependency),
     ):
-        return call(
+        return mutate(
+            session,
             lambda: runtime.enroll_student(
                 session=session,
                 teacher=current_user,
@@ -133,7 +143,8 @@ def create_teacher_router(
         current_user: User = Depends(current_user_dependency),
         session: Session = Depends(session_dependency),
     ):
-        return call(
+        return mutate(
+            session,
             lambda: runtime.submit_review(
                 session=session,
                 teacher=current_user,
