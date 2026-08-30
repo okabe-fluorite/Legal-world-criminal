@@ -1,6 +1,6 @@
 {
   "schema": "xh-202620-public-submission-draft-manifest-v1",
-  "source_git_commit": "fce973d4ef5f1fb454f2bbf9095809af98ecc5a5",
+  "source_git_commit": "43c22fdc7b24dc1a4ba68ce9349a037b7f7336a7",
   "package_build_date": "2026-08-30",
   "files": [
     {
@@ -35,8 +35,8 @@
     },
     {
       "path": "05-代码/LegalWorld-星火智学-源码_DRAFT.zip",
-      "bytes": 14732681,
-      "sha256": "49e9ec2102f65bd91f36702a545a6ee2da7ae388667f289449cc8f2f406535c3"
+      "bytes": 14740058,
+      "sha256": "3da4adcd61de2beebaf1a9a639d43df2d86068478eac342fd39a151009ca2a6c"
     },
     {
       "path": "06-公开审计/25帧视觉接触表.png",
@@ -62,6 +62,16 @@
       "path": "06-公开审计/NARRATED_VIDEO_DRAFT_AUDIT.json",
       "bytes": 8697,
       "sha256": "7baf68482053824d4365d144646d7c8504e8bfef57319b64fad06c4141272927"
+    },
+    {
+      "path": "06-公开审计/THREE_ROUTE_REHEARSAL_AUDIT.json",
+      "bytes": 6438,
+      "sha256": "821c8cd5d7d490bfaded8d98e85654d1fc1913b8ddc02ab94bbb74b3700b6335"
+    },
+    {
+      "path": "06-公开审计/THREE_ROUTE_REHEARSAL_AUDIT.md",
+      "bytes": 1217,
+      "sha256": "928a65b242d39a126f2266f7696170c1ae9b3f3f5cb9ea4ae7bce9053f797ae2"
     },
     {
       "path": "06-公开审计/专家审核包_MANIFEST_DRAFT.md",
@@ -95,8 +105,8 @@
     }
   ],
   "source_code": {
-    "entry_count": 405,
-    "sha256": "49e9ec2102f65bd91f36702a545a6ee2da7ae388667f289449cc8f2f406535c3",
+    "entry_count": 406,
+    "sha256": "3da4adcd61de2beebaf1a9a639d43df2d86068478eac342fd39a151009ca2a6c",
     "sanitized_env": true
   },
   "pending": {
