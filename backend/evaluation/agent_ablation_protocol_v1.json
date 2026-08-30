@@ -1,0 +1,33 @@
+{
+  "schema_version": "agent-ablation-protocol-v1",
+  "protocol_id": "AGENT_ABLATION_CASE144_CR_V1",
+  "case_bundle_id": "CRIM_CASE_BCE041E195C8247BC179",
+  "stage": "CR",
+  "question": "请以辩护人立场分析张那木拉造成一死一伤的反击是否属于刑法第二十条第三款的特殊防卫。",
+  "student_initial_answer": "庭审质证应围绕监控完整性、侵害方所持凶器、后脑等要害部位受攻击、陈某2新倒地后周某强仍持刀的动作展开。公诉方若只以一死一伤证明故意伤害，尚未回应刑法第二十条第三款的行凶、侵害持续性与特殊防卫规则，不能排除正当防卫结论。",
+  "required_element_ids": [
+    "ongoing_unlawful_infringement",
+    "serious_violent_attack",
+    "defensive_harm",
+    "necessity_or_special_defense"
+  ],
+  "evidence_status": "limited",
+  "temperature": 0.1,
+  "max_tokens": 2600,
+  "prompt_versions": {
+    "C0": "agent-ablation-c0-static-v1",
+    "C1_fact": "agent-ablation-c1-fact-v1",
+    "C1_prosecutor": "agent-ablation-c1-prosecutor-v1",
+    "C1_defense": "agent-ablation-c1-defense-v1"
+  },
+  "conditions": {
+    "C0": "单次静态材料+固定提示，无独立角色或审查节点",
+    "C1": "显式状态机+学生可见事实审查+确定性Evidence工具+检察官反方质询+辩方修订"
+  },
+  "teacher_blind_review": "pending",
+  "limits": [
+    "focused CR slice, not a replacement for the existing six-stage engineering E2E",
+    "automatic gates do not establish substantive legal correctness",
+    "teacher blind scores remain pending"
+  ]
+}

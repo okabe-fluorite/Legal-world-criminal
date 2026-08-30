@@ -260,6 +260,15 @@ teaching/
 - 自动指标包括Schema、required point、Evidence scope、逐字quote、禁止输出和应弃权行为；人工Rubric、专家分和学习效果全部保持pending。
 - LawBench/LexEval/MSLR-Bench仅借鉴任务分类、Runner、IRAC/FRC和失败分析，不复制旧模型输出或把外部答案作为刑法Gold。
 
+### Agent C0/C1聚焦消融
+
+- `agent_ablation_protocol_v1.json`固定指导案例144号CR阶段、同一学生初稿、学生可见事实、刑法第二十条Evidence、`deepseek-v4-flash`、温度0.1和Prompt版本。
+- C0为1次静态回答；C1为事实审查→确定性Evidence工具→检察官反方→辩方修订→Schema ID归一→Gate，共3次模型调用。
+- 当前一次真实主模型run：C0/C1最终Gate均通过、必要要件均4/4，反方2/3；C1耗时202,543.986ms对35,070.437ms，tokens 20,188对7,431。
+- C1原始输出因3个`COUNTER_1/2/3` ID未通过Schema；确定性节点仅改为稳定ID，保留原始输出，0额外模型调用、0法律语义字段修改。
+- 这组结果只表明C1增加1条反方且显著增加成本，不证明Agent教学质量更好；匿名A/B双教师盲评仍pending。
+- 本实验是CR推理纵向切片，不替代已有六阶段工程E2E，也不构成学习效果或Agent普遍优越性证据。
+
 ### 受治理AI分层解惑
 
 - `learning_support_sessions`保存学生私有两步会话：确定性诊断追问→学生回答→受治理四层解释；同ID幂等/冲突、跨学生403

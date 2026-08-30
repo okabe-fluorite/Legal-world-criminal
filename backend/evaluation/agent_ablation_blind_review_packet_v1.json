@@ -1,0 +1,494 @@
+{
+  "schema_version": "agent-ablation-blind-review-packet-v1",
+  "packet_id": "BLIND_5971E713159B0C12E4FE",
+  "status": "pending_two_independent_law_reviewers",
+  "question": "请以辩护人立场分析张那木拉造成一死一伤的反击是否属于刑法第二十条第三款的特殊防卫。",
+  "student_initial_answer": "庭审质证应围绕监控完整性、侵害方所持凶器、后脑等要害部位受攻击、陈某2新倒地后周某强仍持刀的动作展开。公诉方若只以一死一伤证明故意伤害，尚未回应刑法第二十条第三款的行凶、侵害持续性与特殊防卫规则，不能排除正当防卫结论。",
+  "review_instructions": [
+    "Do not inspect the ablation report before submitting the locked first-stage review.",
+    "Score A and B independently; do not guess which condition used Agents.",
+    "Record abstention when the governed material is insufficient."
+  ],
+  "rubric": [
+    {
+      "dimension": "争点与事实纪律",
+      "max_score": 4
+    },
+    {
+      "dimension": "法源与逐字Evidence",
+      "max_score": 4
+    },
+    {
+      "dimension": "要件涵摄",
+      "max_score": 4
+    },
+    {
+      "dimension": "最强反方与回应",
+      "max_score": 4
+    },
+    {
+      "dimension": "不确定性与形成性价值",
+      "max_score": 4
+    }
+  ],
+  "review_slots": [
+    {
+      "reviewer_id": null,
+      "submission_A": null,
+      "submission_B": null,
+      "preferred": null
+    },
+    {
+      "reviewer_id": null,
+      "submission_A": null,
+      "submission_B": null,
+      "preferred": null
+    }
+  ],
+  "submissions": [
+    {
+      "submission_label": "A",
+      "reasoning": {
+        "schema_version": "legal-reasoning-v1",
+        "issue": {
+          "statement": "以辩护人立场分析张那木拉造成一死一伤的反击是否属于刑法第二十条第三款的特殊防卫。",
+          "issue_type": "justification"
+        },
+        "facts": [
+          {
+            "fact_id": "FACT_F01",
+            "statement": "公诉方指控反击行为造成一死一伤并构成故意伤害",
+            "source_path": "student_visible.prosecution_claims[0]",
+            "source_quote": "反击行为造成一死一伤并构成故意伤害",
+            "status": "disputed"
+          },
+          {
+            "fact_id": "FACT_F02",
+            "statement": "公诉方指控陈某2新倒地后继续反击超过必要限度",
+            "source_path": "student_visible.prosecution_claims[1]",
+            "source_quote": "陈某2新倒地后继续反击超过必要限度",
+            "status": "disputed"
+          },
+          {
+            "fact_id": "FACT_F03",
+            "statement": "双方对是否存在正在进行的不法侵害存在争议",
+            "source_path": "student_visible.contested_issues[0]",
+            "source_quote": "是否存在正在进行的不法侵害",
+            "status": "disputed"
+          },
+          {
+            "fact_id": "FACT_F04",
+            "statement": "双方对是否属于行凶及特殊防卫存在争议",
+            "source_path": "student_visible.contested_issues[1]",
+            "source_quote": "是否属于行凶及特殊防卫",
+            "status": "disputed"
+          },
+          {
+            "fact_id": "FACT_F05",
+            "statement": "双方对部分侵害人被制伏后防卫权是否终止存在争议",
+            "source_path": "student_visible.contested_issues[2]",
+            "source_quote": "部分侵害人被制伏后防卫权是否终止",
+            "status": "disputed"
+          },
+          {
+            "fact_id": "FACT_F06",
+            "statement": "监控录像记录了持续侵害过程",
+            "source_path": "student_visible.evidence_confrontation_points[0]",
+            "source_quote": "监控中的持续侵害过程",
+            "status": "agreed"
+          },
+          {
+            "fact_id": "FACT_F07",
+            "statement": "侵害方持有凶器",
+            "source_path": "student_visible.evidence_confrontation_points[1]",
+            "source_quote": "侵害方所持凶器",
+            "status": "agreed"
+          },
+          {
+            "fact_id": "FACT_F08",
+            "statement": "张那木拉后脑等要害部位受到攻击",
+            "source_path": "student_visible.evidence_confrontation_points[2]",
+            "source_quote": "后脑等要害部位受攻击事实",
+            "status": "agreed"
+          },
+          {
+            "fact_id": "FACT_F09",
+            "statement": "周某强在屋外仍挥舞砍刀",
+            "source_path": "student_visible.evidence_confrontation_points[3]",
+            "source_quote": "周某强在屋外仍挥舞砍刀",
+            "status": "agreed"
+          }
+        ],
+        "rules": [
+          {
+            "rule_id": "RULE_SPECIAL_DEFENSE",
+            "statement": "根据刑法第二十条第三款，对正在进行行凶、杀人、抢劫、强奸、绑架以及其他严重危及人身安全的暴力犯罪，采取防卫行为，造成不法侵害人伤亡的，不属于防卫过当，不负刑事责任。",
+            "evidence_id": "EVID_9CB6894B3E55465B19C6",
+            "source_title": "中华人民共和国刑法",
+            "article_ref": "第二十条",
+            "quote": "为了使国家、公共利益、本人或者他人的人身、财产和其他权利免受正在进行的不法侵害，而采取的制止不法侵害的行为，对不法侵害人造成损害的，属于正当防卫，不负刑事责任。\n正当防卫明显超过必要限度造成重大损害的，应当负刑事责任，但是应当减轻或者免除处罚。\n对正在进行行凶、杀人、抢劫、强奸、绑架以及其他严重危及人身安全的暴力犯罪，采取防卫行为，造成不法侵害人伤亡的，不属于防卫过当，不负刑事责任。"
+          }
+        ],
+        "applications": [
+          {
+            "element_id": "ongoing_unlawful_infringement",
+            "element": "正在进行的不法侵害",
+            "fact_ids": [
+              "FACT_F03",
+              "FACT_F06",
+              "FACT_F09"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "analysis": "监控录像显示持续侵害过程，且周某强在屋外仍挥舞砍刀，表明侵害行为并未因陈某2新倒地而当然结束。张那木拉面对的是多人持凶器的持续攻击，不能苛求其精确判断每个侵害人的状态。但陈某2新倒地后周某强的具体位置、距离和攻击意图尚不明确，是否仍构成正在进行的不法侵害存在争议，需结合完整监控进一步认定。",
+            "finding": "disputed"
+          },
+          {
+            "element_id": "serious_violent_attack",
+            "element": "行凶或严重危及人身安全的暴力犯罪",
+            "fact_ids": [
+              "FACT_F04",
+              "FACT_F07",
+              "FACT_F08"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "analysis": "侵害方持有凶器，且张那木拉后脑等要害部位受到攻击，这些因素综合表明侵害行为具有高度致命危险，符合刑法第二十条第三款‘行凶’的典型特征。但检察官指出需结合工具、力度、人数等综合判断，现有证据仅显示后脑受攻击，未充分证明伤情达到严重危及生命安全的程度，因此该要素是否满足仍存争议。",
+            "finding": "disputed"
+          },
+          {
+            "element_id": "defensive_harm",
+            "element": "防卫行为造成损害",
+            "fact_ids": [
+              "FACT_F01",
+              "FACT_F06"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "analysis": "张那木拉的反击行为造成一死一伤，这是客观结果。但该结果是否属于正当防卫中的‘造成损害’，取决于反击是否针对正在进行的不法侵害。监控显示持续侵害过程，但公诉方指控故意伤害，因此损害结果与防卫行为的关联性存在争议，需进一步查明反击的时间、对象和主观意图。",
+            "finding": "disputed"
+          },
+          {
+            "element_id": "necessity_or_special_defense",
+            "element": "必要性或特殊防卫",
+            "fact_ids": [
+              "FACT_F02",
+              "FACT_F05",
+              "FACT_F09"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "analysis": "若本案属于刑法第二十条第三款规定的特殊防卫，则无需审查是否明显超过必要限度，造成伤亡不负刑事责任。本案中，侵害方持凶器攻击要害部位，且周某强在屋外仍挥舞砍刀，表明侵害具有严重暴力性质。但陈某2新倒地后继续反击是否属于事后防卫，以及防卫权是否因部分侵害人被制伏而终止，存在争议。需要查明周某强是否仍在实施攻击以及张那木拉对此的认知。",
+            "finding": "disputed"
+          }
+        ],
+        "counterarguments": [
+          {
+            "argument_id": "COUNTER_C01",
+            "position": "学生将“后脑等要害部位受攻击”直接等同于“行凶”，但刑法第二十条第三款要求的是“严重危及人身安全的暴力犯罪”，需结合侵害工具、打击部位、力度、人数等综合判断；现有事实仅显示“后脑等要害部位受攻击”，未证明已达到严重危及生命安全的程度，因此不能直接适用特殊防卫。",
+            "fact_ids": [
+              "FACT_F08",
+              "FACT_F04",
+              "FACT_F07"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "response": "辩方认为，后脑等要害部位受攻击本身即具有高度致命危险，结合侵害方持有凶器，足以认定属于“行凶”。但确实需要综合工具、力度、人数等因素，现有证据有限，无法完全排除合理怀疑，因此该问题仍需进一步审查。",
+            "unresolved": true
+          },
+          {
+            "argument_id": "COUNTER_C02",
+            "position": "学生主张“周某强在屋外仍挥舞砍刀”证明侵害持续，但该事实发生在“陈某2新倒地后”，此时陈某2新已被制伏，防卫权是否终止取决于侵害是否仍在进行；若周某强已退出或不再具有攻击能力，则继续反击可能属于事后防卫，而非特殊防卫。",
+            "fact_ids": [
+              "FACT_F02",
+              "FACT_F05",
+              "FACT_F09"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "response": "辩方认为，周某强在屋外挥舞砍刀表明侵害行为仍在持续，且张那木拉面对的是多人持凶器攻击，不能苛求其精确判断每个侵害人是否被制伏。但陈某2新倒地后周某强的具体位置、距离和攻击意图尚不明确，需要监控完整还原。",
+            "unresolved": true
+          },
+          {
+            "argument_id": "COUNTER_C03",
+            "position": "学生回避了“一死一伤”与“明显超过必要限度”的关系；即使存在不法侵害，造成一死一伤的结果也需要审查是否明显超过必要限度，不能仅以“特殊防卫”一概免除责任。",
+            "fact_ids": [
+              "FACT_F01",
+              "FACT_F02"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "response": "辩方认为，若本案属于刑法第二十条第三款规定的特殊防卫，则不存在“明显超过必要限度”的问题，因为特殊防卫造成伤亡不负刑事责任。但前提是侵害属于“行凶”等严重暴力犯罪，且正在进行。现有证据尚不足以完全确定，因此需要进一步审查。",
+            "unresolved": true
+          }
+        ],
+        "conclusion": {
+          "status": "supported_tentative",
+          "statement": "基于现有有限证据，张那木拉的反击行为有较大可能属于刑法第二十条第三款的特殊防卫，但关键事实（如周某强在陈某2新倒地后是否仍构成现实威胁、后脑攻击是否达到严重危及生命安全程度）尚未查清，需进一步核实监控和证据。",
+          "fact_ids": [
+            "FACT_F03",
+            "FACT_F04",
+            "FACT_F05",
+            "FACT_F06",
+            "FACT_F07",
+            "FACT_F08",
+            "FACT_F09"
+          ],
+          "evidence_ids": [
+            "EVID_9CB6894B3E55465B19C6"
+          ],
+          "confidence": 0.4
+        },
+        "uncertainty": {
+          "evidence_status": "limited",
+          "missing_facts": [
+            "周某强在陈某2新倒地后的具体位置、方向和攻击行为",
+            "后脑等要害部位受攻击的伤情鉴定结果",
+            "监控录像是否完整、无剪辑地记录了从侵害开始到反击结束的全过程",
+            "张那木拉在陈某2新倒地后继续反击时是否知道陈某2新已丧失侵害能力"
+          ],
+          "missing_evidence": [
+            "完整监控录像",
+            "伤情鉴定报告",
+            "凶器鉴定意见",
+            "现场勘验笔录"
+          ],
+          "disputed_points": [
+            "反击行为造成一死一伤是否构成故意伤害",
+            "陈某2新倒地后继续反击是否超过必要限度",
+            "是否存在正在进行的不法侵害",
+            "是否属于行凶及特殊防卫",
+            "部分侵害人被制伏后防卫权是否终止"
+          ],
+          "teacher_review_required": true
+        },
+        "safety": {
+          "untrusted_instruction_detected": false,
+          "ai_generated": true,
+          "intended_use": "formative_education"
+        }
+      }
+    },
+    {
+      "submission_label": "B",
+      "reasoning": {
+        "schema_version": "legal-reasoning-v1",
+        "issue": {
+          "statement": "张那木拉造成一死一伤的反击是否属于刑法第二十条第三款的特殊防卫",
+          "issue_type": "justification"
+        },
+        "facts": [
+          {
+            "fact_id": "FACT_F01",
+            "statement": "公诉方主张反击行为造成一死一伤并构成故意伤害",
+            "source_path": "student_visible.prosecution_claims[0]",
+            "source_quote": "反击行为造成一死一伤并构成故意伤害",
+            "status": "disputed"
+          },
+          {
+            "fact_id": "FACT_F02",
+            "statement": "公诉方主张陈某2新倒地后继续反击超过必要限度",
+            "source_path": "student_visible.prosecution_claims[1]",
+            "source_quote": "陈某2新倒地后继续反击超过必要限度",
+            "status": "disputed"
+          },
+          {
+            "fact_id": "FACT_F03",
+            "statement": "是否存在正在进行的不法侵害是争议焦点",
+            "source_path": "student_visible.contested_issues[0]",
+            "source_quote": "是否存在正在进行的不法侵害",
+            "status": "disputed"
+          },
+          {
+            "fact_id": "FACT_F04",
+            "statement": "是否属于行凶及特殊防卫是争议焦点",
+            "source_path": "student_visible.contested_issues[1]",
+            "source_quote": "是否属于行凶及特殊防卫",
+            "status": "disputed"
+          },
+          {
+            "fact_id": "FACT_F05",
+            "statement": "部分侵害人被制伏后防卫权是否终止是争议焦点",
+            "source_path": "student_visible.contested_issues[2]",
+            "source_quote": "部分侵害人被制伏后防卫权是否终止",
+            "status": "disputed"
+          },
+          {
+            "fact_id": "FACT_F06",
+            "statement": "监控显示存在持续侵害过程",
+            "source_path": "student_visible.evidence_confrontation_points[0]",
+            "source_quote": "监控中的持续侵害过程",
+            "status": "alleged"
+          },
+          {
+            "fact_id": "FACT_F07",
+            "statement": "侵害方持有凶器",
+            "source_path": "student_visible.evidence_confrontation_points[1]",
+            "source_quote": "侵害方所持凶器",
+            "status": "alleged"
+          },
+          {
+            "fact_id": "FACT_F08",
+            "statement": "后脑等要害部位受到攻击",
+            "source_path": "student_visible.evidence_confrontation_points[2]",
+            "source_quote": "后脑等要害部位受攻击事实",
+            "status": "alleged"
+          },
+          {
+            "fact_id": "FACT_F09",
+            "statement": "周某强在屋外仍挥舞砍刀",
+            "source_path": "student_visible.evidence_confrontation_points[3]",
+            "source_quote": "周某强在屋外仍挥舞砍刀",
+            "status": "alleged"
+          }
+        ],
+        "rules": [
+          {
+            "rule_id": "RULE_SPECIAL_DEFENSE",
+            "statement": "刑法第二十条第三款规定对正在进行行凶、杀人、抢劫、强奸、绑架以及其他严重危及人身安全的暴力犯罪采取防卫行为造成不法侵害人伤亡的，不属于防卫过当，不负刑事责任",
+            "evidence_id": "EVID_9CB6894B3E55465B19C6",
+            "source_title": "中华人民共和国刑法",
+            "article_ref": "第二十条",
+            "quote": "为了使国家、公共利益、本人或者他人的人身、财产和其他权利免受正在进行的不法侵害，而采取的制止不法侵害的行为，对不法侵害人造成损害的，属于正当防卫，不负刑事责任。\n正当防卫明显超过必要限度造成重大损害的，应当负刑事责任，但是应当减轻或者免除处罚。\n对正在进行行凶、杀人、抢劫、强奸、绑架以及其他严重危及人身安全的暴力犯罪，采取防卫行为，造成不法侵害人伤亡的，不属于防卫过当，不负刑事责任。"
+          }
+        ],
+        "applications": [
+          {
+            "element_id": "ongoing_unlawful_infringement",
+            "element": "正在进行的不法侵害",
+            "fact_ids": [
+              "FACT_F03",
+              "FACT_F06",
+              "FACT_F07",
+              "FACT_F08",
+              "FACT_F09"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "analysis": "辩护人认为监控显示持续侵害过程、侵害方持凶器、后脑等要害部位受攻击以及周某强在屋外仍挥舞砍刀，均指向正在进行的不法侵害；但上述事实尚待质证确认，故该要件存在争议。",
+            "finding": "disputed"
+          },
+          {
+            "element_id": "serious_violent_attack",
+            "element": "行凶等严重危及人身安全的暴力犯罪",
+            "fact_ids": [
+              "FACT_F04",
+              "FACT_F07",
+              "FACT_F08",
+              "FACT_F09"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "analysis": "持凶器攻击后脑等要害部位，且周某强在屋外仍挥舞砍刀，符合行凶特征；但需进一步核实凶器性质与攻击强度，故该要件存在争议。",
+            "finding": "disputed"
+          },
+          {
+            "element_id": "defensive_harm",
+            "element": "防卫行为造成损害",
+            "fact_ids": [
+              "FACT_F01"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "analysis": "一死一伤是反击行为造成的客观损害，但公诉方将其定性为故意伤害，辩护人认为该损害属于防卫行为造成，性质认定存在争议。",
+            "finding": "disputed"
+          },
+          {
+            "element_id": "necessity_or_special_defense",
+            "element": "必要限度或特殊防卫",
+            "fact_ids": [
+              "FACT_F02",
+              "FACT_F05",
+              "FACT_F09"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "analysis": "公诉方主张陈某2新倒地后继续反击超过必要限度，但辩护人认为周某强仍在屋外挥舞砍刀，不法侵害未结束，且属于行凶，应适用特殊防卫，不负刑事责任；该要件存在争议。",
+            "finding": "disputed"
+          }
+        ],
+        "counterarguments": [
+          {
+            "argument_id": "COUNTER_PROSECUTION_1",
+            "position": "公诉方认为一死一伤构成故意伤害且超过必要限度",
+            "fact_ids": [
+              "FACT_F01",
+              "FACT_F02"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "response": "辩护人认为该主张未回应刑法第二十条第三款的特殊防卫规则，且未考虑持续侵害与行凶情节。",
+            "unresolved": true
+          },
+          {
+            "argument_id": "COUNTER_PROSECUTION_2",
+            "position": "公诉方认为陈某2新倒地后防卫权终止",
+            "fact_ids": [
+              "FACT_F05",
+              "FACT_F09"
+            ],
+            "evidence_ids": [
+              "EVID_9CB6894B3E55465B19C6"
+            ],
+            "response": "周某强仍在屋外挥舞砍刀，侵害并未结束，防卫权未终止。",
+            "unresolved": true
+          }
+        ],
+        "conclusion": {
+          "status": "supported_tentative",
+          "statement": "在现有有限证据下，辩护人认为张那木拉的反击有较大可能属于刑法第二十条第三款的特殊防卫，但需进一步核实监控完整性和凶器情况。",
+          "fact_ids": [
+            "FACT_F03",
+            "FACT_F04",
+            "FACT_F05",
+            "FACT_F06",
+            "FACT_F07",
+            "FACT_F08",
+            "FACT_F09"
+          ],
+          "evidence_ids": [
+            "EVID_9CB6894B3E55465B19C6"
+          ],
+          "confidence": 0.45
+        },
+        "uncertainty": {
+          "evidence_status": "limited",
+          "missing_facts": [
+            "监控完整原始录像",
+            "凶器具体种类与来源",
+            "周某强后续动作的完整记录"
+          ],
+          "missing_evidence": [
+            "现场勘验笔录",
+            "伤情鉴定意见",
+            "证人证言"
+          ],
+          "disputed_points": [
+            "是否存在正在进行的不法侵害",
+            "是否属于行凶",
+            "陈某2新倒地后防卫权是否终止"
+          ],
+          "teacher_review_required": true
+        },
+        "safety": {
+          "untrusted_instruction_detected": false,
+          "ai_generated": true,
+          "intended_use": "formative_education"
+        }
+      }
+    }
+  ],
+  "boundary": "This packet is pending; empty review slots are not expert evidence."
+}
