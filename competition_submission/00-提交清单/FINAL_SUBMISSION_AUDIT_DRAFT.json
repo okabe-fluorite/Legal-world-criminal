@@ -1,9 +1,9 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-29T22:07:27.314423+00:00",
-  "git_commit": "6b0ee3e6dd9ff4f7a5224e36affa9c899ddac265",
-  "tracked_worktree_clean_before_audit": true,
-  "untracked_user_material_count": 5,
+  "generated_at": "2026-08-30T06:56:31.631811+00:00",
+  "git_commit": "296bf5e6ab737d35e73b2a5b983aa35af25f7600",
+  "tracked_worktree_clean_before_audit": false,
+  "untracked_user_material_count": 6,
   "checks": [
     {
       "id": "demo_docs",
@@ -23,9 +23,9 @@
         "competition_submission\\04-作品方案\\guizang\\qa\\pptx-report.json"
       ],
       "detail": {
-        "bytes": 1477753,
+        "bytes": 1501286,
         "slides": 12,
-        "max_render_mae": 0.0953
+        "max_render_mae": null
       },
       "boundary": "仍名为DRAFT；真实用户/专家状态待替换"
     },
@@ -218,10 +218,10 @@
       ],
       "detail": {
         "package_file": "星火智学_XH-202620_公开提交包_DRAFT.zip",
-        "package_bytes": 27646254,
-        "package_sha256": "76e491773aa93b0809012406f6394b512be78bd640de7dbe7a2c309897604eec",
+        "package_bytes": 27700582,
+        "package_sha256": "e7d9f60dc33c74054c79533be3474b02c01a999f756570591da7e9e9235c7459",
         "package_entry_count": 20,
-        "source_entry_count": 396,
+        "source_entry_count": 405,
         "source_required_entry_count": 11,
         "source_required_missing": [],
         "private_path_hits": 0,
