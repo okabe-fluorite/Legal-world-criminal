@@ -162,6 +162,8 @@ def public_materials() -> dict[str, Path]:
         "06-公开审计/LEGAL_SOURCE_CURRENCY_AUDIT.json": SUBMISSION / "03-Demo" / "LEGAL_SOURCE_CURRENCY_AUDIT.json",
         "06-公开审计/LEGAL_SOURCE_CURRENCY_AUDIT.md": SUBMISSION / "03-Demo" / "LEGAL_SOURCE_CURRENCY_AUDIT.md",
         "06-公开审计/FROZEN_DEMO_AUDIT.json": SUBMISSION / "03-Demo" / "FROZEN_DEMO_AUDIT.json",
+        "06-公开审计/THREE_ROUTE_REHEARSAL_AUDIT.json": SUBMISSION / "03-Demo" / "THREE_ROUTE_REHEARSAL_AUDIT.json",
+        "06-公开审计/THREE_ROUTE_REHEARSAL_AUDIT.md": SUBMISSION / "03-Demo" / "THREE_ROUTE_REHEARSAL_AUDIT.md",
         "06-公开审计/25帧视觉接触表.png": SUBMISSION / "06-效果验证" / "视频审片包_DRAFT" / "25帧视觉接触表.png",
         "06-公开审计/视频技术审计与时间轴.pdf": SUBMISSION / "06-效果验证" / "视频审片包_DRAFT" / "public" / "视频技术审计与时间轴.pdf",
         "06-公开审计/专家审核包_MANIFEST_DRAFT.md": SUBMISSION / "06-效果验证" / "专家审核包_MANIFEST_DRAFT.md",

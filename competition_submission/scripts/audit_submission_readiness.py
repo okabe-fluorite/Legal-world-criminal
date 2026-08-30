@@ -63,6 +63,8 @@ def main() -> int:
     segments = read_json(SUBMISSION / "03-Demo" / "VIDEO_SEGMENTS_AUDIT.json")
     narrated = read_json(SUBMISSION / "03-Demo" / "NARRATED_VIDEO_DRAFT_AUDIT.json")
     legal_currency = read_json(SUBMISSION / "03-Demo" / "LEGAL_SOURCE_CURRENCY_AUDIT.json")
+    rehearsal_path = SUBMISSION / "03-Demo" / "THREE_ROUTE_REHEARSAL_AUDIT.json"
+    rehearsal = read_json(rehearsal_path)
     expert_package = read_json(SUBMISSION / "06-效果验证" / "专家审核包_DRAFT" / "MANIFEST.json")
     expert_package_audit = read_json(SUBMISSION / "06-效果验证" / "专家审核包_DRAFT" / "BUILD_AUDIT.json")
     user_trial_package = read_json(SUBMISSION / "06-效果验证" / "目标用户试用包_DRAFT" / "MANIFEST.json")
@@ -141,6 +143,19 @@ def main() -> int:
         and effect_package.get("evidence_levels", {}).get("L3") == "real participant count 0"
         and effect_package.get("evidence_levels", {}).get("L4") == "not conducted"
     )
+    rehearsal_routes = rehearsal.get("routes") or []
+    rehearsal_passed = (
+        rehearsal.get("schema") == "xh-202620-three-route-browser-rehearsal-v1"
+        and rehearsal.get("route_count") == 3
+        and rehearsal.get("routes_executed") == 3
+        and rehearsal.get("routes_passed") == 3
+        and rehearsal.get("all_routes_passed") is True
+        and rehearsal.get("browser_error_total") == 0
+        and rehearsal.get("services_stopped_after_run") is True
+        and not rehearsal.get("lingering_ports")
+        and len(rehearsal_routes) == 3
+        and all(route.get("status") == "passed" for route in rehearsal_routes)
+    )
 
     json_path = args.json.resolve()
     md_path = args.markdown.resolve()
@@ -157,6 +172,30 @@ def main() -> int:
             "status": "passed",
             "evidence": ["competition_submission/03-Demo/本地演示与离线备份_DRAFT.md"],
             "boundary": "本地运行；尚无公开在线地址",
+        },
+        {
+            "id": "three_demo_routes",
+            "requirement": "至少3个可重复演示案例且浏览器/HTTP无错误",
+            "status": "passed" if rehearsal_passed else "failed",
+            "evidence": [
+                str(rehearsal_path.relative_to(REPO)),
+                "competition_submission/03-Demo/THREE_ROUTE_REHEARSAL_AUDIT.md",
+            ],
+            "detail": {
+                "source_git_commit": rehearsal.get("source_git_commit"),
+                "routes_executed": rehearsal.get("routes_executed"),
+                "routes_passed": rehearsal.get("routes_passed"),
+                "browser_error_total": rehearsal.get("browser_error_total"),
+                "duration_seconds": rehearsal.get("duration_seconds"),
+                "services_stopped_after_run": rehearsal.get(
+                    "services_stopped_after_run"
+                ),
+                "route_ids": [route.get("route_id") for route in rehearsal_routes],
+            },
+            "boundary": (
+                "example.com合成账号与确定性学生输入；证明软件路线可重复，"
+                "不替代真实用户、专家法律审核或学习效果"
+            ),
         },
         {
             "id": "ppt",
