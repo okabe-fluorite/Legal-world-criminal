@@ -1,12 +1,12 @@
 {
   "schema": "xh-202620-public-submission-draft-manifest-v1",
-  "source_git_commit": "73a8d9646a69e19e899d8224729f34009c57b6ad",
+  "source_git_commit": "32b0633e2e71decca8228552f6b68a6b6ffdddd7",
   "package_build_date": "2026-08-30",
   "files": [
     {
       "path": "01-作品方案/星火智学_作品方案_Guizang_DRAFT.pptx",
-      "bytes": 1477753,
-      "sha256": "4456fda0394778ad4a6c01049abba23565513404878b94ae7aab060ea0ff58ac"
+      "bytes": 1501286,
+      "sha256": "9717389ec3c4728508594d6926574a52cdde8887418411afe47a577f5d49564d"
     },
     {
       "path": "02-演示视频/星火智学_真实交互演示_AI配音_DRAFT.mp4",
@@ -35,8 +35,8 @@
     },
     {
       "path": "05-代码/LegalWorld-星火智学-源码_DRAFT.zip",
-      "bytes": 14700506,
-      "sha256": "4adf9b7d9bf7ab16a76b39a03cb1e25df082789888768e5b86cd89173ad01236"
+      "bytes": 14731962,
+      "sha256": "1d70c31e279c5082a21a6163b6c5e0da82b8eed75ff2f1f8ba74f114cabfcbaa"
     },
     {
       "path": "06-公开审计/25帧视觉接触表.png",
@@ -95,8 +95,8 @@
     }
   ],
   "source_code": {
-    "entry_count": 396,
-    "sha256": "4adf9b7d9bf7ab16a76b39a03cb1e25df082789888768e5b86cd89173ad01236",
+    "entry_count": 405,
+    "sha256": "1d70c31e279c5082a21a6163b6c5e0da82b8eed75ff2f1f8ba74f114cabfcbaa",
     "sanitized_env": true
   },
   "pending": {
