@@ -99,7 +99,15 @@ ITEMS = [
         "caption": "case3真实E2E：461.547秒、29次固定回答\n3事件、3/3 Agent退场、0 runtime issue",
     },
     {
-        "id": "10-close",
+        "id": "10-iflytek",
+        "kind": "video",
+        "source": "iflytek-tts-iat.webm",
+        "duration": 23.0,
+        "text": "最后是多模态实证。系统通过讯飞在线合成生成当前用户私有WAV，再把同一音频送入流式听写，返回等待复核的真实转写。音频可以播放和下载；ASR与TTS只有真实调用成功后才显示可用，但不自动生成学习事件。数字人仍保持未连接。",
+        "caption": "讯飞TTS→私有WAV→IAT真实往返；ASR/TTS available\n转写needs_review、LearningEvent 0；数字人not_connected",
+    },
+    {
+        "id": "11-close",
         "kind": "image",
         "source": "closing",
         "duration": 6.4,
@@ -163,6 +171,11 @@ REQUIRED_CONTENT = [
         "id": "multi_agent_case",
         "label": "状态机、多智能体、工具权限与case3真实E2E",
         "items": ["06-agent-architecture", "07-case-inv", "08-case-pr", "09-case"],
+    },
+    {
+        "id": "iflytek_asr_tts",
+        "label": "讯飞TTS私有音频、IAT真实转写与数字人后置边界",
+        "items": ["10-iflytek"],
     },
 ]
 
@@ -311,6 +324,29 @@ def main() -> int:
         raise SystemExit("technical evidence segment public audit contains browser errors")
     if not bool((technical_audit.get("qa") or {}).get("expected_visible_checks_pass")):
         raise SystemExit("technical evidence segment visible-check audit did not pass")
+
+    iflytek_audit_path = (
+        REPO
+        / "competition_submission"
+        / "03-Demo"
+        / "IFLYTEK_BROWSER_VIDEO_SEGMENT_AUDIT.json"
+    )
+    iflytek_audit = json.loads(iflytek_audit_path.read_text(encoding="utf-8"))
+    iflytek_segment = segments / "iflytek-tts-iat.webm"
+    if not iflytek_segment.is_file():
+        raise SystemExit(f"missing iFlytek video segment: {iflytek_segment}")
+    if sha256(iflytek_segment) != iflytek_audit.get("sha256"):
+        raise SystemExit("iFlytek video segment SHA does not match public audit")
+    if int((iflytek_audit.get("qa") or {}).get("browser_error_total") or 0) != 0:
+        raise SystemExit("iFlytek video segment public audit contains browser errors")
+    visible = dict(iflytek_audit.get("visible_checks") or {})
+    if not (
+        visible.get("available_capabilities") == 3
+        and visible.get("asr_status") == "needs_review"
+        and visible.get("digital_human_status") == "not_connected"
+        and visible.get("learning_event_created") is False
+    ):
+        raise SystemExit("iFlytek video segment visible-state audit did not pass")
 
     slides = (
         REPO
@@ -481,7 +517,7 @@ def main() -> int:
             }
         )
     audit = {
-        "schema": "competition-narrated-demo-draft-audit-v3",
+        "schema": "competition-narrated-demo-draft-audit-v4",
         "source_git_commit": subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=REPO, text=True
         ).strip(),
@@ -521,6 +557,18 @@ def main() -> int:
                 "expected_visible_checks_pass"
             ),
         },
+        "iflytek_speech_segment_audit": {
+            "file": iflytek_audit_path.name,
+            "source_git_commit": iflytek_audit.get("source_git_commit"),
+            "duration_seconds": iflytek_audit.get("duration_seconds"),
+            "sha256": iflytek_audit.get("sha256"),
+            "browser_error_total": (iflytek_audit.get("qa") or {}).get(
+                "browser_error_total"
+            ),
+            "available_capabilities": visible.get("available_capabilities"),
+            "asr_status": visible.get("asr_status"),
+            "digital_human_status": visible.get("digital_human_status"),
+        },
         "privacy_redactions": [
             {
                 "item": "09-case",
@@ -547,7 +595,7 @@ def main() -> int:
             "duration_under_180_seconds": final_duration <= 180,
         },
         "evidence_boundary": (
-            "AI-voiced DRAFT assembled from six audited real browser interactions, three PPT "
+            "AI-voiced DRAFT assembled from seven audited real browser interactions, three PPT "
             "stills, and two frozen case3 audit snapshots; "
             "not the final team-approved submission, not target-user evidence, and not expert validation"
         ),

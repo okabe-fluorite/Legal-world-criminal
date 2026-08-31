@@ -1,0 +1,38 @@
+{
+  "schema": "competition-iflytek-browser-video-segment-audit-v1",
+  "source_git_commit": "b4c097b8b715e94071ea09c131b673dd9d66e145",
+  "file": "iflytek-tts-iat.webm",
+  "duration_seconds": 23.04,
+  "bytes": 960820,
+  "sha256": "11d61e17c757d50a0d19da347bc32f246f953efed82ba2b7f545eafffaf03a25",
+  "media": {
+    "codec": "vp9",
+    "resolution": "1600x900",
+    "fps": "25/1",
+    "audio": false
+  },
+  "visible_checks": {
+    "available_capabilities": 3,
+    "tts_private_audio_player": true,
+    "tts_audio_duration_seconds": 8.942,
+    "asr_provider": "iflytek_websocket",
+    "asr_status": "needs_review",
+    "asr_transcript_contains_legal_term": true,
+    "digital_human_status": "not_connected",
+    "learning_event_created": false
+  },
+  "browser_error_counts": {
+    "console": 0,
+    "page": 0,
+    "http": 0,
+    "request": 0
+  },
+  "qa": {
+    "browser_error_total": 0,
+    "login_prefix_removed_by_reencode": true,
+    "raw_recording_deleted": true,
+    "synthetic_account_only": true,
+    "credential_or_token_published": false
+  },
+  "evidence_boundary": "real product UI calling iFlytek TTS and IAT with a synthetic verification sentence; not classroom data, not ASR accuracy evidence, and not digital-human completion"
+}
