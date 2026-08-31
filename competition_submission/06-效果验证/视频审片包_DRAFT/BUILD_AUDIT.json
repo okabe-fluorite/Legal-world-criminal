@@ -1,21 +1,78 @@
 {
   "schema": "video-review-package-build-audit-v1",
-  "video_sha256": "682e463ecc03cf71a8b3ff4f43c4df3cbda1f780832eba99b25cbe1f392fd19e",
-  "video_duration_seconds": 121.6,
-  "sampled_frame_count": 25,
+  "video_sha256": "d038a33ee06613aef5b95e6b9d03a3c8ba96188183ca7b9660e0b14adfe90421",
+  "video_duration_seconds": 140.2,
+  "sampled_frame_count": 15,
+  "sample_times_seconds": [
+    2.05,
+    5.1,
+    9.1,
+    13.1,
+    17.1,
+    21.1,
+    31.6,
+    48.35,
+    62.0,
+    73.3,
+    82.8,
+    94.4,
+    110.35,
+    126.2,
+    136.9
+  ],
   "content_coverage": {
-    "required_count": 7,
-    "present_count": 7,
+    "required_count": 11,
+    "present_count": 11,
     "all_required_present": true,
     "items": [
+      {
+        "id": "governed_legal_data",
+        "label": "4,173候选材料到813正式法源的数据治理",
+        "items": [
+          "02-technical-evidence"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 22.7,
+        "present": true
+      },
+      {
+        "id": "legal_reasoning_gate",
+        "label": "11项Evidence约束推理Gate与正负fixture",
+        "items": [
+          "02-technical-evidence"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 22.7,
+        "present": true
+      },
+      {
+        "id": "legal_edu_eval",
+        "label": "LegalEduEval-v1百题候选与E0—E3 pending矩阵",
+        "items": [
+          "02-technical-evidence"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 22.7,
+        "present": true
+      },
+      {
+        "id": "agent_ablation",
+        "label": "同条件C0/C1反方收益与耗时/token成本",
+        "items": [
+          "02-technical-evidence"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 22.7,
+        "present": true
+      },
       {
         "id": "evidence_kt",
         "label": "Evidence-KT保守画像与证据不足",
         "items": [
           "02-diagnosis"
         ],
-        "start_seconds": 4.1,
-        "end_seconds": 21.9,
+        "start_seconds": 22.7,
+        "end_seconds": 40.5,
         "present": true
       },
       {
@@ -24,8 +81,8 @@
         "items": [
           "02-diagnosis"
         ],
-        "start_seconds": 4.1,
-        "end_seconds": 21.9,
+        "start_seconds": 22.7,
+        "end_seconds": 40.5,
         "present": true
       },
       {
@@ -34,8 +91,8 @@
         "items": [
           "02-diagnosis"
         ],
-        "start_seconds": 4.1,
-        "end_seconds": 21.9,
+        "start_seconds": 22.7,
+        "end_seconds": 40.5,
         "present": true
       },
       {
@@ -44,8 +101,8 @@
         "items": [
           "02-diagnosis"
         ],
-        "start_seconds": 4.1,
-        "end_seconds": 21.9,
+        "start_seconds": 22.7,
+        "end_seconds": 40.5,
         "present": true
       },
       {
@@ -54,8 +111,8 @@
         "items": [
           "03-rag"
         ],
-        "start_seconds": 21.9,
-        "end_seconds": 37.6,
+        "start_seconds": 40.5,
+        "end_seconds": 56.2,
         "present": true
       },
       {
@@ -65,8 +122,8 @@
           "04-student",
           "05-teacher"
         ],
-        "start_seconds": 37.6,
-        "end_seconds": 60.2,
+        "start_seconds": 56.2,
+        "end_seconds": 78.8,
         "present": true
       },
       {
@@ -78,8 +135,8 @@
           "08-case-pr",
           "09-case"
         ],
-        "start_seconds": 60.2,
-        "end_seconds": 115.1,
+        "start_seconds": 78.8,
+        "end_seconds": 133.7,
         "present": true
       }
     ]
@@ -97,7 +154,7 @@
     "silence_over_threshold_count": 0,
     "silence_durations_seconds": [],
     "max_silence_seconds": 0.0,
-    "integrated_loudness_lufs": -23.3,
+    "integrated_loudness_lufs": -23.2,
     "true_peak_dbfs": -3.6
   },
   "public_pdf_pages": 2,
