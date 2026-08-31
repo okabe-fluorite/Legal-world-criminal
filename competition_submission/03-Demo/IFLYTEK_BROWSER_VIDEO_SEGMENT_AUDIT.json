@@ -1,10 +1,10 @@
 {
-  "schema": "competition-iflytek-browser-video-segment-audit-v1",
-  "source_git_commit": "b4c097b8b715e94071ea09c131b673dd9d66e145",
-  "file": "iflytek-tts-iat.webm",
-  "duration_seconds": 23.04,
-  "bytes": 960820,
-  "sha256": "11d61e17c757d50a0d19da347bc32f246f953efed82ba2b7f545eafffaf03a25",
+  "schema": "competition-iflytek-realtime-voice-video-segment-audit-v2",
+  "source_git_commit": "9817d321c0af5c656fcbaa9c3a4e1da3e6df95a9",
+  "file": "iflytek-realtime-voice.webm",
+  "duration_seconds": 17,
+  "bytes": 774441,
+  "sha256": "8cd1efa5c9d29991d55d27f8e46bae4aac9c7da6cc34e417a99821c41e21da0a",
   "media": {
     "codec": "vp9",
     "resolution": "1600x900",
@@ -12,13 +12,25 @@
     "audio": false
   },
   "visible_checks": {
+    "browser_voice_start": 1,
+    "browser_pcm_frames": 194,
+    "browser_voice_stop": 1,
+    "file_upload_requests": 0,
+    "partial_results": 28,
+    "final_results": 1,
+    "final_transcript_contains_legal_term": true,
+    "governed_reply_results": 1,
+    "governed_reply_source": "llm_governed_evidence",
+    "coverage_status": "candidate_requires_semantic_audit",
+    "tts_audio_player": true,
+    "tts_audio_bytes": 544552,
+    "tts_audio_duration_seconds": 17.016,
+    "ai_generated_disclosure": true,
     "available_capabilities": 3,
-    "tts_private_audio_player": true,
-    "tts_audio_duration_seconds": 8.942,
-    "asr_provider": "iflytek_websocket",
     "asr_status": "needs_review",
-    "asr_transcript_contains_legal_term": true,
     "digital_human_status": "not_connected",
+    "learning_event_before": 0,
+    "learning_event_after": 0,
     "learning_event_created": false
   },
   "browser_error_counts": {
@@ -32,7 +44,9 @@
     "login_prefix_removed_by_reencode": true,
     "raw_recording_deleted": true,
     "synthetic_account_only": true,
-    "credential_or_token_published": false
+    "credential_or_token_published": false,
+    "microphone_fixture_uses_realtime_browser_media_clock": true,
+    "student_raw_microphone_audio_published": false
   },
-  "evidence_boundary": "real product UI calling iFlytek TTS and IAT with a synthetic verification sentence; not classroom data, not ASR accuracy evidence, and not digital-human completion"
+  "evidence_boundary": "real browser media stream sends PCM frames to iFlytek streaming IAT, then governed Evidence reply and iFlytek TTS; the deterministic audio fixture verifies protocol timing, not multi-speaker classroom ASR accuracy; digital human remains not_connected"
 }
