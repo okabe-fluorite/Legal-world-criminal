@@ -311,10 +311,17 @@ def main() -> int:
     if not bool((technical_audit.get("qa") or {}).get("expected_visible_checks_pass")):
         raise SystemExit("technical evidence segment visible-check audit did not pass")
 
-    slides = REPO / "competition_submission" / "04-作品方案" / "guizang" / "qa" / "screens"
+    slides = (
+        REPO
+        / "competition_submission"
+        / "04-作品方案"
+        / "guizang-tech-v2"
+        / "qa"
+        / "screens"
+    )
     source_map = {
         "cover": slides / "slide-01.png",
-        "architecture": slides / "slide-09.png",
+        "architecture": slides / "slide-08.png",
         "closing": slides / "slide-12.png",
         "inv_snapshot": REPO / "competition_submission" / "03-Demo" / "case3-snapshots" / "CASE3_E2E_INV.png",
         "pr_snapshot": REPO / "competition_submission" / "03-Demo" / "case3-snapshots" / "CASE3_E2E_PR.png",
