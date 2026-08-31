@@ -1,0 +1,55 @@
+{
+  "schema": "competition-technical-evidence-video-segment-audit-v1",
+  "source_git_commit": "2b69e95d982c9971917ee19ee22ae0f8ea98ec08",
+  "file": "technical-evidence.webm",
+  "duration_seconds": 15.04,
+  "bytes": 628661,
+  "sha256": "7aa226f9475dfaa337d416f9c5ee491c66c97d4adb2e96bee3f4ccc83290a034",
+  "media": {
+    "codec": "vp9",
+    "resolution": "1600x900",
+    "fps": "25/1",
+    "audio": false
+  },
+  "visible_checks": {
+    "overview_pipeline": 5,
+    "overview_cards": 4,
+    "data_ledger_rows": 4,
+    "reasoning_checks": 11,
+    "negative_fixtures": 6,
+    "eval_types": 5,
+    "eval_routes": 4,
+    "agent_conditions": 2,
+    "pending_rows": 4
+  },
+  "browser_error_counts": {
+    "console": 0,
+    "page": 0,
+    "http": 0,
+    "request": 0
+  },
+  "qa": {
+    "expected_visible_checks_pass": true,
+    "browser_error_total": 0,
+    "login_prefix_removed_by_reencode": true,
+    "raw_recording_deleted": true,
+    "synthetic_account_only": true,
+    "credential_or_token_published": false,
+    "public_audit_uses_relative_paths_only": true
+  },
+  "video_mapping": {
+    "segment": "技术证据→数据治理→推理/评测→Agent/边界",
+    "ppt_pages": [
+      4,
+      6,
+      7,
+      8
+    ],
+    "scoring": [
+      "技术实现",
+      "技术先进性",
+      "内容质量"
+    ]
+  },
+  "evidence_boundary": "real browser interaction from a synthetic local account; automatic gates are software evidence rather than expert legal accuracy; candidate benchmark items remain not_gold; the segment is silent source material and not the final team-approved video"
+}

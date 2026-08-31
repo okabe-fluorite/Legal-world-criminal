@@ -26,6 +26,14 @@ ITEMS = [
         "caption": "星火智学：本科刑法个性化学习有据可查",
     },
     {
+        "id": "02-technical-evidence",
+        "kind": "video",
+        "source": "technical-evidence.webm",
+        "duration": 16.0,
+        "text": "先看机器证据总账。四千一百七十三份候选材料，经治理形成八百一十三条正式法源；十一项推理门禁、百题候选评测和智能体消融都由审计文件哈希绑定。自动门禁不等于专家准确率，百题仍待教师审核。",
+        "caption": "数据治理→Evidence推理→模型无关评测→Agent消融\n自动Gate≠专家准确率；100题仍为not_gold",
+    },
+    {
         "id": "02-diagnosis",
         "kind": "video",
         "source": "01-diagnosis-orcdf-path-model.webm",
@@ -100,6 +108,26 @@ ITEMS = [
 ]
 
 REQUIRED_CONTENT = [
+    {
+        "id": "governed_legal_data",
+        "label": "4,173候选材料到813正式法源的数据治理",
+        "items": ["02-technical-evidence"],
+    },
+    {
+        "id": "legal_reasoning_gate",
+        "label": "11项Evidence约束推理Gate与正负fixture",
+        "items": ["02-technical-evidence"],
+    },
+    {
+        "id": "legal_edu_eval",
+        "label": "LegalEduEval-v1百题候选与E0—E3 pending矩阵",
+        "items": ["02-technical-evidence"],
+    },
+    {
+        "id": "agent_ablation",
+        "label": "同条件C0/C1反方收益与耗时/token成本",
+        "items": ["02-technical-evidence"],
+    },
     {
         "id": "evidence_kt",
         "label": "Evidence-KT保守画像与证据不足",
@@ -266,6 +294,23 @@ def main() -> int:
     pieces.mkdir()
     voice_dir.mkdir()
 
+    technical_audit_path = (
+        REPO
+        / "competition_submission"
+        / "03-Demo"
+        / "TECHNICAL_EVIDENCE_VIDEO_SEGMENT_AUDIT.json"
+    )
+    technical_audit = json.loads(technical_audit_path.read_text(encoding="utf-8"))
+    technical_segment = segments / "technical-evidence.webm"
+    if not technical_segment.is_file():
+        raise SystemExit(f"missing technical evidence segment: {technical_segment}")
+    if sha256(technical_segment) != technical_audit.get("sha256"):
+        raise SystemExit("technical evidence segment SHA does not match public audit")
+    if int((technical_audit.get("qa") or {}).get("browser_error_total") or 0) != 0:
+        raise SystemExit("technical evidence segment public audit contains browser errors")
+    if not bool((technical_audit.get("qa") or {}).get("expected_visible_checks_pass")):
+        raise SystemExit("technical evidence segment visible-check audit did not pass")
+
     slides = REPO / "competition_submission" / "04-作品方案" / "guizang" / "qa" / "screens"
     source_map = {
         "cover": slides / "slide-01.png",
@@ -419,7 +464,7 @@ def main() -> int:
             }
         )
     audit = {
-        "schema": "competition-narrated-demo-draft-audit-v2",
+        "schema": "competition-narrated-demo-draft-audit-v3",
         "source_git_commit": subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=REPO, text=True
         ).strip(),
@@ -447,6 +492,18 @@ def main() -> int:
         },
         "visual_source_sha256": source_hashes,
         "source_interaction_audit": "VIDEO_SEGMENTS_AUDIT.json",
+        "technical_evidence_segment_audit": {
+            "file": technical_audit_path.name,
+            "source_git_commit": technical_audit.get("source_git_commit"),
+            "duration_seconds": technical_audit.get("duration_seconds"),
+            "sha256": technical_audit.get("sha256"),
+            "browser_error_total": (technical_audit.get("qa") or {}).get(
+                "browser_error_total"
+            ),
+            "expected_visible_checks_pass": (technical_audit.get("qa") or {}).get(
+                "expected_visible_checks_pass"
+            ),
+        },
         "case3_audit_snapshots": {
             "present": True,
             "inv_stage": case_snapshot_audit["inv"]["stage"],
@@ -465,8 +522,8 @@ def main() -> int:
             "duration_under_180_seconds": final_duration <= 180,
         },
         "evidence_boundary": (
-            "AI-voiced DRAFT assembled from audited real browser interactions, three PPT stills, "
-            "and two frozen case3 audit snapshots; "
+            "AI-voiced DRAFT assembled from six audited real browser interactions, three PPT "
+            "stills, and two frozen case3 audit snapshots; "
             "not the final team-approved submission, not target-user evidence, and not expert validation"
         ),
     }
