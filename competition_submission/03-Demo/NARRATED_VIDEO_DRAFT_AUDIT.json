@@ -1,10 +1,10 @@
 {
-  "schema": "competition-narrated-demo-draft-audit-v2",
-  "source_git_commit": "2c8a3efa703547498f043d89a50329b928a04dbc",
+  "schema": "competition-narrated-demo-draft-audit-v3",
+  "source_git_commit": "83e087eb4ffa25b79f37a08a7776792ccc9e2ad0",
   "file": "星火智学_真实交互演示_AI配音_DRAFT.mp4",
-  "duration_seconds": 121.6,
-  "bytes": 9533563,
-  "sha256": "682e463ecc03cf71a8b3ff4f43c4df3cbda1f780832eba99b25cbe1f392fd19e",
+  "duration_seconds": 140.2,
+  "bytes": 10915152,
+  "sha256": "d038a33ee06613aef5b95e6b9d03a3c8ba96188183ca7b9660e0b14adfe90421",
   "resolution": "1920x1080",
   "fps": "25/1",
   "media": {
@@ -29,6 +29,12 @@
         "visual_duration_seconds": 4.1,
         "raw_voice_duration_seconds": 3.889,
         "voice_speed_factor": 1.0371
+      },
+      {
+        "id": "02-technical-evidence",
+        "visual_duration_seconds": 18.6,
+        "raw_voice_duration_seconds": 18.691,
+        "voice_speed_factor": 1.02414
       },
       {
         "id": "02-diagnosis",
@@ -90,70 +96,114 @@
       "silence_over_threshold_count": 0,
       "silence_durations_seconds": [],
       "max_silence_seconds": 0.0,
-      "integrated_loudness_lufs": -23.3,
+      "integrated_loudness_lufs": -23.2,
       "true_peak_dbfs": -3.6
     }
   },
   "subtitles": {
     "present": true,
     "language": "zh-CN",
-    "count": 10
+    "count": 11
   },
   "timeline": {
     "01-cover": {
       "start_seconds": 0.0,
       "end_seconds": 4.1
     },
-    "02-diagnosis": {
+    "02-technical-evidence": {
       "start_seconds": 4.1,
-      "end_seconds": 21.9
+      "end_seconds": 22.7
+    },
+    "02-diagnosis": {
+      "start_seconds": 22.7,
+      "end_seconds": 40.5
     },
     "03-rag": {
-      "start_seconds": 21.9,
-      "end_seconds": 37.6
+      "start_seconds": 40.5,
+      "end_seconds": 56.2
     },
     "04-student": {
-      "start_seconds": 37.6,
-      "end_seconds": 49.2
+      "start_seconds": 56.2,
+      "end_seconds": 67.8
     },
     "05-teacher": {
-      "start_seconds": 49.2,
-      "end_seconds": 60.2
+      "start_seconds": 67.8,
+      "end_seconds": 78.8
     },
     "06-agent-architecture": {
-      "start_seconds": 60.2,
-      "end_seconds": 68.2
+      "start_seconds": 78.8,
+      "end_seconds": 86.8
     },
     "07-case-inv": {
-      "start_seconds": 68.2,
-      "end_seconds": 83.4
+      "start_seconds": 86.8,
+      "end_seconds": 102.0
     },
     "08-case-pr": {
-      "start_seconds": 83.4,
-      "end_seconds": 100.1
+      "start_seconds": 102.0,
+      "end_seconds": 118.7
     },
     "09-case": {
-      "start_seconds": 100.1,
-      "end_seconds": 115.1
+      "start_seconds": 118.7,
+      "end_seconds": 133.7
     },
     "10-close": {
-      "start_seconds": 115.1,
-      "end_seconds": 121.5
+      "start_seconds": 133.7,
+      "end_seconds": 140.1
     }
   },
   "content_coverage": {
-    "required_count": 7,
-    "present_count": 7,
+    "required_count": 11,
+    "present_count": 11,
     "all_required_present": true,
     "items": [
+      {
+        "id": "governed_legal_data",
+        "label": "4,173候选材料到813正式法源的数据治理",
+        "items": [
+          "02-technical-evidence"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 22.7,
+        "present": true
+      },
+      {
+        "id": "legal_reasoning_gate",
+        "label": "11项Evidence约束推理Gate与正负fixture",
+        "items": [
+          "02-technical-evidence"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 22.7,
+        "present": true
+      },
+      {
+        "id": "legal_edu_eval",
+        "label": "LegalEduEval-v1百题候选与E0—E3 pending矩阵",
+        "items": [
+          "02-technical-evidence"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 22.7,
+        "present": true
+      },
+      {
+        "id": "agent_ablation",
+        "label": "同条件C0/C1反方收益与耗时/token成本",
+        "items": [
+          "02-technical-evidence"
+        ],
+        "start_seconds": 4.1,
+        "end_seconds": 22.7,
+        "present": true
+      },
       {
         "id": "evidence_kt",
         "label": "Evidence-KT保守画像与证据不足",
         "items": [
           "02-diagnosis"
         ],
-        "start_seconds": 4.1,
-        "end_seconds": 21.9,
+        "start_seconds": 22.7,
+        "end_seconds": 40.5,
         "present": true
       },
       {
@@ -162,8 +212,8 @@
         "items": [
           "02-diagnosis"
         ],
-        "start_seconds": 4.1,
-        "end_seconds": 21.9,
+        "start_seconds": 22.7,
+        "end_seconds": 40.5,
         "present": true
       },
       {
@@ -172,8 +222,8 @@
         "items": [
           "02-diagnosis"
         ],
-        "start_seconds": 4.1,
-        "end_seconds": 21.9,
+        "start_seconds": 22.7,
+        "end_seconds": 40.5,
         "present": true
       },
       {
@@ -182,8 +232,8 @@
         "items": [
           "02-diagnosis"
         ],
-        "start_seconds": 4.1,
-        "end_seconds": 21.9,
+        "start_seconds": 22.7,
+        "end_seconds": 40.5,
         "present": true
       },
       {
@@ -192,8 +242,8 @@
         "items": [
           "03-rag"
         ],
-        "start_seconds": 21.9,
-        "end_seconds": 37.6,
+        "start_seconds": 40.5,
+        "end_seconds": 56.2,
         "present": true
       },
       {
@@ -203,8 +253,8 @@
           "04-student",
           "05-teacher"
         ],
-        "start_seconds": 37.6,
-        "end_seconds": 60.2,
+        "start_seconds": 56.2,
+        "end_seconds": 78.8,
         "present": true
       },
       {
@@ -216,8 +266,8 @@
           "08-case-pr",
           "09-case"
         ],
-        "start_seconds": 60.2,
-        "end_seconds": 115.1,
+        "start_seconds": 78.8,
+        "end_seconds": 133.7,
         "present": true
       }
     ]
@@ -225,7 +275,11 @@
   "visual_source_sha256": {
     "01-cover": {
       "source": "slide-01.png",
-      "sha256": "6496686c87af43bdb30c932e28f6a8ca4c1b643ed3128295838a23165b4a9f20"
+      "sha256": "f6635ea4d540b24b587cb83717c1acea5935173d51d3842cd173081e1943a6a5"
+    },
+    "02-technical-evidence": {
+      "source": "technical-evidence.webm",
+      "sha256": "7aa226f9475dfaa337d416f9c5ee491c66c97d4adb2e96bee3f4ccc83290a034"
     },
     "02-diagnosis": {
       "source": "01-diagnosis-orcdf-path-model.webm",
@@ -244,8 +298,8 @@
       "sha256": "3208678663d1fcf662488c10675ad2cc846ae8a4a75072fbe9b13ffe75cf7c6f"
     },
     "06-agent-architecture": {
-      "source": "slide-09.png",
-      "sha256": "dc6d3e5740b8a79204bfe05c14f7b384216118ed21cf1c2fc5e6d781a990df58"
+      "source": "slide-08.png",
+      "sha256": "57934191b172ea4b9ee1a5d582ef0baabda086fde30a3552317906f57b500e0b"
     },
     "07-case-inv": {
       "source": "CASE3_E2E_INV.png",
@@ -261,10 +315,26 @@
     },
     "10-close": {
       "source": "slide-12.png",
-      "sha256": "329cd7a3b8176697cacaa367420164c860a1dab92ce458e9f58fab87a31bb657"
+      "sha256": "6bc619b5af17d4a71dab6831e192f681eb854d86f6d0814d8f6ae32a87817a6e"
     }
   },
   "source_interaction_audit": "VIDEO_SEGMENTS_AUDIT.json",
+  "technical_evidence_segment_audit": {
+    "file": "TECHNICAL_EVIDENCE_VIDEO_SEGMENT_AUDIT.json",
+    "source_git_commit": "2b69e95d982c9971917ee19ee22ae0f8ea98ec08",
+    "duration_seconds": 15.04,
+    "sha256": "7aa226f9475dfaa337d416f9c5ee491c66c97d4adb2e96bee3f4ccc83290a034",
+    "browser_error_total": 0,
+    "expected_visible_checks_pass": true
+  },
+  "privacy_redactions": [
+    {
+      "item": "09-case",
+      "target": "synthetic account email and logout control in app header",
+      "method": "deterministic solid mask after source capture",
+      "changes_legal_or_learning_evidence": false
+    }
+  ],
   "case3_audit_snapshots": {
     "present": true,
     "inv_stage": "INV",
@@ -286,5 +356,5 @@
     "max_voice_speed_factor": 1.0371,
     "duration_under_180_seconds": true
   },
-  "evidence_boundary": "AI-voiced DRAFT assembled from audited real browser interactions, three PPT stills, and two frozen case3 audit snapshots; not the final team-approved submission, not target-user evidence, and not expert validation"
+  "evidence_boundary": "AI-voiced DRAFT assembled from six audited real browser interactions, three PPT stills, and two frozen case3 audit snapshots; not the final team-approved submission, not target-user evidence, and not expert validation"
 }

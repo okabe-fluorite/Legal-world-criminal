@@ -41,11 +41,10 @@ from build_expert_review_package import (  # noqa: E402
 
 REPO = SCRIPT_DIR.parents[1]
 SUBMISSION = REPO / "competition_submission"
-DEFAULT_VIDEO = SUBMISSION / "offline_backup" / "narrated-video-proposed-final" / "星火智学_真实交互演示_AI配音_DRAFT.mp4"
+DEFAULT_VIDEO = SUBMISSION / "offline_backup" / "narrated-video-tech-v2-v3" / "星火智学_真实交互演示_AI配音_DRAFT.mp4"
 VIDEO_AUDIT = SUBMISSION / "03-Demo" / "NARRATED_VIDEO_DRAFT_AUDIT.json"
 DEFAULT_OUTPUT = SUBMISSION / "06-效果验证" / "视频审片包_DRAFT"
 FOOTER = "星火智学 · XH-202620 · 视频团队审片材料"
-SAMPLE_TIMES = (1.5, 5.0, 8.0, 11.0, 14.0, 17.5, 20.5, 23.0, 28.0, 33.0, 37.0, 39.0, 45.0, 51.0, 57.0, 61.5, 66.0, 69.5, 76.0, 83.0, 90.0, 99.0, 106.0, 114.0, 120.5)
 
 
 def git_output(*args: str) -> str:
@@ -65,11 +64,31 @@ def deterministic_zip(path: Path, base: Path, files: list[Path]) -> None:
             archive.writestr(info, file.read_bytes())
 
 
-def extract_frames(video: Path, output: Path, ffmpeg: str) -> list[Path]:
+def sample_times(audit: dict[str, Any]) -> tuple[float, ...]:
+    points: list[float] = []
+    for item_id, row in audit["timeline"].items():
+        start = float(row["start_seconds"])
+        end = float(row["end_seconds"])
+        if item_id == "02-technical-evidence":
+            points.extend(
+                min(end - 0.3, start + offset)
+                for offset in (1.0, 5.0, 9.0, 13.0, 17.0)
+            )
+        else:
+            points.append(start + (end - start) / 2)
+    return tuple(round(value, 3) for value in points)
+
+
+def extract_frames(
+    video: Path,
+    output: Path,
+    ffmpeg: str,
+    times: tuple[float, ...],
+) -> list[Path]:
     frames = output / "frames"
     frames.mkdir(parents=True, exist_ok=True)
     result = []
-    for index, second in enumerate(SAMPLE_TIMES, start=1):
+    for index, second in enumerate(times, start=1):
         path = frames / f"frame-{index:02d}-{second:05.1f}s.png"
         subprocess.run(
             [ffmpeg, "-hide_banner", "-loglevel", "error", "-ss", str(second), "-i", str(video), "-frames:v", "1", "-vf", "scale=960:-2", "-y", str(path)],
@@ -79,7 +98,11 @@ def extract_frames(video: Path, output: Path, ffmpeg: str) -> list[Path]:
     return result
 
 
-def build_contact_sheet(frames: list[Path], output: Path) -> Path:
+def build_contact_sheet(
+    frames: list[Path],
+    output: Path,
+    times: tuple[float, ...],
+) -> Path:
     font = ImageFont.truetype(r"C:\Windows\Fonts\msyh.ttc", 18)
     cols = 5
     width, height = 384, 216
@@ -92,9 +115,9 @@ def build_contact_sheet(frames: list[Path], output: Path) -> Path:
         x = 18 + (index % cols) * (width + 18)
         y = 18 + (index // cols) * (height + 42)
         canvas.paste(image, (x, y))
-        label = f"{SAMPLE_TIMES[index]:05.1f}s"
+        label = f"{times[index]:05.1f}s"
         draw.text((x, y + height + 6), label, font=font, fill=(238, 238, 238))
-    path = output / "25帧视觉接触表.png"
+    path = output / f"{len(frames)}帧视觉接触表.png"
     canvas.save(path, optimize=True)
     return path
 
@@ -103,7 +126,7 @@ def qa_story(audit: dict[str, Any], video: Path, contact_sha: str, st: dict[str,
     media = audit["media"]
     analysis = audit["audio"]["analysis"]
     story: list[Any] = [
-        p("121.6秒演示视频 · 技术审片摘要", st["title"]),
+        p(f"{audit['duration_seconds']}秒演示视频 · 技术审片摘要", st["title"]),
         p("DRAFT · 本摘要证明媒体与抽样QA，不代替团队完整播放或最终批准。", st["subtitle"]),
         label_value_table(
             [
@@ -127,7 +150,13 @@ def qa_story(audit: dict[str, Any], video: Path, contact_sha: str, st: dict[str,
         timeline_data.append([p(item_id, st["cell"]), p(f"{row['start_seconds']:.1f}s", st["cell"]), p(f"{row['end_seconds']:.1f}s", st["cell"]), p(f"{voice[item_id]['voice_speed_factor']:.3f}×", st["cell"])])
     table = Table(timeline_data, colWidths=[78 * mm, 30 * mm, 30 * mm, 33 * mm], repeatRows=1)
     table.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), LIGHT), ("GRID", (0, 0), (-1, -1), 0.35, LINE), ("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 4), ("RIGHTPADDING", (0, 0), (-1, -1), 4), ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 4)]))
-    story.extend([table, PageBreak(), p("二、七项强制技术覆盖", st["h1"])])
+    story.extend(
+        [
+            table,
+            PageBreak(),
+            p(f"二、{audit['content_coverage']['required_count']}项强制技术覆盖", st["h1"]),
+        ]
+    )
     coverage_data = [[p("技术", st["cell_bold"]), p("时间", st["cell_bold"]), p("状态", st["cell_bold"])]]
     for row in audit["content_coverage"]["items"]:
         coverage_data.append([p(row["label"], st["cell"]), p(f"{row['start_seconds']:.1f}-{row['end_seconds']:.1f}s", st["cell"]), p("可见" if row["present"] else "缺失", st["cell"])])
@@ -141,12 +170,13 @@ def qa_story(audit: dict[str, Any], video: Path, contact_sha: str, st: dict[str,
             label_value_table(
                 [
                     ("≤180秒", "通过"),
-                    ("七项覆盖", f"{audit['content_coverage']['present_count']}/{audit['content_coverage']['required_count']}"),
+                    ("技术覆盖", f"{audit['content_coverage']['present_count']}/{audit['content_coverage']['required_count']}"),
                     ("最大语速", f"{audit['qa']['max_voice_speed_factor']}× ≤ 1.10×"),
                     ("超过1.2秒静音", f"{analysis['silence_over_threshold_count']}处"),
                     ("字幕", f"{audit['subtitles']['count']}段、最多2行"),
                     ("AI标识", "全程右下角可见"),
-                    ("25帧抽检", "已完成；仍需团队完整播放"),
+                    ("章节抽帧", "已完成；仍需团队完整播放"),
+                    ("隐私遮罩", f"{len(audit.get('privacy_redactions') or [])}处；不修改法律/学习证据"),
                 ],
                 st,
             ),
@@ -158,9 +188,9 @@ def qa_story(audit: dict[str, Any], video: Path, contact_sha: str, st: dict[str,
     return story
 
 
-def review_story(audit: dict[str, Any], st: dict[str, Any]) -> list[Any]:
+def review_story(audit: dict[str, Any], st: dict[str, Any], frame_count: int) -> list[Any]:
     checks = [
-        ("七项强制技术均清晰可辨", "[时间点/问题]"),
+        ("审计列出的强制技术均清晰可辨", "[时间点/问题]"),
         ("法条名称、条号、原文、来源和版本至少一次清晰可见", "[时间点]"),
         ("错误引用2/2拒绝与专家PENDING同屏", "[时间点]"),
         ("ORCDF、未校准、shadow和迁移边界清晰", "[时间点]"),
@@ -177,8 +207,8 @@ def review_story(audit: dict[str, Any], st: dict[str, Any]) -> list[Any]:
     table = Table(data, colWidths=[16 * mm, 105 * mm, 50 * mm], repeatRows=1, rowHeights=[10 * mm] + [14 * mm] * len(checks))
     table.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), LIGHT), ("GRID", (0, 0), (-1, -1), 0.35, LINE), ("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 4), ("RIGHTPADDING", (0, 0), (-1, -1), 4), ("TOPPADDING", (0, 0), (-1, -1), 4)]))
     return [
-        p("121.6秒演示视频 · 团队完整审片表", st["title"]),
-        p("私密签署页。三名审片人必须完整播放视频；25帧抽检和自动门禁不能代替完整审片。", st["subtitle"]),
+        p(f"{audit['duration_seconds']}秒演示视频 · 团队完整审片表", st["title"]),
+        p(f"私密签署页。三名审片人必须完整播放视频；{frame_count}帧抽检和自动门禁不能代替完整审片。", st["subtitle"]),
         label_value_table([("视频SHA-256", audit["sha256"]), ("源commit", audit["source_git_commit"]), ("审片日期", "[YYYY-MM-DD]")], st),
         Spacer(1, 4 * mm),
         table,
@@ -223,12 +253,23 @@ def main() -> int:
     private_dir = output / "private"
     public_dir.mkdir(parents=True, exist_ok=True)
     private_dir.mkdir(parents=True, exist_ok=True)
-    frames = extract_frames(video, output, args.ffmpeg)
-    contact = build_contact_sheet(frames, output)
+    times = sample_times(audit)
+    frames = extract_frames(video, output, args.ffmpeg, times)
+    contact = build_contact_sheet(frames, output, times)
     qa_pdf = public_dir / "视频技术审计与时间轴.pdf"
     review_pdf = private_dir / "团队完整审片批准表_私密.pdf"
-    build_pdf(qa_pdf, "121.6秒演示视频技术审片摘要", qa_story(audit, video, sha256(contact), st), FOOTER)
-    build_pdf(review_pdf, "121.6秒演示视频团队完整审片表", review_story(audit, st), FOOTER)
+    build_pdf(
+        qa_pdf,
+        f"{audit['duration_seconds']}秒演示视频技术审片摘要",
+        qa_story(audit, video, sha256(contact), st),
+        FOOTER,
+    )
+    build_pdf(
+        review_pdf,
+        f"{audit['duration_seconds']}秒演示视频团队完整审片表",
+        review_story(audit, st, len(frames)),
+        FOOTER,
+    )
     public_files = [qa_pdf, contact]
     private_files = [review_pdf]
     public_manifest = public_dir / "PUBLIC_MANIFEST.json"
@@ -245,7 +286,16 @@ def main() -> int:
     private_sha_path.write_text(f"{sha256(private_zip)}  {private_zip.name}\n", encoding="utf-8")
     public_text = pdf_text(qa_pdf)
     private_text = pdf_text(review_pdf)
-    required_public = ["121.6秒", "七项强制技术覆盖", "7/7", "1.037", "0处", "-23.3", "-3.6", "不证明用户认可"]
+    required_public = [
+        f"{audit['duration_seconds']}秒",
+        f"{audit['content_coverage']['required_count']}项强制技术覆盖",
+        f"{audit['content_coverage']['present_count']}/{audit['content_coverage']['required_count']}",
+        str(audit["qa"]["max_voice_speed_factor"]),
+        f"{audit['audio']['analysis']['silence_over_threshold_count']}处",
+        str(audit["audio"]["analysis"]["integrated_loudness_lufs"]),
+        str(audit["audio"]["analysis"]["true_peak_dbfs"]),
+        "不证明用户认可",
+    ]
     missing_public = [value for value in required_public if value not in public_text]
     required_private = ["完整播放", "内容审片人", "技术审片人", "隐私/伦理审片人", "四选一", "签署后本页SHA-256"]
     missing_private = [value for value in required_private if value not in private_text]
@@ -260,6 +310,7 @@ def main() -> int:
         "video_sha256": audit["sha256"],
         "video_duration_seconds": audit["duration_seconds"],
         "sampled_frame_count": len(frames),
+        "sample_times_seconds": list(times),
         "content_coverage": audit["content_coverage"],
         "media_qa": audit["qa"],
         "audio_analysis": audit["audio"]["analysis"],
@@ -277,11 +328,11 @@ def main() -> int:
     audit_path = output / "BUILD_AUDIT.json"
     write_json(audit_path, build_audit)
     readme_path = output / "README.md"
-    readme_path.write_text(f"""# 121.6秒演示视频审片包（DRAFT）
+    readme_path.write_text(f"""# {audit['duration_seconds']}秒演示视频审片包（DRAFT）
 
 视频SHA：`{audit['sha256']}`
 
-1. 查看25帧接触表和技术审计PDF。
+1. 查看{len(frames)}帧接触表和技术审计PDF。
 2. 三名审片人分别完整播放私密视频，不能只看接触表。
 3. 内容、技术、隐私/伦理审片人填写私密批准表。
 4. 只有三人一致批准后，才能将视频状态从DRAFT改为最终候选。
