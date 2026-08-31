@@ -67,6 +67,8 @@ from src.teacher.routes import create_teacher_router
 from src.learning_support.routes import create_learning_support_router
 from src.subjective.routes import create_subjective_router
 from src.media.routes import create_media_router
+from src.competition import build_technical_evidence_snapshot
+from src.competition.technical_evidence import TechnicalEvidenceUnavailableError
 from src.orchestration.case_fsm import CaseStateMachine
 from src.orchestration.agent_registry import AgentRegistry
 from src.orchestration.scenario_orchestrator import ScenarioOrchestrator
@@ -3055,6 +3057,19 @@ async def competition_typical_questions(
     if report.get("case_count") != 3:
         raise HTTPException(status_code=503, detail="typical question report is incomplete")
     return report
+
+
+@app.get("/api/competition/technical-evidence")
+async def competition_technical_evidence(
+    current_user: User = Depends(_get_current_user),
+):
+    """Return a secret-free projection of committed technical evidence."""
+
+    _ = current_user
+    try:
+        return build_technical_evidence_snapshot()
+    except TechnicalEvidenceUnavailableError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 @app.get("/api/adaptive/catalog")

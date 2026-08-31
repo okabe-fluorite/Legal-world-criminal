@@ -45,4 +45,14 @@
 - 视频脚本：`competition_submission/06-效果验证/170秒技术主线视频脚本_V2_DRAFT.md`。
 - 机器证据报告：`competition_submission/06-效果验证/技术主线机器证据增量报告_V2_DRAFT.md`。
 
+## Demo技术证据路线
+
+登录后点击顶部“技术证据”：
+
+1. 数据治理：4,173→813与2024刑法版本审计；
+2. 推理/评测：11项Gate、1正例/6负例、LegalEduEval 100题；
+3. Agent/边界：要件4/4、反方2→3、耗时/token成本与教师盲评pending。
+
+页面由后端实时读取审计SHA，详见`docs/TECHNICAL_EVIDENCE_SHOWCASE.md`。
+
 真实人员材料没有被代填；最终提交包须等待上述pending项完成后再重建。

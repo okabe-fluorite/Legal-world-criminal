@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-08-31T02:09:51.410Z",
+  "viewport": "780x900",
+  "overview_pipeline": 5,
+  "overview_cards": 4,
+  "data_ledger_rows": 4,
+  "reasoning_checks": 11,
+  "negative_fixtures": 6,
+  "eval_types": 5,
+  "eval_routes": 4,
+  "agent_conditions": 2,
+  "pending_rows": 4,
+  "horizontal_overflow": {
+    "overview": {
+      "clientWidth": 778,
+      "scrollWidth": 778,
+      "overflow": false
+    },
+    "data": {
+      "clientWidth": 778,
+      "scrollWidth": 778,
+      "overflow": false
+    },
+    "reasoning": {
+      "clientWidth": 778,
+      "scrollWidth": 778,
+      "overflow": false
+    },
+    "agent": {
+      "clientWidth": 778,
+      "scrollWidth": 778,
+      "overflow": false
+    }
+  },
+  "private_leaks": [],
+  "console_errors": [],
+  "page_errors": [],
+  "http_errors": [],
+  "request_failures": [],
+  "artifact_dir": "output/playwright/technical-evidence-narrow"
+}

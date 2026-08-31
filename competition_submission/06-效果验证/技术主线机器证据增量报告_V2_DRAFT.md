@@ -21,6 +21,7 @@
 - 后端全量`unittest`：112/112通过。
 - 前端生产构建：通过；4张WebP进入bundle。
 - 浏览器：1500×980三条导师路线、780×900两条路线通过；私有字段、console/page/HTTP/request错误0。
+- 技术证据总账：1500×980与780×900四页完整通过，横向溢出0；API实时投影6份审计SHA，敏感/私有字段0。
 - Agent真实run：固定OpenCode `deepseek-v4-flash`主端，无fallback混用；原始输出、ID归一和最终Gate全部保留。
 - PPT网页：12页Swiss validator通过；1600×900 overflow 0、图片失败0、console/page/request错误0。
 - PPTX：PowerPoint实际回渲染12/12页；1.35MB；最大平均像素差0.094646。

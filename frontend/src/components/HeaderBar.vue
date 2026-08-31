@@ -7,6 +7,7 @@ import LearningJourney from "./LearningJourney.vue";
 import TeacherDashboard from "./TeacherDashboard.vue";
 import CognitiveDashboard from "./CognitiveDashboard.vue";
 import TrustedRagShowcase from "./TrustedRagShowcase.vue";
+import TechnicalEvidenceShowcase from "./TechnicalEvidenceShowcase.vue";
 
 const session = useSession();
 
@@ -15,6 +16,7 @@ const showJourney = ref(false);
 const showTeacher = ref(false);
 const showCognitive = ref(false);
 const showTrustedRag = ref(false);
+const showTechnicalEvidence = ref(false);
 const isTeacher = computed(() => ["teacher", "admin"].includes(session.state.role));
 
 const wsDotClass = computed(() => {
@@ -107,6 +109,9 @@ const accent = computed(() => stageAccent(session.state.caseState));
         <button class="btn hdr__rag" @click="showTrustedRag = true">
           可信RAG
         </button>
+        <button class="btn hdr__evidence" @click="showTechnicalEvidence = true">
+          技术证据
+        </button>
         <button v-if="isTeacher" class="btn hdr__teacher" @click="showTeacher = true">
           教师驾驶舱
         </button>
@@ -120,6 +125,7 @@ const accent = computed(() => stageAccent(session.state.caseState));
         @open-journey="showCognitive = false; showJourney = true"
       />
       <TrustedRagShowcase v-if="showTrustedRag" @close="showTrustedRag = false" />
+      <TechnicalEvidenceShowcase v-if="showTechnicalEvidence" @close="showTechnicalEvidence = false" />
       <TeacherDashboard v-if="showTeacher" @close="showTeacher = false" />
 
       <div class="hdr__user">
@@ -287,6 +293,16 @@ const accent = computed(() => stageAccent(session.state.caseState));
   color: #f3dfb0;
   border-color: var(--accent-amber);
   background: rgba(176, 138, 62, 0.11);
+}
+.hdr__evidence {
+  color: #c3e0e7;
+  border-color: rgba(100, 139, 153, 0.66);
+  background: rgba(100, 139, 153, 0.07);
+}
+.hdr__evidence:hover {
+  color: #f0fbfd;
+  border-color: #88b3bf;
+  background: rgba(100, 139, 153, 0.15);
 }
 .hdr__teacher:hover {
   color: #e0ebef;

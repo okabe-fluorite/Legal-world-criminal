@@ -33,6 +33,7 @@ import type {
   TeacherReviewCatalogResponse,
   TeacherSubjectiveQueueResponse,
   TypicalQuestionReport,
+  TechnicalEvidenceSnapshot,
 } from "./types";
 
 const API_BASE = "/api";
@@ -217,6 +218,10 @@ export const api = {
 
   async typicalQuestionReport(): Promise<TypicalQuestionReport> {
     return request<TypicalQuestionReport>("/competition/typical-questions");
+  },
+
+  async technicalEvidence(): Promise<TechnicalEvidenceSnapshot> {
+    return request<TechnicalEvidenceSnapshot>("/competition/technical-evidence");
   },
 
   async mediaCapabilities(): Promise<MediaCapabilitiesResponse> {

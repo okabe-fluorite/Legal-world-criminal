@@ -995,3 +995,112 @@ export interface MediaJob {
   };
   job_status?: "inserted" | "duplicate" | string;
 }
+
+export interface TechnicalEvidenceCondition {
+  workflow_completed: boolean;
+  state_count: number;
+  model_calls: number;
+  elapsed_ms: number;
+  total_tokens: number;
+  gate_pass: boolean;
+  raw_schema_pass: boolean;
+  required_element_coverage: number;
+  required_element_total: number;
+  counterargument_count: number;
+}
+
+export interface TechnicalEvidenceSnapshot {
+  schema_version: "competition-technical-evidence-snapshot-v1" | string;
+  title: string;
+  summary: {
+    candidate_files: number;
+    formal_articles: number;
+    reasoning_gate_checks: number;
+    benchmark_items: number;
+    agent_conditions: number;
+    tutor_states: number;
+  };
+  data_governance: {
+    snapshot_date: string;
+    inventory_files: number;
+    inventory_bytes: number;
+    formal_articles: number;
+    criminal_law_articles: number;
+    criminal_procedure_articles: number;
+    l2_candidates: number;
+    l3_candidates: number;
+    knowledge_evidence_links: number;
+    gates_passed: number;
+    gates_total: number;
+    model_calls: number;
+    version_as_of: string;
+    amendment_12_matches: number;
+    reference_exact_articles: number;
+    reference_differences: number;
+    reference_formal_admission: boolean;
+    boundary: string[];
+  };
+  legal_reasoning: {
+    fixture_suite_id: string;
+    fixtures: number;
+    positive_passed: number;
+    negative_blocked: number;
+    all_expectations_met: boolean;
+    model_calls: number;
+    network_calls: number;
+    checks: string[];
+    negative_fixtures: Array<{ fixture_id: string; failed_checks: string[] }>;
+    boundary: string[];
+  };
+  legal_edu_eval: {
+    dataset_id: string;
+    status: string;
+    gold_status: string;
+    items: number;
+    by_type: Record<string, number>;
+    by_split: Record<string, number>;
+    source_families: number;
+    cross_split_family_overlap: number;
+    evaluation_matrix: Record<string, string>;
+    training_manifest_check_required: boolean;
+    boundary: string[];
+  };
+  agent_ablation: {
+    protocol_id: string;
+    run_status: string;
+    case_bundle_id: string;
+    stage: string;
+    model_route: Record<string, unknown>;
+    c0: TechnicalEvidenceCondition;
+    c1: TechnicalEvidenceCondition;
+    comparison: {
+      counterargument_count_delta: number;
+      elapsed_ms_delta: number;
+      total_tokens_delta: number;
+      elapsed_ratio_c1_over_c0: number;
+      token_ratio_c1_over_c0: number;
+    };
+    teacher_blind_review: string;
+    schema_normalization: {
+      additional_model_calls: number;
+      semantic_fields_changed: boolean;
+    };
+    boundary: string[];
+  };
+  interaction: {
+    tutor_states: number;
+    tutor_canvas: { width?: number; height?: number; pixel_format?: string };
+    allowed_contexts: string[];
+    creates_learning_event: boolean;
+    formal_grading_eligible: boolean;
+    label: string;
+  };
+  pending: Array<{ item: string; status: string; required_evidence: string }>;
+  provenance: Array<{
+    artifact_id: string;
+    schema_version: string;
+    sha256: string;
+    bytes: number;
+  }>;
+  global_boundary: string[];
+}
