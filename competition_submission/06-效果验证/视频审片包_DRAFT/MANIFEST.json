@@ -1,64 +1,64 @@
 {
   "schema": "video-review-package-manifest-v1",
-  "source_git_commit": "487b99e7a2bd3ec40f09c7674dc435995c41a53d",
+  "source_git_commit": "b2378db8d86332c666e6e741536ed390734d73b3",
   "package_build_date": "2026-08-30",
-  "video_sha256": "f820b3536b356fe3f39decb83b09132c812f0465ccfb20a7ad60118220ca9bb0",
-  "video_duration_seconds": 163.2,
+  "video_sha256": "29e286670dd8a27733dc9e6f1f355236bd1195fbd75db272dba7b237193bb0ee",
+  "video_duration_seconds": 162.2,
   "files": [
     {
       "path": "18帧视觉接触表.png",
-      "bytes": 1014836,
-      "sha256": "15e8fee8b49732aed8758772ef78d1fe6a5fe0dd866d7febc65c539ec136ed2d"
+      "bytes": 1002960,
+      "sha256": "6dc1977e4098f94622c2ef7940d4f2ec0ea666c3ac03babd30ab5609450af6e3"
     },
     {
       "path": "BUILD_AUDIT.json",
-      "bytes": 4872,
-      "sha256": "1550102accfb0b8dabf9b10c1db977112348df6ebe1c5c4f05fb24e580df028e"
+      "bytes": 4892,
+      "sha256": "0d62d7d8035f959d12a0929c1ae9ea60e8af25a12b7cfb8811ab3dcfe980a6c0"
     },
     {
       "path": "README.md",
       "bytes": 497,
-      "sha256": "99be2a83da840d44ac516b8c8444c6f087c9ca715d7a2c8b202fb4b8d04c02b7"
+      "sha256": "2b23083b287de16309b8b41e6dbc37fd3a563617b0e84d3371a155cf44ca042e"
     },
     {
       "path": "private/PRIVATE_MANIFEST.json",
       "bytes": 379,
-      "sha256": "f6a57028bbdced90c0903b01db15e13217c6182dbf2b814850c084ecdb96f411"
+      "sha256": "916c168ab8be4188762757580d75f610da43e87b8807b6362baef3fa61ddc0ff"
     },
     {
       "path": "private/团队完整审片批准表_私密.pdf",
-      "bytes": 137516,
-      "sha256": "3c105e5a0d15844e9e6a1d832a34b45db22658ba74fb41e18fde97926e5acb46"
+      "bytes": 137521,
+      "sha256": "8bee05f9394956a9610927b6d71be20eb4a6247c47a2036ba71fc3afe7b5d73e"
     },
     {
       "path": "public/PUBLIC_MANIFEST.json",
       "bytes": 521,
-      "sha256": "733e532cc2dc97d28783953c2ec363f611032d9f5a33f50c8be466c9d24e5875"
+      "sha256": "55da31accc50c96a525b5643690797cd7abe2432b7177cf5a544cb3da59791d8"
     },
     {
       "path": "public/视频技术审计与时间轴.pdf",
-      "bytes": 154877,
-      "sha256": "3c6c341ab81fcb0e4012d7a24842be26c9309e9787067e6d8e056e875fc8d566"
+      "bytes": 154099,
+      "sha256": "301e9513b6de08d9a1c37affe41a04806c9f57d46b5ecae13f141143d735c70c"
     },
     {
       "path": "团队审片批准页包_DRAFT.zip",
-      "bytes": 134081,
-      "sha256": "77dfee53b09e379d3bb7308fe47135569b16718b95d70cb539d6b7fb648fe4c8"
+      "bytes": 134076,
+      "sha256": "40eb8d4d4139e8fedbb7edad14af31e5febabc8530da8ad82dc2d23b20859445"
     },
     {
       "path": "团队审片批准页包_DRAFT.zip.sha256.txt",
       "bytes": 102,
-      "sha256": "55947b1a46c32b6c1bd04616bdfa012f7e54c897f1629f1973561ee8e517a353"
+      "sha256": "a8b4dde896703ac415c47bdf8fabf21939175f12601ad23596269cb72dc985a7"
     },
     {
       "path": "视频技术审片包_DRAFT.zip",
-      "bytes": 1154544,
-      "sha256": "073ab978db55c3a7e422c90f26039c691c665d57a584d3a0bf8434ea0a89399d"
+      "bytes": 1142301,
+      "sha256": "545d6c7143908cb70ea2506b9bed187d11a9c644cfafe192110ffcbcdb866486"
     },
     {
       "path": "视频技术审片包_DRAFT.zip.sha256.txt",
       "bytes": 99,
-      "sha256": "e0ae91dcd2122b35ed794e2e69e0254634b55b69363d9125ede2bba72352c9d5"
+      "sha256": "89b0ada0be68611262f7252d9ca6a2744e53ca5b9a18c9692318a7063f651fad"
     }
   ],
   "required_reviewer_count": 3,

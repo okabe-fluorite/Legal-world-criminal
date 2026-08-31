@@ -1,6 +1,6 @@
 {
   "schema": "effect-report-evidence-index-v1",
-  "source_git_commit": "313d2fab804d2526cf4625cf603b4ff5845c63ee",
+  "source_git_commit": "b2378db8d86332c666e6e741536ed390734d73b3",
   "sources": [
     {
       "id": "frozen",
@@ -17,8 +17,8 @@
     {
       "id": "video",
       "path": "competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json",
-      "bytes": 8697,
-      "sha256": "7baf68482053824d4365d144646d7c8504e8bfef57319b64fad06c4141272927"
+      "bytes": 12180,
+      "sha256": "d9f7408ae065bfc6ee5ccc91de5317242e10bbecf4f21cc84054baa135d5d8cd"
     },
     {
       "id": "rehearsal",
@@ -47,14 +47,14 @@
     {
       "id": "cognitive",
       "path": "docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md",
-      "bytes": 6036,
-      "sha256": "3aedf9e763c456d99952feb50f453efa646114f8d581de153c077e2b4e6ce3c8"
+      "bytes": 6385,
+      "sha256": "bc8bb37a3d7ebbfc3a8627ef708666f166f4abeb0097eb13a166fadbc495e54d"
     },
     {
       "id": "media",
       "path": "docs/MULTIMODAL_AVATAR_ARCHITECTURE.md",
-      "bytes": 7828,
-      "sha256": "59fd79f260ab94ec2b8ae9d1f43cf6ffcfc72f0efb7019e7f5b9771fda7b1ace"
+      "bytes": 10040,
+      "sha256": "60d5eeaa8155e929a81f470d48beee610fd5941797fa0725a92b9e12228f33eb"
     },
     {
       "id": "expert",
@@ -72,13 +72,13 @@
       "id": "ethics",
       "path": "competition_submission/02-伦理与安全/伦理签署包_DRAFT/MANIFEST.json",
       "bytes": 2677,
-      "sha256": "02d23eba313a8247e7b19b560be20b08e77dfc3c3ddf8fb888a36660df236e5f"
+      "sha256": "1445912d383ba02a7cc5bb72d5aa3993545f5d58899e37faf63cb829df73ab05"
     },
     {
       "id": "video_review",
       "path": "competition_submission/06-效果验证/视频审片包_DRAFT/MANIFEST.json",
       "bytes": 2438,
-      "sha256": "7079bc0279b452192eb77195cae6661a028ef282d98e55ad9d4873ddd6898cc3"
+      "sha256": "a455324c051c8a75cfe51fa86dc343113bbc0eaa7ef88502a1f2a77db2f1c8c2"
     }
   ],
   "evidence_levels": {

@@ -1,15 +1,15 @@
 # 效果验证报告包MANIFEST（DRAFT）
 
-> 公开报告已按L1—L4分层并建立11项证据源索引，但真实批准仍为0/3。批准当前DRAFT不等于补齐专家、用户或学习效果证据。
+> 公开报告已按L1—L4分层并建立13项证据源索引，但真实批准仍为0/3。批准当前DRAFT不等于补齐专家、用户或学习效果证据。
 
 | 字段 | 值 |
 |---|---|
-| 构建commit | `54326efa5431520df4f49e54e6f1da4ded7a07cd` |
-| 公开报告SHA-256 | `fe4bb091f549115272b645b380084554cf429be0e0efec53ab437caf096d3518` |
-| 证据索引SHA-256 | `48ff649b8366fa16e4a43d6564fec32d677cb4f97b2208a5bbc37ff4cbc9d5ba` |
+| 构建commit | `b2378db8d86332c666e6e741536ed390734d73b3` |
+| 公开报告SHA-256 | `8ede03426ac74feba11d396f69ea831bf4c4353856f7d41b1c5967c7994d3177` |
+| 证据索引SHA-256 | `4dc0f121797329c090843fb95a974cd93cdc09aed564935aa4636b836f923ee1` |
 | 公开报告页数 | `5` |
 | 私密批准表页数 | `2` |
-| 证据源数量 | `11` |
+| 证据源数量 | `13` |
 | L1 | 软件证据在列明范围可用 |
 | L2 | 独立专家审核PENDING |
 | L3 | 真实参与者0人 |
@@ -23,22 +23,22 @@
 
 | 文件 | SHA-256 |
 |---|---|
-| `public/星火智学效果验证报告_DRAFT.pdf` | `fe4bb091f549115272b645b380084554cf429be0e0efec53ab437caf096d3518` |
-| `public/EVIDENCE_INDEX.json` | `48ff649b8366fa16e4a43d6564fec32d677cb4f97b2208a5bbc37ff4cbc9d5ba` |
+| `public/星火智学效果验证报告_DRAFT.pdf` | `8ede03426ac74feba11d396f69ea831bf4c4353856f7d41b1c5967c7994d3177` |
+| `public/EVIDENCE_INDEX.json` | `4dc0f121797329c090843fb95a974cd93cdc09aed564935aa4636b836f923ee1` |
 
-公开ZIP SHA-256：`3b4e1d0959a1cd4e3876fa3fadc111c5978808f6e12ac331b06df32654ffd1c5`
+公开ZIP SHA-256：`758c558bebab19458942788f48639d765e651704f566aea32bafb637b0d348c1`
 
 ## 私密批准页包
 
 | 文件 | SHA-256 |
 |---|---|
-| `private/效果验证报告批准表_私密.pdf` | `ed06f6090b2d5a39a96fbb1debddabe5ef3b31f4ea5f799417cf71e1c57175d3` |
+| `private/效果验证报告批准表_私密.pdf` | `61bab5f68ea2a6259382a994bf76d65d18cb039bd37b79ce6c8932e16618bcd1` |
 
-私密ZIP SHA-256：`088d8aacd019aa3de680dbcd6148ed6b6dec33ce6d632458ad263ae82e88b78b`
+私密ZIP SHA-256：`a943bc8f2f1d19669f6947890bd3da5a3db5641e0d65f2911b79a820615ce769`
 
 ## 门禁与边界
 
-- `BUILD_AUDIT.json` SHA-256：`536c5af898f9d540b025093b3ee2d623b4a0ff9925dc0575d690417e1e4647fb`。
+- `BUILD_AUDIT.json` SHA-256：`5a20d2412f2207e3259a5da3725d5add690cb9a9a7296a048ff6ca651286637c`。
 - 公开PDF5页、私密批准表2页经Poppler逐页渲染和视觉检查。
 - L1/L2/L3/L4必需文本全部存在；越界正面结论0命中；秘密扫描0命中。
 - 报告明确不支持“刑法掌握率X%”“路径提升成绩”“V2显著优于V1”“微调优于基线”“专家/用户/伦理已完成”等结论。

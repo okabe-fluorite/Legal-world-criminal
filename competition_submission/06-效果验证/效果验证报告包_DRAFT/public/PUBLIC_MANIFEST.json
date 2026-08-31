@@ -4,13 +4,13 @@
   "files": [
     {
       "path": "public/EVIDENCE_INDEX.json",
-      "bytes": 3331,
-      "sha256": "6754ccdc0640696420427e88a6c1df7afc41e5b282cbc12efc6aba363ba253bd"
+      "bytes": 3333,
+      "sha256": "4dc0f121797329c090843fb95a974cd93cdc09aed564935aa4636b836f923ee1"
     },
     {
       "path": "public/星火智学效果验证报告_DRAFT.pdf",
-      "bytes": 266871,
-      "sha256": "e9a36e228dd58f5ed1f4f68f0a5342cb40c4cb7fbb676d782a7aec4282bc5860"
+      "bytes": 265567,
+      "sha256": "8ede03426ac74feba11d396f69ea831bf4c4353856f7d41b1c5967c7994d3177"
     }
   ],
   "boundary": "L1-L4 evidence-indexed DRAFT; L2-L4 remain incomplete"

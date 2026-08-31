@@ -1,7 +1,7 @@
 {
   "schema": "video-review-package-build-audit-v1",
-  "video_sha256": "f820b3536b356fe3f39decb83b09132c812f0465ccfb20a7ad60118220ca9bb0",
-  "video_duration_seconds": 163.2,
+  "video_sha256": "29e286670dd8a27733dc9e6f1f355236bd1195fbd75db272dba7b237193bb0ee",
+  "video_duration_seconds": 162.2,
   "sampled_frame_count": 18,
   "sample_times_seconds": [
     2.05,
@@ -20,8 +20,8 @@
     126.2,
     135.7,
     143.7,
-    155.7,
-    159.9
+    155.4,
+    158.9
   ],
   "content_coverage": {
     "required_count": 12,
@@ -144,12 +144,12 @@
       },
       {
         "id": "iflytek_asr_tts",
-        "label": "讯飞TTS私有音频、IAT真实转写与数字人后置边界",
+        "label": "讯飞实时IAT partial/final、Evidence回复、TTS播放与数字人后置边界",
         "items": [
           "10-iflytek"
         ],
         "start_seconds": 133.7,
-        "end_seconds": 156.7,
+        "end_seconds": 155.7,
         "present": true
       }
     ]
@@ -159,7 +159,7 @@
     "subtitles_max_two_lines": true,
     "ai_voice_label_visible_throughout": true,
     "silence_over_1_2_seconds_detected": false,
-    "max_voice_speed_factor": 1.0371,
+    "max_voice_speed_factor": 1.05677,
     "duration_under_180_seconds": true
   },
   "audio_analysis": {
@@ -167,7 +167,7 @@
     "silence_over_threshold_count": 0,
     "silence_durations_seconds": [],
     "max_silence_seconds": 0.0,
-    "integrated_loudness_lufs": -23.3,
+    "integrated_loudness_lufs": -23.4,
     "true_peak_dbfs": -3.6
   },
   "public_pdf_pages": 2,

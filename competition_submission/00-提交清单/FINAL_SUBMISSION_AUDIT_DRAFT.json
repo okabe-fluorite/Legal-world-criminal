@@ -1,9 +1,9 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-31T05:30:54.402281+00:00",
-  "git_commit": "487b99e7a2bd3ec40f09c7674dc435995c41a53d",
+  "generated_at": "2026-08-31T14:03:44.706315+00:00",
+  "git_commit": "b2378db8d86332c666e6e741536ed390734d73b3",
   "tracked_worktree_clean_before_audit": false,
-  "untracked_user_material_count": 11,
+  "untracked_user_material_count": 13,
   "checks": [
     {
       "id": "demo_docs",
@@ -47,8 +47,8 @@
       ],
       "detail": {
         "schema": "guizang-tech-v2-pptx-render-audit-v1",
-        "bytes": 1644330,
-        "sha256": "55075f72a2cb21960ba6f26a12e03b269e0987d9b3aea7b77a0551a6336fd9e8",
+        "bytes": 1549008,
+        "sha256": "1729556276310fd973514696a2e5a42d38c98e8aded1131f9ff97336b23ef81f",
         "slides": 12,
         "rendered_slides": 12,
         "max_render_mae": 0.094643,
@@ -72,19 +72,19 @@
         "competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json"
       ],
       "detail": {
-        "source_git_commit": "947274a591722c8352d7830dd632cd698aebf88b",
+        "source_git_commit": "41bed10f008b6c495a16eefddb50da5b5de1a678",
         "real_segment_seconds": 65.24,
-        "draft_seconds": 163.2,
-        "draft_bytes": 12539255,
-        "draft_sha256": "f820b3536b356fe3f39decb83b09132c812f0465ccfb20a7ad60118220ca9bb0",
+        "draft_seconds": 162.2,
+        "draft_bytes": 12432308,
+        "draft_sha256": "29e286670dd8a27733dc9e6f1f355236bd1195fbd75db272dba7b237193bb0ee",
         "draft_resolution": "1920x1080",
         "video_codec": "h264",
         "audio_codec": "aac",
         "content_coverage": "12/12",
         "all_required_content_present": true,
-        "max_voice_speed_factor": 1.0371,
+        "max_voice_speed_factor": 1.05677,
         "silence_over_1_2_seconds": 0,
-        "integrated_loudness_lufs": -23.3,
+        "integrated_loudness_lufs": -23.4,
         "true_peak_dbfs": -3.6,
         "ai_voice_label_visible": true,
         "subtitle_count": 12,
@@ -177,8 +177,8 @@
         "competition_submission/06-效果验证/效果验证报告包_DRAFT/BUILD_AUDIT.json"
       ],
       "detail": {
-        "report_sha256": "e9a36e228dd58f5ed1f4f68f0a5342cb40c4cb7fbb676d782a7aec4282bc5860",
-        "evidence_index_sha256": "6754ccdc0640696420427e88a6c1df7afc41e5b282cbc12efc6aba363ba253bd",
+        "report_sha256": "8ede03426ac74feba11d396f69ea831bf4c4353856f7d41b1c5967c7994d3177",
+        "evidence_index_sha256": "4dc0f121797329c090843fb95a974cd93cdc09aed564935aa4636b836f923ee1",
         "public_pdf_pages": 5,
         "private_pdf_pages": 2,
         "source_count": 13,

@@ -1,6 +1,6 @@
 # XH-202620最终提交就绪审计（DRAFT）
 
-- Git：`487b99e7a2bd3ec40f09c7674dc435995c41a53d`
+- Git：`b2378db8d86332c666e6e741536ed390734d73b3`
 - 最终提交就绪：**否**
 - 外部待补：`three_questions, target_users, ethics`
 - 内部待批准：`video, effect_report`
