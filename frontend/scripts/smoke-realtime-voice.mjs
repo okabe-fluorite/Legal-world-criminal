@@ -53,6 +53,8 @@ const pageErrors = [];
 const httpErrors = [];
 const requestFailures = [];
 const voiceFrames = [];
+const sentVoiceFrames = [];
+const realtimeFileUploadRequests = [];
 
 page.on("console", (message) => {
   if (message.type() === "error") consoleErrors.push(message.text());
@@ -65,12 +67,40 @@ page.on("requestfailed", (request) => {
   if (request.url().startsWith("blob:")) return;
   requestFailures.push({ url: request.url(), error: request.failure()?.errorText || "unknown" });
 });
+page.on("request", (request) => {
+  if (request.method() === "POST" && request.url().includes("/api/multimodal/assets")) {
+    realtimeFileUploadRequests.push(request.url());
+  }
+});
 page.on("websocket", (socket) => {
   if (!socket.url().includes("/ws/realtime-voice")) return;
+  socket.on("framesent", (event) => {
+    if (typeof event.payload !== "string") return;
+    try {
+      const message = JSON.parse(event.payload);
+      sentVoiceFrames.push({ type: message.type, turn_id: message.turn_id || "", seq: message.seq });
+    } catch {
+      sentVoiceFrames.push({ type: "invalid_json_frame" });
+    }
+  });
   socket.on("framereceived", (event) => {
     if (typeof event.payload !== "string") return;
     try {
       const message = JSON.parse(event.payload);
+      let audioEvidence = null;
+      if (message.type === "voice_reply" && message.audio?.base64) {
+        const replyIndex = voiceFrames.filter((row) => row.type === "voice_reply").length + 1;
+        const filename = `reply-${String(replyIndex).padStart(2, "0")}.wav`;
+        const audio = Buffer.from(message.audio.base64, "base64");
+        fs.writeFileSync(path.join(artifactDir, filename), audio);
+        audioEvidence = {
+          filename,
+          size_bytes: audio.length,
+          sha256: message.audio.sha256,
+          duration_seconds: message.audio.duration_seconds,
+          ai_generated_disclosure: message.audio.ai_generated_disclosure,
+        };
+      }
       voiceFrames.push({
         type: message.type,
         turn_id: message.turn_id || "",
@@ -78,12 +108,7 @@ page.on("websocket", (socket) => {
         reply_text: message.reply_text || "",
         source: message.source || "",
         coverage_status: message.coverage_status || "",
-        audio: message.audio ? {
-          size_bytes: message.audio.size_bytes,
-          sha256: message.audio.sha256,
-          duration_seconds: message.audio.duration_seconds,
-          ai_generated_disclosure: message.audio.ai_generated_disclosure,
-        } : null,
+        audio: audioEvidence,
         evidence_eligibility: message.evidence_eligibility || null,
         code: message.code || "",
       });
@@ -173,11 +198,24 @@ try {
   const finals = voiceFrames.filter((row) => row.type === "voice_transcript_final");
   const partials = voiceFrames.filter((row) => row.type === "voice_transcript_partial");
   const errors = voiceFrames.filter((row) => row.type === "voice_error");
+  const sentTypeCounts = Object.fromEntries(
+    [...new Set(sentVoiceFrames.map((row) => row.type))]
+      .sort()
+      .map((type) => [type, sentVoiceFrames.filter((row) => row.type === type).length]),
+  );
   if (replies.length !== roundCount || finals.length !== roundCount || partials.length < roundCount || errors.length) {
     throw new Error(`Realtime protocol incomplete: ${JSON.stringify(typeCounts)}`);
   }
   if (beforeEvents !== afterEvents) {
     throw new Error(`Realtime voice changed LearningEvent timeline: ${beforeEvents} -> ${afterEvents}`);
+  }
+  if (
+    sentTypeCounts.voice_start !== roundCount
+    || sentTypeCounts.voice_stop !== roundCount
+    || Number(sentTypeCounts.voice_audio || 0) < roundCount
+    || realtimeFileUploadRequests.length
+  ) {
+    throw new Error(`Browser did not use the realtime PCM protocol: ${JSON.stringify(sentTypeCounts)}`);
   }
   if (replies.some((row) => !row.audio?.ai_generated_disclosure || !row.audio?.size_bytes)) {
     throw new Error("TTS audio proof or AI disclosure missing");
@@ -204,6 +242,7 @@ try {
     viewport: `${viewport.width}x${viewport.height}`,
     rounds: roundCount,
     type_counts: typeCounts,
+    sent_type_counts: sentTypeCounts,
     final_transcripts: finals.map((row) => row.transcript),
     reply_sources: replies.map((row) => row.source),
     coverage_statuses: replies.map((row) => row.coverage_status),
@@ -216,6 +255,7 @@ try {
     page_errors: pageErrors,
     http_errors: httpErrors,
     request_failures: requestFailures,
+    realtime_file_upload_requests: realtimeFileUploadRequests,
     artifact_dir: publicArtifactDir,
   };
   fs.writeFileSync(
@@ -236,6 +276,7 @@ try {
     smoke_error: error instanceof Error ? error.message : String(error),
     url: page.url(),
     voice_frames: voiceFrames.map((row) => ({ type: row.type, code: row.code || "" })),
+    sent_voice_frames: sentVoiceFrames.map((row) => ({ type: row.type })),
     console_errors: consoleErrors,
     page_errors: pageErrors,
     http_errors: httpErrors,

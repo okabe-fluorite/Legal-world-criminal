@@ -34,9 +34,9 @@
   --accent-cool: #5c7a8a;
 
   /* Typography */
-  --font-display: "Fraunces", "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
-  --font-body: "Newsreader", "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-display: "Source Han Serif SC", "Songti SC", STSong, SimSun, Georgia, serif;
+  --font-body: "Source Han Serif SC", "Songti SC", STSong, SimSun, Georgia, serif;
+  --font-mono: "Cascadia Mono", Consolas, ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* Shape */
   --radius-sm: 2px;

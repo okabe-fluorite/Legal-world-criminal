@@ -1,0 +1,111 @@
+{
+  "schema_version": "simlaw-realtime-voice-verification-v1",
+  "generated_at": "2026-08-31T08:54:38.068Z",
+  "source_code_commit": "0b3cd23e1486802087a2313173758076308cde27",
+  "official_protocol_references": [
+    "https://www.xfyun.cn/doc/asr/voicedictation/API.html",
+    "https://www.xfyun.cn/doc/tts/online_tts/API.html"
+  ],
+  "browser_input_method": {
+    "kind": "chromium_fake_media_device_with_realtime_wav_clock",
+    "file_upload_api_used_for_realtime_turn": false,
+    "browser_pipeline": "MediaStream -> AudioWorklet -> streaming resampler -> 16kHz pcm_s16le -> 40ms WebSocket frames",
+    "fixture_scope": "deterministic browser microphone timing fixture; not a multi-speaker ASR accuracy sample"
+  },
+  "desktop_two_rounds": {
+    "viewport": "1500x980",
+    "rounds": 2,
+    "voice_session_ready": 2,
+    "voice_transcript_partial": 54,
+    "voice_transcript_final": 2,
+    "voice_reply_generating": 2,
+    "voice_reply_text": 2,
+    "voice_reply": 2,
+    "browser_sent": {
+      "voice_start": 2,
+      "voice_audio": 384,
+      "voice_stop": 2
+    },
+    "file_upload_requests": 0,
+    "reply_sources": [
+      "llm_governed_evidence",
+      "llm_governed_evidence"
+    ],
+    "coverage_statuses": [
+      "candidate_requires_semantic_audit",
+      "candidate_requires_semantic_audit"
+    ],
+    "learning_event_timeline_before": 0,
+    "learning_event_timeline_after": 0,
+    "available_capabilities_after_live_voice": 3,
+    "console_errors": 0,
+    "page_errors": 0,
+    "http_errors": 0,
+    "request_failures": 0,
+    "private_leaks": 0
+  },
+  "narrow_one_round": {
+    "viewport": "780x900",
+    "rounds": 1,
+    "voice_transcript_partial": 27,
+    "voice_transcript_final": 1,
+    "voice_reply": 1,
+    "browser_sent": {
+      "voice_start": 1,
+      "voice_audio": 192,
+      "voice_stop": 1
+    },
+    "file_upload_requests": 0,
+    "learning_event_timeline_before": 0,
+    "learning_event_timeline_after": 0,
+    "available_capabilities_after_live_voice": 3,
+    "console_errors": 0,
+    "page_errors": 0,
+    "http_errors": 0,
+    "request_failures": 0,
+    "private_leaks": 0
+  },
+  "tts_outputs": [
+    {
+      "file": "reply-01.wav",
+      "bytes": 583852,
+      "sha256": "c374b23b00ce3d120a0c6cd361f25c81f3c245f6372f1be9491ac9354dc644a6",
+      "codec": "pcm_s16le",
+      "sample_rate": 16000,
+      "channels": 1,
+      "bits_per_sample": 16,
+      "duration_seconds": 18.244,
+      "ai_generated_disclosure": true
+    },
+    {
+      "file": "reply-02.wav",
+      "bytes": 488566,
+      "sha256": "5833902ea1f4fb635ebcaa14f5390d89b8045fc0fc5e8bb38998679071cfa138",
+      "codec": "pcm_s16le",
+      "sample_rate": 16000,
+      "channels": 1,
+      "bits_per_sample": 16,
+      "duration_seconds": 15.266312,
+      "ai_generated_disclosure": true
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "desktop-two-rounds.png",
+      "sha256": "3a6ef4ff8f8555791034c6d6ac07f33a293953fddc6a29ea47c207c1ef629b57"
+    },
+    {
+      "file": "narrow-one-round.png",
+      "sha256": "f4bee867cf77c0b9fe749ee008e6e38662bd8ec0fdb77bfe9d1ca664ad0a488e"
+    }
+  ],
+  "evidence_boundary": {
+    "asr_status": "needs_review",
+    "learning_event_created": false,
+    "formal_grading_eligible": false,
+    "long_term_profile_updated": false,
+    "legal_entailment_proven": false,
+    "multi_speaker_asr_accuracy_claimed": false,
+    "digital_human_status": "not_connected"
+  }
+}
