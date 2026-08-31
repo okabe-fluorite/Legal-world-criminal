@@ -102,7 +102,7 @@ ITEMS = [
         "id": "10-iflytek",
         "kind": "video",
         "source": "iflytek-realtime-voice.webm",
-        "duration": 20.0,
+        "duration": 22.0,
         "text": "最后是实时语音多模态。浏览器麦克风持续发送十六千赫兹PCM分片，讯飞边听边返回动态转写；结束本轮后，系统检索受治理法源，生成形成性短答并自动播放讯飞合成语音。整个过程没有文件上传，不生成学习事件，数字人仍保持未连接。",
         "caption": "浏览器麦克风PCM→讯飞partial/final→Evidence短答→TTS播放\n文件上传0、转写needs_review、LearningEvent 0；数字人not_connected",
     },
