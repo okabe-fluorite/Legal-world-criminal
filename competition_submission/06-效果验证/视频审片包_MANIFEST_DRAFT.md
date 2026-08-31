@@ -1,13 +1,13 @@
-# 121.6秒演示视频审片包MANIFEST（DRAFT）
+# 163.2秒演示视频审片包MANIFEST（DRAFT）
 
-> 技术QA与审片材料已生成，但团队尚未完成完整播放与批准。25帧接触表不能代替完整审片，空白批准表不构成批准。
+> 技术QA与审片材料已生成，但团队尚未完成完整播放与批准。18帧接触表不能代替完整审片，空白批准表不构成批准。
 
 | 字段 | 值 |
 |---|---|
-| 构建commit | `d2d20a65a58fa072aca8a073c1ba4eed1f940831` |
-| 视频SHA-256 | `682e463ecc03cf71a8b3ff4f43c4df3cbda1f780832eba99b25cbe1f392fd19e` |
-| 时长/分辨率 | `121.6秒 / 1920×1080` |
-| 七项技术覆盖 | `7/7` |
+| 构建commit | `947274a591722c8352d7830dd632cd698aebf88b` |
+| 视频SHA-256 | `f820b3536b356fe3f39decb83b09132c812f0465ccfb20a7ad60118220ca9bb0` |
+| 时长/分辨率 | `163.2秒 / 1920×1080` |
+| 技术覆盖 | `12/12` |
 | 最大旁白语速 | `1.0371×` |
 | 超过1.2秒静音 | `0处` |
 | 音频 | `-23.3 LUFS / 真峰值-3.6 dBFS` |
@@ -20,24 +20,24 @@
 
 | 文件 | SHA-256 |
 |---|---|
-| `25帧视觉接触表.png` | `ba3e65a627d11609c1e189137e1022143e71a1e5999e3a31527e347887eeeb7a` |
-| `public/视频技术审计与时间轴.pdf` | `9a127098c531f543067b1b30920acb51a90704a266b971d261e8e2e6b49a2c06` |
+| `18帧视觉接触表.png` | `15e8fee8b49732aed8758772ef78d1fe6a5fe0dd866d7febc65c539ec136ed2d` |
+| `public/视频技术审计与时间轴.pdf` | `3c6c341ab81fcb0e4012d7a24842be26c9309e9787067e6d8e056e875fc8d566` |
 
-公开ZIP SHA-256：`8eaf9a311a667767ca91daa74cb2e6ea381ca824116c1cbf87afc5390c154d34`
+公开ZIP SHA-256：`073ab978db55c3a7e422c90f26039c691c665d57a584d3a0bf8434ea0a89399d`
 
 ## 私密批准页包
 
 | 文件 | SHA-256 |
 |---|---|
-| `private/团队完整审片批准表_私密.pdf` | `9edbfd5cde98a3d3c2703c58358438e7c7278a8ad08b2488c26575d2dc51c6a3` |
+| `private/团队完整审片批准表_私密.pdf` | `3c105e5a0d15844e9e6a1d832a34b45db22658ba74fb41e18fde97926e5acb46` |
 
-私密ZIP SHA-256：`01f7318a75a6cca021a6813e9c08f815c74dc684720b3a4af4d7bb2da228b9bc`
+私密ZIP SHA-256：`77dfee53b09e379d3bb7308fe47135569b16718b95d70cb539d6b7fb648fe4c8`
 
 ## 门禁与边界
 
-- `BUILD_AUDIT.json` SHA-256：`5d4ed098b11d13deefc42110f3c6d9b15cd1031d3737808dd43bae5de49fc856`。
+- `BUILD_AUDIT.json` SHA-256：`1550102accfb0b8dabf9b10c1db977112348df6ebe1c5c4f05fb24e580df028e`。
 - 技术PDF2页、私密批准表2页均经Poppler逐页渲染和视觉检查。
-- 视频25帧覆盖10段时间轴，字幕最多2行，`AI配音·DRAFT`角标可见。
-- 七项技术：Evidence-KT、ORCDF、七步路径、Model Adapter、可信RAG、教师HITL、多智能体/case3均有明确时间段。
+- 视频18帧覆盖12段时间轴，字幕最多2行，`AI配音·DRAFT`角标可见。
+- 12项技术含数据治理、Evidence推理、LegalEduEval、Agent消融、Evidence-KT/ORCDF、路径/模型、可信RAG、教师HITL、case3与真实讯飞ASR/TTS。
 - 三名审片人必须各自完整播放视频；只有三人一致批准后才能转为最终候选。
 - 当前视频只证明软件演示和媒体质量，不证明专家法律结论、用户认可、诊断效度或学习效果。

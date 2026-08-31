@@ -3,14 +3,14 @@
   "stage": "public_video_qa",
   "files": [
     {
-      "path": "15帧视觉接触表.png",
-      "bytes": 803680,
-      "sha256": "9a0dca3b026e6880248294c027cd3de07759bda95c147c5a8d988f63e151ebf1"
+      "path": "18帧视觉接触表.png",
+      "bytes": 1014836,
+      "sha256": "15e8fee8b49732aed8758772ef78d1fe6a5fe0dd866d7febc65c539ec136ed2d"
     },
     {
       "path": "public/视频技术审计与时间轴.pdf",
-      "bytes": 151437,
-      "sha256": "d6a9b2f6761e15e63ceb83355f8ed6fd71b5f8e44f2c46537dbb914f56e4fd2b"
+      "bytes": 154877,
+      "sha256": "3c6c341ab81fcb0e4012d7a24842be26c9309e9787067e6d8e056e875fc8d566"
     }
   ],
   "boundary": "Technical and sampled visual QA; not team approval"

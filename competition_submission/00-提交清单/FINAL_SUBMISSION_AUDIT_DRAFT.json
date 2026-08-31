@@ -1,9 +1,9 @@
 {
   "schema": "xh-202620-submission-readiness-audit-v1",
-  "generated_at": "2026-08-30T07:59:42.123361+00:00",
-  "git_commit": "09cf5086673a908f67965ac77924b44ffed9cb60",
-  "tracked_worktree_clean_before_audit": true,
-  "untracked_user_material_count": 6,
+  "generated_at": "2026-08-31T05:30:54.402281+00:00",
+  "git_commit": "487b99e7a2bd3ec40f09c7674dc435995c41a53d",
+  "tracked_worktree_clean_before_audit": false,
+  "untracked_user_material_count": 11,
   "checks": [
     {
       "id": "demo_docs",
@@ -42,27 +42,26 @@
       "requirement": "100MB以内作品方案PPT",
       "status": "passed",
       "evidence": [
-        "competition_submission\\04-作品方案\\星火智学_作品方案_Guizang_DRAFT.pptx",
-        "competition_submission\\04-作品方案\\guizang\\qa\\pptx-report.json"
+        "competition_submission\\04-作品方案\\星火智学_作品方案_技术主线V2_DRAFT.pptx",
+        "competition_submission\\04-作品方案\\guizang-tech-v2\\qa\\pptx-report.json"
       ],
       "detail": {
-        "schema": "guizang-pptx-full-bleed-image-audit-v2",
-        "bytes": 1501286,
-        "sha256": "9717389ec3c4728508594d6926574a52cdde8887418411afe47a577f5d49564d",
+        "schema": "guizang-tech-v2-pptx-render-audit-v1",
+        "bytes": 1644330,
+        "sha256": "55075f72a2cb21960ba6f26a12e03b269e0987d9b3aea7b77a0551a6336fd9e8",
         "slides": 12,
-        "zip_crc_passed": true,
-        "all_full_bleed": true,
-        "embedded_images_match_qa": true,
+        "rendered_slides": 12,
+        "max_render_mae": 0.094643,
         "browser_qa": {
           "overflow": 0,
           "console_errors": 0,
           "page_errors": 0,
           "failed_requests": 0
         },
-        "powerpoint_com_render_performed": false,
+        "powerpoint_com_render_performed": null,
         "legacy_max_render_mae": null
       },
-      "boundary": "仍名为DRAFT；全幅嵌入图与浏览器QA逐页一致，但本轮未执行新的PowerPoint COM重渲染；真实用户/专家状态待替换"
+      "boundary": "仍名为DRAFT；网页PPT与PowerPoint COM 12页回渲染一致；真实用户/专家状态待替换"
     },
     {
       "id": "video",
@@ -73,29 +72,29 @@
         "competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json"
       ],
       "detail": {
-        "source_git_commit": "2c8a3efa703547498f043d89a50329b928a04dbc",
+        "source_git_commit": "947274a591722c8352d7830dd632cd698aebf88b",
         "real_segment_seconds": 65.24,
-        "draft_seconds": 121.6,
-        "draft_bytes": 9533563,
-        "draft_sha256": "682e463ecc03cf71a8b3ff4f43c4df3cbda1f780832eba99b25cbe1f392fd19e",
+        "draft_seconds": 163.2,
+        "draft_bytes": 12539255,
+        "draft_sha256": "f820b3536b356fe3f39decb83b09132c812f0465ccfb20a7ad60118220ca9bb0",
         "draft_resolution": "1920x1080",
         "video_codec": "h264",
         "audio_codec": "aac",
-        "content_coverage": "7/7",
+        "content_coverage": "12/12",
         "all_required_content_present": true,
         "max_voice_speed_factor": 1.0371,
         "silence_over_1_2_seconds": 0,
         "integrated_loudness_lufs": -23.3,
         "true_peak_dbfs": -3.6,
         "ai_voice_label_visible": true,
-        "subtitle_count": 10,
-        "review_package_sampled_frames": 25,
+        "subtitle_count": 12,
+        "review_package_sampled_frames": 18,
         "required_reviewer_count": 3,
         "real_approval_count": 0,
         "team_review_complete": false,
         "video_approved": false
       },
-      "boundary": "技术QA与25帧接触表已就绪；AI配音DRAFT尚未由内容、技术、隐私/伦理三名审片人完整播放并一致批准"
+      "boundary": "技术QA与18帧接触表已就绪；AI配音DRAFT尚未由内容、技术、隐私/伦理三名审片人完整播放并一致批准"
     },
     {
       "id": "reproducible_code",
