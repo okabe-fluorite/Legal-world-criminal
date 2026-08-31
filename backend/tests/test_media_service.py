@@ -78,8 +78,17 @@ class MediaServiceTests(unittest.TestCase):
             rows = {row["capability_id"]: row for row in payload["capabilities"]}
             self.assertEqual(rows["private_asset_upload"]["implementation_status"], "implemented")
             self.assertEqual(rows["speech_to_text"]["connection_status"], "not_connected")
+            self.assertEqual(rows["speech_to_text"]["endpoint"], "WS /ws/realtime-voice")
+            self.assertIn("realtime_pcm_primary", rows["speech_to_text"]["modes"])
             self.assertEqual(rows["digital_human"]["priority"], "P2")
             self.assertFalse(payload["evidence_boundary"]["learning_event_created"])
+            self.service.mark_verified("speech_to_text", "unknown")
+            verified_rows = {
+                row["capability_id"]: row
+                for row in self.service.capabilities()["capabilities"]
+            }
+            self.assertEqual(verified_rows["speech_to_text"]["connection_status"], "available")
+            self.assertEqual(verified_rows["text_to_speech"]["connection_status"], "not_connected")
         finally:
             for name, value in previous.items():
                 if value is None:

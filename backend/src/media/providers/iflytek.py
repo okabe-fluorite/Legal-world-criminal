@@ -429,9 +429,9 @@ def build_iflytek_provider_catalog(*, verified: bool = False) -> dict[str, Any]:
         "reference_license": "Apache-2.0 reference SDK; adapter is project code",
         "credentials_present": credentials_present,
         "connection_status": "available" if credentials_present and verified else "not_connected",
-        "adapter_status": "implemented_real_call_required",
+        "adapter_status": "implemented_realtime_websocket",
         "clients": {
-            "speech_to_text": ["streaming_iat_v2"],
+            "speech_to_text": ["streaming_iat_v2", "streaming_iat_v2_live_pcm"],
             "text_to_speech": ["online_tts_v2"],
             "auth_transport": ["HMAC-SHA256 WebSocket URL signing"],
         },
@@ -439,6 +439,7 @@ def build_iflytek_provider_catalog(*, verified: bool = False) -> dict[str, Any]:
         "promotion_requirements": [
             "real TTS audio generated",
             "real IAT transcript generated",
+            "real browser microphone PCM produced partial and final results",
             "credential and service authorization verified without logging secrets",
             "AI disclosure retained",
             "ASR output requires rule or teacher gate before LearningEvent",

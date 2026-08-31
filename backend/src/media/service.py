@@ -117,6 +117,14 @@ class MediaService:
         except ProviderUnavailableError:
             return None
 
+    def mark_verified(self, *capability_ids: str) -> None:
+        """Expose a capability only after this process observed a real success."""
+
+        allowed = {"speech_to_text", "text_to_speech"}
+        self._verified_capabilities.update(
+            value for value in capability_ids if value in allowed
+        )
+
     def capabilities(self) -> dict[str, Any]:
         xfyun_credentials = self._iflytek_provider_override is not None or _env_present(
             "XFYUN_APP_ID", "XFYUN_API_KEY", "XFYUN_API_SECRET"
@@ -149,12 +157,13 @@ class MediaService:
                         if "speech_to_text" in self._verified_capabilities
                         else "not_connected"
                     ),
-                    "endpoint": "POST /api/multimodal/transcriptions",
+                    "endpoint": "WS /ws/realtime-voice",
+                    "modes": ["realtime_pcm_primary", "file_compatibility"],
                     "provider_options": [
                         {
                             "provider_id": "xfyun_streaming_asr",
                             "credentials_present": xfyun_credentials,
-                            "adapter_status": "implemented_real_call_required",
+                            "adapter_status": "implemented_realtime_websocket",
                         },
                         {
                             "provider_id": "faster_whisper_local",

@@ -10,6 +10,7 @@
     "smoke:journey": "node scripts/smoke-learning-journey.mjs",
     "smoke:teacher": "node scripts/smoke-teacher-dashboard.mjs",
     "smoke:cognitive": "node scripts/smoke-cognitive-dashboard.mjs",
+    "smoke:voice": "node scripts/smoke-realtime-voice.mjs",
     "smoke:rag": "node scripts/smoke-trusted-rag.mjs",
     "smoke:case": "node scripts/smoke-competition-case.mjs"
   },

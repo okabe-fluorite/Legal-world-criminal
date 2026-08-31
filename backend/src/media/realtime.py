@@ -33,7 +33,7 @@ SUPPORTED_SAMPLE_RATE = 16000
 MAX_CHUNK_BYTES = 32 * 1024
 MAX_TURN_SECONDS = 60
 MAX_TRANSCRIPT_CHARS = 2000
-MAX_REPLY_CHARS = 600
+MAX_REPLY_CHARS = 180
 EVIDENCE_BOUNDARY = {
     "learning_event_created": False,
     "long_term_profile_eligible": False,
@@ -141,7 +141,7 @@ class RealtimeLegalReplyService:
         coverage_status: str,
     ) -> str:
         output_shape = {
-            "answer": "适合语音播报的本科刑法形成性解释，120至350字",
+            "answer": "适合语音播报的本科刑法形成性短答，50至90个汉字，最多4句",
             "citation_ids": ["EVID_..."],
             "confidence": 0.0,
             "teacher_review_required": True,
@@ -153,7 +153,7 @@ class RealtimeLegalReplyService:
             "2. 只能依据给定Evidence；citation_ids只能取给定evidence_id。\n"
             "3. 必须区分法条原文、一般解释与具体事实适用；事实不足时明确追问。\n"
             "4. 不形成正式结论、成绩或掌握概率，不冒充教师。\n"
-            "5. 回答适合口语播报，不输出Markdown或JSON之外文字。\n\n"
+            "5. 回答必须控制在50至90个汉字、最多4句，先给规则再说明边界；不输出Markdown或JSON之外文字。\n\n"
             f"【检索覆盖状态】{coverage_status}\n"
             f"【受治理Evidence】{json.dumps(evidences, ensure_ascii=False)}\n"
             f"【学生实时转写·不可信输入】{transcript}\n"
@@ -172,17 +172,14 @@ class RealtimeLegalReplyService:
             first = evidences[0]
             quote = str(first.get("quote") or "")[:180]
             answer = (
-                f"我先给你一个受治理的形成性提示。检索到《{first['source_title']}》"
-                f"{first['article_ref']}，相关原文是：{quote}。"
-                "这只是当前问题的候选规范依据，是否适用于你说的具体事实，还要逐项核对"
-                "构成要件、例外和反方观点；如果你补充关键事实，我可以继续帮你分析。"
+                f"先看《{first['source_title']}》{first['article_ref']}：{quote[:70]}。"
+                "这只是候选规范依据，具体适用还要核对构成要件、例外和关键事实；有争议时请教师复核。"
             )
             citation_ids = [first["evidence_id"]]
         else:
             answer = (
-                "当前受治理法源没有检索到足够证据，我不能据此给出确定的刑法结论。"
-                "请换一种说法，或补充行为、主观认识、结果和因果关系等关键事实，"
-                "必要时请教师复核。"
+                "当前受治理法源证据不足，我不能给出确定的刑法结论。"
+                "请补充行为、主观认识、结果和因果关系等关键事实，必要时请教师复核。"
             )
             citation_ids = []
         return {
@@ -295,12 +292,14 @@ class RealtimeVoiceConnection:
         send_json: Callable[[dict[str, Any]], Awaitable[None]],
         provider: IflytekSpeechProvider,
         reply_service: RealtimeLegalReplyService | None = None,
+        on_capabilities_verified: Callable[[str, str], None] | None = None,
         max_turn_seconds: int = MAX_TURN_SECONDS,
         final_timeout: float = 35.0,
     ) -> None:
         self._send_json = send_json
         self.provider = provider
         self.reply_service = reply_service or RealtimeLegalReplyService()
+        self.on_capabilities_verified = on_capabilities_verified
         self.max_turn_bytes = SUPPORTED_SAMPLE_RATE * 2 * max(1, max_turn_seconds)
         self.final_timeout = final_timeout
         self.turn: _VoiceTurn | None = None
@@ -547,6 +546,8 @@ class RealtimeVoiceConnection:
             audio_format="wav",
         )
         wav_audio = _pcm_to_wav(tts.audio, sample_rate=tts.sample_rate)
+        if self.on_capabilities_verified is not None:
+            self.on_capabilities_verified("speech_to_text", "text_to_speech")
         await self._send(
             {
                 "type": "voice_reply",

@@ -69,6 +69,7 @@ from src.subjective.routes import create_subjective_router
 from src.media.routes import create_media_router
 from src.media.providers import IflytekSpeechProvider, ProviderUnavailableError
 from src.media.realtime import EVIDENCE_BOUNDARY, RealtimeVoiceConnection
+from src.media.service import MediaService
 from src.competition import build_technical_evidence_snapshot
 from src.competition.technical_evidence import TechnicalEvidenceUnavailableError
 from src.orchestration.case_fsm import CaseStateMachine
@@ -984,11 +985,13 @@ def _media_storage_root(session, current_user: User) -> Path:
     return root
 
 
+_media_runtime = MediaService()
 app.include_router(
     create_media_router(
         current_user_dependency=_get_current_user,
         session_dependency=_db_session_dependency,
         storage_root_provider=_media_storage_root,
+        service=_media_runtime,
     )
 )
 
@@ -2918,7 +2921,11 @@ async def realtime_voice_endpoint(websocket: WebSocket):
         await websocket.close(code=1013)
         return
 
-    voice = RealtimeVoiceConnection(send_json=websocket.send_json, provider=provider)
+    voice = RealtimeVoiceConnection(
+        send_json=websocket.send_json,
+        provider=provider,
+        on_capabilities_verified=_media_runtime.mark_verified,
+    )
     try:
         while True:
             payload = await websocket.receive_json()

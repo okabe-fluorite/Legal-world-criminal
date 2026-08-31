@@ -138,7 +138,7 @@ try {
   await page.screenshot({ path: path.join(artifactDir, "05-model-routes.png"), fullPage: false });
 
   await page.getByRole("button", { name: "多模态 / 数字人" }).click();
-  await page.getByText("多模态与数字人能力总线", { exact: true }).waitFor();
+  await page.getByText("实时语音多模态与数字人边界", { exact: true }).waitFor();
   const mediaCapabilities = await page.locator(".media-capability-grid article").count();
   if (mediaCapabilities !== 5) {
     throw new Error(`Expected 5 media capabilities, received ${mediaCapabilities}`);

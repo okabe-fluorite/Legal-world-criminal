@@ -38,7 +38,7 @@ import type {
 
 const API_BASE = "/api";
 
-function getToken(): string | null {
+export function getAccessToken(): string | null {
   return localStorage.getItem("lw.token");
 }
 
@@ -55,7 +55,7 @@ async function request<T>(
   if (!headers.has("Content-Type") && init.body && !(init.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
-  const token = getToken();
+  const token = getAccessToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
   const res = await fetch(`${API_BASE}${path}`, { ...init, headers });
@@ -75,7 +75,7 @@ async function request<T>(
 
 async function requestBlob(path: string): Promise<Blob> {
   const headers = new Headers();
-  const token = getToken();
+  const token = getAccessToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
   const res = await fetch(`${API_BASE}${path}`, { headers });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);

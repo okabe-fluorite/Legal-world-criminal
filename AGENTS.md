@@ -237,6 +237,8 @@ teaching/
 - `AITutor.vue`实现原创轻量2D助教四态（闭嘴/半开/张嘴/眨眼）、CSS呼吸/微摆/随机眨眼和浏览器朗读嘴形；只在分层解惑、Evidence警告、路径解释出现，固定“AI助教·形成性反馈”。
 - 四张最终WebP均为768×960真透明`yuva420p`，资产manifest保存SHA；它不是Live2D Cubism，也不是已接通的讯飞虚拟人。
 - `media/providers/iflytek.py`使用项目`websockets`直接实现讯飞IAT/TTS v2和HMAC签名；SDK未vendored。真实验收音频207,892字节、IAT转写相似度1.0，公开审计不含密钥。
+- `WS /ws/realtime-voice`是当前多模态主链：浏览器AudioWorklet持续采集麦克风，重采样为16kHz/16bit/单声道PCM并按40ms分片；后端转发讯飞IAT partial/final，final进入受治理Evidence回复，再由讯飞TTS回传WAV自动播放，支持同页多轮。
+- 文件上传和TTS→IAT回送只保留为兼容/Provider审计工具，不作为实时语音完成证据；实时ASR/AI/TTS仍固定LearningEvent 0、正式评分0、自动画像更新0，数字人继续后置。
 
 ### 比赛可信RAG与三个典型问题
 
