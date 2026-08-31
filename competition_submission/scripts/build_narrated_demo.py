@@ -29,7 +29,7 @@ ITEMS = [
         "id": "02-technical-evidence",
         "kind": "video",
         "source": "technical-evidence.webm",
-        "duration": 16.0,
+        "duration": 19.2,
         "text": "先看机器证据总账。四千一百七十三份候选材料，经治理形成八百一十三条正式法源；十一项推理门禁、百题候选评测和智能体消融都由审计文件哈希绑定。自动门禁不等于专家准确率，百题仍待教师审核。",
         "caption": "数据治理→Evidence推理→模型无关评测→Agent消融\n自动Gate≠专家准确率；100题仍为not_gold",
     },
@@ -94,6 +94,7 @@ ITEMS = [
         "kind": "video",
         "source": "05-case3-card-and-evidence.webm",
         "duration": 15.0,
+        "mask_synthetic_account_header": True,
         "text": "冻结演示库的张那木拉案真实走完委托、侦查和审查起诉。二十九次固定脚本回答后作出不起诉分支，三名智能体退场、零运行错误，并形成三条案件学习事件。",
         "caption": "case3真实E2E：461.547秒、29次固定回答\n3事件、3/3 Agent退场、0 runtime issue",
     },
@@ -365,7 +366,13 @@ def main() -> int:
             video_map = "0:v:0"
         else:
             visual_args = ["-i", str(visual)]
-            video_filter = f"[0:v]tpad=stop_mode=clone:stop_duration={duration:.3f}[v];"
+            operations = []
+            if item.get("mask_synthetic_account_header"):
+                operations.append(
+                    "drawbox=x=1335:y=68:w=245:h=38:color=0x002FA7@1:t=fill"
+                )
+            operations.append(f"tpad=stop_mode=clone:stop_duration={duration:.3f}")
+            video_filter = f"[0:v]{','.join(operations)}[v];"
             video_map = "[v]"
         run(
             [
@@ -430,8 +437,8 @@ def main() -> int:
         "[0:v]scale=1920:1080[v0];"
         "[v0][1:v]overlay=W-w-24:H-h-24[v1];"
         "[v1]subtitles=narration.srt:force_style='FontName=Microsoft YaHei,"
-        "FontSize=15,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,"
-        "BorderStyle=3,BackColour=&H90000000,Alignment=2,MarginV=42'[v]"
+        "FontSize=13,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,"
+        "BorderStyle=3,BackColour=&H90000000,Alignment=2,MarginV=24'[v]"
     )
     run(
         [
@@ -511,6 +518,14 @@ def main() -> int:
                 "expected_visible_checks_pass"
             ),
         },
+        "privacy_redactions": [
+            {
+                "item": "09-case",
+                "target": "synthetic account email and logout control in app header",
+                "method": "deterministic solid mask after source capture",
+                "changes_legal_or_learning_evidence": False,
+            }
+        ],
         "case3_audit_snapshots": {
             "present": True,
             "inv_stage": case_snapshot_audit["inv"]["stage"],
