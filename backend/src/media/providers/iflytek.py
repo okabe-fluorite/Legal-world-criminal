@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import asyncio
 import hashlib
 import hmac
 import json
@@ -14,6 +15,7 @@ from typing import Any
 from urllib.parse import urlencode, urlsplit
 
 from websockets.exceptions import WebSocketException
+from websockets.asyncio.client import connect as async_connect
 from websockets.sync.client import connect
 
 from .base import ProviderUnavailableError
@@ -115,6 +117,9 @@ class IflytekSpeechProvider:
         voice: str = "xiaoyan",
         audio_format: str = "wav",
     ) -> IflytekAudioResult:
+        encoded_text = text.encode("utf-8")
+        if not encoded_text or len(encoded_text) >= 8000:
+            raise ProviderUnavailableError("iflytek_tts_text_length_invalid")
         normalized_format = audio_format.strip().lower()
         if normalized_format not in {"wav", "mp3"}:
             raise ProviderUnavailableError("iflytek_tts_format_unsupported")
@@ -132,7 +137,7 @@ class IflytekSpeechProvider:
             },
             "data": {
                 "status": 2,
-                "text": base64.b64encode(text.encode("utf-8")).decode("ascii"),
+                "text": base64.b64encode(encoded_text).decode("ascii"),
             },
         }
         chunks = bytearray()
@@ -207,7 +212,8 @@ class IflytekSpeechProvider:
                             "language": language,
                             "domain": "iat",
                             "accent": "mandarin",
-                            "vad_eos": 5000,
+                            "eos": 3000,
+                            "dwa": "wpgs",
                             "ptt": 1,
                         }
                     websocket.send(json.dumps(payload, ensure_ascii=False))
@@ -227,10 +233,19 @@ class IflytekSpeechProvider:
                             for word in result.get("ws") or []
                         )
                         sn = int(result.get("sn") or len(segments))
+                        replace_range = result.get("rg")
+                        if result.get("pgs") == "rpl" and isinstance(replace_range, list) and len(replace_range) == 2:
+                            try:
+                                start, end = int(replace_range[0]), int(replace_range[1])
+                            except (TypeError, ValueError):
+                                start, end = 1, 0
+                            for replaced_sn in range(start, end + 1):
+                                segments.pop(replaced_sn, None)
                         segments[sn] = {
                             "sn": sn,
                             "text": text,
                             "final": bool(result.get("ls")),
+                            "pgs": str(result.get("pgs") or ""),
                         }
                     if int(data.get("status", -1)) == 2:
                         break
@@ -247,6 +262,164 @@ class IflytekSpeechProvider:
             provider_sid=provider_sid,
             segments=ordered,
         )
+
+    def streaming_iat_session(
+        self,
+        *,
+        language: str = "zh_cn",
+        sample_rate: int = 16000,
+    ) -> "IflytekStreamingIATSession":
+        return IflytekStreamingIATSession(
+            app_id=self.app_id,
+            api_key=self.api_key,
+            api_secret=self.api_secret,
+            language=language,
+            sample_rate=sample_rate,
+            url=self.iat_url,
+            open_timeout=self.open_timeout,
+            receive_timeout=self.receive_timeout,
+        )
+
+
+class IflytekStreamingIATSession:
+    """One live microphone turn over iFlytek streaming IAT v2."""
+
+    def __init__(
+        self,
+        *,
+        app_id: str,
+        api_key: str,
+        api_secret: str,
+        language: str,
+        sample_rate: int,
+        url: str,
+        open_timeout: float,
+        receive_timeout: float,
+    ) -> None:
+        if sample_rate not in {8000, 16000}:
+            raise ProviderUnavailableError("iflytek_iat_sample_rate_unsupported")
+        self.app_id = app_id
+        self.api_key = api_key
+        self.api_secret = api_secret
+        self.language = language
+        self.sample_rate = sample_rate
+        self.url = url
+        self.open_timeout = open_timeout
+        self.receive_timeout = receive_timeout
+        self.websocket: Any | None = None
+        self.started = False
+        self.finished = False
+        self.audio_bytes = 0
+        self.segments: dict[int, dict[str, Any]] = {}
+        self.provider_sid = ""
+
+    async def start(self) -> None:
+        if self.websocket is not None:
+            return
+        try:
+            self.websocket = await async_connect(
+                _signed_url(self.url, self.api_key, self.api_secret),
+                open_timeout=self.open_timeout,
+                close_timeout=5,
+            )
+        except (WebSocketException, TimeoutError, OSError) as exc:
+            raise _provider_error("iat_stream", exc) from None
+
+    async def send_audio(self, pcm: bytes) -> None:
+        if self.finished or self.websocket is None:
+            raise ProviderUnavailableError("iflytek_iat_stream_not_active")
+        if not pcm:
+            return
+        payload: dict[str, Any] = {
+            "data": {
+                "status": 0 if not self.started else 1,
+                "format": f"audio/L16;rate={self.sample_rate}",
+                "encoding": "raw",
+                "audio": base64.b64encode(pcm).decode("ascii"),
+            }
+        }
+        if not self.started:
+            payload["common"] = {"app_id": self.app_id}
+            payload["business"] = {
+                "language": self.language,
+                "domain": "iat",
+                "accent": "mandarin",
+                "eos": 3000,
+                "dwa": "wpgs",
+                "ptt": 1,
+            }
+        try:
+            await self.websocket.send(json.dumps(payload, ensure_ascii=False))
+        except (WebSocketException, OSError) as exc:
+            raise _provider_error("iat_stream_send", exc) from None
+        self.started = True
+        self.audio_bytes += len(pcm)
+
+    async def finish(self) -> None:
+        if self.websocket is None or self.finished:
+            return
+        if not self.started:
+            raise ProviderUnavailableError("iflytek_iat_stream_empty_audio")
+        try:
+            await self.websocket.send(json.dumps({"data": {"status": 2}}))
+        except (WebSocketException, OSError) as exc:
+            raise _provider_error("iat_stream_finish", exc) from None
+        self.finished = True
+
+    async def receive(self) -> dict[str, Any]:
+        if self.websocket is None:
+            raise ProviderUnavailableError("iflytek_iat_stream_not_active")
+        try:
+            raw = await asyncio.wait_for(
+                self.websocket.recv(decode=True), timeout=self.receive_timeout
+            )
+            message = json.loads(raw)
+        except (WebSocketException, TimeoutError, OSError, json.JSONDecodeError) as exc:
+            raise _provider_error("iat_stream_receive", exc) from None
+        code = int(message.get("code") or 0)
+        if code:
+            raise ProviderUnavailableError(f"iflytek_iat_stream_api_error:{code}")
+        self.provider_sid = str(message.get("sid") or self.provider_sid)
+        data = dict(message.get("data") or {})
+        result = dict(data.get("result") or {})
+        if result:
+            text = "".join(
+                str((word.get("cw") or [{}])[0].get("w") or "")
+                for word in result.get("ws") or []
+            )
+            sn = int(result.get("sn") or len(self.segments))
+            replace_range = result.get("rg")
+            if result.get("pgs") == "rpl" and isinstance(replace_range, list) and len(replace_range) == 2:
+                try:
+                    start, end = int(replace_range[0]), int(replace_range[1])
+                except (TypeError, ValueError):
+                    start, end = 1, 0
+                for replaced_sn in range(start, end + 1):
+                    self.segments.pop(replaced_sn, None)
+            self.segments[sn] = {
+                "sn": sn,
+                "text": text,
+                "final": bool(result.get("ls")),
+                "pgs": str(result.get("pgs") or ""),
+            }
+        transcript = "".join(
+            str(self.segments[key]["text"]) for key in sorted(self.segments)
+        ).strip()
+        return {
+            "transcript": transcript,
+            "final": int(data.get("status", -1)) == 2,
+            "provider_sid_present": bool(self.provider_sid),
+            "segment_count": len(self.segments),
+            "audio_bytes": self.audio_bytes,
+        }
+
+    async def close(self) -> None:
+        websocket, self.websocket = self.websocket, None
+        if websocket is not None:
+            try:
+                await websocket.close(code=1000)
+            except (WebSocketException, OSError):
+                pass
 
 
 def build_iflytek_provider_catalog(*, verified: bool = False) -> dict[str, Any]:
@@ -276,6 +449,7 @@ def build_iflytek_provider_catalog(*, verified: bool = False) -> dict[str, Any]:
 __all__ = [
     "IflytekAudioResult",
     "IflytekSpeechProvider",
+    "IflytekStreamingIATSession",
     "IflytekTranscriptionResult",
     "build_iflytek_provider_catalog",
 ]

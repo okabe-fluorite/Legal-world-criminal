@@ -67,6 +67,8 @@ from src.teacher.routes import create_teacher_router
 from src.learning_support.routes import create_learning_support_router
 from src.subjective.routes import create_subjective_router
 from src.media.routes import create_media_router
+from src.media.providers import IflytekSpeechProvider, ProviderUnavailableError
+from src.media.realtime import EVIDENCE_BOUNDARY, RealtimeVoiceConnection
 from src.competition import build_technical_evidence_snapshot
 from src.competition.technical_evidence import TechnicalEvidenceUnavailableError
 from src.orchestration.case_fsm import CaseStateMachine
@@ -2883,6 +2885,50 @@ async def _start_or_resume_simulation() -> dict:
 
 
 # ── WebSocket 端点 ──
+
+@app.websocket("/ws/realtime-voice")
+async def realtime_voice_endpoint(websocket: WebSocket):
+    """Authenticated browser microphone → iFlytek IAT → legal reply → TTS."""
+
+    token, accepted_subprotocol = _extract_websocket_token(websocket)
+    if not token:
+        await websocket.close(code=4401)
+        return
+    try:
+        with get_db_session(_get_session_factory()) as session:
+            _get_user_from_access_token(token, session)
+    except (AuthError, UserNotFoundError, HTTPException):
+        await websocket.close(code=4401)
+        return
+
+    await websocket.accept(subprotocol=accepted_subprotocol)
+    try:
+        provider = IflytekSpeechProvider.from_environment()
+    except ProviderUnavailableError:
+        await websocket.send_json(
+            {
+                "type": "voice_error",
+                "turn_id": "",
+                "code": "iflytek_credentials_missing",
+                "message": "讯飞实时语音服务尚未配置。",
+                "recoverable": False,
+                "evidence_eligibility": dict(EVIDENCE_BOUNDARY),
+            }
+        )
+        await websocket.close(code=1013)
+        return
+
+    voice = RealtimeVoiceConnection(send_json=websocket.send_json, provider=provider)
+    try:
+        while True:
+            payload = await websocket.receive_json()
+            await voice.handle_message(payload)
+    except WebSocketDisconnect:
+        pass
+    except Exception as exc:
+        logger.warning("Realtime voice WebSocket ended: %s", type(exc).__name__)
+    finally:
+        await voice.shutdown()
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):

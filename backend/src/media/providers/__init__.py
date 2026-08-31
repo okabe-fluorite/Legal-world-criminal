@@ -4,6 +4,7 @@ from .base import MediaProvider, MediaProviderResult, ProviderUnavailableError
 from .iflytek import (
     IflytekAudioResult,
     IflytekSpeechProvider,
+    IflytekStreamingIATSession,
     IflytekTranscriptionResult,
     build_iflytek_provider_catalog,
 )
@@ -14,6 +15,7 @@ __all__ = [
     "ProviderUnavailableError",
     "IflytekAudioResult",
     "IflytekSpeechProvider",
+    "IflytekStreamingIATSession",
     "IflytekTranscriptionResult",
     "build_iflytek_provider_catalog",
 ]
