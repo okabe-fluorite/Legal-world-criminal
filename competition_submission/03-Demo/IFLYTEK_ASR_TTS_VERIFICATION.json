@@ -1,0 +1,70 @@
+{
+  "schema_version": "iflytek-asr-tts-real-verification-v1",
+  "generated_at": "2026-08-31T04:13:58.086557+00:00",
+  "source_git_commit": "3f0915132bad541b24cb23815066198f3e625e0e",
+  "provider": "iFlytek WebSocket API",
+  "real_network_calls": {
+    "tts": 1,
+    "iat": 1
+  },
+  "credentials": {
+    "names": [
+      "XFYUN_APP_ID",
+      "XFYUN_API_KEY",
+      "XFYUN_API_SECRET"
+    ],
+    "configured": true,
+    "values_published": false
+  },
+  "tts": {
+    "status": "succeeded",
+    "request_text": "罪刑法定原则要求法无明文规定不为罪，法无明文规定不处罚。",
+    "voice": "xiaoyan",
+    "audio_file": "competition_submission/03-Demo/iflytek-speech/iflytek-tts-verification.wav",
+    "audio_bytes": 207892,
+    "audio_sha256": "ad341c972c4945e8d9eda300a44493d6ddd12ed85f005cba750c03963da1e80c",
+    "provider_session_present": true,
+    "wav": {
+      "channels": 1,
+      "sample_width_bytes": 2,
+      "sample_rate_hz": 16000,
+      "frames": 103924,
+      "duration_seconds": 6.495
+    },
+    "ai_generated_disclosure": true
+  },
+  "asr": {
+    "status": "succeeded_needs_review",
+    "transcript": "罪刑法定原则要求法无明文规定不为罪法无明文规定不处罚。",
+    "transcript_sha256": "cc5ff0e556208c5fba655e9205d1285b0c391b7b2171ef599366d65a2c72dc87",
+    "provider_session_present": true,
+    "segment_count": 1,
+    "normalized_similarity_to_tts_text": 1.0,
+    "required_term_checks": {
+      "罪刑法定": true,
+      "明文规定": true,
+      "不为罪": true,
+      "不处罚": true
+    },
+    "human_review_required": true
+  },
+  "gates": {
+    "real_tts_audio_nonempty": true,
+    "wav_mono_16bit_16khz": true,
+    "real_asr_transcript_nonempty": true,
+    "legal_terms_all_present": true,
+    "normalized_similarity_at_least_0_80": true,
+    "provider_sessions_returned": true,
+    "credential_values_absent": true,
+    "learning_event_created": false,
+    "formal_grading_eligible": false,
+    "digital_human_connected": false
+  },
+  "evidence_boundary": [
+    "This proves one real iFlytek TTS call and one real iFlytek IAT call.",
+    "The transcript is synthetic verification content, not classroom data.",
+    "ASR output requires rule or teacher review before any learning evidence.",
+    "Digital human remains postponed and not_connected."
+  ],
+  "overall_status": "passed"
+}

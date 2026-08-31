@@ -230,13 +230,13 @@ teaching/
 
 - 认知驾驶舱新增真实KnowledgeCard先修DAG（10节点/10边）和六步法律论证脚手架；论证图是交互模板，不是学生既有证据
 - `backend/src/media/`提供私有音频/图片上传、ASR、视觉分析、TTS、Avatar和通用任务查询；资产按JWT用户写入sandbox并计算SHA-256
-- 媒体任务状态统一为`not_connected/queued/running/succeeded/failed/needs_review`；当前无已验证云Provider，ASR/服务端TTS/Avatar必须显示`not_connected`
+- 媒体任务状态统一为`not_connected/queued/running/succeeded/failed/needs_review`；讯飞IAT/TTS已真实接通，只有当前进程成功调用后ASR/TTS才显示`available`，数字人仍`not_connected`
 - 浏览器`SpeechSynthesis`是真实本地朗读fallback，不生成下载资产、不冒充讯飞调用
-- ASR/OCR/数字人输出默认不创建LearningEvent、不评分、不更新画像；自定义数字人需要肖像同意，所有合成输出保留AI标识
-- `smoke-cognitive-dashboard.mjs`现验证10知识节点、10先修边、6论证节点、5媒体能力、私有上传和TTS/ASR/Avatar真实状态，且0私有/网络错误
+- ASR/OCR/数字人输出默认不创建LearningEvent、不评分、不更新画像；ASR固定`needs_review`，自定义数字人需要肖像同意，所有合成输出保留AI标识
+- `smoke-cognitive-dashboard.mjs`现验证10知识节点、10先修边、6论证节点、5媒体能力、真实讯飞TTS→IAT、上传音频IAT和Avatar后置状态，且0私有/网络错误
 - `AITutor.vue`实现原创轻量2D助教四态（闭嘴/半开/张嘴/眨眼）、CSS呼吸/微摆/随机眨眼和浏览器朗读嘴形；只在分层解惑、Evidence警告、路径解释出现，固定“AI助教·形成性反馈”。
 - 四张最终WebP均为768×960真透明`yuva420p`，资产manifest保存SHA；它不是Live2D Cubism，也不是已接通的讯飞虚拟人。
-- `media/providers/iflytek.py`记录Apache-2.0参考SDK的IAT/LFASR/RTASR/TTS/OCR/HMAC客户端边界；凭据存在仍为not_connected，SDK未vendored、Adapter未调用云端。
+- `media/providers/iflytek.py`使用项目`websockets`直接实现讯飞IAT/TTS v2和HMAC签名；SDK未vendored。真实验收音频207,892字节、IAT转写相似度1.0，公开审计不含密钥。
 
 ### 比赛可信RAG与三个典型问题
 
@@ -342,7 +342,8 @@ teaching/
 - [ ] 对抗质询增强：检察官主动指出辩护漏洞并追问（方案：检察官场景配置加对抗指令 + 庭审主持 prompt 倾向性路由 + 追问上限防刷屏）
 - [ ] CR 判决书全文输出（现为摘要句）
 - [ ] Dify API 对接（等接口修通，可插拔设计已挂）
-- [ ] 接入并实测讯飞ASR/TTS Provider；数字人保持P2，需授权后再接；评分模型 LoRA 对比实验仍待正式模型
+- [x] 接入并实测讯飞ASR/TTS Provider：真实WAV、真实转写、产品API和浏览器均通过；数字人保持P2，需授权后再接
+- [ ] 评分模型 LoRA 对比实验仍待正式模型
 
 ---
 

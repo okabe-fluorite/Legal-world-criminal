@@ -64,7 +64,7 @@
 
 ### 6. 多模态与数字人
 
-媒体页展示私有资产、ASR、视觉、TTS和数字人五项能力，区分`implemented`、`interface_reserved`和`not_connected`。浏览器本地朗读是真实fallback；音频上传会进入当前用户私有sandbox并返回SHA-256。ASR、服务端TTS和数字人没有已验证Provider时只记录任务，不生成伪输出，也不创建LearningEvent。
+媒体页展示私有资产、ASR、视觉、TTS和数字人五项能力。讯飞TTS可真实生成并播放当前用户私有WAV，IAT可转写上传音频或刚生成的WAV；成功后当前进程的ASR/TTS状态为`available`。ASR固定`needs_review`，媒体不会创建LearningEvent。视觉和数字人继续`not_connected`，浏览器朗读仅作fallback。
 
 接口、讯飞/Azure/LiveKit选型、AI标识和肖像同意门禁见[`MULTIMODAL_AVATAR_ARCHITECTURE.md`](MULTIMODAL_AVATAR_ARCHITECTURE.md)。
 
@@ -77,7 +77,7 @@ cd frontend
 npm run smoke:cognitive
 ```
 
-脚本真实注册学生，完成1次选择题与1次困惑，再依次打开六个视图。比赛主视口1500×980结果：10个知识点、2条事件、3个ORCDF版本、48个真实热力格、7个路径节点、10个知识图节点/10条先修边、6个论证模板节点、4个模型任务路由、5个媒体能力和3项私有上传证明；私有字段、console/page/HTTP/request错误均为0。
+脚本真实注册学生，完成1次选择题与1次困惑，再依次打开六个视图。比赛主视口1500×980结果：10个知识点、2条事件、3个ORCDF版本、48个真实热力格、7个路径节点、10个知识图节点/10条先修边、6个论证模板节点、4个模型任务路由和5个媒体能力；真实讯飞TTS→IAT往返、上传音频IAT和数字人`not_connected`边界均通过，私有字段、console/page/HTTP/request错误0。
 
 六张截图写入Git忽略的`.codex-artifacts/cognitive-dashboard/`，可直接作为PPT和录屏构图参考。
 
@@ -87,7 +87,7 @@ npm run smoke:cognitive
 - **视频第3段（45—70秒）**：七步路径和“进入当前推荐任务”；
 - **视频第3段可选插入（约5秒）**：10节点先修DAG和论证模板；
 - **视频第7段（155—170秒）**：Model Adapter与微调`not_connected`边界；
-- **视频第7段可选插入（约4秒）**：多模态/数字人接口与`not_connected`诚实状态；
+- **视频第7段可选插入（约6秒）**：讯飞ASR/TTS真实音频/转写与数字人`not_connected`边界；
 - **PPT第5/6/7/10页**：在线诊断、ORCDF、路径/知识图、模型与媒体能力路由；
 - **评分项**：技术实现20、技术先进10、创意实用20、完成度10。
 

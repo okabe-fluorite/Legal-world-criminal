@@ -73,6 +73,15 @@ async function request<T>(
   return (await res.json()) as T;
 }
 
+async function requestBlob(path: string): Promise<Blob> {
+  const headers = new Headers();
+  const token = getToken();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  const res = await fetch(`${API_BASE}${path}`, { headers });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return res.blob();
+}
+
 export const api = {
   async status(): Promise<StatusResponse> {
     return request<StatusResponse>("/status");
@@ -236,6 +245,10 @@ export const api = {
     body.set("purpose", purpose);
     body.set("file", file);
     return request<MediaAsset>("/multimodal/assets", { method: "POST", body });
+  },
+
+  async downloadMediaAsset(assetId: string): Promise<Blob> {
+    return requestBlob(`/multimodal/assets/${encodeURIComponent(assetId)}/content`);
   },
 
   async startTranscription(payload: {

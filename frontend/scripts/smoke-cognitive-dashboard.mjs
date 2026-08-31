@@ -7,6 +7,15 @@ const baseUrl = process.env.COGNITIVE_BASE_URL || "http://127.0.0.1:5173";
 const artifactDir = path.resolve(
   process.env.COGNITIVE_ARTIFACT_DIR || "../.codex-artifacts/cognitive-dashboard",
 );
+const repoRoot = path.resolve("..");
+const publicArtifactDir = path.relative(repoRoot, artifactDir).split(path.sep).join("/");
+if (!publicArtifactDir || publicArtifactDir.startsWith("../")) {
+  throw new Error("Cognitive artifacts must stay inside the repository");
+}
+const verificationAudio = path.resolve(
+  process.env.COGNITIVE_IFLYTEK_AUDIO
+    || "../competition_submission/03-Demo/iflytek-speech/iflytek-tts-verification.wav",
+);
 const viewport = {
   width: Number(process.env.COGNITIVE_VIEWPORT_WIDTH || 1500),
   height: Number(process.env.COGNITIVE_VIEWPORT_HEIGHT || 980),
@@ -35,6 +44,7 @@ page.on("response", (response) => {
   if (response.status() >= 400) httpErrors.push({ status: response.status(), url: response.url() });
 });
 page.on("requestfailed", (request) => {
+  if (request.url().startsWith("blob:")) return;
   requestFailures.push({ url: request.url(), error: request.failure()?.errorText || "unknown" });
 });
 
@@ -133,23 +143,35 @@ try {
   if (mediaCapabilities !== 5) {
     throw new Error(`Expected 5 media capabilities, received ${mediaCapabilities}`);
   }
-  await page.getByRole("button", { name: "检查服务端TTS" }).click();
-  await page.getByText(/服务端TTS接口已真实调用/).waitFor();
-  await page.locator(".media-upload input").setInputFiles({
-    name: "criminal-law-quick-answer.wav",
-    mimeType: "audio/wav",
-    buffer: Buffer.concat([Buffer.from("RIFF"), Buffer.alloc(128)]),
-  });
-  await page.getByText(/上传已完成且私有保存/).waitFor();
+  await page.getByRole("button", { name: "生成讯飞WAV" }).click();
+  await page.getByText(/讯飞TTS真实生成/).waitFor({ timeout: 60000 });
+  await page.locator("audio[aria-label='讯飞AI合成音频']").waitFor();
+  await page.getByRole("button", { name: "将WAV送入ASR" }).click();
+  await page.getByText(/讯飞ASR已返回真实转写/).waitFor({ timeout: 60000 });
+  const roundTripStatus = await page.locator(".media-result").innerText();
+  if (
+    !roundTripStatus.includes("iflytek_websocket")
+    || !roundTripStatus.includes("needs_review")
+    || !roundTripStatus.includes("罪刑法定")
+  ) {
+    throw new Error(`iFlytek UI round trip incomplete: ${roundTripStatus}`);
+  }
+  await page.screenshot({ path: path.join(artifactDir, "06-iflytek-tts-asr.png"), fullPage: false });
+  await page.locator(".media-upload input").setInputFiles(verificationAudio);
+  await page.getByText(/讯飞ASR已生成真实转写/).waitFor({ timeout: 60000 });
   const mediaProofRows = await page.locator(".media-proof div").count();
   if (mediaProofRows !== 3) throw new Error(`Expected 3 media proof rows, received ${mediaProofRows}`);
+  const availableCapabilities = await page.locator(".media-capability-grid article.ready").count();
+  if (availableCapabilities !== 3) {
+    throw new Error(`Expected upload/ASR/TTS available, received ${availableCapabilities}`);
+  }
   await page.getByRole("button", { name: "调用预留接口验证状态" }).click();
   await page.getByText(/数字人异步契约已真实调用/).waitFor();
   const mediaStatus = await page.locator(".media-result").innerText();
   if (!mediaStatus.includes("not_connected")) {
     throw new Error(`Media provider boundary missing: ${mediaStatus}`);
   }
-  await page.screenshot({ path: path.join(artifactDir, "06-media-capabilities.png"), fullPage: false });
+  await page.screenshot({ path: path.join(artifactDir, "07-media-avatar-boundary.png"), fullPage: false });
 
   const privateLeaks = await page.locator(".cog-board").evaluate((body) => {
     const text = body.textContent || "";
@@ -171,15 +193,22 @@ try {
     model_routes: routeCards,
     model_status: modelText,
     media_capabilities: mediaCapabilities,
+    media_available_capabilities: availableCapabilities,
     media_proof_rows: mediaProofRows,
+    iflytek_round_trip: roundTripStatus,
     media_status: mediaStatus,
     private_leaks: privateLeaks,
     console_errors: consoleErrors,
     page_errors: pageErrors,
     http_errors: httpErrors,
     request_failures: requestFailures,
-    artifact_dir: artifactDir,
+    artifact_dir: publicArtifactDir,
   };
+  fs.writeFileSync(
+    path.join(artifactDir, "report.json"),
+    `${JSON.stringify({ generated_at: new Date().toISOString(), ...result }, null, 2)}\n`,
+    "utf8",
+  );
   console.log(JSON.stringify(result));
   if (
     privateLeaks.length

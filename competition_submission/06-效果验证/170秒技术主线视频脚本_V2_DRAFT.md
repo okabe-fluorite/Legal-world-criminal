@@ -55,6 +55,8 @@
 - 旁白：第一题只改变下一任务，不直接宣称掌握。2D导师只出现在解惑、Evidence警告和路径解释，不冒充教师。
 - ORCDF只闪现一条受控结论：同47题V1−V0 +0.02994，95%CI不跨0；民法/宪法shadow、mastery未校准。
 
+可插入6秒多模态实证：点击“多模态/数字人”→“生成讯飞WAV”→“将WAV送入ASR”，展示可播放音频、`iflytek_websocket`、`needs_review`和真实转写；同时同屏保留数字人`not_connected`、LearningEvent 0。
+
 ## 150—163秒：Model Adapter
 
 - 画面：Model Adapter路由页。

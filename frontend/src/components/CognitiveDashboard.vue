@@ -33,7 +33,9 @@ const mediaBusy = ref(false);
 const mediaMessage = ref("");
 const browserSpeechSupported = ref(false);
 const browserSpeaking = ref(false);
-const speechText = ref("正当防卫要求存在正在进行的不法侵害；本段为浏览器本地合成语音，不代表讯飞接口已连接。");
+const serverAudioUrl = ref("");
+const lastTtsAssetId = ref("");
+const speechText = ref("罪刑法定原则要求法无明文规定不为罪，法无明文规定不处罚。本段为AI合成语音。");
 
 const REASON_LABELS: Record<string, string> = {
   case_evidence_indicates_weakness: "案件证据提示薄弱，优先补强",
@@ -226,6 +228,12 @@ const relevantRoutes = computed(() => {
     return { task, route, smallConnected };
   });
 });
+const mediaTranscript = computed(() => String(mediaJob.value?.result?.transcript ?? ""));
+
+function mediaCapabilityStatus(capabilityId: string): string {
+  return mediaCatalog.value?.capabilities.find((row) => row.capability_id === capabilityId)?.connection_status
+    ?? "not_connected";
+}
 
 function stateLabel(state?: AdaptiveKnowledgeEvidence): string {
   if (!state?.event_count) return "insufficient_evidence";
@@ -291,11 +299,15 @@ function readWithBrowserSpeech(): void {
   utterance.onend = () => { browserSpeaking.value = false; };
   utterance.onerror = () => {
     browserSpeaking.value = false;
-    mediaMessage.value = "浏览器朗读失败；服务端TTS仍保持not_connected。";
+    mediaMessage.value = "浏览器朗读失败；可改用讯飞在线TTS生成可下载音频。";
   };
   browserSpeaking.value = true;
-  mediaMessage.value = "正在使用浏览器SpeechSynthesis本地降级；未调用讯飞或云端TTS。";
+  mediaMessage.value = "正在使用浏览器SpeechSynthesis本地降级；本次未调用讯飞。";
   window.speechSynthesis.speak(utterance);
+}
+
+async function refreshMediaCapabilities(): Promise<void> {
+  mediaCatalog.value = await api.mediaCapabilities();
 }
 
 async function checkServerSpeech(): Promise<void> {
@@ -305,10 +317,48 @@ async function checkServerSpeech(): Promise<void> {
     mediaJob.value = await api.synthesizeSpeech({
       job_id: newJobId("tts"),
       text: speechText.value,
-      provider: "auto",
+      voice: "standard_zh",
+      audio_format: "wav",
+      provider: "xfyun_online_tts",
       ai_generated_disclosure: true,
     });
-    mediaMessage.value = "服务端TTS接口已真实调用；当前无已验证Provider，因此返回not_connected，未生成伪音频。";
+    if (mediaJob.value.status !== "succeeded") {
+      mediaMessage.value = `讯飞TTS未成功：${mediaJob.value.error?.code ?? mediaJob.value.status}`;
+      return;
+    }
+    const assetId = String(mediaJob.value.result?.output_asset_id ?? "");
+    if (!assetId) throw new Error("讯飞TTS成功但未返回音频资产");
+    if (serverAudioUrl.value) URL.revokeObjectURL(serverAudioUrl.value);
+    const audio = await api.downloadMediaAsset(assetId);
+    serverAudioUrl.value = URL.createObjectURL(audio);
+    lastTtsAssetId.value = assetId;
+    mediaMessage.value = `讯飞TTS真实生成${audio.size.toLocaleString()}字节WAV；AI合成标识保留。`;
+    await refreshMediaCapabilities();
+  } catch (reason) {
+    mediaMessage.value = reason instanceof Error ? reason.message : String(reason);
+  } finally {
+    mediaBusy.value = false;
+  }
+}
+
+async function transcribeLastTts(): Promise<void> {
+  if (!lastTtsAssetId.value) return;
+  mediaBusy.value = true;
+  mediaMessage.value = "正在将刚生成的讯飞WAV送入讯飞IAT……";
+  try {
+    mediaJob.value = await api.startTranscription({
+      job_id: newJobId("iat"),
+      asset_id: lastTtsAssetId.value,
+      language: "zh_cn",
+      hotwords: ["罪刑法定", "明文规定", "不为罪", "不处罚"],
+      provider: "xfyun_streaming_asr",
+    });
+    if (mediaJob.value.status !== "needs_review") {
+      mediaMessage.value = `讯飞ASR未成功：${mediaJob.value.error?.code ?? mediaJob.value.status}`;
+      return;
+    }
+    mediaMessage.value = "讯飞ASR已返回真实转写；结果保持needs_review，不进入画像或正式评分。";
+    await refreshMediaCapabilities();
   } catch (reason) {
     mediaMessage.value = reason instanceof Error ? reason.message : String(reason);
   } finally {
@@ -349,9 +399,12 @@ async function handleAudioUpload(event: Event): Promise<void> {
       asset_id: mediaAsset.value.asset_id,
       language: "zh_cn",
       hotwords: ["刑法", "正当防卫", "罪刑法定", "要件涵摄"],
-      provider: "auto",
+      provider: "xfyun_streaming_asr",
     });
-    mediaMessage.value = "上传已完成且私有保存；ASR Provider未连接，未生成或伪造转写文本。";
+    mediaMessage.value = mediaJob.value.status === "needs_review"
+      ? "讯飞ASR已生成真实转写；等待规则或教师复核，不进入画像。"
+      : `音频已私有保存；ASR状态${mediaJob.value.status}。`;
+    await refreshMediaCapabilities();
   } catch (reason) {
     mediaMessage.value = reason instanceof Error ? reason.message : String(reason);
   } finally {
@@ -399,6 +452,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("keydown", handleKeydown);
   if (browserSpeechSupported.value) window.speechSynthesis.cancel();
+  if (serverAudioUrl.value) URL.revokeObjectURL(serverAudioUrl.value);
 });
 </script>
 
@@ -546,8 +600,8 @@ onUnmounted(() => {
 
         <template v-else>
           <section class="media-hero">
-            <div><p class="kicker mono">P1 SPEECH / VISION · P2 AVATAR</p><h3>多模态与数字人能力总线</h3><p>资产上传、身份隔离和任务状态已落地；云Provider未接入时明确not_connected。</p></div>
-            <div class="media-truth"><span>接口已预留 ≠ 能力已完成</span><strong>LearningEvent 0</strong><small>需规则或教师门禁后晋级</small></div>
+            <div><p class="kicker mono">P1 REAL IFLYTEK SPEECH · P2 AVATAR POSTPONED</p><h3>多模态与数字人能力总线</h3><p>讯飞ASR/TTS需真实调用后才显示available；数字人继续后置并保持not_connected。</p></div>
+            <div class="media-truth"><span>真实音频 + 真实转写</span><strong>LearningEvent 0</strong><small>ASR需规则或教师门禁后晋级</small></div>
           </section>
 
           <section v-if="mediaCatalog" class="media-capability-grid">
@@ -566,17 +620,18 @@ onUnmounted(() => {
 
           <div class="media-lab-grid">
             <section class="media-lab">
-              <header><div><p class="kicker mono">CLIENT FALLBACK · REAL BROWSER API</p><h3>语音快问快答朗读</h3></div><span :class="browserSpeechSupported ? 'ok' : 'off'">{{ browserSpeechSupported ? 'available' : 'unsupported' }}</span></header>
+              <header><div><p class="kicker mono">IFLYTEK ONLINE TTS · CLIENT FALLBACK</p><h3>语音快问快答朗读</h3></div><span :class="mediaCapabilityStatus('text_to_speech') === 'available' ? 'ok' : 'off'">{{ mediaCapabilityStatus('text_to_speech') }}</span></header>
               <textarea v-model="speechText" maxlength="2000" aria-label="待朗读文本"></textarea>
-              <div class="media-actions"><button :disabled="!browserSpeechSupported || browserSpeaking" @click="readWithBrowserSpeech">{{ browserSpeaking ? '正在朗读…' : '浏览器本地朗读' }}</button><button :disabled="mediaBusy" @click="checkServerSpeech">检查服务端TTS</button></div>
-              <p>浏览器SpeechSynthesis只作现场降级，不产生可下载音频，也不冒充讯飞调用。</p>
+              <div class="media-actions"><button :disabled="mediaBusy" @click="checkServerSpeech">生成讯飞WAV</button><button :disabled="mediaBusy || !lastTtsAssetId" @click="transcribeLastTts">将WAV送入ASR</button><button :disabled="!browserSpeechSupported || browserSpeaking" @click="readWithBrowserSpeech">{{ browserSpeaking ? '正在朗读…' : '浏览器降级' }}</button></div>
+              <audio v-if="serverAudioUrl" class="media-audio" :src="serverAudioUrl" controls aria-label="讯飞AI合成音频"></audio>
+              <p>讯飞成功后返回当前用户私有可下载WAV；浏览器SpeechSynthesis只作降级，不冒充云调用。</p>
             </section>
 
             <section class="media-lab">
-              <header><div><p class="kicker mono">PRIVATE ASSET · HASHED</p><h3>课堂短音频转写入口</h3></div><span class="off">provider gate</span></header>
+              <header><div><p class="kicker mono">IFLYTEK STREAMING IAT · NEEDS REVIEW</p><h3>课堂短音频转写入口</h3></div><span :class="mediaCapabilityStatus('speech_to_text') === 'available' ? 'ok' : 'off'">{{ mediaCapabilityStatus('speech_to_text') }}</span></header>
               <label class="media-upload"><input type="file" accept="audio/wav,audio/mpeg,audio/mp3,audio/mp4,audio/webm,audio/ogg" :disabled="mediaBusy" @change="handleAudioUpload"><strong>选择≤15MB短音频</strong><span>私有sandbox · SHA-256 · JWT隔离</span></label>
               <dl v-if="mediaAsset" class="media-proof"><div><dt>asset</dt><dd>{{ mediaAsset.asset_id }}</dd></div><div><dt>hash</dt><dd>{{ mediaAsset.content_sha256.slice(0, 20) }}…</dd></div><div><dt>scope</dt><dd>{{ mediaAsset.storage_scope }}</dd></div></dl>
-              <p>未接ASR时只保存资产与not_connected任务，不生成伪转写。</p>
+              <p>仅支持符合规格的WAV/MP3；真实转写固定needs_review，不自动形成LearningEvent。</p>
             </section>
 
             <section class="media-lab avatar-lab">
@@ -589,7 +644,7 @@ onUnmounted(() => {
 
           <section v-if="mediaMessage || mediaJob" class="media-result">
             <div><p class="kicker mono">HONEST RUNTIME RESULT</p><h3>{{ mediaMessage || '任务状态已更新' }}</h3></div>
-            <dl v-if="mediaJob"><div><dt>job</dt><dd>{{ mediaJob.job_id }}</dd></div><div><dt>type</dt><dd>{{ mediaJob.job_type }}</dd></div><div><dt>provider</dt><dd>{{ mediaJob.provider_resolved }}</dd></div><div><dt>status</dt><dd :class="mediaJob.status === 'succeeded' ? 'ok' : 'off'">{{ mediaJob.status }}</dd></div></dl>
+            <dl v-if="mediaJob"><div><dt>job</dt><dd>{{ mediaJob.job_id }}</dd></div><div><dt>provider</dt><dd>{{ mediaJob.provider_resolved }}</dd></div><div><dt>status</dt><dd :class="['succeeded','needs_review'].includes(mediaJob.status) ? 'ok' : 'off'">{{ mediaJob.status }}</dd></div><div><dt>转写</dt><dd>{{ mediaTranscript || '—' }}</dd></div></dl>
           </section>
         </template>
       </main>
@@ -609,6 +664,7 @@ onUnmounted(() => {
 .graph-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(100,139,153,.34)}.graph-hero h3{font-size:1.4rem}.graph-hero>div>p:last-child{margin:5px 0 0;color:var(--parchment-dim);font-size:.73rem}.graph-counts{display:flex;border:1px solid var(--line)}.graph-counts span{min-width:100px;padding:9px 12px;color:var(--parchment-faint);border-right:1px solid var(--line);font-size:.6rem;text-align:center}.graph-counts span:last-child{border:0}.graph-counts b{display:block;color:var(--parchment);font-family:var(--font-mono);font-size:1.05rem}.graph-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(360px,.65fr);gap:12px;margin-top:14px}.knowledge-graph-panel,.argument-graph-panel{min-width:0;padding:14px;border:1px solid var(--line);background:rgba(255,255,255,.014)}.knowledge-graph-panel>header,.argument-graph-panel>header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.knowledge-graph-panel h3,.argument-graph-panel h3{font-size:.94rem}.knowledge-graph-panel>header>span,.argument-graph-panel>header>span{color:var(--parchment-faint);font-family:var(--font-mono);font-size:.55rem}.knowledge-graph-panel svg{width:100%;height:min(56vh,500px);min-height:390px;margin-top:8px;border:1px dashed var(--line);background:radial-gradient(circle,rgba(100,139,153,.14) 1px,transparent 1px) 0 0/18px 18px}.knowledge-edge{fill:none;stroke:rgba(120,157,172,.55);stroke-width:1.5}.knowledge-graph-panel marker path{fill:#789dac}.knowledge-node rect{fill:#121714;stroke:rgba(100,139,153,.62);stroke-width:1.2}.knowledge-node.target rect{fill:rgba(122,153,98,.1);stroke:#8cae7f;stroke-width:2}.knowledge-node text{fill:#ece2d1;font-family:var(--font-display);font-size:12px}.knowledge-node .node-law{fill:#82949a;font-family:var(--font-mono);font-size:8px}.knowledge-graph-panel>footer{display:flex;gap:12px;margin-top:8px;color:var(--parchment-faint);font-size:.56rem}.argument-chain{display:grid;gap:7px;margin-top:12px}.argument-chain article{position:relative;display:grid;grid-template-columns:44px 1fr;gap:9px;min-height:61px;padding:9px;border:1px solid var(--line)}.argument-chain article>span{align-self:start;padding:3px 4px;color:#a9c3cc;border:1px solid rgba(100,139,153,.45);font-size:.52rem;text-align:center}.argument-chain h4{font-size:.72rem}.argument-chain p{margin:3px 0 0;color:var(--parchment-faint);font-size:.57rem;line-height:1.45}.argument-chain i{position:absolute;right:13px;bottom:-13px;z-index:2;color:#789dac;font-style:normal;transform:rotate(90deg)}.argument--evidence,.argument--gate{border-color:rgba(122,153,98,.42)!important}.argument--challenge{border-color:rgba(196,71,27,.42)!important}.argument-graph-panel>footer{margin-top:10px;padding:8px;color:var(--parchment-faint);border:1px dashed var(--line-strong);font-size:.57rem;line-height:1.5}.argument-graph-panel>footer strong{color:#df9d84}
 .model-status{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--line)}.model-status span{width:8px;height:8px;background:var(--accent)}.model-status span.connected{background:var(--accent-success)}.model-status strong{font-size:.7rem}.route-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}.route-grid article{padding:14px;border:1px solid var(--line);background:rgba(255,255,255,.016)}.route-grid header{display:flex;align-items:center;gap:10px}.route-grid header>span{width:34px;height:34px;display:grid;place-items:center;color:#b9d2db;border:1px solid rgba(100,139,153,.42);font-family:var(--font-mono)}.route-grid h3{overflow:hidden;font-size:.86rem;white-space:nowrap;text-overflow:ellipsis}.route-grid dl{margin:13px 0}.route-grid dl div{display:grid;grid-template-columns:1fr minmax(0,1.3fr);gap:7px;padding:6px 0;border-bottom:1px solid var(--line);font-size:.61rem}.route-grid dt{color:var(--parchment-faint)}.route-grid dd{overflow:hidden;margin:0;text-align:right;white-space:nowrap;text-overflow:ellipsis}.route-grid dd.ok{color:#b7cba9}.route-grid dd.off{color:#df9e86}.route-grid footer{color:var(--parchment-faint);font-size:.57rem}.comparison-lane{display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr 28px 1fr;align-items:center;gap:7px;margin-top:14px}.comparison-lane article{min-height:115px;padding:13px;border:1px solid rgba(122,153,98,.38);background:rgba(122,153,98,.025)}.comparison-lane article.pending{border-style:dashed;border-color:rgba(196,71,27,.45)}.comparison-lane article>span{color:#789dac;font-family:var(--font-mono);font-size:.61rem}.comparison-lane h3{margin:5px 0;font-size:.85rem}.comparison-lane p{margin:0;color:var(--parchment-faint);font-size:.61rem;line-height:1.45}.comparison-lane>i{color:#789dac;text-align:center;font-style:normal}.model-boundary{display:grid;grid-template-columns:80px 1fr auto;align-items:center;gap:12px;margin-top:13px;padding:10px;border:1px dashed var(--line-strong)}.model-boundary strong{color:var(--accent);font-family:var(--font-display)}.model-boundary p{margin:0;color:var(--parchment-dim);font-size:.63rem}.model-boundary span{color:var(--parchment-faint);font-size:.55rem}
 .media-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(100,139,153,.34)}.media-hero h3{font-size:1.4rem}.media-hero>div>p:last-child{margin:5px 0 0;color:var(--parchment-dim);font-size:.73rem}.media-truth{display:grid;justify-items:end;gap:4px;padding:9px 11px;border:1px solid rgba(196,71,27,.45);background:rgba(196,71,27,.05)}.media-truth span{color:#e0a28b;font-family:var(--font-display);font-size:.72rem}.media-truth strong{font-family:var(--font-mono);font-size:.82rem}.media-truth small{color:var(--parchment-faint);font-size:.56rem}.media-capability-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:15px}.media-capability-grid article{min-width:0;padding:12px;border:1px dashed rgba(196,71,27,.42);background:rgba(255,255,255,.014)}.media-capability-grid article.ready{border-style:solid;border-color:rgba(122,153,98,.45)}.media-capability-grid header{display:flex;align-items:center;gap:8px}.media-capability-grid header>span{width:31px;height:31px;display:grid;place-items:center;color:#b7ced6;border:1px solid currentColor;font-family:var(--font-mono);font-size:.61rem}.media-capability-grid h3{font-size:.78rem}.media-capability-grid dl{margin:10px 0}.media-capability-grid dl div{display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px;padding:4px 0;border-bottom:1px solid var(--line);font-size:.57rem}.media-capability-grid dt{color:var(--parchment-faint)}.media-capability-grid dd{overflow:hidden;margin:0;text-align:right;white-space:nowrap;text-overflow:ellipsis}.media-capability-grid dd.ok,.media-lab .ok,.media-result dd.ok{color:#b8d0ac}.media-capability-grid dd.off,.media-lab .off,.media-result dd.off{color:#e0a087}.media-capability-grid footer{display:grid;gap:3px;color:var(--parchment-faint);font-size:.52rem}.media-missing{margin-top:15px;padding:13px;border:1px dashed var(--line-strong)}.media-missing p{margin:4px 0 0;color:var(--parchment-faint);font-size:.63rem}.media-lab-grid{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:11px;margin-top:14px}.media-lab{min-width:0;padding:14px;border:1px solid var(--line);background:rgba(255,255,255,.016)}.media-lab>header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.media-lab h3{font-size:.9rem}.media-lab>header>span{padding:3px 5px;border:1px solid currentColor;font-family:var(--font-mono);font-size:.56rem}.media-lab textarea{width:100%;min-height:96px;margin:11px 0 8px;padding:9px;color:var(--parchment);border:1px solid var(--line-strong);background:#0c0f0e;resize:vertical;font:inherit;font-size:.66rem;line-height:1.55}.media-actions{display:flex;gap:7px}.media-lab button,.media-upload{padding:8px 10px;color:var(--parchment);border:1px solid rgba(100,139,153,.5);background:rgba(100,139,153,.07);font-family:var(--font-display);font-size:.66rem;cursor:pointer}.media-lab button:disabled{opacity:.42;cursor:not-allowed}.media-lab>p{margin:9px 0 0;color:var(--parchment-faint);font-size:.58rem;line-height:1.5}.media-upload{display:grid;gap:4px;margin-top:12px;text-align:center}.media-upload input{position:absolute;width:1px;height:1px;opacity:0}.media-upload strong{font-size:.7rem}.media-upload span{color:var(--parchment-faint);font-size:.56rem}.media-proof{margin:9px 0 0}.media-proof div{display:grid;grid-template-columns:48px 1fr;gap:8px;padding:4px 0;border-bottom:1px solid var(--line);font-size:.56rem}.media-proof dt{color:var(--parchment-faint)}.media-proof dd{overflow:hidden;margin:0;text-align:right;white-space:nowrap;text-overflow:ellipsis}.avatar-flow{display:flex;align-items:center;justify-content:center;gap:6px;min-height:92px;margin:10px 0;padding:8px;border:1px dashed var(--line-strong)}.avatar-flow span{padding:5px 6px;color:var(--parchment-dim);border:1px solid var(--line);font-size:.56rem}.avatar-flow i{color:#789dac;font-style:normal}.avatar-lab>button{width:100%}.media-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(420px,.9fr);align-items:center;gap:16px;margin-top:12px;padding:11px 13px;border:1px solid rgba(176,138,62,.43);background:rgba(176,138,62,.035)}.media-result h3{font-size:.74rem}.media-result dl{display:grid;grid-template-columns:repeat(4,1fr);margin:0}.media-result dl div{min-width:0;padding:0 8px;border-left:1px solid var(--line)}.media-result dt{color:var(--parchment-faint);font-size:.52rem}.media-result dd{overflow:hidden;margin:2px 0 0;font-family:var(--font-mono);font-size:.58rem;white-space:nowrap;text-overflow:ellipsis}
+.media-audio{width:100%;height:34px;margin-top:9px;filter:sepia(.3) saturate(.55) brightness(.82)}
 @media(max-width:1180px){.cog-head{grid-template-columns:1fr auto 38px}.cog-badges{display:none}.diagnosis-grid{grid-template-columns:1fr}.knowledge-panel{grid-row:auto}.path-map{grid-template-columns:repeat(4,1fr)}.path-connector{display:none}.route-grid{grid-template-columns:repeat(2,1fr)}.graph-grid{grid-template-columns:1fr}.media-capability-grid{grid-template-columns:repeat(3,1fr)}.media-lab-grid{grid-template-columns:1fr 1fr}.avatar-lab{grid-column:1/-1}}
 @media(max-width:820px){.cog-layer{padding:0}.cog-head{grid-template-columns:1fr 38px;padding:10px 12px}.cog-tabs{grid-column:1/-1;grid-row:2;overflow-x:auto}.cog-tabs button{flex:1;white-space:nowrap}.cog-content{padding:16px 13px 40px}.diagnosis-hero,.path-hero,.model-hero,.graph-hero,.media-hero{display:block}.graph-counts{margin-top:12px;overflow-x:auto}.media-truth{justify-items:start;margin-top:12px}.hero-metrics{grid-template-columns:repeat(2,1fr);margin-top:12px}.orcdf-versions,.orcdf-detail-grid,.route-grid,.media-capability-grid,.media-lab-grid{grid-template-columns:1fr}.avatar-lab{grid-column:auto}.generic-init{grid-template-columns:1fr 1fr}.generic-init>div:first-child,.generic-init>p{grid-column:1/-1}.init-arrow{display:none}.path-map{grid-template-columns:repeat(2,1fr)}.comparison-lane{grid-template-columns:1fr}.comparison-lane>i{transform:rotate(90deg)}.model-boundary,.media-result{grid-template-columns:1fr}.media-result dl{grid-template-columns:1fr 1fr}.shadow-boundaries{grid-template-columns:1fr}.shadow-boundaries footer{grid-column:1}.signal-panel{grid-template-columns:1fr}.signal-panel footer{grid-column:1}.knowledge-table article{grid-template-columns:9px minmax(0,1fr) 38px}.state-pill{grid-column:2/-1}.timeline li{grid-template-columns:24px 14px minmax(0,1fr)}.eligibility{grid-column:3}.cog-brand h2{font-size:1.05rem}.avatar-flow{flex-wrap:wrap}.knowledge-graph-panel{overflow-x:auto}.knowledge-graph-panel svg{min-width:760px}.knowledge-graph-panel>footer{min-width:760px}}
 </style>

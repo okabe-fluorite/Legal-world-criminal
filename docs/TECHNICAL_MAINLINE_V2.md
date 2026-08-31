@@ -22,7 +22,7 @@
 | LegalEduEval | 100题Schema/Runner/Dataset Card | 候选not_gold；E0—E3与教师审核pending |
 | Agent消融 | `AGENT_ABLATION_V1` | 反方2→3，同时耗时×5.7753、token×2.7167；教师盲评pending |
 | 认知诊断 | Evidence-KT + ORCDF shadow | 正式产品使用保守事件画像；ORCDF只作民法/宪法实验 |
-| 2D导师 | 4态WebP + `AITutor.vue` | 三个允许场景与浏览器朗读可用；不是Live2D/讯飞数字人 |
+| 2D导师与语音 | 4态WebP + 讯飞IAT/TTS | 三个导师场景、可下载TTS WAV、真实ASR转写；不是Live2D/讯飞数字人 |
 
 ## 对外ORCDF选择
 

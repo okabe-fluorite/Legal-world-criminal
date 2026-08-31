@@ -1,12 +1,12 @@
 {
   "schema_version": "guizang-tech-v2-pptx-render-audit-v1",
   "pptx": "星火智学_作品方案_技术主线V2_DRAFT.pptx",
-  "pptx_bytes": 1350090,
-  "pptx_sha256": "ed8b4214c5d753c34970a94007dea3daa423095741daa4fbdacfdd6cc76a4404",
+  "pptx_bytes": 1644330,
+  "pptx_sha256": "55075f72a2cb21960ba6f26a12e03b269e0987d9b3aea7b77a0551a6336fd9e8",
   "slides": 12,
   "rendered_slides": 12,
   "under_100_mb": true,
-  "max_mean_absolute_pixel_difference": 0.094646,
+  "max_mean_absolute_pixel_difference": 0.094643,
   "rows": [
     {
       "slide": 1,
@@ -28,9 +28,9 @@
         1600,
         900
       ],
-      "mean_absolute_pixel_difference": 0.083925,
-      "source_sha256": "277688443daef13b02a0884db6f22626038c6e07bd14ef4b0cd6779d911bb5c4",
-      "rendered_sha256": "eb7e4c1f38010fea829c6c11f191f84d431e0f173e7abce9cb6af1f089a66ed1"
+      "mean_absolute_pixel_difference": 0.083603,
+      "source_sha256": "087a143261ea0b69efa492760e64c6456882f9e06b53d08f342be380f8d9fe39",
+      "rendered_sha256": "702a66dd273fa88617b35ac9e2df4901981b5401807755b760577aa6208fb835"
     },
     {
       "slide": 3,
@@ -52,9 +52,9 @@
         1600,
         900
       ],
-      "mean_absolute_pixel_difference": 0.032479,
-      "source_sha256": "aec29850a541eddb31f2e7d9e4180efa3c8d4b77cb6f61b85f53a83d11009caa",
-      "rendered_sha256": "22eaa95debe4256600da10035f8d811e8e4f3b6030bbc726f956b08c209359ba"
+      "mean_absolute_pixel_difference": 0.032434,
+      "source_sha256": "36a2058c745c6698d63c42a850a024ffec7d6092f9db6df733ce31b068fd0e3b",
+      "rendered_sha256": "b65a4a32663f7c79c84bf7a3a27e418865ce37916baf5f5fb528fb917e8a96e2"
     },
     {
       "slide": 5,
@@ -64,9 +64,9 @@
         1600,
         900
       ],
-      "mean_absolute_pixel_difference": 0.08144,
-      "source_sha256": "29d09e4a6784690805aa9c6ef68bc8bae4ce16852d629e5956fa5aa10b91ba4a",
-      "rendered_sha256": "4691cd23b5927aa59719ca4cb648dd2492f88efd78ffaa258129becc0d104903"
+      "mean_absolute_pixel_difference": 0.081424,
+      "source_sha256": "089803c063c1338316c8d88bb0f354e2cd16a0bf068357d299ce7777698bf42a",
+      "rendered_sha256": "fb86d73e240bb5310cb6f6e5cbf5b837de2c5c69f8e77beec1e75f1b122b5e1f"
     },
     {
       "slide": 6,
@@ -76,9 +76,9 @@
         1600,
         900
       ],
-      "mean_absolute_pixel_difference": 0.058651,
-      "source_sha256": "aec1a1b1efaa57aecb897d55bfdd873a0b912fcf6ac01f9a856641c25f65db0e",
-      "rendered_sha256": "23f87a9eff55296e7e217860e5fea6f6921dcdfa0feab9a140a781646e13bb4d"
+      "mean_absolute_pixel_difference": 0.058505,
+      "source_sha256": "adae16313c87f20f647eaf0574308d503f030a6838d9f48c7f5b33c7ce609050",
+      "rendered_sha256": "2d5c2c2c1d9392dd8ba18561dbf4275d4406afe70e3c743b313ba1d666cad328"
     },
     {
       "slide": 7,
@@ -88,9 +88,9 @@
         1600,
         900
       ],
-      "mean_absolute_pixel_difference": 0.058154,
-      "source_sha256": "fa913775db1eda2e126beb8501b1c6d7466609b8c22628e1e1fbe5250e89fc5c",
-      "rendered_sha256": "be2c1cfc9e868cd972b7cd82a4f3792dca2d2dc48ceff94526cd892197c3252f"
+      "mean_absolute_pixel_difference": 0.058093,
+      "source_sha256": "a4868ee0836161c7ca593a59dc87f3d0253b14aa4d91e18cabe270ba8060255d",
+      "rendered_sha256": "b7ef57f3f5172faa671db5df9b36c17da034f9f2828df855cdbd9db597671bd5"
     },
     {
       "slide": 8,
@@ -100,9 +100,9 @@
         1600,
         900
       ],
-      "mean_absolute_pixel_difference": 0.05078,
-      "source_sha256": "57934191b172ea4b9ee1a5d582ef0baabda086fde30a3552317906f57b500e0b",
-      "rendered_sha256": "60cd2dbe3e1aaa60fdb7be5eafaed61d80735e7399a95a6e2ab1f5a544923b8d"
+      "mean_absolute_pixel_difference": 0.050781,
+      "source_sha256": "daa54d1aafc613e72ccfa0409c9f367fbf21f745e72fd770f830b7f813a64739",
+      "rendered_sha256": "306fc3118b30d4bc479352af05da3070652f1b007107be459d6522a3e07074c5"
     },
     {
       "slide": 9,
@@ -112,9 +112,9 @@
         1600,
         900
       ],
-      "mean_absolute_pixel_difference": 0.06616,
-      "source_sha256": "b0286bf327237156ad7726e076a24e5c1d7d283a544e4831d33b757c8ec9043b",
-      "rendered_sha256": "ba6db1cb3c52bc7e6af69af5553b8d9ee6c8c75a64d8e53348ca743c8f21e068"
+      "mean_absolute_pixel_difference": 0.066034,
+      "source_sha256": "34921bb6de6a2bc1000f33a0b6c1a36a834703a2dae400fd5f31f9db1648acdc",
+      "rendered_sha256": "edcb3b765095b149fadfdbb1857dc328cb28fd377e69a974c862c2104d9a88fc"
     },
     {
       "slide": 10,
@@ -124,9 +124,9 @@
         1600,
         900
       ],
-      "mean_absolute_pixel_difference": 0.094646,
-      "source_sha256": "01d82efffd496400e72a8ef421ad8ee749b2dafd25cd701ca1b9c5d2b304b459",
-      "rendered_sha256": "f44af44680e13ae7e304d9f1323c4857827d8b45b94b2f4c80d0d585ceba9f55"
+      "mean_absolute_pixel_difference": 0.094643,
+      "source_sha256": "ae47ea5450bab7335b959b92a6d0f4f55d4f714031b68d27a3fb0177ba762a2a",
+      "rendered_sha256": "5b34acaf074e4a836136f94c58438b8e9c6cf6a75f4ce18098816441e63a3e97"
     },
     {
       "slide": 11,
@@ -136,9 +136,9 @@
         1600,
         900
       ],
-      "mean_absolute_pixel_difference": 0.04788,
-      "source_sha256": "6c287794157f66cd9e31388b86737cb29737f98f007775102ba422c444c9f275",
-      "rendered_sha256": "cc94e2c3a2597381be65a9b17970bb43e320b5125ae7aed1e282d9b22e183de0"
+      "mean_absolute_pixel_difference": 0.087125,
+      "source_sha256": "cf85834f12b1575a1cb5139ef122df783f6be82b916a876bed53bacd4aaf9a71",
+      "rendered_sha256": "b8d23d5dfeb61fd8e52ebd20e11658e1d9c7e393be725db2045ba7934ed733d9"
     },
     {
       "slide": 12,
@@ -149,8 +149,8 @@
         900
       ],
       "mean_absolute_pixel_difference": 0.087359,
-      "source_sha256": "6bc619b5af17d4a71dab6831e192f681eb854d86f6d0814d8f6ae32a87817a6e",
-      "rendered_sha256": "6451ee86385f468d7efb17f5e97f46b8a8cae961abe9458ffa196afe1133e924"
+      "source_sha256": "5d6609d437254b2a34b9e9c61dee8f5332c7cef92a7d3babe5d5e1ba426f513b",
+      "rendered_sha256": "1dcb94c32ecb870e7768b33bedc47a69f853b723bc85c09549c8fe2c87173b71"
     }
   ],
   "overview": "pptx-overview.png"

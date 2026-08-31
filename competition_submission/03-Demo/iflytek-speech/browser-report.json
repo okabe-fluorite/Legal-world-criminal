@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-08-31T04:29:44.596Z",
+  "viewport": "1500x980",
+  "knowledge_rows": 10,
+  "timeline_rows": 2,
+  "orcdf_versions": 3,
+  "heatmap_cells": 48,
+  "path_nodes": 7,
+  "path_tutor": {
+    "label": "NEXT STEP\n\n下一步为何是这项任务\n\n依据当前证据、先修和已完成任务解释推荐；路径不是因果最优证明。\n\nAI助教·形成性反馈\n非教师结论 · 不形成正式成绩\n▶朗读本段",
+    "image": {
+      "naturalWidth": 768,
+      "naturalHeight": 960
+    }
+  },
+  "knowledge_graph_nodes": 10,
+  "knowledge_graph_edges": 10,
+  "argument_template_nodes": 6,
+  "model_routes": 4,
+  "model_status": "微调端点已预留 · 当前未连接",
+  "media_capabilities": 5,
+  "media_available_capabilities": 3,
+  "media_proof_rows": 3,
+  "iflytek_round_trip": "HONEST RUNTIME RESULT\n\n讯飞ASR已返回真实转写；结果保持needs_review，不进入画像或正式评分。\njob\niat-1788150565036-7c3a0d\nprovider\niflytek_websocket\nstatus\nneeds_review\n转写\n罪刑法定原则要求法无明文规定不为罪法无明文规定不处罚本段为I合成语音。",
+  "media_status": "HONEST RUNTIME RESULT\n\n数字人异步契约已真实调用；当前Provider未授权，任务保持not_connected。\njob\navatar-1788150584369-3657e9\nprovider\nnone\nstatus\nnot_connected\n转写\n—",
+  "private_leaks": [],
+  "console_errors": [],
+  "page_errors": [],
+  "http_errors": [],
+  "request_failures": [],
+  "artifact_dir": "output/playwright/iflytek-cognitive-final"
+}

@@ -1,10 +1,10 @@
 # sii-research/Legal-world 上游代码级对照
 
 - 审计对象：`https://github.com/sii-research/Legal-world.git`
-- 独立克隆：`D:\Code\Legal-world-upstream-sii`
+- 独立克隆：仓库外只读工作副本（不进入公开材料）
 - 固定提交：`979ee9619f187d227059316f849c17ecc530c816`
 - 审计日期：2026-08-30
-- 当前刑法仓库基线：`D:\Code\Legal-world-criminal`
+- 当前刑法仓库基线：本仓库`main`
 
 ## 结论
 
@@ -36,7 +36,7 @@
 | 认知诊断/知识追踪 | 上游未实现 | Evidence-KT在线保守画像 + ORCDF shadow | 否 | 保持当前证据边界和独立adaptive服务 |
 | 个性化路径 | 上游未实现 | 七步候选路径、先修DAG和下一任务重排 | 否 | 继续由adaptive约束，Agent只解释/执行 |
 | 教师闭环 | 上游未实现课堂教师复核 | 班级匿名聚合、内容审核、主观题门禁 | 否 | 保持当前实现 |
-| 多模态/语音/数字人 | 上游未实现 | 本轮新增资产、能力目录和任务接口；Provider未连接 | 否 | 使用独立Provider Adapter，不从上游寻找不存在的实现 |
+| 多模态/语音/数字人 | 上游未实现 | 私有资产、讯飞ASR/TTS真实Provider和浏览器实证已完成；数字人后置 | 否 | 使用独立Provider Adapter，不从上游寻找不存在的实现 |
 
 ## 值得继续吸收的五点
 

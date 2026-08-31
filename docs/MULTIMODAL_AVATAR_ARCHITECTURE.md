@@ -5,14 +5,14 @@
 | 能力 | 优先级 | 当前状态 | 可运行证据 |
 |---|---|---|---|
 | 私有音频/图片上传 | P1 | `implemented` | JWT用户隔离、≤15MB、类型白名单、SHA-256、sandbox相对存储 |
-| ASR短音频转写 | P1 | `interface_reserved / not_connected` | 创建持久化幂等任务；无Provider时不生成文本 |
+| ASR短音频转写 | P1 | `implemented / available_after_real_call` | 讯飞IAT v2真实转写；结果固定`needs_review` |
 | 图像OCR/论证种子 | P1 | `interface_reserved / not_connected` | 视觉分析任务契约已冻结 |
-| 服务端TTS | P1 | `interface_reserved / not_connected` | TTS任务、AI标识和状态查询已冻结 |
+| 服务端TTS | P1 | `implemented / available_after_real_call` | 讯飞在线TTS v2生成当前用户私有WAV/MP3和下载端点 |
 | 浏览器本地朗读 | P1 fallback | `implemented_on_client` | `SpeechSynthesis`现场真实朗读；不生成下载资产 |
 | 数字人渲染 | P2 | `external_provider_required / not_connected` | 异步任务、AI标识、肖像同意门禁已冻结 |
 | 实时WebRTC语音 | Beta后 | `deferred` | 当前HTTP异步切片不引入房间/TURN/媒体集群 |
 
-接口存在不代表厂商能力已经连接。能力页会同时展示`implementation_status`和`connection_status`，Provider未验证时必须显示`not_connected`。
+接口存在不代表厂商能力已经连接。ASR/TTS适配器已实现，但新进程仍从`not_connected`开始；当前进程只有完成真实成功调用后才显示`available`。数字人和视觉Provider继续`not_connected`。
 
 ## 推荐架构
 
@@ -53,11 +53,12 @@ P1比赛版使用HTTP异步任务足够展示上传、状态、降级和安全�
 | GET | `/api/media/capabilities` | secret-free能力与Provider目录 | 返回真实状态 |
 | POST | `/api/multimodal/assets` | multipart私有音频/图片上传 | 上传仍可用 |
 | GET | `/api/multimodal/assets/{asset_id}` | 当前用户资产元数据 | 跨用户404 |
-| POST | `/api/multimodal/transcriptions` | 创建ASR任务 | 持久化`not_connected` |
+| GET | `/api/multimodal/assets/{asset_id}/content` | 当前用户私有媒体下载 | 跨用户404 |
+| POST | `/api/multimodal/transcriptions` | 执行短音频ASR任务 | 无凭据`not_connected`；成功`needs_review` |
 | GET | `/api/multimodal/transcriptions/{job_id}` | 查询ASR任务 | 返回已有状态 |
 | POST | `/api/multimodal/visual-analyses` | OCR/论证种子/材料摘要任务 | 持久化`not_connected` |
 | GET | `/api/multimodal/visual-analyses/{job_id}` | 查询视觉任务 | 返回已有状态 |
-| POST | `/api/speech/synthesis` | 创建TTS任务 | 持久化`not_connected` |
+| POST | `/api/speech/synthesis` | 执行TTS任务并生成私有资产 | 无凭据`not_connected`；成功`succeeded` |
 | GET | `/api/speech/jobs/{job_id}` | 查询TTS任务 | 返回已有状态 |
 | POST | `/api/avatar/renders` | 创建数字人任务 | 持久化`not_connected` |
 | GET | `/api/avatar/renders/{job_id}` | 查询数字人任务 | 返回已有状态 |
@@ -100,7 +101,14 @@ AZURE_SPEECH_REGION=
 SIMLAW_FASTER_WHISPER_MODEL=
 ```
 
-出现这些变量只表示“配置槽或凭据存在”，不表示适配器已经通过调用验证。能力目录永远不返回密钥值。
+本地启动器也兼容用户外部配置文件中的`APPID/APIKey/APISecret`，只在子进程环境映射为`XFYUN_*`，不复制进仓库。凭据存在仍不等于可用；真实成功调用后当前进程才晋级`available`。能力目录永远不返回密钥值。
+
+## 真实接通证据（2026-08-31）
+
+- `competition_submission/03-Demo/iflytek-speech/iflytek-tts-verification.wav`：真实讯飞TTS生成，207,892字节，16kHz/单声道/16bit/6.495秒，SHA-256 `ad341c972c4945e8d9eda300a44493d6ddd12ed85f005cba750c03963da1e80c`。
+- 真实IAT转写：`罪刑法定原则要求法无明文规定不为罪法无明文规定不处罚。`；归一化相似度1.0，4个法学关键词全部命中。
+- `IFLYTEK_ASR_TTS_VERIFICATION.json`绑定真实TTS 1次、IAT 1次和Provider会话存在性；不含密钥值或签名URL。
+- 产品API与1500×980浏览器又完成真实`TTS→私有下载→IAT`，ASR/TTS为`available`、数字人为`not_connected`、网络/console/私有字段错误0。
 
 ## 数据与教学边界
 
@@ -112,7 +120,7 @@ SIMLAW_FASTER_WHISPER_MODEL=
 
 ## 分阶段实施
 
-1. **当前提交版（已完成）。**私有上传、任务台账、能力页、本地朗读降级、知识/论证图、真实`not_connected`展示。
-2. **有讯飞授权后。**实现`xfyun_asr`和`xfyun_tts`两个适配器，固定短音频样本、法律热词、延迟和失败降级测试；先不接数字人。
+1. **当前提交版（已完成）。**私有上传、任务台账、讯飞IAT/TTS真实适配器、可下载音频、真实转写、浏览器实证和本地朗读降级。
+2. **数字人前阶段（当前）。**ASR结果继续由规则/教师复核，不引入课堂画像；保留凭据轮换、配额和断网失败降级测试。
 3. **P2可选。**确认数字人产品形态、API授权、标准角色和费用后，只把审核通过文本交给Avatar Provider；现场保留2D静态角色+TTS降级。
 4. **Beta后。**真实学生同意与课堂口语需求成立时，再评估LiveKit/WebRTC、长录音转写、数据保留期限和教师转写审核队列。
