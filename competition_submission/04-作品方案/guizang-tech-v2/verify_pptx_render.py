@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 from pathlib import Path
 
@@ -10,7 +11,7 @@ from PIL import Image, ImageChops, ImageStat, ImageDraw
 
 HERE = Path(__file__).resolve().parent
 SOURCE = HERE / "qa" / "screens"
-RENDERED = HERE / "qa" / "pptx-render"
+RENDERED = HERE / "qa" / os.getenv("GUIZANG_PPTX_RENDER_DIR", "pptx-render")
 PPTX = HERE.parent / "星火智学_作品方案_技术主线V2_DRAFT.pptx"
 
 

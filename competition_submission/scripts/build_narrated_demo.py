@@ -101,10 +101,10 @@ ITEMS = [
     {
         "id": "10-iflytek",
         "kind": "video",
-        "source": "iflytek-tts-iat.webm",
-        "duration": 23.0,
-        "text": "最后是多模态实证。系统通过讯飞在线合成生成当前用户私有WAV，再把同一音频送入流式听写，返回等待复核的真实转写。音频可以播放和下载；ASR与TTS只有真实调用成功后才显示可用，但不自动生成学习事件。数字人仍保持未连接。",
-        "caption": "讯飞TTS→私有WAV→IAT真实往返；ASR/TTS available\n转写needs_review、LearningEvent 0；数字人not_connected",
+        "source": "iflytek-realtime-voice.webm",
+        "duration": 30.0,
+        "text": "最后是实时语音多模态。浏览器麦克风持续发送十六千赫兹PCM分片，讯飞边听边返回动态转写；结束本轮后，系统检索受治理法源，生成形成性短答并自动播放讯飞合成语音。整个过程没有文件上传，不生成学习事件，数字人仍保持未连接。",
+        "caption": "浏览器麦克风PCM→讯飞partial/final→Evidence短答→TTS播放\n文件上传0、转写needs_review、LearningEvent 0；数字人not_connected",
     },
     {
         "id": "11-close",
@@ -174,7 +174,7 @@ REQUIRED_CONTENT = [
     },
     {
         "id": "iflytek_asr_tts",
-        "label": "讯飞TTS私有音频、IAT真实转写与数字人后置边界",
+        "label": "讯飞实时IAT partial/final、Evidence回复、TTS播放与数字人后置边界",
         "items": ["10-iflytek"],
     },
 ]
@@ -332,7 +332,7 @@ def main() -> int:
         / "IFLYTEK_BROWSER_VIDEO_SEGMENT_AUDIT.json"
     )
     iflytek_audit = json.loads(iflytek_audit_path.read_text(encoding="utf-8"))
-    iflytek_segment = segments / "iflytek-tts-iat.webm"
+    iflytek_segment = segments / "iflytek-realtime-voice.webm"
     if not iflytek_segment.is_file():
         raise SystemExit(f"missing iFlytek video segment: {iflytek_segment}")
     if sha256(iflytek_segment) != iflytek_audit.get("sha256"):
@@ -341,7 +341,12 @@ def main() -> int:
         raise SystemExit("iFlytek video segment public audit contains browser errors")
     visible = dict(iflytek_audit.get("visible_checks") or {})
     if not (
-        visible.get("available_capabilities") == 3
+        int(visible.get("browser_pcm_frames") or 0) >= 100
+        and visible.get("file_upload_requests") == 0
+        and int(visible.get("partial_results") or 0) >= 1
+        and visible.get("final_results") == 1
+        and visible.get("governed_reply_source") == "llm_governed_evidence"
+        and visible.get("available_capabilities") == 3
         and visible.get("asr_status") == "needs_review"
         and visible.get("digital_human_status") == "not_connected"
         and visible.get("learning_event_created") is False
@@ -566,6 +571,10 @@ def main() -> int:
                 "browser_error_total"
             ),
             "available_capabilities": visible.get("available_capabilities"),
+            "browser_pcm_frames": visible.get("browser_pcm_frames"),
+            "partial_results": visible.get("partial_results"),
+            "final_results": visible.get("final_results"),
+            "file_upload_requests": visible.get("file_upload_requests"),
             "asr_status": visible.get("asr_status"),
             "digital_human_status": visible.get("digital_human_status"),
         },
