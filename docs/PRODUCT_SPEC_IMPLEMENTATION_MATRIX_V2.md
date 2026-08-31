@@ -20,7 +20,7 @@
 | 法源核验与Rubric反馈 | §3.3 | citation/tool接口 | 四层评分、引用检查、NLI、8能力Rubric | `implemented_with_boundary` | 主观争议仍需教师 | 保持形成性评价 |
 | 错因分类与复习 | §3.4 | 无 | 错误标签、技能卡、下一任务 | `implemented_with_boundary` | 间隔时间衰减未正式实现 | 保留当前重排逻辑 |
 | 变式与角色互换 | §3.4 | 民事上诉/文书变式可参考 | 3个角色互换SubjectiveTask | `implemented_with_boundary` | 只覆盖3案 | 不盲目扩题 |
-| 语音快问快答 | §3.4、§5.6 P1 | 无 | 浏览器朗读fallback；ASR/TTS任务已预留 | `interface_reserved` | 无已验证讯飞Provider | 新增媒体页与接口 |
+| 语音快问快答 | §3.4、§5.6 P1 | 无 | 浏览器AudioWorklet实时PCM→讯飞IAT partial/final→Evidence短答→TTS自动播放；浏览器朗读fallback | `implemented_with_boundary` | 已验证多轮协议，真实课堂多说话人准确率与教师转写复核仍待试点 | 主交互升级为实时语音 |
 | 教师内容审核 | §3.5 | 人评工具但非课堂教师端 | 不可变review overlay、案例/卡/任务审核 | `implemented_with_boundary` | 无内容在线修订/下线工作流 | 保持冻结内容+overlay |
 | 班级匿名学情 | §3.5 | 无 | 班级、选课、最小人数抑制、知识/能力/错误/困惑聚合 | `implemented_with_boundary` | 无教务同步和多教师 | 比赛后置 |
 | 主观题教师门禁 | §1.4、§3.5 | 无 | approve/revision/reject、修订带回、一次决定一次事件 | `implemented_with_boundary` | 无双评/仲裁/正式成绩 | 已完成，不扩正式考试 |
@@ -52,14 +52,14 @@
 |---|---|---|---|---|---|---|
 | 流式文本/案件工作台 | §5.6 P0 | WebSocket | Vue工作台、WebSocket事件 | `implemented` | — | 无需改动 |
 | 私有媒体资产 | §5.6 P1隐含 | 无 | `media_assets`、JWT、SHA、类型/大小门禁 | `implemented` | 无内容病毒扫描 | 本轮新增 |
-| ASR | §5.6 P1 | 无 | `/api/multimodal/transcriptions` | `interface_reserved` | 讯飞/faster-whisper适配器未实现 | 本轮冻结契约 |
+| ASR | §5.6 P1 | 无 | `/ws/realtime-voice`实时讯飞IAT；`/api/multimodal/transcriptions`文件兼容 | `implemented_with_boundary` | ASR固定needs_review；faster-whisper未实现 | 真实桌面/窄屏/视频段验收 |
 | 图像理解/OCR | §5.6 P1多模态 | 无 | `/api/multimodal/visual-analyses` | `interface_reserved` | Provider未选 | 本轮冻结契约 |
-| 服务端TTS | §5.6 P1 | 无 | `/api/speech/synthesis` | `interface_reserved` | 讯飞适配器未实现 | 本轮冻结契约 |
+| 服务端TTS | §5.6 P1 | 无 | 讯飞在线TTS真实适配器；实时回复WAV回传自动播放；`/api/speech/synthesis`私有资产兼容 | `implemented_with_boundary` | 云配额/网络依赖；不形成学习证据 | 真实音频和多轮播放验收 |
 | 浏览器本地朗读 | §5.6 P1降级 | 无 | CognitiveDashboard SpeechSynthesis | `implemented_with_boundary` | 无下载资产、浏览器依赖 | 本轮新增真实fallback |
 | 数字人 | §5.6 P2、§9 P2 | 无 | `/api/avatar/renders`、AI标识和肖像同意门禁 | `external_provider_required` | 需讯飞/Azure授权、费用和适配器 | 本轮只预留，不宣称完成 |
 | 简单动画/复杂立绘 | §5.6 P2 | 小镇角色与静态素材 | 现有2D角色/阶段背景 | `implemented_with_boundary` | 不是数字人/3D | 不继续扩美术 |
-| 自动视频 | §5.6 P2 | 无 | 比赛视频构建脚本和163.2秒技术主线DRAFT，非产品能力 | `implemented_with_boundary` | 仍需真实人员完整审片 | 暂缓人工材料按用户要求 |
-| 实时WebRTC语音 | 技术演进项 | 无 | 架构建议LiveKit，未接入 | `deferred` | 当前无实时口语验收需求 | Beta后评估 |
+| 自动视频 | §5.6 P2 | 无 | 比赛视频构建脚本和162.2秒技术主线DRAFT，含讯飞实时语音段，非产品能力 | `implemented_with_boundary` | 仍需真实人员完整审片 | 机器审片包已重建 |
+| WebRTC房间/全双工语音 | 技术演进项 | 无 | 当前已实现PCM WebSocket半双工多轮；LiveKit/WebRTC房间未接入 | `deferred` | 多人、打断、TURN与弱网治理待Beta | Beta后评估 |
 
 ## 治理、评测、部署与范围
 
@@ -76,7 +76,7 @@
 
 ## 本轮新增的可展示证据
 
-- 认知驾驶舱新增“知识 / 论证图”和“多模态 / 数字人”两个页签。
-- 1500×980真实浏览器验证：10知识节点、10先修边、6论证模板节点、5媒体能力、3项私有资产证明；控制台、页面、HTTP和请求失败均为0。
-- 媒体页面首屏明确显示`接口已预留 ≠ 能力已完成`、`LearningEvent 0`和Provider `not_connected`。
-- 后端19项媒体/安全/Model Adapter回归通过；前端类型检查和Vite生产构建通过。
+- 认知驾驶舱“多模态 / 数字人”页以实时语音为主，文件上传只标为兼容/审计工具。
+- 1500×980真实浏览器两轮验证：384个PCM分片、54个partial、2个final、2个Evidence回复与2段TTS；780×900单轮192分片；文件上传0、LearningEvent 0→0，控制台、页面、HTTP和请求失败均为0。
+- 媒体页面明确显示ASR`needs_review`、LearningEvent/正式评分/自动画像更新均为0，数字人`not_connected`。
+- 后端全量125/125通过；前端类型检查、Vite生产构建、认知驾驶舱旧路径和实时语音专用smoke均通过。

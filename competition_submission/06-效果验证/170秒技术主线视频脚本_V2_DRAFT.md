@@ -55,7 +55,7 @@
 - 旁白：第一题只改变下一任务，不直接宣称掌握。2D导师只出现在解惑、Evidence警告和路径解释，不冒充教师。
 - ORCDF只闪现一条受控结论：同47题V1−V0 +0.02994，95%CI不跨0；民法/宪法shadow、mastery未校准。
 
-可插入6秒多模态实证：点击“多模态/数字人”→“生成讯飞WAV”→“将WAV送入ASR”，展示可播放音频、`iflytek_websocket`、`needs_review`和真实转写；同时同屏保留数字人`not_connected`、LearningEvent 0。
+当前成片第10段展示实时语音多模态：点击“多模态/数字人”→“开始实时提问”，浏览器麦克风持续发送16kHz PCM分片，页面边听边更新partial；结束本轮后显示final、受治理Evidence短答和讯飞TTS播放器。审计记录194个PCM帧、28个partial、文件上传0、LearningEvent 0→0；同屏保留数字人`not_connected`。确定性麦克风fixture只证明实时协议与产品链，不称课堂ASR准确率。
 
 ## 150—163秒：Model Adapter
 

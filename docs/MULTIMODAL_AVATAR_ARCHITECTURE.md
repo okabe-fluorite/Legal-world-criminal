@@ -8,9 +8,10 @@
 | ASR短音频转写 | P1 | `implemented / available_after_real_call` | 讯飞IAT v2真实转写；结果固定`needs_review` |
 | 图像OCR/论证种子 | P1 | `interface_reserved / not_connected` | 视觉分析任务契约已冻结 |
 | 服务端TTS | P1 | `implemented / available_after_real_call` | 讯飞在线TTS v2生成当前用户私有WAV/MP3和下载端点 |
+| 实时语音问答 | P1 | `implemented / verified` | AudioWorklet→16kHz PCM→JWT WebSocket→讯飞IAT partial/final→Evidence短答→TTS自动播放；桌面两轮/窄屏一轮/视频段通过 |
 | 浏览器本地朗读 | P1 fallback | `implemented_on_client` | `SpeechSynthesis`现场真实朗读；不生成下载资产 |
 | 数字人渲染 | P2 | `external_provider_required / not_connected` | 异步任务、AI标识、肖像同意门禁已冻结 |
-| 实时WebRTC语音 | Beta后 | `deferred` | 当前HTTP异步切片不引入房间/TURN/媒体集群 |
+| WebRTC房间/打断式全双工语音 | Beta后 | `deferred` | 当前比赛版使用浏览器PCM→后端WebSocket的半双工多轮对话，不引入房间/TURN/媒体集群 |
 
 接口存在不代表厂商能力已经连接。ASR/TTS适配器已实现，但新进程仍从`not_connected`开始；当前进程只有完成真实成功调用后才显示`available`。数字人和视觉Provider继续`not_connected`。
 
@@ -22,9 +23,10 @@
         ▼
 JWT + 类型/大小/AI标识/肖像同意门禁
         │
+        ├── 实时语音WebSocket ── 16kHz PCM ── 讯飞IAT partial/final ── Evidence短答 ── 讯飞TTS
         ├── 私有资产服务 ── SHA-256 ── 用户sandbox
         │
-        └── Media Job Service ── SQLite幂等任务
+        └── Media Job Service ── SQLite幂等兼容任务
                   │
                   ▼
            Provider Registry
@@ -44,13 +46,14 @@ JWT + 类型/大小/AI标识/肖像同意门禁
        规则校验或教师审核后才可晋级候选证据
 ```
 
-P1比赛版使用HTTP异步任务足够展示上传、状态、降级和安全边界。若Beta阶段确需双向实时语音，再在Provider层外增加LiveKit/WebRTC房间；不能让实时媒体层直接调用adaptive画像。
+P1比赛版已经使用独立鉴权WebSocket完成浏览器麦克风实时多轮对话；HTTP异步任务保留给文件兼容、状态和审计。若Beta阶段需要打断、双工、多人房间和弱网治理，再在Provider层外增加LiveKit/WebRTC；实时媒体层仍不得直接调用adaptive画像。
 
 ## 已冻结API
 
 | 方法 | 路径 | 作用 | 无Provider行为 |
 |---|---|---|---|
 | GET | `/api/media/capabilities` | secret-free能力与Provider目录 | 返回真实状态 |
+| WS | `/ws/realtime-voice` | 16kHz PCM实时语音多轮：IAT partial/final→Evidence→TTS | 无凭据返回脱敏错误；JWT只走子协议，不进URL |
 | POST | `/api/multimodal/assets` | multipart私有音频/图片上传 | 上传仍可用 |
 | GET | `/api/multimodal/assets/{asset_id}` | 当前用户资产元数据 | 跨用户404 |
 | GET | `/api/multimodal/assets/{asset_id}/content` | 当前用户私有媒体下载 | 跨用户404 |
@@ -109,6 +112,7 @@ SIMLAW_FASTER_WHISPER_MODEL=
 - 真实IAT转写：`罪刑法定原则要求法无明文规定不为罪法无明文规定不处罚。`；归一化相似度1.0，4个法学关键词全部命中。
 - `IFLYTEK_ASR_TTS_VERIFICATION.json`绑定真实TTS 1次、IAT 1次和Provider会话存在性；不含密钥值或签名URL。
 - 产品API与1500×980浏览器又完成真实`TTS→私有下载→IAT`，ASR/TTS为`available`、数字人为`not_connected`、网络/console/私有字段错误0。
+- 实时产品主链完成桌面两轮384个PCM分片/54个partial/2个final/2个Evidence回复/2段TTS，窄屏单轮192分片，视频段194分片/28 partial；三次验收文件上传请求均为0，LearningEvent均为0→0，四类浏览器错误0。确定性麦克风fixture按真实媒体时钟工作，但不等于多说话人课堂ASR准确率。
 
 ## 数据与教学边界
 
@@ -120,7 +124,7 @@ SIMLAW_FASTER_WHISPER_MODEL=
 
 ## 分阶段实施
 
-1. **当前提交版（已完成）。**私有上传、任务台账、讯飞IAT/TTS真实适配器、可下载音频、真实转写、浏览器实证和本地朗读降级。
+1. **当前提交版（已完成）。**浏览器实时麦克风多轮、讯飞IAT partial/final、Evidence短答、讯飞TTS自动播放、私有上传兼容、任务台账、可下载音频和本地朗读降级。
 2. **数字人前阶段（当前）。**ASR结果继续由规则/教师复核，不引入课堂画像；保留凭据轮换、配额和断网失败降级测试。
 3. **P2可选。**确认数字人产品形态、API授权、标准角色和费用后，只把审核通过文本交给Avatar Provider；现场保留2D静态角色+TTS降级。
-4. **Beta后。**真实学生同意与课堂口语需求成立时，再评估LiveKit/WebRTC、长录音转写、数据保留期限和教师转写审核队列。
+4. **Beta后。**真实学生同意与课堂口语需求成立时，再评估LiveKit/WebRTC多人/打断式双工、长录音转写、数据保留期限和教师转写审核队列。

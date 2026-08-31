@@ -62,6 +62,6 @@
 
 ## AI配音审片版
 
-已用真实底片+技术主线V2封面/Agent/收束页+INV/PR去标识快照生成163.2秒1080p提议审片DRAFT：12段中文字幕最多两行，全程右下角显示`AI配音 · DRAFT`；最大语速1.0371倍，48kHz双声道AAC未检出超过1.2秒静音，响度-23.3 LUFS、真峰值-3.6 dBFS。18帧抽检覆盖12项强制技术，并新增真实讯飞TTS→IAT产品段和数字人后置边界。
+已用真实底片+技术主线V2封面/Agent/收束页+INV/PR去标识快照生成162.2秒1080p提议审片DRAFT：12段中文字幕最多两行，全程右下角显示`AI配音 · DRAFT`；最大语速1.05677倍，48kHz双声道AAC未检出超过1.2秒静音，响度-23.4 LUFS、真峰值-3.6 dBFS。18帧抽检覆盖12项强制技术，并新增浏览器麦克风实时PCM→讯飞IAT partial/final→Evidence回复→TTS播放产品段；文件上传0、LearningEvent 0，数字人继续后置。
 
 审计见`../03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json`。INV快照显著披露原始`INV_result.json`内嵌scenario_type=LC，因此只使用stage=INV的LearningEvent；PR快照展示学生主张、检察官回应、有效法条和Agent不起诉分支。最终提交前必须由团队完整播放审片并决定使用AI配音还是替换真人旁白；无论选择哪一种，均保留AI生成内容标识与证据边界。

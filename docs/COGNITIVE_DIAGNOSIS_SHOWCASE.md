@@ -64,7 +64,7 @@
 
 ### 6. 多模态与数字人
 
-媒体页展示私有资产、ASR、视觉、TTS和数字人五项能力。讯飞TTS可真实生成并播放当前用户私有WAV，IAT可转写上传音频或刚生成的WAV；成功后当前进程的ASR/TTS状态为`available`。ASR固定`needs_review`，媒体不会创建LearningEvent。视觉和数字人继续`not_connected`，浏览器朗读仅作fallback。
+媒体页展示私有资产、ASR、视觉、TTS和数字人五项能力。主交互为浏览器AudioWorklet实时采集麦克风、重采样为16kHz PCM并通过`/ws/realtime-voice`分片发送；讯飞IAT持续返回partial/final，final进入受治理Evidence短答，再由讯飞TTS回传WAV自动播放并支持下一轮。文件上传和TTS→IAT回送只保留为兼容/Provider审计工具。成功后当前进程的ASR/TTS状态为`available`；ASR固定`needs_review`，媒体不会创建LearningEvent。视觉和数字人继续`not_connected`，浏览器朗读仅作fallback。
 
 接口、讯飞/Azure/LiveKit选型、AI标识和肖像同意门禁见[`MULTIMODAL_AVATAR_ARCHITECTURE.md`](MULTIMODAL_AVATAR_ARCHITECTURE.md)。
 
@@ -87,7 +87,7 @@ npm run smoke:cognitive
 - **视频第3段（45—70秒）**：七步路径和“进入当前推荐任务”；
 - **视频第3段可选插入（约5秒）**：10节点先修DAG和论证模板；
 - **视频第7段（155—170秒）**：Model Adapter与微调`not_connected`边界；
-- **视频第7段可选插入（约6秒）**：讯飞ASR/TTS真实音频/转写与数字人`not_connected`边界；
+- **视频第10段（22秒）**：浏览器麦克风PCM→讯飞IAT partial/final→Evidence短答→TTS播放；文件上传0、LearningEvent 0、数字人`not_connected`；
 - **PPT第5/6/7/10页**：在线诊断、ORCDF、路径/知识图、模型与媒体能力路由；
 - **评分项**：技术实现20、技术先进10、创意实用20、完成度10。
 

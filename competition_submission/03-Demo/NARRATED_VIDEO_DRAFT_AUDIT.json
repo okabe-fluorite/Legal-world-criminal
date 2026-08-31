@@ -1,10 +1,10 @@
 {
   "schema": "competition-narrated-demo-draft-audit-v4",
-  "source_git_commit": "947274a591722c8352d7830dd632cd698aebf88b",
+  "source_git_commit": "41bed10f008b6c495a16eefddb50da5b5de1a678",
   "file": "星火智学_真实交互演示_AI配音_DRAFT.mp4",
-  "duration_seconds": 163.2,
-  "bytes": 12539255,
-  "sha256": "f820b3536b356fe3f39decb83b09132c812f0465ccfb20a7ad60118220ca9bb0",
+  "duration_seconds": 162.2,
+  "bytes": 12432308,
+  "sha256": "29e286670dd8a27733dc9e6f1f355236bd1195fbd75db272dba7b237193bb0ee",
   "resolution": "1920x1080",
   "fps": "25/1",
   "media": {
@@ -86,9 +86,9 @@
       },
       {
         "id": "10-iflytek",
-        "visual_duration_seconds": 23.0,
-        "raw_voice_duration_seconds": 22.694,
-        "voice_speed_factor": 1.00193
+        "visual_duration_seconds": 22.0,
+        "raw_voice_duration_seconds": 22.879,
+        "voice_speed_factor": 1.05677
       },
       {
         "id": "11-close",
@@ -102,7 +102,7 @@
       "silence_over_threshold_count": 0,
       "silence_durations_seconds": [],
       "max_silence_seconds": 0.0,
-      "integrated_loudness_lufs": -23.3,
+      "integrated_loudness_lufs": -23.4,
       "true_peak_dbfs": -3.6
     }
   },
@@ -154,11 +154,11 @@
     },
     "10-iflytek": {
       "start_seconds": 133.7,
-      "end_seconds": 156.7
+      "end_seconds": 155.7
     },
     "11-close": {
-      "start_seconds": 156.7,
-      "end_seconds": 163.1
+      "start_seconds": 155.7,
+      "end_seconds": 162.1
     }
   },
   "content_coverage": {
@@ -282,12 +282,12 @@
       },
       {
         "id": "iflytek_asr_tts",
-        "label": "讯飞TTS私有音频、IAT真实转写与数字人后置边界",
+        "label": "讯飞实时IAT partial/final、Evidence回复、TTS播放与数字人后置边界",
         "items": [
           "10-iflytek"
         ],
         "start_seconds": 133.7,
-        "end_seconds": 156.7,
+        "end_seconds": 155.7,
         "present": true
       }
     ]
@@ -319,7 +319,7 @@
     },
     "06-agent-architecture": {
       "source": "slide-08.png",
-      "sha256": "daa54d1aafc613e72ccfa0409c9f367fbf21f745e72fd770f830b7f813a64739"
+      "sha256": "42fb97ba5c201dbc8a6cf9fb382ace9ba6632310be71c6471cf3c9a9cc917745"
     },
     "07-case-inv": {
       "source": "CASE3_E2E_INV.png",
@@ -334,8 +334,8 @@
       "sha256": "7883e8bca5ab07dd0249c709f8e5d1eb23f361f89edd91ecf3e2b9265a65e41c"
     },
     "10-iflytek": {
-      "source": "iflytek-tts-iat.webm",
-      "sha256": "11d61e17c757d50a0d19da347bc32f246f953efed82ba2b7f545eafffaf03a25"
+      "source": "iflytek-realtime-voice.webm",
+      "sha256": "8cd1efa5c9d29991d55d27f8e46bae4aac9c7da6cc34e417a99821c41e21da0a"
     },
     "11-close": {
       "source": "slide-12.png",
@@ -353,11 +353,15 @@
   },
   "iflytek_speech_segment_audit": {
     "file": "IFLYTEK_BROWSER_VIDEO_SEGMENT_AUDIT.json",
-    "source_git_commit": "b4c097b8b715e94071ea09c131b673dd9d66e145",
-    "duration_seconds": 23.04,
-    "sha256": "11d61e17c757d50a0d19da347bc32f246f953efed82ba2b7f545eafffaf03a25",
+    "source_git_commit": "9817d321c0af5c656fcbaa9c3a4e1da3e6df95a9",
+    "duration_seconds": 17,
+    "sha256": "8cd1efa5c9d29991d55d27f8e46bae4aac9c7da6cc34e417a99821c41e21da0a",
     "browser_error_total": 0,
     "available_capabilities": 3,
+    "browser_pcm_frames": 194,
+    "partial_results": 28,
+    "final_results": 1,
+    "file_upload_requests": 0,
     "asr_status": "needs_review",
     "digital_human_status": "not_connected"
   },
@@ -387,7 +391,7 @@
     "subtitles_max_two_lines": true,
     "ai_voice_label_visible_throughout": true,
     "silence_over_1_2_seconds_detected": false,
-    "max_voice_speed_factor": 1.0371,
+    "max_voice_speed_factor": 1.05677,
     "duration_under_180_seconds": true
   },
   "evidence_boundary": "AI-voiced DRAFT assembled from seven audited real browser interactions, three PPT stills, and two frozen case3 audit snapshots; not the final team-approved submission, not target-user evidence, and not expert validation"

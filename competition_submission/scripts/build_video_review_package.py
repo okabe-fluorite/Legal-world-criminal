@@ -11,6 +11,7 @@ import hashlib
 import json
 import subprocess
 import sys
+import shutil
 import zipfile
 from datetime import date
 from pathlib import Path
@@ -251,6 +252,11 @@ def main() -> int:
     output = args.output.resolve()
     if not video.is_file():
         raise SystemExit(f"Video not found: {video}")
+    allowed_root = (SUBMISSION / "06-效果验证").resolve()
+    if not output.is_relative_to(allowed_root) or output.name != "视频审片包_DRAFT":
+        raise SystemExit("Review output must be the named DRAFT directory inside 06-效果验证")
+    if output.exists():
+        shutil.rmtree(output)
     audit = load(VIDEO_AUDIT)
     if sha256(video) != audit["sha256"]:
         raise SystemExit("Video SHA does not match public audit")

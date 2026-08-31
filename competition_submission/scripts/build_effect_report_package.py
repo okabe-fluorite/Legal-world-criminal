@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import subprocess
 import sys
 import zipfile
@@ -140,7 +141,7 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
                 ("ORCDF shadow", "同47题AUC V0/V1/V2=0.7272/0.7489/0.7528", "数据来自MOOCCubeX民法/宪法；不可用主范围比较Q矩阵优劣"),
                 ("七步路径", "薄弱点、先修、选择、主观、案件、角色互换、复习", "候选排序，不宣称因果最优"),
                 ("Model Adapter", "OpenCode/DeepSeek基线；四任务统一路由", "微调not_connected，不称LoRA/SFT完成"),
-                ("知识图/媒体", "10节点、10条先修边、6步论证模板；私有上传与浏览器朗读可用", "云ASR/TTS/Avatar未接入未验收；媒体不进入画像"),
+                ("知识图/实时语音", "10节点、10条先修边、6步论证模板；讯飞实时IAT partial/final、Evidence回复与TTS多轮通过", "ASR需复核、媒体不进入画像；OCR/数字人未连接"),
                 ("可信RAG", f"三题自动门禁{typical['automated_gate_pass_count']}/{typical['case_count']}；错误引用2/2拒绝", "自动门禁不等于专家准确率"),
                 ("教师HITL", "退回-原文修订-批准；同稿单决定、单事件", "合成账号浏览器闭环，不是用户试用"),
                 ("case3 Agent", f"{frozen['case3_e2e']['elapsed_seconds']}秒、{frozen['case3_e2e']['fixed_response_count']}次固定回答、3/3 Agent退场、0错误", "不是29名用户；不起诉分支非专家结论"),
@@ -157,8 +158,8 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
                 ("关键法条", f"{legal['target_article_pass_count']}/{legal['target_article_count']}", "5条来源、版本、文本一致", "全量法库或具体适法正确"),
                 ("三案例彩排", f"{rehearsal['routes_passed']}/{rehearsal['route_count']}、{rehearsal['duration_seconds']}秒、浏览器错误{rehearsal['browser_error_total']}", "同一本地栈三条UI路线可重复", "真实用户认可或学习效果"),
                 ("网页PPT", f"12页、浏览器错误{web_errors}、溢出0", "主要视口可用", "目标用户可用性"),
-                ("PPTX", "12页、CRC通过、全幅嵌入图与浏览器QA逐页一致", "PPTX结构和视觉源一致", "本轮PowerPoint COM重渲染未执行；内容专家认可"),
-                ("演示视频", f"{video['duration_seconds']}秒、7/7、{video['qa']['max_voice_speed_factor']}×、静音{video['audio']['analysis']['silence_over_threshold_count']}", "≤180秒、内容覆盖、媒体门禁", "团队批准或用户认可"),
+                ("PPTX", "12页、1,549,008字节；PowerPoint COM回渲染12页；最大像素差0.094643", "PPTX结构、视觉源和实际PowerPoint渲染一致", "内容专家认可"),
+                ("演示视频", f"{video['duration_seconds']}秒、12/12、{video['qa']['max_voice_speed_factor']}×、静音{video['audio']['analysis']['silence_over_threshold_count']}", "≤180秒、内容覆盖、实时语音与媒体门禁", "团队批准或用户认可"),
             ],
             [31, 45, 50, 45],
             st,
@@ -279,6 +280,11 @@ def main() -> int:
     register_fonts()
     st = styles()
     output = args.output.resolve()
+    allowed_root = (SUBMISSION / "06-效果验证").resolve()
+    if not output.is_relative_to(allowed_root) or output.name != "效果验证报告包_DRAFT":
+        raise SystemExit("Effect-report output must be the named DRAFT directory inside 06-效果验证")
+    if output.exists():
+        shutil.rmtree(output)
     public_dir = output / "public"
     private_dir = output / "private"
     public_dir.mkdir(parents=True, exist_ok=True)
@@ -320,10 +326,10 @@ def main() -> int:
     private_sha.write_text(f"{sha256(private_zip)}  {private_zip.name}\n", encoding="utf-8")
     public_text = pdf_text(report_path)
     private_text = pdf_text(approval_path)
-    required_public = ["L1 软件机制", "L2 法学内容", "L3 用户可用性", "L4 学习效果", "真实参与者0人", "不作效果声称", "不支持的结论", "微调not_connected", "专家状态", "PENDING", "三案例彩排", "云ASR/TTS/Avatar未接入未验收"]
+    required_public = ["L1 软件机制", "L2 法学内容", "L3 用户可用性", "L4 学习效果", "真实参与者0人", "不作效果声称", "不支持的结论", "微调not_connected", "专家状态", "PENDING", "三案例彩排", "讯飞实时IAT", "ASR需复核"]
     missing_public = [value for value in required_public if value not in public_text]
     compact_public = re.sub(r"\s+", "", public_text)
-    required_compact = ["PowerPointCOM重渲染未执行"]
+    required_compact = ["PowerPointCOM回渲染12页", "OCR/数字人未连接"]
     missing_public.extend(
         value for value in required_compact if value not in compact_public
     )

@@ -14,19 +14,19 @@
 | LegalEduEval-v1 | 100题；25/25/20/15/15；30/70；跨split来源家族0重叠 | 候选评测结构、pending语义和Runner已冻结 | 教师Gold、无预训练污染或模型成绩 |
 | Agent消融 | C0/C1最终Gate均通过；要件4/4；反方2→3；耗时×5.7753；token×2.7167 | 固定条件下Agent增加一条反方并增加成本 | Agent普遍或教学质量更优 |
 | ORCDF shadow | 外展只采用同47题V1−V0 +0.02994，95%CI [0.00372,0.05366] | 民法/宪法公开行为中存在受控预测差异 | 刑法课堂掌握率或路径因果效果 |
-| 讯飞ASR/TTS | 真实TTS WAV 207,892字节；16kHz/单声道/16bit；IAT转写相似度1.0；产品API/浏览器均通过 | 讯飞短音频合成、私有下载与转写真实可运行 | 转写无需复核、课堂学习效果或数字人完成 |
+| 实时语音多模态 | 浏览器两轮384个PCM分片、54个partial、2个final、2个Evidence回复与2段讯飞TTS；文件上传0；窄屏单轮192分片；视频正式段194分片/28 partial | 浏览器麦克风实时流→讯飞IAT→Evidence回复→TTS播放与多轮状态机可运行 | 多说话人课堂ASR准确率、转写无需复核、课堂学习效果或数字人完成 |
 | 2D导师 | 4张透明WebP；3允许场景；朗读嘴形切换；画像更新0 | 交互机制、AI标识和媒体边界可运行 | Live2D、讯飞数字人已接通或学习增益 |
 
 ## 自动验证
 
-- 后端全量`unittest`：112/112通过。
+- 后端全量`unittest`：125/125通过。
 - 前端生产构建：通过；4张WebP进入bundle。
 - 浏览器：1500×980三条导师路线、780×900两条路线通过；私有字段、console/page/HTTP/request错误0。
 - 技术证据总账：1500×980与780×900四页完整通过，横向溢出0；API实时投影6份审计SHA，敏感/私有字段0。
-- 讯飞真实语音：直接TTS→IAT与产品API均通过；浏览器1500×980显示ASR/TTS `available`、数字人`not_connected`，私有/console/page/HTTP/request错误0。
+- 讯飞真实语音：直接TTS→IAT保留为Provider单元验收；产品主链已升级为浏览器AudioWorklet实时PCM→IAT partial/final→受治理Evidence回复→TTS自动播放。桌面两轮与窄屏一轮均通过，文件上传0、LearningEvent 0→0、数字人`not_connected`，私有/console/page/HTTP/request错误0。
 - Agent真实run：固定OpenCode `deepseek-v4-flash`主端，无fallback混用；原始输出、ID归一和最终Gate全部保留。
 - PPT网页：12页Swiss validator通过；1600×900 overflow 0、图片失败0、console/page/request错误0。
-- PPTX：PowerPoint实际回渲染12/12页；1.35MB；最大平均像素差0.094646。
+- PPTX：PowerPoint实际回渲染12/12页；1,549,008字节；最大平均像素差0.094643。第11页实时语音截图经独立视觉复审修复后解除投屏可读性阻断。
 
 ## 仍需真实人员完成
 

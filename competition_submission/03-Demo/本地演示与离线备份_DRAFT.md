@@ -232,4 +232,4 @@ py competition_submission/scripts/build_narrated_demo.py `
   --public-audit competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json
 ```
 
-脚本使用本机`Microsoft Huihui Desktop`，把技术主线V2封面/Agent消融/片尾、7段真实交互与2张去标识INV/PR审计快照组合，生成1080p H.264/AAC、12段中文字幕和全程AI配音标识。当前提议审片版163.2秒、约11.96MiB，最大旁白语速1.0371倍，未检出超过1.2秒静音；视频SHA与12项内容覆盖见公开审计。它仍是DRAFT，不自动升级为最终参赛视频。
+脚本使用本机`Microsoft Huihui Desktop`，把技术主线V2封面/Agent消融/片尾、7段真实交互、1段讯飞实时语音与2张去标识INV/PR审计快照组合，生成1080p H.264/AAC、12段中文字幕和全程AI配音标识。当前提议审片版162.2秒、约11.86MiB，最大旁白语速1.05677倍，未检出超过1.2秒静音；实时语音段记录194个PCM帧、28个partial、文件上传0和LearningEvent 0。视频SHA与12项内容覆盖见公开审计。它仍是DRAFT，不自动升级为最终参赛视频。

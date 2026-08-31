@@ -19,8 +19,8 @@
 - 三案例统一彩排：认知/路径/适配器、三个可信RAG问题、教师HITL三条真实UI路线在同一SQLite+adaptive+Vite栈3/3通过，总计107.25秒，console/page/HTTP/request错误均为0；仍是合成账号软件证据。
 - 标杆案件冻结演示库：LC→INV→PR→不起诉→结案，461.547秒；测试脚本提供29次固定回答（非29名真人、非用户证据）；case3产生3个阶段LearningEvent、3/3 Agent退场、0 runtime issue。
 - Model Adapter：四任务路由可见；当前基线OpenCode/DeepSeek；微调端点`not_connected`。
-- 知识图与媒体：10节点/10条先修边来自受治理KnowledgeCard，六步论证图是模板；私有上传和浏览器朗读可用，云ASR/TTS/Avatar未接入未验收，媒体不进入LearningEvent或画像。
-- 比赛材料：技术主线V2 PPT 12页，浏览器四类错误为0；PPTX 1.64MB并经PowerPoint COM回渲染12页；163.2秒1080p AI配音视频覆盖12项强制技术，含真实讯飞TTS→IAT产品段，最大语速1.0371倍且未检出超过1.2秒静音，仍为DRAFT并待团队完整审片。
+- 知识图与媒体：10节点/10条先修边来自受治理KnowledgeCard，六步论证图是模板；私有上传和浏览器朗读可用；讯飞实时ASR/TTS已接通并完成桌面两轮/窄屏一轮与视频段验收，数字人/OCR继续`not_connected`；媒体不进入LearningEvent或画像。
+- 比赛材料：技术主线V2 PPT 12页，浏览器四类错误为0；PPTX 1,549,008字节并经PowerPoint COM回渲染12页；162.2秒1080p AI配音视频覆盖12项强制技术，含浏览器麦克风实时PCM→讯飞IAT partial/final→Evidence回复→TTS播放产品段，最大语速1.05677倍且未检出超过1.2秒静音，仍为DRAFT并待团队完整审片。
 
 | 机制 | 权威证据文件 | 版本/日期 |
 |---|---|---|
@@ -34,7 +34,7 @@
 | 三案例统一浏览器彩排 | `competition_submission/03-Demo/THREE_ROUTE_REHEARSAL_AUDIT.json`、`.md` | 3/3、107.25秒、浏览器四类错误0、服务全部停止；合成账号 |
 | case3冻结演示E2E | `competition_submission/03-Demo/FROZEN_DEMO_AUDIT.json`、`CASE3_INV_PR_SNAPSHOT.json` | 461.547秒、29次固定脚本回答、0 runtime issue；不起诉分支非专家结论 |
 | Guizang PPT | `competition_submission/04-作品方案/guizang/qa/report.json`、`pptx-report.json` | 12页；浏览器四类错误为0；PPTX CRC/全幅/逐页图片一致性通过；PowerPoint COM重渲染未执行 |
-| 演示视频DRAFT | `competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json` | 163.2秒、1920×1080；SHA `f820b353...a9bb0`；12项技术12/12、AI配音标识可见 |
+| 演示视频DRAFT | `competition_submission/03-Demo/NARRATED_VIDEO_DRAFT_AUDIT.json` | 162.2秒、1920×1080；SHA `29e28667...bb0ee`；12项技术12/12、AI配音标识可见 |
 | 团队审片材料 | `competition_submission/06-效果验证/视频审片包_DRAFT/MANIFEST.json`、`BUILD_AUDIT.json` | 18帧接触表、技术PDF与三角色批准表已就绪；真实批准仍为0/3 |
 
 ### L1量化摘要
@@ -47,7 +47,7 @@
 | 典型问题自动门禁 | 3/3；错误引用2/2拒绝 | 结构、标准要点、允许来源与逐字quote门禁通过 | 独立专家准确率 |
 | 关键法条时效 | 5/5 | 5条目标法条的来源、版本和文本一致 | 全量法库时效或具体案件适法正确 |
 | Guizang网页/PPTX | 12页；Web四类错误0；CRC/全幅/逐页图片一致 | 主要展示视口与交付PPTX视觉源一致 | PowerPoint COM重渲染、目标用户可用性 |
-| AI配音视频DRAFT | 163.2秒、1920×1080 | 已形成180秒以内、12项技术12/12的可审片草案 | 团队最终批准或真实用户认可 |
+| AI配音视频DRAFT | 162.2秒、1920×1080 | 已形成180秒以内、12项技术12/12的可审片草案；实时语音段194 PCM帧/28 partial/文件上传0 | 团队最终批准或真实用户认可 |
 
 ## 3. L2三题内容验证
 
