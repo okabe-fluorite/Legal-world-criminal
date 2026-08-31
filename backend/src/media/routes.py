@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field, model_validator
 from sqlalchemy.orm import Session
 
@@ -131,6 +132,22 @@ def create_media_router(
     ):
         return call(lambda: runtime.get_asset(session=session, user=current_user, asset_id=asset_id))
 
+    @router.get("/api/multimodal/assets/{asset_id}/content")
+    async def asset_content(
+        asset_id: str,
+        current_user: User = Depends(current_user_dependency),
+        session: Session = Depends(session_dependency),
+    ):
+        path, content_type, filename = call(
+            lambda: runtime.get_asset_content(
+                session=session,
+                user=current_user,
+                storage_root=storage_root_provider(session, current_user),
+                asset_id=asset_id,
+            )
+        )
+        return FileResponse(path, media_type=content_type, filename=filename)
+
     @router.post("/api/multimodal/transcriptions")
     async def transcribe(
         body: TranscriptionBody,
@@ -153,6 +170,7 @@ def create_media_router(
                     "language": body.language,
                     "hotword_count": len(body.hotwords),
                 },
+                storage_root=storage_root_provider(session, current_user),
             )
         )
 
@@ -227,6 +245,7 @@ def create_media_router(
                     "audio_format": body.audio_format,
                     "ai_generated_disclosure": True,
                 },
+                storage_root=storage_root_provider(session, current_user),
             )
         )
 

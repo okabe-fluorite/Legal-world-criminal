@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import os
 import re
+import wave
 from pathlib import Path, PurePosixPath
 from typing import Any
 from uuid import uuid4
@@ -11,7 +13,11 @@ from uuid import uuid4
 from sqlalchemy.orm import Session
 
 from src.core.models import MediaAssetRecord, MediaJobRecord, User
-from .providers import build_iflytek_provider_catalog
+from .providers import (
+    IflytekSpeechProvider,
+    ProviderUnavailableError,
+    build_iflytek_provider_catalog,
+)
 
 
 MAX_ASSET_BYTES = 15 * 1024 * 1024
@@ -93,16 +99,31 @@ def _env_present(*names: str) -> bool:
 class MediaService:
     """Persist private media metadata and honest provider job states.
 
-    This first implementation intentionally ships no cloud provider client.
-    A configured credential slot therefore remains ``not_connected`` until a
-    tested adapter implementing :class:`MediaProvider` is registered.
+    iFlytek IAT/TTS is executed synchronously for short classroom clips. Cloud
+    output remains private and cannot create a LearningEvent without review.
     """
 
     schema_version = "simlaw-media-v1"
 
+    def __init__(self, *, iflytek_provider: IflytekSpeechProvider | None = None) -> None:
+        self._iflytek_provider_override = iflytek_provider
+        self._verified_capabilities: set[str] = set()
+
+    def _iflytek_provider(self) -> IflytekSpeechProvider | None:
+        if self._iflytek_provider_override is not None:
+            return self._iflytek_provider_override
+        try:
+            return IflytekSpeechProvider.from_environment()
+        except ProviderUnavailableError:
+            return None
+
     def capabilities(self) -> dict[str, Any]:
-        xfyun_credentials = _env_present("XFYUN_APP_ID", "XFYUN_API_KEY", "XFYUN_API_SECRET")
-        xfyun_reference = build_iflytek_provider_catalog()
+        xfyun_credentials = self._iflytek_provider_override is not None or _env_present(
+            "XFYUN_APP_ID", "XFYUN_API_KEY", "XFYUN_API_SECRET"
+        )
+        xfyun_reference = build_iflytek_provider_catalog(
+            verified=bool(self._verified_capabilities)
+        )
         azure_credentials = _env_present("AZURE_SPEECH_KEY", "AZURE_SPEECH_REGION")
         local_asr_slot = bool(str(os.getenv("SIMLAW_FASTER_WHISPER_MODEL", "")).strip())
         return {
@@ -122,14 +143,18 @@ class MediaService:
                 {
                     "capability_id": "speech_to_text",
                     "priority": "P1",
-                    "implementation_status": "interface_reserved",
-                    "connection_status": "not_connected",
+                    "implementation_status": "implemented",
+                    "connection_status": (
+                        "available"
+                        if "speech_to_text" in self._verified_capabilities
+                        else "not_connected"
+                    ),
                     "endpoint": "POST /api/multimodal/transcriptions",
                     "provider_options": [
                         {
                             "provider_id": "xfyun_streaming_asr",
                             "credentials_present": xfyun_credentials,
-                            "adapter_status": "not_implemented",
+                            "adapter_status": "implemented_real_call_required",
                         },
                         {
                             "provider_id": "faster_whisper_local",
@@ -149,8 +174,12 @@ class MediaService:
                 {
                     "capability_id": "text_to_speech",
                     "priority": "P1",
-                    "implementation_status": "interface_reserved",
-                    "connection_status": "not_connected",
+                    "implementation_status": "implemented",
+                    "connection_status": (
+                        "available"
+                        if "text_to_speech" in self._verified_capabilities
+                        else "not_connected"
+                    ),
                     "endpoint": "POST /api/speech/synthesis",
                     "client_fallback": {
                         "provider_id": "browser_speech_synthesis",
@@ -161,7 +190,7 @@ class MediaService:
                         {
                             "provider_id": "xfyun_online_tts",
                             "credentials_present": xfyun_credentials,
-                            "adapter_status": "not_implemented",
+                            "adapter_status": "implemented_real_call_required",
                         }
                     ],
                 },
@@ -256,6 +285,96 @@ class MediaService:
             raise MediaNotFoundError("media asset not found")
         return self._serialize_asset(row)
 
+    def get_asset_content(
+        self,
+        *,
+        session: Session,
+        user: User,
+        storage_root: Path,
+        asset_id: str,
+    ) -> tuple[Path, str, str]:
+        row = session.get(MediaAssetRecord, str(asset_id))
+        if row is None or row.user_id != str(user.id):
+            raise MediaNotFoundError("media asset not found")
+        target = self._asset_path(storage_root=storage_root, storage_key=row.storage_key)
+        if not target.is_file():
+            raise MediaNotFoundError("media asset content not found")
+        return target, row.content_type, row.original_name
+
+    @staticmethod
+    def _asset_path(*, storage_root: Path, storage_key: str) -> Path:
+        root = Path(storage_root).resolve()
+        target = (root / Path(storage_key)).resolve()
+        if not target.is_relative_to(root):
+            raise MediaValidationError("invalid media storage path")
+        return target
+
+    @staticmethod
+    def _pcm_to_wav(pcm: bytes, *, sample_rate: int) -> bytes:
+        output = io.BytesIO()
+        with wave.open(output, "wb") as wav:
+            wav.setnchannels(1)
+            wav.setsampwidth(2)
+            wav.setframerate(sample_rate)
+            wav.writeframes(pcm)
+        return output.getvalue()
+
+    @staticmethod
+    def _transcription_audio(path: Path, content_type: str) -> tuple[bytes, str, int]:
+        data = path.read_bytes()
+        if content_type in {"audio/wav", "audio/x-wav"}:
+            try:
+                with wave.open(io.BytesIO(data), "rb") as wav:
+                    if wav.getnchannels() != 1 or wav.getsampwidth() != 2:
+                        raise MediaValidationError(
+                            "iFlytek IAT requires mono 16-bit WAV audio"
+                        )
+                    sample_rate = wav.getframerate()
+                    if sample_rate not in {8000, 16000}:
+                        raise MediaValidationError(
+                            "iFlytek IAT requires 8kHz or 16kHz WAV audio"
+                        )
+                    return wav.readframes(wav.getnframes()), "raw", sample_rate
+            except wave.Error as exc:
+                raise MediaValidationError("invalid WAV audio") from exc
+        if content_type in {"audio/mpeg", "audio/mp3"}:
+            return data, "lame", 16000
+        raise MediaValidationError("iFlytek IAT currently supports WAV or MP3")
+
+    def _store_generated_asset(
+        self,
+        *,
+        session: Session,
+        user: User,
+        storage_root: Path,
+        data: bytes,
+        content_type: str,
+        filename: str,
+    ) -> MediaAssetRecord:
+        asset_id = f"asset_{uuid4().hex}"
+        extension = CONTENT_EXTENSIONS[content_type]
+        storage_key = PurePosixPath(
+            "media", "generated", f"{asset_id}{extension}"
+        ).as_posix()
+        target = self._asset_path(storage_root=storage_root, storage_key=storage_key)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+        row = MediaAssetRecord(
+            asset_id=asset_id,
+            user_id=str(user.id),
+            purpose="speech_output",
+            media_type="audio",
+            content_type=content_type,
+            original_name=_safe_original_name(filename),
+            size_bytes=len(data),
+            content_sha256=hashlib.sha256(data).hexdigest(),
+            storage_key=storage_key,
+            status="active",
+        )
+        session.add(row)
+        session.flush()
+        return row
+
     def submit_job(
         self,
         *,
@@ -267,6 +386,7 @@ class MediaService:
         request_summary: dict[str, Any],
         asset_id: str | None = None,
         provider: str = "auto",
+        storage_root: Path | None = None,
     ) -> dict[str, Any]:
         normalized_job_type = str(job_type or "").strip().lower()
         if normalized_job_type not in JOB_CAPABILITY:
@@ -317,9 +437,117 @@ class MediaService:
         )
         session.add(row)
         session.flush()
+        if normalized_job_type in {"transcription", "speech_synthesis"}:
+            self._execute_iflytek_job(
+                session=session,
+                user=user,
+                row=row,
+                request_payload=request_payload,
+                asset=asset if asset_id else None,
+                storage_root=storage_root,
+            )
         result = self._serialize_job(row)
         result["job_status"] = "inserted"
         return result
+
+    def _execute_iflytek_job(
+        self,
+        *,
+        session: Session,
+        user: User,
+        row: MediaJobRecord,
+        request_payload: dict[str, Any],
+        asset: MediaAssetRecord | None,
+        storage_root: Path | None,
+    ) -> None:
+        accepted = {
+            "auto",
+            "xfyun",
+            "iflytek_websocket",
+            "xfyun_streaming_asr",
+            "xfyun_online_tts",
+        }
+        if row.provider_requested not in accepted or storage_root is None:
+            return
+        provider = self._iflytek_provider()
+        if provider is None:
+            return
+        row.provider_resolved = provider.provider_id
+        row.status = "running"
+        row.error_code = ""
+        row.error_message = ""
+        try:
+            if row.job_type == "speech_synthesis":
+                requested_format = str(request_payload.get("audio_format") or "mp3")
+                requested_voice = str(request_payload.get("voice") or "standard_zh")
+                voice = (
+                    str(os.getenv("XFYUN_TTS_VOICE", "xiaoyan"))
+                    if requested_voice == "standard_zh"
+                    else requested_voice
+                )
+                response = provider.synthesize(
+                    text=str(request_payload.get("text") or ""),
+                    voice=voice,
+                    audio_format=requested_format,
+                )
+                audio = response.audio
+                content_type = response.content_type
+                if requested_format == "wav":
+                    audio = self._pcm_to_wav(audio, sample_rate=response.sample_rate)
+                generated = self._store_generated_asset(
+                    session=session,
+                    user=user,
+                    storage_root=storage_root,
+                    data=audio,
+                    content_type=content_type,
+                    filename=f"{row.job_id}.{CONTENT_EXTENSIONS[content_type].lstrip('.')}",
+                )
+                row.asset_id = generated.asset_id
+                row.status = "succeeded"
+                row.result_json = {
+                    "output_asset_id": generated.asset_id,
+                    "content_type": generated.content_type,
+                    "size_bytes": generated.size_bytes,
+                    "content_sha256": generated.content_sha256,
+                    "content_url": f"/api/multimodal/assets/{generated.asset_id}/content",
+                    "provider_sid": response.provider_sid,
+                    "ai_generated_disclosure": True,
+                }
+                self._verified_capabilities.add("text_to_speech")
+            else:
+                if asset is None:
+                    raise MediaValidationError("transcription requires an audio asset")
+                source = self._asset_path(
+                    storage_root=storage_root, storage_key=asset.storage_key
+                )
+                audio, encoding, sample_rate = self._transcription_audio(
+                    source, asset.content_type
+                )
+                response = provider.transcribe(
+                    audio=audio,
+                    language=str(request_payload.get("language") or "zh_cn"),
+                    encoding=encoding,
+                    sample_rate=sample_rate,
+                )
+                row.status = "needs_review"
+                row.result_json = {
+                    "transcript": response.transcript,
+                    "transcript_sha256": hashlib.sha256(
+                        response.transcript.encode("utf-8")
+                    ).hexdigest(),
+                    "segments": list(response.segments),
+                    "provider_sid": response.provider_sid,
+                    "human_review_required": True,
+                }
+                self._verified_capabilities.add("speech_to_text")
+        except MediaValidationError:
+            raise
+        except ProviderUnavailableError as exc:
+            error_code = str(exc).split(":", 1)[0]
+            row.status = "failed"
+            row.error_code = error_code
+            row.error_message = "iFlytek request failed without exposing credentials"
+        session.flush()
 
     def get_job(
         self,

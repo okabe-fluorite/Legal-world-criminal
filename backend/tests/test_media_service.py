@@ -13,6 +13,11 @@ from sqlalchemy import func, select
 from src.core.database import Base, create_database_engine, create_session_factory, get_db_session
 from src.core.models import LearningEventRecord, MediaAssetRecord, MediaJobRecord, User
 from src.media.routes import create_media_router
+from src.media.providers import (
+    IflytekAudioResult,
+    IflytekTranscriptionResult,
+    ProviderUnavailableError,
+)
 from src.media.service import (
     MediaConflictError,
     MediaNotFoundError,
@@ -235,6 +240,136 @@ class MediaServiceTests(unittest.TestCase):
                 },
             )
             self.assertEqual(unsafe_avatar.status_code, 422)
+
+    def test_verified_iflytek_tts_and_asr_create_private_outputs_without_learning_event(self) -> None:
+        phrase = "罪刑法定原则要求法无明文规定不为罪。"
+
+        class FakeIflytek:
+            provider_id = "iflytek_websocket"
+
+            def synthesize(self, *, text: str, voice: str, audio_format: str):
+                self.assertions = (text, voice, audio_format)
+                return IflytekAudioResult(
+                    audio=b"\x00\x00" * 3200,
+                    content_type="audio/wav",
+                    sample_rate=16000,
+                    provider_sid="tts-safe-sid",
+                )
+
+            def transcribe(
+                self,
+                *,
+                audio: bytes,
+                language: str,
+                encoding: str,
+                sample_rate: int,
+            ):
+                if not audio or language != "zh_cn" or encoding != "raw" or sample_rate != 16000:
+                    raise AssertionError("unexpected IAT request")
+                return IflytekTranscriptionResult(
+                    transcript=phrase,
+                    provider_sid="iat-safe-sid",
+                    segments=({"sn": 0, "text": phrase, "final": True},),
+                )
+
+        service = MediaService(iflytek_provider=FakeIflytek())
+
+        def session_dependency():
+            with get_db_session(self.factory) as session:
+                yield session
+
+        def current_user(
+            x_media_user: str = Header(default="media-user-1"),
+            session=Depends(session_dependency),
+        ) -> User:
+            user = session.get(User, x_media_user)
+            if user is None:
+                raise HTTPException(status_code=401, detail="unknown test user")
+            return user
+
+        app = FastAPI()
+        app.include_router(
+            create_media_router(
+                current_user_dependency=current_user,
+                session_dependency=session_dependency,
+                storage_root_provider=lambda _session, user: self.root / str(user.id),
+                service=service,
+            )
+        )
+        with TestClient(app) as client:
+            tts = client.post(
+                "/api/speech/synthesis",
+                json={
+                    "job_id": "verified-tts",
+                    "text": phrase,
+                    "voice": "standard_zh",
+                    "audio_format": "wav",
+                    "provider": "xfyun_online_tts",
+                    "ai_generated_disclosure": True,
+                },
+            )
+            self.assertEqual(tts.status_code, 200, tts.text)
+            self.assertEqual(tts.json()["status"], "succeeded")
+            asset_id = tts.json()["result"]["output_asset_id"]
+            audio = client.get(f"/api/multimodal/assets/{asset_id}/content")
+            self.assertEqual(audio.status_code, 200)
+            self.assertTrue(audio.content.startswith(b"RIFF"))
+            self.assertEqual(
+                client.get(
+                    f"/api/multimodal/assets/{asset_id}/content",
+                    headers={"X-Media-User": "media-user-2"},
+                ).status_code,
+                404,
+            )
+            iat = client.post(
+                "/api/multimodal/transcriptions",
+                json={
+                    "job_id": "verified-iat",
+                    "asset_id": asset_id,
+                    "language": "zh_cn",
+                    "provider": "xfyun_streaming_asr",
+                },
+            )
+            self.assertEqual(iat.status_code, 200, iat.text)
+            self.assertEqual(iat.json()["status"], "needs_review")
+            self.assertEqual(iat.json()["result"]["transcript"], phrase)
+            capabilities = {
+                row["capability_id"]: row
+                for row in client.get("/api/media/capabilities").json()["capabilities"]
+            }
+            self.assertEqual(capabilities["speech_to_text"]["connection_status"], "available")
+            self.assertEqual(capabilities["text_to_speech"]["connection_status"], "available")
+        with get_db_session(self.factory) as session:
+            self.assertEqual(session.scalar(select(func.count()).select_from(MediaJobRecord)), 2)
+            self.assertEqual(session.scalar(select(func.count()).select_from(LearningEventRecord)), 0)
+
+    def test_iflytek_failure_is_sanitized(self) -> None:
+        class FailingIflytek:
+            provider_id = "iflytek_websocket"
+
+            def synthesize(self, **_kwargs):
+                raise ProviderUnavailableError("iflytek_tts_failed:SignedUrlWithSecret")
+
+        service = MediaService(iflytek_provider=FailingIflytek())
+        with get_db_session(self.factory) as session:
+            user = session.get(User, "media-user-1")
+            result = service.submit_job(
+                session=session,
+                user=user,
+                job_id="failed-tts",
+                job_type="speech_synthesis",
+                provider="xfyun_online_tts",
+                storage_root=self.root / user.id,
+                request_payload={
+                    "text": "测试",
+                    "voice": "standard_zh",
+                    "audio_format": "wav",
+                },
+                request_summary={"text_sha256": "safe"},
+            )
+            serialized = json.dumps(result, ensure_ascii=False)
+            self.assertEqual(result["status"], "failed")
+            self.assertNotIn("SignedUrlWithSecret", serialized)
 
 
 if __name__ == "__main__":

@@ -55,6 +55,23 @@ model=file-model
         self.assertEqual(env["OPENAI_API_KEY"], "explicit-primary")
         self.assertEqual(env["OPENAI_MODEL_NAME"], "file-model")
 
+    def test_iflytek_generic_names_map_without_overriding_explicit_values(self) -> None:
+        content = """
+APPID=app-from-file
+APIKey=key-from-file
+APISecret=secret-from-file
+APIPassword=password-not-used-by-iat-tts
+""".strip()
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "speech.env.example"
+            path.write_text(content, encoding="utf-8")
+            env = {"XFYUN_API_KEY": "explicit-key"}
+            START.apply_iflytek_config(env, path)
+        self.assertEqual(env["XFYUN_APP_ID"], "app-from-file")
+        self.assertEqual(env["XFYUN_API_KEY"], "explicit-key")
+        self.assertEqual(env["XFYUN_API_SECRET"], "secret-from-file")
+        self.assertNotIn("APIPassword", env)
+
 
 if __name__ == "__main__":
     unittest.main()

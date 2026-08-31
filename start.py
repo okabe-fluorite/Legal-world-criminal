@@ -110,11 +110,27 @@ def apply_grouped_model_config(env: dict[str, str], path: Path) -> dict[str, str
     return env
 
 
+def apply_iflytek_config(env: dict[str, str], path: Path) -> dict[str, str]:
+    """Map the user's generic iFlytek section without printing or copying keys."""
+
+    values = read_env_file(path)
+    mapping = {
+        "XFYUN_APP_ID": "APPID",
+        "XFYUN_API_KEY": "APIKey",
+        "XFYUN_API_SECRET": "APISecret",
+    }
+    for target, source in mapping.items():
+        if not str(env.get(target) or "").strip() and str(values.get(source) or "").strip():
+            env[target] = values[source]
+    return env
+
+
 def build_backend_env(model_config: Path | None = None) -> dict[str, str]:
     # Explicit process environment wins over repository .env and grouped file.
     env = {**read_env_file(ROOT_ENV_PATH), **os.environ}
     if model_config is not None:
         apply_grouped_model_config(env, model_config)
+        apply_iflytek_config(env, model_config)
 
     RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
     database_path = (RUNTIME_DIR / "legalworld-local.db").resolve().as_posix()
@@ -257,6 +273,15 @@ def main() -> int:
         "Fallback:  "
         f"{env.get('SIMLAW_FALLBACK_MODEL_NAME') or 'not configured'} @ "
         f"{_safe_endpoint_label(env.get('SIMLAW_FALLBACK_MODEL_API_BASE_URL', ''))}"
+    )
+    speech_configured = all(
+        str(env.get(name) or "").strip()
+        for name in ("XFYUN_APP_ID", "XFYUN_API_KEY", "XFYUN_API_SECRET")
+    )
+    print(
+        "Speech:    iFlytek ASR/TTS credentials configured"
+        if speech_configured
+        else "Speech:    iFlytek ASR/TTS not configured"
     )
     print("Local SQLite/runtime data:", RUNTIME_DIR)
     print("Press Ctrl+C to stop. No API keys are printed or written.")
