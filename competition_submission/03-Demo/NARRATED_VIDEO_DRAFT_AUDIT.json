@@ -1,10 +1,10 @@
 {
-  "schema": "competition-narrated-demo-draft-audit-v3",
-  "source_git_commit": "83e087eb4ffa25b79f37a08a7776792ccc9e2ad0",
+  "schema": "competition-narrated-demo-draft-audit-v4",
+  "source_git_commit": "947274a591722c8352d7830dd632cd698aebf88b",
   "file": "星火智学_真实交互演示_AI配音_DRAFT.mp4",
-  "duration_seconds": 140.2,
-  "bytes": 10915152,
-  "sha256": "d038a33ee06613aef5b95e6b9d03a3c8ba96188183ca7b9660e0b14adfe90421",
+  "duration_seconds": 163.2,
+  "bytes": 12539255,
+  "sha256": "f820b3536b356fe3f39decb83b09132c812f0465ccfb20a7ad60118220ca9bb0",
   "resolution": "1920x1080",
   "fps": "25/1",
   "media": {
@@ -85,7 +85,13 @@
         "voice_speed_factor": 1.00753
       },
       {
-        "id": "10-close",
+        "id": "10-iflytek",
+        "visual_duration_seconds": 23.0,
+        "raw_voice_duration_seconds": 22.694,
+        "voice_speed_factor": 1.00193
+      },
+      {
+        "id": "11-close",
         "visual_duration_seconds": 6.4,
         "raw_voice_duration_seconds": 6.061,
         "voice_speed_factor": 1.00187
@@ -96,14 +102,14 @@
       "silence_over_threshold_count": 0,
       "silence_durations_seconds": [],
       "max_silence_seconds": 0.0,
-      "integrated_loudness_lufs": -23.2,
+      "integrated_loudness_lufs": -23.3,
       "true_peak_dbfs": -3.6
     }
   },
   "subtitles": {
     "present": true,
     "language": "zh-CN",
-    "count": 11
+    "count": 12
   },
   "timeline": {
     "01-cover": {
@@ -146,14 +152,18 @@
       "start_seconds": 118.7,
       "end_seconds": 133.7
     },
-    "10-close": {
+    "10-iflytek": {
       "start_seconds": 133.7,
-      "end_seconds": 140.1
+      "end_seconds": 156.7
+    },
+    "11-close": {
+      "start_seconds": 156.7,
+      "end_seconds": 163.1
     }
   },
   "content_coverage": {
-    "required_count": 11,
-    "present_count": 11,
+    "required_count": 12,
+    "present_count": 12,
     "all_required_present": true,
     "items": [
       {
@@ -269,6 +279,16 @@
         "start_seconds": 78.8,
         "end_seconds": 133.7,
         "present": true
+      },
+      {
+        "id": "iflytek_asr_tts",
+        "label": "讯飞TTS私有音频、IAT真实转写与数字人后置边界",
+        "items": [
+          "10-iflytek"
+        ],
+        "start_seconds": 133.7,
+        "end_seconds": 156.7,
+        "present": true
       }
     ]
   },
@@ -299,7 +319,7 @@
     },
     "06-agent-architecture": {
       "source": "slide-08.png",
-      "sha256": "57934191b172ea4b9ee1a5d582ef0baabda086fde30a3552317906f57b500e0b"
+      "sha256": "daa54d1aafc613e72ccfa0409c9f367fbf21f745e72fd770f830b7f813a64739"
     },
     "07-case-inv": {
       "source": "CASE3_E2E_INV.png",
@@ -313,9 +333,13 @@
       "source": "05-case3-card-and-evidence.webm",
       "sha256": "7883e8bca5ab07dd0249c709f8e5d1eb23f361f89edd91ecf3e2b9265a65e41c"
     },
-    "10-close": {
+    "10-iflytek": {
+      "source": "iflytek-tts-iat.webm",
+      "sha256": "11d61e17c757d50a0d19da347bc32f246f953efed82ba2b7f545eafffaf03a25"
+    },
+    "11-close": {
       "source": "slide-12.png",
-      "sha256": "6bc619b5af17d4a71dab6831e192f681eb854d86f6d0814d8f6ae32a87817a6e"
+      "sha256": "5d6609d437254b2a34b9e9c61dee8f5332c7cef92a7d3babe5d5e1ba426f513b"
     }
   },
   "source_interaction_audit": "VIDEO_SEGMENTS_AUDIT.json",
@@ -326,6 +350,16 @@
     "sha256": "7aa226f9475dfaa337d416f9c5ee491c66c97d4adb2e96bee3f4ccc83290a034",
     "browser_error_total": 0,
     "expected_visible_checks_pass": true
+  },
+  "iflytek_speech_segment_audit": {
+    "file": "IFLYTEK_BROWSER_VIDEO_SEGMENT_AUDIT.json",
+    "source_git_commit": "b4c097b8b715e94071ea09c131b673dd9d66e145",
+    "duration_seconds": 23.04,
+    "sha256": "11d61e17c757d50a0d19da347bc32f246f953efed82ba2b7f545eafffaf03a25",
+    "browser_error_total": 0,
+    "available_capabilities": 3,
+    "asr_status": "needs_review",
+    "digital_human_status": "not_connected"
   },
   "privacy_redactions": [
     {
@@ -356,5 +390,5 @@
     "max_voice_speed_factor": 1.0371,
     "duration_under_180_seconds": true
   },
-  "evidence_boundary": "AI-voiced DRAFT assembled from six audited real browser interactions, three PPT stills, and two frozen case3 audit snapshots; not the final team-approved submission, not target-user evidence, and not expert validation"
+  "evidence_boundary": "AI-voiced DRAFT assembled from seven audited real browser interactions, three PPT stills, and two frozen case3 audit snapshots; not the final team-approved submission, not target-user evidence, and not expert validation"
 }

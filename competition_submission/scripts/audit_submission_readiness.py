@@ -56,9 +56,9 @@ def main() -> int:
     parser.add_argument("--markdown", type=Path, required=True)
     args = parser.parse_args()
 
-    ppt = SUBMISSION / "04-作品方案" / "星火智学_作品方案_Guizang_DRAFT.pptx"
-    ppt_report = SUBMISSION / "04-作品方案" / "guizang" / "qa" / "pptx-report.json"
-    web_report = SUBMISSION / "04-作品方案" / "guizang" / "qa" / "report.json"
+    ppt = SUBMISSION / "04-作品方案" / "星火智学_作品方案_技术主线V2_DRAFT.pptx"
+    ppt_report = SUBMISSION / "04-作品方案" / "guizang-tech-v2" / "qa" / "pptx-report.json"
+    web_report = SUBMISSION / "04-作品方案" / "guizang-tech-v2" / "qa" / "report.json"
     frozen = read_json(SUBMISSION / "03-Demo" / "FROZEN_DEMO_AUDIT.json")
     segments = read_json(SUBMISSION / "03-Demo" / "VIDEO_SEGMENTS_AUDIT.json")
     narrated = read_json(SUBMISSION / "03-Demo" / "NARRATED_VIDEO_DRAFT_AUDIT.json")
@@ -95,7 +95,7 @@ def main() -> int:
         "page_errors": len(web_meta.get("pageErrors") or []),
         "failed_requests": len(web_meta.get("failedRequests") or []),
     }
-    ppt_v2 = ppt_meta.get("schema") == "guizang-pptx-full-bleed-image-audit-v2"
+    ppt_v2 = ppt_meta.get("schema_version") == "guizang-tech-v2-pptx-render-audit-v1"
     ppt_integrity_passed = (
         ppt.is_file()
         and ppt.stat().st_size < 100 * 1024 * 1024
@@ -106,12 +106,8 @@ def main() -> int:
                 and ppt_meta.get("pptx_bytes") == ppt.stat().st_size
                 and ppt_meta.get("pptx_sha256") == sha256(ppt)
                 and ppt_meta.get("under_100_mb") is True
-                and ppt_meta.get("zip_crc_passed") is True
-                and ppt_meta.get("all_one_picture") is True
-                and ppt_meta.get("all_full_bleed") is True
-                and ppt_meta.get("all_1600x900") is True
-                and ppt_meta.get("all_embedded_images_match_qa_png") is True
-                and ppt_meta.get("web_qa_report_sha256") == sha256(web_report)
+                and ppt_meta.get("rendered_slides") == 12
+                and ppt_meta.get("max_mean_absolute_pixel_difference", 999) <= 0.2
                 and all(value == 0 for value in web_qa.values())
             )
             or (
@@ -130,10 +126,11 @@ def main() -> int:
         and narrated.get("audio", {}).get("present") is True
         and narrated.get("audio", {}).get("ai_generated_label_visible") is True
         and narrated.get("subtitles", {}).get("present") is True
-        and narrated.get("subtitles", {}).get("count") == 10
-        and video_content.get("required_count") == 7
-        and video_content.get("present_count") == 7
+        and narrated.get("subtitles", {}).get("count") == len(narrated.get("timeline") or {})
+        and video_content.get("required_count", 0) >= 12
+        and video_content.get("present_count") == video_content.get("required_count")
         and video_content.get("all_required_present") is True
+        and video_qa.get("sampled_timeline_frames_reviewed") is True
         and video_qa.get("max_voice_speed_factor", 999) <= 1.1
         and video_audio_analysis.get("silence_over_threshold_count", 999) == 0
         and video_qa.get("duration_under_180_seconds") is True
@@ -216,15 +213,12 @@ def main() -> int:
             "status": "passed" if ppt_integrity_passed else "failed",
             "evidence": [str(ppt.relative_to(REPO)), str(ppt_report.relative_to(REPO))],
             "detail": {
-                "schema": ppt_meta.get("schema", "legacy"),
+                "schema": ppt_meta.get("schema_version", ppt_meta.get("schema", "legacy")),
                 "bytes": ppt.stat().st_size,
                 "sha256": sha256(ppt),
                 "slides": ppt_meta.get("slides"),
-                "zip_crc_passed": ppt_meta.get("zip_crc_passed"),
-                "all_full_bleed": ppt_meta.get("all_full_bleed"),
-                "embedded_images_match_qa": ppt_meta.get(
-                    "all_embedded_images_match_qa_png"
-                ),
+                "rendered_slides": ppt_meta.get("rendered_slides"),
+                "max_render_mae": ppt_meta.get("max_mean_absolute_pixel_difference"),
                 "browser_qa": web_qa,
                 "powerpoint_com_render_performed": ppt_meta.get(
                     "powerpoint_com_render_performed"
@@ -232,7 +226,7 @@ def main() -> int:
                 "legacy_max_render_mae": ppt_meta.get("max_mean_abs_error"),
             },
             "boundary": (
-                "仍名为DRAFT；全幅嵌入图与浏览器QA逐页一致，但本轮未执行新的PowerPoint COM重渲染；"
+                "仍名为DRAFT；网页PPT与PowerPoint COM 12页回渲染一致；"
                 "真实用户/专家状态待替换"
             ),
         },
@@ -264,7 +258,7 @@ def main() -> int:
                 "team_review_complete": video_review.get("team_review_complete"),
                 "video_approved": video_review.get("video_approved"),
             },
-            "boundary": "技术QA与25帧接触表已就绪；AI配音DRAFT尚未由内容、技术、隐私/伦理三名审片人完整播放并一致批准",
+            "boundary": "技术QA与18帧接触表已就绪；AI配音DRAFT尚未由内容、技术、隐私/伦理三名审片人完整播放并一致批准",
         },
         {
             "id": "reproducible_code",

@@ -41,7 +41,7 @@ from build_expert_review_package import (  # noqa: E402
 
 REPO = SCRIPT_DIR.parents[1]
 SUBMISSION = REPO / "competition_submission"
-DEFAULT_VIDEO = SUBMISSION / "offline_backup" / "narrated-video-tech-v2-v3" / "星火智学_真实交互演示_AI配音_DRAFT.mp4"
+DEFAULT_VIDEO = SUBMISSION / "offline_backup" / "narrated-video-tech-v3-v1" / "星火智学_真实交互演示_AI配音_DRAFT.mp4"
 VIDEO_AUDIT = SUBMISSION / "03-Demo" / "NARRATED_VIDEO_DRAFT_AUDIT.json"
 DEFAULT_OUTPUT = SUBMISSION / "06-效果验证" / "视频审片包_DRAFT"
 FOOTER = "星火智学 · XH-202620 · 视频团队审片材料"
@@ -73,6 +73,11 @@ def sample_times(audit: dict[str, Any]) -> tuple[float, ...]:
             points.extend(
                 min(end - 0.3, start + offset)
                 for offset in (1.0, 5.0, 9.0, 13.0, 17.0)
+            )
+        elif item_id == "10-iflytek":
+            points.extend(
+                min(end - 0.3, start + offset)
+                for offset in (2.0, 10.0, 22.0)
             )
         else:
             points.append(start + (end - start) / 2)

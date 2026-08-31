@@ -58,7 +58,7 @@
 | 浏览器本地朗读 | §5.6 P1降级 | 无 | CognitiveDashboard SpeechSynthesis | `implemented_with_boundary` | 无下载资产、浏览器依赖 | 本轮新增真实fallback |
 | 数字人 | §5.6 P2、§9 P2 | 无 | `/api/avatar/renders`、AI标识和肖像同意门禁 | `external_provider_required` | 需讯飞/Azure授权、费用和适配器 | 本轮只预留，不宣称完成 |
 | 简单动画/复杂立绘 | §5.6 P2 | 小镇角色与静态素材 | 现有2D角色/阶段背景 | `implemented_with_boundary` | 不是数字人/3D | 不继续扩美术 |
-| 自动视频 | §5.6 P2 | 无 | 比赛视频构建脚本和121.6秒DRAFT，非产品能力 | `implemented_with_boundary` | 仍需真实人员完整审片 | 暂缓人工材料按用户要求 |
+| 自动视频 | §5.6 P2 | 无 | 比赛视频构建脚本和163.2秒技术主线DRAFT，非产品能力 | `implemented_with_boundary` | 仍需真实人员完整审片 | 暂缓人工材料按用户要求 |
 | 实时WebRTC语音 | 技术演进项 | 无 | 架构建议LiveKit，未接入 | `deferred` | 当前无实时口语验收需求 | Beta后评估 |
 
 ## 治理、评测、部署与范围
