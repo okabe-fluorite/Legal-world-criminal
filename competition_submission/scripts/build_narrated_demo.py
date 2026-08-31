@@ -29,7 +29,7 @@ ITEMS = [
         "id": "02-technical-evidence",
         "kind": "video",
         "source": "technical-evidence.webm",
-        "duration": 19.2,
+        "duration": 18.6,
         "text": "先看机器证据总账。四千一百七十三份候选材料，经治理形成八百一十三条正式法源；十一项推理门禁、百题候选评测和智能体消融都由审计文件哈希绑定。自动门禁不等于专家准确率，百题仍待教师审核。",
         "caption": "数据治理→Evidence推理→模型无关评测→Agent消融\n自动Gate≠专家准确率；100题仍为not_gold",
     },
@@ -368,8 +368,11 @@ def main() -> int:
             visual_args = ["-i", str(visual)]
             operations = []
             if item.get("mask_synthetic_account_header"):
-                operations.append(
-                    "drawbox=x=1335:y=68:w=245:h=38:color=0x002FA7@1:t=fill"
+                operations.extend(
+                    [
+                        "drawbox=x=1360:y=67:w=170:h=28:color=0x0C0906@1:t=fill",
+                        "drawbox=x=1536:y=50:w=58:h=58:color=0x0C0906@1:t=fill",
+                    ]
                 )
             operations.append(f"tpad=stop_mode=clone:stop_duration={duration:.3f}")
             video_filter = f"[0:v]{','.join(operations)}[v];"
