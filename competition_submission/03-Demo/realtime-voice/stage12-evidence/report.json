@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-09-01T08:07:09.080Z",
+  "rag_citation_marks": 6,
+  "rag_tooltip_concise": true,
+  "rag_case_drawer_complete": true,
+  "case_source_href_present": true,
+  "asr_initial_status": "ASR 已连接",
+  "tts_initial_status": "TTS 已连接 · 小露女声",
+  "asr_after_handshake": "available",
+  "microphone_level_observed": true,
+  "microphone_device_visible": true,
+  "sent_pcm_frames": 201,
+  "partial_results": 27,
+  "final_results": 1,
+  "tts_voice": "x4_yezi",
+  "preferred_voice_used": true,
+  "reply_evidence_count": 1,
+  "file_upload_requests": 0,
+  "learning_event_before": 0,
+  "learning_event_after": 0,
+  "errors": {
+    "console": [],
+    "page": [],
+    "http": [],
+    "request": []
+  }
+}

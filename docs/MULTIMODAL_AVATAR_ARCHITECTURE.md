@@ -5,7 +5,7 @@
 | 能力 | 优先级 | 当前状态 | 可运行证据 |
 |---|---|---|---|
 | 私有音频/图片上传 | P1 | `implemented` | JWT用户隔离、≤15MB、类型白名单、SHA-256、sandbox相对存储 |
-| ASR短音频转写 | P1 | `implemented / available_after_real_call` | 讯飞IAT v2真实转写；结果固定`needs_review` |
+| ASR短音频转写 | P1 | `implemented / available_after_real_call` | 讯飞IAT v2真实转写；结果固定`needs_review`；能力状态区分未配置/待验证/已连接 |
 | 图像OCR/论证种子 | P1 | `interface_reserved / not_connected` | 视觉分析任务契约已冻结 |
 | 服务端TTS | P1 | `implemented / available_after_real_call` | 讯飞在线TTS v2生成当前用户私有WAV/MP3和下载端点 |
 | 实时语音问答 | P1 | `implemented / verified` | AudioWorklet→16kHz PCM→JWT WebSocket→讯飞IAT partial/final→Evidence短答→TTS自动播放；桌面两轮/窄屏一轮/视频段通过 |
@@ -13,7 +13,7 @@
 | 数字人渲染 | P2 | `external_provider_required / not_connected` | 异步任务、AI标识、肖像同意门禁已冻结 |
 | WebRTC房间/打断式全双工语音 | Beta后 | `deferred` | 当前比赛版使用浏览器PCM→后端WebSocket的半双工多轮对话，不引入房间/TURN/媒体集群 |
 
-接口存在不代表厂商能力已经连接。ASR/TTS适配器已实现，但新进程仍从`not_connected`开始；当前进程只有完成真实成功调用后才显示`available`。数字人和视觉Provider继续`not_connected`。
+接口存在不代表厂商能力已经连接。ASR/TTS适配器已实现，新进程先显示`configured_not_verified`（无凭据则为`not_configured`），IAT握手成功后ASR、TTS真实合成成功后TTS才显示`available`。数字人和视觉Provider继续`not_connected`。
 
 ## 推荐架构
 
@@ -106,13 +106,19 @@ SIMLAW_FASTER_WHISPER_MODEL=
 
 本地启动器也兼容用户外部配置文件中的`APPID/APIKey/APISecret`，只在子进程环境映射为`XFYUN_*`，不复制进仓库。凭据存在仍不等于可用；真实成功调用后当前进程才晋级`available`。能力目录永远不返回密钥值。
 
-## 真实接通证据（2026-08-31）
+## 真实接通证据（2026-08-31—2026-09-01）
 
 - `competition_submission/03-Demo/iflytek-speech/iflytek-tts-verification.wav`：真实讯飞TTS生成，207,892字节，16kHz/单声道/16bit/6.495秒，SHA-256 `ad341c972c4945e8d9eda300a44493d6ddd12ed85f005cba750c03963da1e80c`。
 - 真实IAT转写：`罪刑法定原则要求法无明文规定不为罪法无明文规定不处罚。`；归一化相似度1.0，4个法学关键词全部命中。
 - `IFLYTEK_ASR_TTS_VERIFICATION.json`绑定真实TTS 1次、IAT 1次和Provider会话存在性；不含密钥值或签名URL。
 - 产品API与1500×980浏览器又完成真实`TTS→私有下载→IAT`，ASR/TTS为`available`、数字人为`not_connected`、网络/console/私有字段错误0。
 - 实时产品主链完成桌面两轮384个PCM分片/54个partial/2个final/2个Evidence回复/2段TTS，窄屏单轮192分片，视频段194分片/28 partial；三次验收文件上传请求均为0，LearningEvent均为0→0，四类浏览器错误0。确定性麦克风fixture按真实媒体时钟工作，但不等于多说话人课堂ASR准确率。
+- 阶段12最终专项验收重新验证行末引用与实时语音：6个RAG引用标记、案例完整Evidence抽屉和原始来源URL、201个PCM分片、27个partial、1个final、1条Evidence回复、`x4_yezi`首选女声、真实输入电平/设备名、文件上传0、LearningEvent 0→0，console/page/HTTP/request错误全0。专用脱敏材料见`competition_submission/03-Demo/realtime-voice/stage12-evidence/`。
+- `x4_yezi`试听WAV为180,942字节、16kHz，SHA-256 `be4950d12f267f492df5731110a51f5367393b4312935467c906eaff5d5876cb`；该结果证明讯飞真实调用成功，不是主观自然度评分。
+
+## 行末 Evidence 引用
+
+可信RAG、AI分层解惑和实时语音回复共享`EvidenceCitations.vue`组件。每个标记绑定当前EvidencePack中的唯一Evidence ID；悬停只显示截断摘要，点击在`body`层打开完整抽屉，展示来源类型、法源层级、条号、逐字quote、版本/时效、快照、内容SHA、风险标签和原始链接。引用审查只验证来源存在、范围和逐字片段，不自动证明法律蕴含；抽屉和回复均保留教师/专家复核提示。
 
 ## 数据与教学边界
 

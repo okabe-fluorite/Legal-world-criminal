@@ -2,7 +2,7 @@
 
 - 基准：`星火智学_完整产品形态与系统架构说明书_V1.0(3).docx`
 - 上游：`sii-research/Legal-world@979ee9619f187d227059316f849c17ecc530c816`
-当前仓库审计日期：2026-08-30
+当前仓库审计日期：2026-09-01
 
 状态只使用：`implemented`、`implemented_with_boundary`、`interface_reserved`、`external_provider_required`、`deferred`、`not_recommended`。
 
@@ -37,6 +37,7 @@
 | LearnerProfile | §5.4、§6.1 | 无 | Evidence-KT在线画像、事件门槛、错误/困惑 | `implemented_with_boundary` | 非校准概率、无充分课堂数据 | ORCDF继续shadow |
 | Recommendation | §5.4、§6.1 | 无 | 规则候选、先修回退、七步路径、原因码 | `implemented_with_boundary` | 非因果最优、间隔调度有限 | 保持诚实说明 |
 | 可信RAG与引用审查 | §5.2 | 工具接口可参考 | 三典型题、错误引用拒绝、法源版本/SHA | `implemented_with_boundary` | 专家结论仍pending | 无需改动 |
+| 正文行末Evidence引用 | §5.2、§5.6 P0 | citation/tool接口 | 统一行末编号、悬停截断摘要、点击完整Evidence抽屉、原始来源/版本/SHA/风险字段 | `implemented_with_boundary` | 抽屉不替代法律蕴含判断，专家复核仍pending | 本轮新增并接入RAG/解惑/实时语音 |
 | 混合/向量/图检索 | §5.2 | 可选向量索引 | BM25 + 轻量先修图；向量可插拔 | `implemented_with_boundary` | 未启用向量不影响P0 | 不引入未治理远程向量 |
 | 智能体显式状态机 | §5.3、§7.2 | 核心参考来源 | 刑事六阶段FSM、Agent/Tool分离 | `implemented` | 未换LangGraph | 现有显式FSM足够，不为技术名重写 |
 | Model Adapter | §5.5 | 模型配置/运行层 | 任务路由、fallback、small-model not_connected | `implemented_with_boundary` | 无正式LoRA/SFT | 保持接口和真实状态 |
@@ -78,5 +79,6 @@
 
 - 认知驾驶舱“多模态 / 数字人”页以实时语音为主，文件上传只标为兼容/审计工具。
 - 1500×980真实浏览器两轮验证：384个PCM分片、54个partial、2个final、2个Evidence回复与2段TTS；780×900单轮192分片；文件上传0、LearningEvent 0→0，控制台、页面、HTTP和请求失败均为0。
+- 阶段12专项验证：正文引用标记6个，悬停摘要和案例完整Evidence抽屉/原始URL通过；201个PCM分片、27个partial、1个final、1条Evidence回复、`x4_yezi`首选音色、真实输入电平和设备名通过；文件上传0、LearningEvent 0→0，控制台、页面、HTTP和请求失败均为0。
 - 媒体页面明确显示ASR`needs_review`、LearningEvent/正式评分/自动画像更新均为0，数字人`not_connected`。
-- 后端全量125/125通过；前端类型检查、Vite生产构建、认知驾驶舱旧路径和实时语音专用smoke均通过。
+- 后端全量128/128通过；前端类型检查、Vite生产构建、认知驾驶舱旧路径和实时语音专用smoke均通过。

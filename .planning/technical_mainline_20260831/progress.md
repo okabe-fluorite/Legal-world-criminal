@@ -1,0 +1,105 @@
+# 进度日志
+
+## 2026-08-31
+- 完整读取新的goal objective，确认旧blocked条件被新机器任务解除。
+- 读取planning-with-files-zh技能和当前`live2d_integration_20260831`规划。
+- 核验`docs/CHALLENGE_CUP_TECHNICAL_STRATEGY.md`与`docs/NON_MODEL_EXECUTION_PLAN.md`内容和仓库状态。
+- 创建新的技术主线规划，阶段1从真实法源候选库存开始。
+- 实时盘点`laws`：4173文件/255,164,821字节，确认扩展名与顶层目录计数，并发现策略中的530 DOC口径错误。
+- 核验正式813条法源manifest、10卡/30题/22 Evidence课程manifest和现有消融审计边界。
+- 抽查raw四类目录、10知识点、相关司法解释和指导/检察案例标题，冻结四层候选与教师审核边界。
+- 接收用户补充参考：讯飞`websdk-python-master`与既有结果测评目录，加入阶段3/5只读审计。
+- 完成两处参考的第一轮库存：讯飞SDK 251文件/Apache-2.0；结果测评真实路径约11GB，识别LawBench、LexEval、MSLR-Bench与多类法律任务数据。
+- 首次运行4173文件SHA治理构建；7个实质门禁通过，因`model_calls=0`被布尔化而误失败，已修正审计Schema。
+- 完成数据治理流水线和六项公开产物：4173文件、813正式法源、20个L2候选、27个L3候选、87链接、4123拒绝/隔离记录；8/8门禁、5/5测试通过。
+- 生成16:9数据治理SVG并用Chrome渲染视觉QA，无溢出或低对比阻断项；阶段1完成，转入Evidence约束推理。
+- 接收用户对2024刑法与ORCDF展示的纠正：通过中国人大网核实修正案十二自2024-03-01施行，将“文件年份”和“来源/内容污染”拆分审计；ORCDF三版本保留内部对比、外部只展示一条选定结果。
+- 完成本地“2024年最新版”刑法逐条对照：七处修正案十二修改全部正确，但仅493/505条在去标题/水印后逐字一致，存在缺条、旧文本、缺字、替换字符和12处第三方水印；决定保留为交叉校验参考，不进入正式Evidence。
+- 完整读取挑战杯技术导向V2.0说明书并完成差距映射；采纳FactSheet事实来源路径、统一实验run manifest、四类数据资产和自适应三层定位，不采纳会造成主线重写的React/LangGraph/向量库/Docker建议。
+- 冻结`legal-reasoning-v1` Schema与模型无关门禁；同一指导案例144号CR阶段/刑法第二十条条件下，1个正例通过、6个负例全部按预期阻断，模型/网络调用均为0。
+- 生成`LEGAL_REASONING_GATE_AUDIT.json/.md`和可复现Runner；新增2024刑法版本审计Runner与JSON/Markdown证据。
+- 专项测试6/6通过；按正确backend工作目录运行全量后端100/100通过。阶段2完成，进入LegalEduEval-v1。
+- 完整读取EduBrain根规划/发现/进度记录并提炼到当前findings：继承结构有效≠法学有效、题族防泄漏、同模型共错、RAG不替代规范解释、ORCDF受控展示、Evidence-KT冷启动及工程失败复盘。
+- Evidence阶段提交为`4b98c03 feat: add evidence-constrained legal reasoning gate`；提交包含中文功能/展示/边界/验证说明。首次消息注入错误已在推送前amend，文件树未变。
+- LegalEduEval-v1机器阶段完成：生成100题候选，五类配额25/25/20/15/15，dev/test=30/70，10个来源家族跨split重叠0；所有题均为pending法学审核/not_gold。
+- 完成LawBench/LexEval/MSLR/LeCaRDv2方法审计：只借鉴任务分类、舍弃率、LexCog、IRAC/FRC和Runner，不搬运旧预测或外部答案。
+- 模型无关Runner支持E0/E1/E2/E3响应JSONL、自动Schema/point/Evidence/quote/禁止输出/弃权、人工Rubric、延迟/token/费用；当前E0—E2 pending、E3 pending_model_delivery，无模拟分数。
+- 明确25道涵摄题与产品TaskItem的潜在同源污染；队友训练manifest若命中必须标记污染并替换独立命题。
+- LegalEduEval专项4/4、backend全量104/104通过；阶段3机器交付完成，转入Agent C0/C1消融。
+- Agent消融首轮固定主模型完成但发现实验fact ID夹具错误：C0/C1均4/4要件，反方2/5，唯一门禁失败均为`FACT_1`不满足Schema；不作为正式结论，修复为`FACT_F01`后整轮重跑。
+- 修复夹具后完成固定主模型正式C0/C1 run：C0原始/最终Gate通过；C1原始因3个counter ID格式失败，确定性ID归一后最终Gate通过，0额外模型调用、0语义字段改写。
+- C0/C1要件均4/4，反方2/3；C1耗时202,543.986ms对35,070.437ms，tokens 20,188对7,431。只支持“增加1条反方且显著增加成本”，不支持Agent更优结论。
+- 生成匿名A/B双法学教师盲评包，review slots保持空/pending；阶段4机器实验完成，进入轻量2D数字导师。
+- 使用内置ImageGen生成原创非真人法学AI助教及闭嘴/半开/张嘴/眨眼四态；对假透明RGB结果逐张背景提取，最终4张均为768×960 `yuva420p` WebP，总计约382KB并带SHA manifest。
+- `AITutor.vue`完成CSS呼吸/微摆/随机眨眼、145ms朗读嘴形、reduced-motion和固定“AI助教·形成性反馈”标识；只接入解惑、错误Evidence、路径解释三处。
+- 新增讯飞Apache-2.0参考Provider目录：IAT/LFASR/RTASR/TTS/OCR/HMAC接口可替换，凭据存在仍not_connected，未vendor SDK或声称云端已接通。
+- 浏览器1500×980三路线与780×900两路线通过；真实模型解惑四层、真实朗读嘴形切换、角色透明尺寸、私有/console/page/HTTP/request错误均通过。
+- 前端生产构建通过；导师/媒体专项8/8、backend全量112/112通过；阶段5完成，进入比赛材料同步。
+- 新建不覆盖旧稿的`guizang-tech-v2`：12页瑞士IKB技术主线，ORCDF外展只保留同47题V1−V0一条受控结论；首轮发现并修复图槽、账单、标题、对比度和KPI溢底。
+- Guizang第三轮门禁：12种登记版式、overflow 0、图片失败0、console/page/request错误0；PowerPoint实际回渲染12/12页，PPTX 1,350,090字节，最大平均像素差0.094646。
+- 新增170秒技术主线V2视频脚本、机器证据增量报告、LegalEduEval Dataset Card、技术主线报告和机器交付清单；真实视频尚未按V2重录。
+- 机器技术主线阶段完成。最终公开包故意等待Qwen3-8B模型交付、100题教师Gold、Agent双教师盲评、2名用户、伦理签字和团队终审，保持DRAFT。
+- 自动goal续作重新读取完整目标与仓库HEAD `895a74e`；确认上一轮为真实进展，但完整验收仍缺V2真实成片、专家/用户/签字及队友模型。
+- 发现可继续推进的机器缺口：新数据治理、推理Gate、LegalEduEval、Agent消融尚无统一Demo入口；开始阶段7只读技术证据页。
+- 完成只读技术证据API和前端四页入口：真实聚合数据治理、2024刑法版本链、LegalReasoning Gate、LegalEduEval-v1、Agent C0/C1与轻量导师6份权威产物；API重新计算SHA并只输出安全投影。
+- 技术证据专项2/2、backend全量114/114、前端生产构建均在代码阶段通过；页面私有字段测试覆盖教师答案、内部A/B映射、鉴权、密钥和本机绝对路径。
+- 1500×980桌面与780×900窄屏真实smoke均通过：5技术链/4总账/4数据行/11 Gate/6负例/5评测类/4路由/2 Agent条件/4 pending；横向溢出、私有字段、console/page/HTTP/request错误全部0。
+- 首轮report持久化发现本机绝对artifact目录，公开复制前改为仓库相对路径并新增仓库内目录约束；重启三服务并重跑两视口后继续0错误，停止后5173/5174/8000/8010端口全部0。
+- 人工视觉抽检桌面总账、推理/评测、Agent/边界及窄屏Agent页：层级清楚、成本分组明确、pending显著、无遮挡。
+- 固化`competition_submission/03-Demo/technical-evidence/`：4张桌面截图、1张窄屏截图、2份去绝对路径报告和README/SHA；V2视频脚本同步为真实点击“技术证据→数据治理→推理/评测→Agent/边界”。
+- 阶段7机器侧完成；下一步提交并推送。完整goal仍缺Qwen3-8B交付、100题教师Gold、Agent双教师盲评、2名真实用户、伦理签字和V2最终视频。
+- 最终代码回归再次通过：backend全量114/114、前端生产构建、smoke脚本语法；提交前端口0，旧PPT/素材/策略文档与`.planning`继续保留且不纳入提交。
+- staged公开审计完成：22个本轮文件，真实密钥值0、Demo绝对路径0、非example邮箱0、7个固化产物SHA失配0；首次`sk-`命中确认为`edubrain-task-attempts-v1`子串误报，不是密钥。
+- 阶段7提交为`4537527 feat: add live technical evidence ledger`，中文正文包含功能、视频/PPT价值、评分项、证据边界与验证；已推送`okabe/main`并用`git ls-remote`确认本地/远端SHA一致。用户未跟踪旧PPT、素材、构建脚本、策略文档和`.planning`均保留未提交。
+- 进入阶段8：实查现有公开视频审计已更新为121.6秒、1080p、10段字幕、AI配音DRAFT；旧5段WebM位于ignored的`video-capture-v5`，无需重跑461秒案件E2E。计划只增录约16—20秒技术证据真实点击段并增量合成，目标总长约140秒且低于180秒。
+- 新增专用录制脚本并提交`2b69e95 feat: add auditable technical evidence capture`：注册/登录前缀裁剪、原始录屏删除、example.com合成账号、仓库内ignored输出、安全公开审计和6类浏览器/结构门禁；语法、diff与staged密钥扫描通过。下一步在该commit上真实录制以绑定source SHA。
+- 技术证据真实录制一次通过：15.04秒/1600×900/VP9，SHA=`7aa226f...`，9类结构计数符合预期、四类浏览器错误0；首/中/末帧无登录或凭据。提交`762c75b`并与录制脚本一起推送；远端最终核验为SHA一致。
+- 提交`5ca27dc fix: bind narrated draft to technical-mainline deck`，将片头/Agent/片尾换成技术主线V2第1/8/12页；基于该commit合成137.6秒1080p AI配音DRAFT，11项内容覆盖11/11、无长静音、低于180秒。
+- 已检查前半段7个关键帧：字幕两行、AI角标可见、技术证据/认知/RAG/学生修订无账号与私有字段；继续审后半段。
+- 后半段7帧审查发现Agent字幕压KPI与case段合成邮箱可见；已修改构建器：技术段19.2秒、字幕13/24、case header确定性遮罩并公开`privacy_redactions`，准备在新commit上重建。
+- v2重建为140.8秒，Agent KPI可读、邮箱已遮；但音频审计发现1.297秒静音且蓝色遮罩不自然。继续改18.6秒技术段和深色贴合遮罩，生成v3，不把v2误标为最终DRAFT。
+- v3/v4 reviewed最终为140.2秒、SHA=`d038a33e...`、11/11覆盖、长静音0、最大语速1.0371；15帧总览覆盖11章且技术段5帧，公私PDF共4页Poppler渲染无缺陷，团队真实批准仍0/3。
+- 收到用户新验收标准：除数字人外，讯飞ASR/TTS必须真实接通并生成转写与音频才算完成；接口契约不再计完成。阶段8视频收口后立即新增真实多模态阶段。
+- 讯飞适配器提交`36cd3f1`并推送；验收器提交`3f09151`。真实TTS/IAT直接调用passed，公开WAV 207,892字节、SHA=`ad341c97...`，转写相似度1.0。
+- 产品API与浏览器真实调用均通过：ASR/TTS available、数字人not_connected、ASR needs_review、LearningEvent/正式评分false；浏览器1500×980私有/console/page/HTTP/request错误0。
+- 更新技术主线PPT第11页并完成两轮视觉修复：网页12页0溢出/0错误，独立复审无阻断，PPTX 1,644,330字节、PowerPoint回渲染12页、最大像素差0.094643。
+- 最终全量后端119/119、前端生产构建与smoke语法通过；PPT网页12页0错误、PPTX实际PowerPoint回渲染一致。准备精准staging，未使用全屏PPT图片保持未跟踪不提交。
+- 最终staging 26文件；通用密钥、外部APPID/APIKey/APISecret真实值、绝对路径均0命中，真实WAV SHA与审计一致。额外清理上游对照文档中2处既有本机绝对路径。
+- 真实讯飞里程碑提交`f25b820 feat: verify real iflytek multimodal round trip`并推送；本地/`okabe/main`SHA一致。未使用全屏截图与用户旧PPT/素材保持未跟踪。
+- 进入阶段10：现有140.2秒视频生成于讯飞接通前，计划只增录真实TTS→IAT浏览器段并插入，不重跑已有case3 E2E；目标仍低于180秒。
+- 讯飞视频录制器提交`b4c097b`；真实段23.04秒、SHA=`11d61e17...`、3项available、IAT needs_review、数字人not_connected、四类浏览器错误0。
+- 合成器与片段审计提交`947274a`并推送；新成片163.2秒、12段字幕、12项覆盖12/12、最大语速1.0371、长静音0、SHA=`f820b353...`。
+- 18帧总览和公私PDF4页视觉QA通过；提交`487b99e`保存视频审计/脚本，`69be0ed`保存审片包与ready=false就绪审计，两提交已推送且本地/远端SHA一致。
+- 当前就绪审计：Demo/PPT/代码/法源/AI标识/离线备份passed；视频draft_ready。外部仍缺三题专家审核、2名目标用户、伦理签字；内部仍缺视频三人批准和效果报告批准。
+- 用户纠正多模态标准：文件式TTS→IAT不满足“用户与平台实时语音交流”。停止继续收口效果报告，进入阶段11实现实时麦克风流式ASR→法学回复→TTS播放多轮闭环；此前文件式证据降级为Provider接通证明。
+- 恢复阶段11上下文、读取goal与仓库规划，确认远端HEAD为`69be0ed`，工作区仅有流式IAT骨架和用户未跟踪材料。
+- 审计后端鉴权、媒体Provider、KnowledgeService、模型路由和前端多模态页：实时语音端点、麦克风采集、partial/final状态机、Evidence回复和TTS自动播放均尚未完成。
+- 冻结实时协议边界：JWT子协议鉴权、16kHz PCM/40ms分片、60秒上限、单活动turn、ASR needs_review、LearningEvent/画像/正式评分均为0，数字人继续后置。
+- 按用户提供的讯飞IAT/TTS官方文档逐项复核：发现IAT需改`eos`并开启`dwa=wpgs`，聚合器需支持`pgs=rpl/rg`替换；TTS文本新增小于8000字节门禁。
+- 完成后端第一纵向切片：独立`/ws/realtime-voice`鉴权端点、单turn状态机、partial/final、受治理Evidence回复、确定性fallback、讯飞TTS WAV回传及两轮假Provider测试；首轮15项中14项通过，唯一失败为安全字段断言过宽，已改为路由白名单后重验。
+- 后端实时语音专项最终15/15、后端全量125/125通过；准备以独立小里程碑提交，前端实时麦克风将在下一提交完成。
+- 前端新增AudioWorklet麦克风采集、流式16kHz PCM重采样/40ms分帧、多轮状态机、partial/final显示、Evidence回复和TTS自动播放；生产构建通过，开始真实浏览器两轮验收。
+- 真实浏览器首轮两轮E2E通过：54 partial、2 final、2模型Evidence回复、2真实TTS、LearningEvent 0→0、四类浏览器错误0；但TTS长达60—67秒且允许播放重叠，判定链路通过而体验未达标，收敛短答并重跑。
+- 短答/播放互斥修复后的第一次重验已完成第一轮28 partial+final+reply+TTS，产品四类错误0；验收脚本因同文案双元素strict selector失败，已收紧选择器后重跑，不重复模型/协议修复。
+- 最终真实浏览器两轮重验通过：54 partial、2 final、2个`llm_governed_evidence`回复、2段真实讯飞TTS（18.848s/18.723s），LearningEvent 0→0，私有/console/page/HTTP/request错误均0；第一段播放结束后才开放第二轮。
+- 当前最终代码再次桌面两轮通过：57 partial、2 final、2 Evidence回复、TTS 24.627s/21.375s、3能力available、错误0；780×900单轮29 partial/TTS 20.661s、错误0；传统认知驾驶舱smoke也全项通过。
+- 公开验收包最终重跑：桌面两轮56 partial/2 final/2回复，保存22.282s和17.847s两段真实讯飞WAV；生成桌面/窄屏图、脱敏report与README，明确实时媒体fixture和课堂ASR准确率边界。阶段11机器范围完成。
+- 移除Google Fonts远程依赖后最终公开重跑：桌面384个`voice_audio`分片/54 partial/2 final/2回复，文件上传请求0，TTS 18.244s/15.266s；窄屏192分片/27 partial/文件上传0；所有外部字体、console/page/HTTP/request/隐私错误均0。公开验收包已替换为该最终证据。
+- 实时语音三次小提交`fab75d6`、`0b3cd23`、`0c33507`已推送`okabe/main`，远端与本地SHA=`0c335074c78891819b1f0edc56e66b05ca638c76`一致；本地验收端口5173/8000/8010均已停止。
+- Guizang第11页从旧文件式TTS→IAT更新为实时语音S22：独立复审首轮发现截图内关键证据过小，已按同页关键区域保真拼接并把图片区55%增至62%；复审确认阻断解除。浏览器12页0溢出/0错误，PowerPoint回渲染12页，最大平均像素差0.094644，PPTX 1,548,395字节。
+- 实时视频正式段在提交`9817d32`后重录：17.0秒、194 PCM帧、28 partial、1 final、1个Evidence回复、TTS 17.016秒、文件上传0、LearningEvent 0→0、数字人not_connected、四类错误0；视频第10段收敛为20秒。
+- 160.2秒新片动态审片通过画面/字幕/技术覆盖，但第10段旁白1.16433×超过审片包既有≤1.10×门槛；不放宽门槛，将该段调整为22秒，预计全片162.2秒且语速约1.056×。
+- 最终视频基于提交`41bed10`重建为162.2秒，SHA=`29e28667...bb0ee`，12/12技术覆盖、最大语速1.05677×、长静音0；18帧审片包已重建，真实批准0/3。
+- 基于提交`b2378db`串行重建效果报告包：公开PDF5页、私密批准表2页、13项证据源、报告SHA=`8ede0342...d3177`、真实批准0/3；FINAL审计仍为ready=false，外部三项+内部两项pending。
+- PPT/视频/报告同步提交`9817d32`、`105210a`、`41bed10`、`b2378db`、`3283eb3`已推送`okabe/main`；本地/远端HEAD一致为`3283eb3ed188daf7ea9c5ed009ccf5597ec82670`。实时语音阶段完成，完整比赛目标继续等待真实人员证据与批准。
+- 2026-09-01进入阶段12：用户要求统一RAG行末引用、修复ASR未连接/麦克风无反馈并更换自然女声。确定性复现普通启动三项讯飞配置全False，显式外部配置全True；冻结本地配置指针+状态拆分+真实麦克风RMS反馈方案。
+- 新增`EvidenceCitations`统一组件并接入可信RAG、分层解惑、实时语音；首轮集成验收确认案件引用抽屉、原始来源URL、ASR握手、电平、203 PCM帧/32 partial、小露女声和0事件均通过，仅报告脚本关闭弹窗后把引用数写成0，待修正并重跑。
+- 集成复测第二次未进入语音操作即因旧用户已让进程能力全局变为available、脚本仍硬等configured_not_verified而超时；改为允许configured或available初始状态，继续强制本轮握手后ASR connected。
+- 2026-09-01恢复阶段12：读取目标、Git状态、活动计划与进程监听；确认5173/8000/8010分别属于本仓库Vite、WebSocket后端和adaptive service，未误停其他进程。
+- 最终`npm run smoke:evidence-voice`通过：6个引用、悬停摘要、案件完整抽屉/原始URL、ASR available、真实输入电平/设备名、200 PCM、30 partial、1 final、小露女声TTS、1条Evidence、0文件上传、LearningEvent 0→0、四类浏览器错误均0。
+- 截图复核发现抽屉遮罩仍能透出较多底层RAG文本；已把遮罩提升为0.94并将抽屉改为不透明背景，同时在E2E截图前等待抽屉过渡完成，准备重跑视觉回归。
+- 用户显式要求启用`planning-with-files-zh`；活动计划阶段12已同步已完成代码项，材料、提交和推送仍保持进行中。
+- 前端实时语音窄屏回归（780×900/1轮）通过：193 PCM、26 partial、1 final、讯飞Evidence回复、3项能力可用、文件上传0、LearningEvent 0→0、错误0。
+- 前端实时语音桌面回归（1500×980/2轮）通过：385 PCM、56 partial、2 final、2次Evidence回复、2段TTS、3项能力可用、文件上传0、LearningEvent 0→0、私有字段/console/page/HTTP/request错误0。fixture首字可能从句中间开始，按既有边界不作为ASR准确率结论。
+- 根目录`.env`布尔配置审计通过：OpenCode主模型、DeepSeek回退、讯飞三项凭据均已加载；输出明确不含密钥值。
+- 前端构建与后端全量单测在文档同步前已通过（build成功；128/128）。

@@ -12,10 +12,15 @@
 在仓库根目录执行：
 
 ```powershell
-uv run --isolated --with-requirements requirements.lock.txt -- python start.py --model-config "<仓库外安全路径>\model-groups.env"
+# 首次准备：从用户授权的外部 .env.example 按白名单生成仓库本地 .env
+uv run --isolated --with-requirements requirements.lock.txt -- `
+  python start.py --sync-env-from "E:\guabangjieshuai\EduBrain\.env.example"
+
+# 后续每次直接使用仓库 .env 启动
+uv run --isolated --with-requirements requirements.lock.txt -- python start.py
 ```
 
-模型配置文件放在仓库外，不录屏、不提交Git。OpenCode为优先端点，DeepSeek官方仅在瞬态故障时fallback。若只回放离线快照，可不触发新的模型调用，但必须在讲解中说明“真实E2E审计快照”。
+同步命令只写入Git忽略的`.env`白名单；`.env`不录屏、不提交Git。OpenCode为优先端点，DeepSeek官方仅在瞬态故障时fallback。若只回放离线快照，可不触发新的模型调用，但必须在讲解中说明“真实E2E审计快照”。
 
 该命令会持续占用第一个PowerShell窗口。以下健康检查、教师授权和浏览器录制均在第二个PowerShell窗口执行。
 
@@ -64,7 +69,7 @@ $env:DATABASE_URL = "sqlite+pysqlite:///" + (($demo + "\legalworld-local.db") -r
 $env:SIMLAW_ADAPTIVE_DB_PATH = $demo + "\adaptive.db"
 $env:SIMLAW_SANDBOX_DATA_DIR = $demo + "\sandboxes"
 $env:SIMLAW_TEACHER_EMAILS = "demo-teacher@example.com"
-uv run --isolated --with-requirements requirements.lock.txt -- python start.py --model-config "<仓库外安全路径>\model-groups.env"
+uv run --isolated --with-requirements requirements.lock.txt -- python start.py
 ```
 
 第二窗口先生成学生选择/困惑/主观退回—修订—批准和教师班级台账：
@@ -106,7 +111,7 @@ New-Item -ItemType Directory -Force -Path $preflight | Out-Null
 $env:DATABASE_URL = "sqlite+pysqlite:///" + (($preflight + "\legalworld.db") -replace '\\','/')
 $env:SIMLAW_ADAPTIVE_DB_PATH = $preflight + "\adaptive.db"
 $env:SIMLAW_SANDBOX_DATA_DIR = $preflight + "\sandboxes"
-uv run --isolated --with-requirements requirements.lock.txt -- python start.py --model-config "<仓库外安全路径>\model-groups.env"
+uv run --isolated --with-requirements requirements.lock.txt -- python start.py
 ```
 
 在第二个窗口执行：
@@ -164,7 +169,7 @@ $restore = (Resolve-Path competition_submission/offline_backup/restore-check).Pa
 $env:DATABASE_URL = "sqlite+pysqlite:///" + (($restore + "\legalworld-local.db") -replace '\\','/')
 $env:SIMLAW_ADAPTIVE_DB_PATH = $restore + "\adaptive.db"
 $env:SIMLAW_SANDBOX_DATA_DIR = $restore + "\sandboxes"
-uv run --isolated --with-requirements requirements.lock.txt -- python start.py --model-config "<仓库外安全路径>\model-groups.env"
+uv run --isolated --with-requirements requirements.lock.txt -- python start.py
 ```
 
 在第二个窗口重跑三项健康检查，并用学生/教师账号各登录一次；确认事件数、教师台账和case3页面与冻结库一致后停止恢复栈。

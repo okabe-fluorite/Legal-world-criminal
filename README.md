@@ -23,11 +23,16 @@
 推荐直接本地启动完整效果，不需要Docker：
 
 ```powershell
+# 首次使用：把用户授权的外部配置按白名单写入本地、Git 忽略的 .env
 uv run --isolated --with-requirements requirements.lock.txt -- `
-  python start.py --model-config E:\guabangjieshuai\EduBrain\.env.example
+  python start.py --sync-env-from E:\guabangjieshuai\EduBrain\.env.example
+
+# 之后直接从仓库 .env 启动
+uv run --isolated --with-requirements requirements.lock.txt -- `
+  python start.py
 ```
 
-该命令使用本地SQLite，自动启动backend、adaptive与Vite前端；能识别三组重复的`api_key/baseurl/model`配置，正常优先OpenCode，429/用量窗口/服务暂不可用时自动回退DeepSeek官方API。密钥仅进入子进程环境，不打印、不写入仓库。访问`http://127.0.0.1:5173`，按`Ctrl+C`停止。
+首次命令只复制模型、讯飞和JWT运行所需的白名单键，不复制无关字段；后续命令使用本地`.env`启动完整SQLite、backend、adaptive与Vite前端。正常优先OpenCode，429/用量窗口/服务暂不可用时自动回退DeepSeek官方API。密钥不打印、不提交仓库；访问`http://127.0.0.1:5173`，按`Ctrl+C`停止。
 
 本地SQLite启用WAL和30秒busy timeout；密码哈希在写事务前完成，短注册事务仅对`database is locked`做有界退避；sandbox记录先提交再初始化seed文件。学生与教师同时首次注册/建sandbox已通过真实并发浏览器门禁，不需要为本地试用换Docker/PostgreSQL。
 
@@ -38,6 +43,7 @@ uv run --isolated --with-requirements requirements.lock.txt -- `
 本地测试：
 
 ```powershell
+# 若尚未执行上面的同步命令，也可以从仓库模板复制后手工填写
 Copy-Item .env.example .env
 uv venv .venv --python 3.11
 uv pip install --python .venv\Scripts\python.exe -r requirements.lock.txt
@@ -82,7 +88,7 @@ Compose包含PostgreSQL、后端、自适应服务和Nginx前端。前端容器�
 
 ## 受治理法条库
 
-离线法条库共813条：刑法505条（2020官方正文精确合并修正案十二）与刑诉法308条（2018第三次修正）。来源批次、原件SHA、输出SHA、版本和隔离源记录在`backend/legal_corpus/processed/law_corpus_manifest.json`。旧PDF语料漏掉刑法第二百条，含第三方署名的“2024最新版”也已隔离，均不得覆盖生产语料。重建与每学期复核要求见[`docs/DATA_GOVERNANCE.md`](docs/DATA_GOVERNANCE.md)。
+离线法条库共813条：刑法505条（2020官方正文精确合并修正案十二，形成自2024-03-01施行的现行版本）与刑诉法308条（2018第三次修正）。来源批次、原件SHA、输出SHA、版本和隔离源记录在`backend/legal_corpus/processed/law_corpus_manifest.json`。旧PDF语料漏掉刑法第二百条；某份带第三方署名且存在内容污染/差异的“2024最新版”参考件已隔离，不能覆盖生产语料，隔离理由是具体文件质量而非年份。重建与每学期复核要求见[`docs/DATA_GOVERNANCE.md`](docs/DATA_GOVERNANCE.md)。
 
 外部`laws`目录已建立只读文件级治理库存：4,173个混合文件全部计算SHA并按原始文档/派生文本/归档/运维/缓存分层；813条正式法源不会被候选量替代。围绕10知识点和3案例筛出20个司法解释、27个案例待审候选，均未提升为正式Evidence。产物与16:9技术图见[`data_governance/DATASET_CARD.md`](data_governance/DATASET_CARD.md)和[`data_governance/DATA_GOVERNANCE_FLOW.svg`](data_governance/DATA_GOVERNANCE_FLOW.svg)。
 
@@ -109,7 +115,7 @@ EvidencePack中的检索相关性和coverage只是待语义审核候选，不等
 
 顶部“认知诊断”是比赛展示核心页：在线Evidence-KT保守画像与学生事件时间线、ORCDF V0/V1/V2真实shadow实验、选择/短答/案件/角色互换七步路径和四任务Model Adapter路由集中展示。ORCDF明确来自MOOCCubeX民法/宪法、mastery未校准且不进入当前刑法学生画像；微调未连接时显示`not_connected`。展示口径、来源SHA和浏览器脚本见[`docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md`](docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md)。
 
-认知驾驶舱同时提供真实KnowledgeCard先修图、法律论证脚手架和“多模态 / 数字人”能力页：10个知识节点/10条先修边不使用LLM补边；私有音频/图片上传会做JWT隔离、类型/大小检查和SHA-256；ASR、视觉、服务端TTS和Avatar接口已冻结，但当前没有已验证Provider，页面会显示`not_connected`且不生成LearningEvent。浏览器`SpeechSynthesis`只作真实本地朗读fallback。完整API、讯飞/Azure/LiveKit选型和证据边界见[`docs/MULTIMODAL_AVATAR_ARCHITECTURE.md`](docs/MULTIMODAL_AVATAR_ARCHITECTURE.md)，说明书逐项状态见[`docs/PRODUCT_SPEC_IMPLEMENTATION_MATRIX_V2.md`](docs/PRODUCT_SPEC_IMPLEMENTATION_MATRIX_V2.md)，上游代码级对照见[`docs/UPSTREAM_LEGALWORLD_COMPARISON.md`](docs/UPSTREAM_LEGALWORLD_COMPARISON.md)。
+认知驾驶舱同时提供真实KnowledgeCard先修图、法律论证脚手架和“多模态 / 数字人”能力页：10个知识节点/10条先修边不使用LLM补边；私有音频/图片上传会做JWT隔离、类型/大小检查和SHA-256；配置讯飞凭据后，浏览器可通过AudioWorklet实时PCM→IAT partial/final→受治理Evidence回复→TTS自动播放，页面显示真实输入电平和设备名；无凭据时显示`not_configured`，有凭据但未完成本轮真实调用时显示`configured_not_verified`。ASR结果保持`needs_review`且不生成LearningEvent，视觉和数字人继续`not_connected`，浏览器`SpeechSynthesis`只作fallback。完整API、讯飞/Azure/LiveKit选型和证据边界见[`docs/MULTIMODAL_AVATAR_ARCHITECTURE.md`](docs/MULTIMODAL_AVATAR_ARCHITECTURE.md)，说明书逐项状态见[`docs/PRODUCT_SPEC_IMPLEMENTATION_MATRIX_V2.md`](docs/PRODUCT_SPEC_IMPLEMENTATION_MATRIX_V2.md)，上游代码级对照见[`docs/UPSTREAM_LEGALWORLD_COMPARISON.md`](docs/UPSTREAM_LEGALWORLD_COMPARISON.md)。
 
 顶部“可信RAG”对应赛题内容质量硬要求：罪刑法定/从旧兼从轻、特殊防卫、抢劫罪构成3题均保存真实OpenCode基线输出、标准答案、权威法条/指导案例、版本/SHA、模型逐字引用和要点门禁；错误条号/伪造引文可现场调用后端拦截。当前自动门禁3/3，但法学专家复核仍为`pending`且`verified_accurate=false`，不能写成专家确认准确率。报告见[`docs/TYPICAL_QUESTION_EVALUATION.md`](docs/TYPICAL_QUESTION_EVALUATION.md)，复跑命令为`python backend/scripts/run_typical_question_evaluation.py --live-model --model-config <path>`，免模型复审可用`--reuse-report`。
 

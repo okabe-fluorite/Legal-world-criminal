@@ -14,7 +14,7 @@
 
 `04-作品方案/guizang-tech-v2/`为不覆盖旧稿的技术主线V2：12页瑞士IKB网页PPT、PowerPoint回渲染审计和1.55MB PPTX，叙事改为数据治理→Evidence推理→LegalEduEval→Agent消融→四场景验证。ORCDF外展只保留一条受控同47题结论，不平铺三版本。
 
-`06-效果验证/170秒技术主线视频脚本_V2_DRAFT.md`与`技术主线机器证据增量报告_V2_DRAFT.md`同步新证据；当前162.2秒视频已按技术主线重建并加入浏览器麦克风→讯飞实时IAT partial/final→Evidence短答→TTS播放产品段，仍是待团队完整审片的DRAFT。
+`06-效果验证/170秒技术主线视频脚本_V2_DRAFT.md`与`技术主线机器证据增量报告_V2_DRAFT.md`同步新证据；当前162.2秒视频已按技术主线重建并加入浏览器麦克风→讯飞实时IAT partial/final→Evidence短答→TTS播放产品段，仍是待团队完整审片的DRAFT。阶段12行末引用与实时语音专项证据见`03-Demo/realtime-voice/stage12-evidence/`。
 
 本地`offline_backup/final-demo/`已生成但不进入Git：它含演示密码哈希，仅供团队离线保管。可公开的去标识审计摘要为`03-Demo/FROZEN_DEMO_AUDIT.json`，源备份与空目录恢复各24项语义检查均通过。
 
@@ -29,3 +29,4 @@
 - 当前模型是OpenCode/DeepSeek基线；微调端点为`not_connected`，不称已完成LoRA/SFT。
 - 三题自动门禁3/3不等于法学专家准确率；专家结论仍为`pending`。
 - 浏览器smoke与固定E2E证明软件链路，不证明学习增益或用户认可。
+- 行末Evidence抽屉证明来源可追溯和版本/SHA可复核，不自动证明法律蕴含；ASR结果保持`needs_review`，不进入正式评分或长期画像。

@@ -66,6 +66,8 @@
 
 媒体页展示私有资产、ASR、视觉、TTS和数字人五项能力。主交互为浏览器AudioWorklet实时采集麦克风、重采样为16kHz PCM并通过`/ws/realtime-voice`分片发送；讯飞IAT持续返回partial/final，final进入受治理Evidence短答，再由讯飞TTS回传WAV自动播放并支持下一轮。文件上传和TTS→IAT回送只保留为兼容/Provider审计工具。成功后当前进程的ASR/TTS状态为`available`；ASR固定`needs_review`，媒体不会创建LearningEvent。视觉和数字人继续`not_connected`，浏览器朗读仅作fallback。
 
+实时回复正文已统一使用行末Evidence标记：鼠标悬停显示法源/案例的截断摘要，点击标记打开完整Evidence抽屉，可查看条号、版本/时效、逐字quote、快照、SHA、风险提示和原始来源。抽屉固定提示“检索相关不等于法律蕴含”，不把检索结果包装成自动法律结论。ASR/TTS能力状态区分`not_configured`、`configured_not_verified`和`available`；页面同步显示麦克风权限、设备名和真实输入电平，避免用CSS波形代替麦克风反馈。
+
 接口、讯飞/Azure/LiveKit选型、AI标识和肖像同意门禁见[`MULTIMODAL_AVATAR_ARCHITECTURE.md`](MULTIMODAL_AVATAR_ARCHITECTURE.md)。
 
 ## 可复现浏览器验证
@@ -81,13 +83,15 @@ npm run smoke:cognitive
 
 六张截图写入Git忽略的`.codex-artifacts/cognitive-dashboard/`，可直接作为PPT和录屏构图参考。
 
+阶段12专项截图、报告和小露女声试听保存在[`competition_submission/03-Demo/realtime-voice/stage12-evidence/`](../competition_submission/03-Demo/realtime-voice/stage12-evidence/)。最终一轮1500×980验收得到6个RAG引用标记、201个PCM分片、27个partial、1个final、1条Evidence回复、`x4_yezi`首选音色、文件上传0、LearningEvent 0→0及console/page/HTTP/request错误全0。
+
 ## 比赛映射
 
 - **视频第2段（15—45秒）**：在线Evidence-KT与ORCDF shadow；
 - **视频第3段（45—70秒）**：七步路径和“进入当前推荐任务”；
 - **视频第3段可选插入（约5秒）**：10节点先修DAG和论证模板；
 - **视频第7段（155—170秒）**：Model Adapter与微调`not_connected`边界；
-- **视频第10段（22秒）**：浏览器麦克风PCM→讯飞IAT partial/final→Evidence短答→TTS播放；文件上传0、LearningEvent 0、数字人`not_connected`；
+- **视频第10段（22秒）**：浏览器麦克风PCM→讯飞IAT partial/final→Evidence短答→TTS播放；文件上传0、LearningEvent 0、数字人`not_connected`；行末引用抽屉作为可选近景插入；
 - **PPT第5/6/7/10页**：在线诊断、ORCDF、路径/知识图、模型与媒体能力路由；
 - **评分项**：技术实现20、技术先进10、创意实用20、完成度10。
 
