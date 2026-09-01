@@ -4,6 +4,8 @@
 
 “技术证据”页面把已提交的数据治理、2024刑法版本、LegalReasoning Gate、LegalEduEval、Agent消融和轻量2D导师审计投影到真实Demo，满足3分钟视频中直接展示学科数据、结构化推理、模型评测与Agent实验的要求。
 
+它是比赛、答辩和队友验收用的只读技术总账，不是学生学习页面：用于把“数据→Evidence→推理→评测→应用”的证据链、哈希和pending边界集中呈现；它不参与学生作答、评分、LearningEvent或长期画像。页面顶部会明确显示这一用途，避免将审计面板误解为课程功能。
+
 页面不是第二套事实源。`GET /api/competition/technical-evidence`每次读取6份权威JSON/manifest、重算SHA，并只返回计数、状态、成本、哈希和证据边界。
 
 ## 安全投影
@@ -32,6 +34,7 @@ API不返回：
 - 后端专项2/2：计数正确、6个SHA存在、敏感字段和绝对路径0。
 - 前端生产构建通过。
 - 1500×980与780×900真实注册后完整浏览四页：每页横向溢出0，私有字段0，console/page/HTTP/request错误0。
+- 阶段13复核：用途提示可见；1500×980与780×900的标签/说明/边界字号分别达到约12.5/10.9/10.4px，四页横向溢出0、私有字段0、console/page/HTTP/request错误0。
 - 截图位于本地`output/playwright/technical-evidence*`，可由`frontend/scripts/smoke-technical-evidence.mjs`复现，不提交账号或运行库。
 
 ## 展示映射

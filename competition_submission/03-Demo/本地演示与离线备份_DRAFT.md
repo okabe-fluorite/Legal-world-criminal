@@ -12,9 +12,9 @@
 在仓库根目录执行：
 
 ```powershell
-# 首次准备：从用户授权的外部 .env.example 按白名单生成仓库本地 .env
+# 首次准备：从外部配置按白名单生成仓库本地 .env
 uv run --isolated --with-requirements requirements.lock.txt -- `
-  python start.py --sync-env-from "E:\guabangjieshuai\EduBrain\.env.example"
+  python start.py --sync-env-from "<外部配置文件路径>"
 
 # 后续每次直接使用仓库 .env 启动
 uv run --isolated --with-requirements requirements.lock.txt -- python start.py
@@ -143,7 +143,7 @@ py competition_submission/scripts/backup_demo_state.py --runtime competition_sub
 
 ```powershell
 .\.venv\Scripts\python.exe -X utf8 competition_submission\scripts\run_three_route_rehearsal.py `
-  --model-config "E:\guabangjieshuai\EduBrain\.env.example"
+  --model-config "<外部配置文件路径>"
 ```
 
 彩排包含：

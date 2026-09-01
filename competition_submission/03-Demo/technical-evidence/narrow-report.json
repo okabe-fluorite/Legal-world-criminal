@@ -1,8 +1,14 @@
 {
-  "generated_at": "2026-08-31T02:09:51.410Z",
+  "generated_at": "2026-09-01T15:32:52.441Z",
   "viewport": "780x900",
   "overview_pipeline": 5,
   "overview_cards": 4,
+  "purpose_visible": true,
+  "readability": {
+    "tab_font_px": 12.48,
+    "pipeline_note_font_px": 10.88,
+    "boundary_font_px": 10.4
+  },
   "data_ledger_rows": 4,
   "reasoning_checks": 11,
   "negative_fixtures": 6,
@@ -37,5 +43,5 @@
   "page_errors": [],
   "http_errors": [],
   "request_failures": [],
-  "artifact_dir": "output/playwright/technical-evidence-narrow"
+  "artifact_dir": ".codex-artifacts/stage13/final-technical-narrow"
 }

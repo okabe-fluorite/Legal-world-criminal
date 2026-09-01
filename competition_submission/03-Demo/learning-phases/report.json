@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-09-01T15:32:52.987Z",
+  "url": "http://127.0.0.1:5173/",
+  "viewport": "1500x980",
+  "knowledge_cards": 10,
+  "governed_case_entries": 3,
+  "option_count": 4,
+  "feedback_visible": true,
+  "next_task_visible": true,
+  "profile_metrics": [
+    "2",
+    "1",
+    "1"
+  ],
+  "phase_design": {
+    "prestudy_title": "带着问题进入课堂",
+    "review_title": "用证据完成一次课后复盘",
+    "prestudy_accent": "rgba(176, 138, 62, 0.42)",
+    "review_accent": "rgba(100, 156, 168, 0.48)",
+    "stem_font_px": 23.25,
+    "option_font_px": 15.68,
+    "review_scroll_reset": [
+      0,
+      0,
+      0
+    ],
+    "distinct": true
+  },
+  "learning_support": {
+    "tested": false,
+    "source": "not_requested",
+    "layers": 0,
+    "tutor": false
+  },
+  "private_field_leaks": [],
+  "console_errors": [],
+  "page_errors": [],
+  "http_errors": [],
+  "request_failures": [],
+  "screenshot": ".codex-artifacts/stage13/final-prestudy.png",
+  "review_screenshot": ".codex-artifacts/stage13/final-review.png",
+  "support_screenshot": null
+}

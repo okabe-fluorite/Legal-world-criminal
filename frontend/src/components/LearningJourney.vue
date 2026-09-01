@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { api } from "../lib/api";
 import LearningSupportPanel from "./LearningSupportPanel.vue";
 import SubjectiveTaskPanel from "./SubjectiveTaskPanel.vue";
@@ -42,6 +42,64 @@ const confusionSaved = ref("");
 const supportSeed = ref<LearningSupportSeed | null>(null);
 const supportOpen = ref(false);
 const subjectiveOpen = ref(false);
+const journeyRoot = ref<HTMLElement | null>(null);
+
+const PHASE_CONFIG = {
+  prestudy: {
+    code: "BEFORE CLASS · QUESTION FIRST",
+    title: "带着问题进入课堂",
+    description: "先扫清规则轮廓，再用一题暴露真实困惑。这里不追求刷题量，只形成一张可带入课堂的问题单。",
+    indexKicker: "PRE-CLASS MAP",
+    indexTitle: "本课知识地图",
+    taskLabel: "课前快速摸底",
+    taskInstruction: "先按当前理解判断 · 不确定也可以标记困惑",
+    submitLabel: "完成课前摸底",
+    ledgerKicker: "CLASS READINESS",
+    ledgerTitle: "入课准备",
+    metricLabels: ["预习事件", "可用证据", "课前困惑"],
+    queueKicker: "BEFORE CLASS · NEXT",
+    queueTitle: "课前任务单",
+    subjectiveKicker: "FIRST ARGUMENT",
+    subjectiveTitle: "写下课前初步论证 →",
+    subjectiveNote: "不要求一次写对 · 教师复核后才进入长期画像",
+    confusionKicker: "QUESTION TO CLASS",
+    confusionTitle: "带入课堂的问题",
+    confusionPlaceholder: "写下你希望课堂上重点弄清的条件、事实或证据……",
+    confusionSubmit: "加入课前问题单",
+    steps: ["浏览规则", "完成摸底", "标记困惑", "带入课堂"],
+  },
+  review: {
+    code: "AFTER CLASS · EVIDENCE REPLAY",
+    title: "用证据完成一次课后复盘",
+    description: "从本次作答和错因返回规则，完成变式验证，再把仍不稳定的知识点放入后续复现队列。",
+    indexKicker: "REVIEW MAP",
+    indexTitle: "错因与知识清单",
+    taskLabel: "课后变式巩固",
+    taskInstruction: "对照规则重新判断 · 关注上次错因是否再次出现",
+    submitLabel: "提交复盘证据",
+    ledgerKicker: "REVIEW EVIDENCE",
+    ledgerTitle: "复盘证据",
+    metricLabels: ["历史事件", "有效证据", "遗留问题"],
+    queueKicker: "REINFORCEMENT · NEXT",
+    queueTitle: "巩固与再测队列",
+    subjectiveKicker: "REWRITE / ROLE SWITCH",
+    subjectiveTitle: "完成课后重写或角色互换 →",
+    subjectiveNote: "短答、案件与反方角色 · 教师批准后才更新画像",
+    confusionKicker: "UNRESOLVED ISSUE",
+    confusionTitle: "仍未解决的问题",
+    confusionPlaceholder: "复盘后仍不确定什么？写下规则边界、错因或证据缺口……",
+    confusionSubmit: "加入后续巩固",
+    steps: ["回看错因", "核对Evidence", "完成变式", "安排再测"],
+  },
+} as const;
+
+const phaseConfig = computed(() => PHASE_CONFIG[phase.value]);
+const phaseProgress = computed(() => {
+  if (confusionSaved.value) return 3;
+  if (feedback.value) return 2;
+  if (selectedOptions.value.length) return 1;
+  return 0;
+});
 
 const REASON_LABELS: Record<string, string> = {
   case_evidence_indicates_weakness: "案件证据提示薄弱，优先补强",
@@ -298,9 +356,12 @@ function handleKeydown(event: KeyboardEvent): void {
   if (event.key === "Escape") emit("close");
 }
 
-watch(phase, () => {
+watch(phase, async () => {
   if (currentTask.value) startTask(currentTask.value);
   confusionSaved.value = "";
+  await nextTick();
+  journeyRoot.value?.querySelectorAll<HTMLElement>(".index-pane, .task-pane, .ledger-pane")
+    .forEach((pane) => { pane.scrollTop = 0; });
 });
 
 onMounted(() => {
@@ -311,14 +372,14 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 </script>
 
 <template>
-  <div class="journey-layer">
-    <section class="journey" role="dialog" aria-modal="true" aria-label="刑法自主学习卷宗">
+  <div :class="['journey-layer', `journey-layer--${phase}`]">
+    <section ref="journeyRoot" :class="['journey', `journey--${phase}`]" role="dialog" aria-modal="true" aria-label="刑法自主学习卷宗">
       <header class="journey__head">
         <div class="journey__brand">
           <span class="journey__seal">学</span>
           <div>
-            <p class="journey__kicker mono">PERSONAL DOCKET · CRIMINAL LAW</p>
-            <h2>刑法自主学习卷宗</h2>
+            <p class="journey__kicker mono">{{ phaseConfig.code }}</p>
+            <h2>{{ phase === "prestudy" ? "刑法课前导学卷" : "刑法课后复盘卷" }}</h2>
           </div>
         </div>
 
@@ -339,6 +400,24 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
         <button class="journey__close" aria-label="关闭自主学习" @click="emit('close')">×</button>
       </header>
 
+      <section class="phase-story" aria-live="polite">
+        <div class="phase-story__copy">
+          <p class="mono">{{ phase === "prestudy" ? "PREVIEW 01" : "REVIEW 02" }}</p>
+          <h3>{{ phaseConfig.title }}</h3>
+          <span>{{ phaseConfig.description }}</span>
+        </div>
+        <ol class="phase-story__steps" :aria-label="`${phaseConfig.title}流程`">
+          <li
+            v-for="(step, index) in phaseConfig.steps"
+            :key="step"
+            :class="{ active: index <= phaseProgress, current: index === phaseProgress }"
+          >
+            <b class="mono">{{ String(index + 1).padStart(2, "0") }}</b>
+            <span>{{ step }}</span>
+          </li>
+        </ol>
+      </section>
+
       <div v-if="loading" class="journey__loading">
         <span class="loading-seal">卷</span>
         <p>正在调取你的课程卷宗与下一任务……</p>
@@ -348,8 +427,8 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
         <aside class="index-pane">
           <div class="pane-head">
             <div>
-              <p class="pane-kicker mono">COURSE INDEX</p>
-              <h3>知识卷宗</h3>
+              <p class="pane-kicker mono">{{ phaseConfig.indexKicker }}</p>
+              <h3>{{ phaseConfig.indexTitle }}</h3>
             </div>
             <span class="pane-count mono">{{ cards.length }} 卷</span>
           </div>
@@ -417,14 +496,14 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
                   TASK {{ String(currentTask.rank ?? 1).padStart(2, "0") }}
                 </div>
                 <div class="task-sheet__meta">
-                  <span>{{ phase === "prestudy" ? "预习诊断" : "复习取证" }}</span>
+                  <span>{{ phaseConfig.taskLabel }}</span>
                   <span>{{ currentTask.cognitive_dimension || "理解" }}</span>
                   <span>难度 {{ currentTask.difficulty ?? 2 }}/3</span>
                 </div>
               </header>
               <p class="task-sheet__reason">{{ taskReason(currentTask) }}</p>
               <h3 class="task-sheet__stem">{{ currentTask.stem }}</h3>
-              <p class="task-sheet__instruction mono">选择你认为成立的全部选项 · 提交前可修改</p>
+              <p class="task-sheet__instruction mono">{{ phaseConfig.taskInstruction }}</p>
 
               <div class="option-list" role="group" aria-label="答题选项">
                 <button
@@ -460,7 +539,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
                     标记困惑
                   </button>
                   <button class="submit-seal" :disabled="!canSubmit" @click="submitAttempt">
-                    {{ submitting ? "判分中…" : "提交取证" }}
+                    {{ submitting ? "判分中…" : phaseConfig.submitLabel }}
                   </button>
                 </div>
               </div>
@@ -511,15 +590,15 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
           <section class="ledger-block">
             <div class="pane-head pane-head--tight">
               <div>
-                <p class="pane-kicker mono">EVIDENCE LEDGER</p>
-                <h3>证据账本</h3>
+                <p class="pane-kicker mono">{{ phaseConfig.ledgerKicker }}</p>
+                <h3>{{ phaseConfig.ledgerTitle }}</h3>
               </div>
               <button class="refresh-button" :disabled="refreshing" @click="refreshRecommendations">↻</button>
             </div>
             <div class="ledger-metrics">
-              <div><b>{{ adaptive?.profile?.event_count ?? 0 }}</b><span>全部事件</span></div>
-              <div><b>{{ adaptive?.profile?.eligible_event_count ?? 0 }}</b><span>合格证据</span></div>
-              <div><b>{{ adaptive?.profile?.self_report_event_count ?? 0 }}</b><span>困惑自报</span></div>
+              <div><b>{{ adaptive?.profile?.event_count ?? 0 }}</b><span>{{ phaseConfig.metricLabels[0] }}</span></div>
+              <div><b>{{ adaptive?.profile?.eligible_event_count ?? 0 }}</b><span>{{ phaseConfig.metricLabels[1] }}</span></div>
+              <div><b>{{ adaptive?.profile?.self_report_event_count ?? 0 }}</b><span>{{ phaseConfig.metricLabels[2] }}</span></div>
             </div>
             <div v-if="selectedCard" class="selected-ledger">
               <p>{{ selectedCard.canonical_name }}</p>
@@ -535,8 +614,8 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
           </section>
 
           <section class="ledger-block ledger-block--queue">
-            <p class="pane-kicker mono">NEXT ENTRIES · {{ executableRecommendations.length }}</p>
-            <h3>任务序列</h3>
+            <p class="pane-kicker mono">{{ phaseConfig.queueKicker }} · {{ executableRecommendations.length }}</p>
+            <h3>{{ phaseConfig.queueTitle }}</h3>
             <div class="queue-list">
               <button
                 v-for="(task, index) in visibleQueue.slice(0, 6)"
@@ -553,17 +632,17 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
               <p v-if="!visibleQueue.length" class="queue-empty">暂无未完成任务。</p>
             </div>
             <button class="subjective-entry" @click="subjectiveOpen = true">
-              <span class="mono">ARGUMENT DRAFT</span>
-              <strong>进入主观论证与角色互换 →</strong>
-              <small>10个知识短答 · 3个案例角色任务 · 教师复核后入画像</small>
+              <span class="mono">{{ phaseConfig.subjectiveKicker }}</span>
+              <strong>{{ phaseConfig.subjectiveTitle }}</strong>
+              <small>{{ phaseConfig.subjectiveNote }}</small>
             </button>
           </section>
 
           <section class="ledger-block confusion-block">
             <div class="confusion-block__head">
               <div>
-                <p class="pane-kicker mono">QUESTION SLIP</p>
-                <h3>困惑便笺</h3>
+                <p class="pane-kicker mono">{{ phaseConfig.confusionKicker }}</p>
+                <h3>{{ phaseConfig.confusionTitle }}</h3>
               </div>
               <button @click="confusionOpen = !confusionOpen">{{ confusionOpen ? "收起" : "填写" }}</button>
             </div>
@@ -581,13 +660,13 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
                 v-model="confusionNote"
                 class="ledger-input ledger-textarea"
                 maxlength="2000"
-                placeholder="具体写下你卡住的条件、事实或证据……"
+                :placeholder="phaseConfig.confusionPlaceholder"
               ></textarea>
               <button
                 class="confusion-submit"
                 :disabled="!confusionNote.trim() || confusionSaving"
                 @click="saveConfusion"
-              >{{ confusionSaving ? "归档中…" : "归入证据账本" }}</button>
+              >{{ confusionSaving ? "归档中…" : phaseConfig.confusionSubmit }}</button>
             </template>
             <p v-else class="confusion-note">
               自报困惑会影响下一任务排序，但不会被当作答错或直接降低掌握状态。
@@ -626,8 +705,16 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
     rgba(5, 4, 3, 0.9);
   backdrop-filter: blur(12px);
 }
+.journey-layer--review {
+  background:
+    radial-gradient(circle at 82% 16%, rgba(82, 139, 151, 0.16), transparent 34%),
+    rgba(3, 6, 7, 0.92);
+}
 
 .journey {
+  --phase-accent: #d2a64c;
+  --phase-accent-soft: rgba(176, 138, 62, 0.12);
+  --phase-border: rgba(176, 138, 62, 0.42);
   height: 100%;
   min-height: 0;
   display: flex;
@@ -639,6 +726,15 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
     linear-gradient(180deg, #18140f, #0d0b08 65%);
   border: 1px solid rgba(176, 138, 62, 0.32);
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.72), inset 0 1px rgba(255, 245, 220, 0.04);
+}
+.journey--review {
+  --phase-accent: #8ab8c2;
+  --phase-accent-soft: rgba(92, 145, 157, 0.13);
+  --phase-border: rgba(100, 156, 168, 0.48);
+  background:
+    linear-gradient(90deg, rgba(124, 179, 190, 0.018) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(180deg, #10191a, #080d0e 66%);
+  border-color: rgba(100, 156, 168, 0.42);
 }
 
 .journey__head {
@@ -670,8 +766,9 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   transform: rotate(-2deg);
 }
 .journey__kicker,
-.pane-kicker { margin: 0 0 3px; color: var(--accent-amber); font-size: 0.64rem; letter-spacing: 0.18em; }
-.journey__brand h2 { font-size: 1.28rem; font-weight: 650; letter-spacing: 0.04em; }
+.pane-kicker { margin: 0 0 3px; color: var(--phase-accent); font-size: 0.72rem; letter-spacing: 0.16em; }
+.journey__brand h2 { font-size: 1.42rem; font-weight: 650; letter-spacing: 0.04em; }
+.journey--review .journey__seal { color:#e8f4f4; border-color:#77aab4; box-shadow:inset 0 0 0 3px #10272b,0 0 0 1px rgba(119,170,180,.26); background:#285966; }
 
 .phase-switch {
   display: flex;
@@ -679,19 +776,21 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   background: rgba(0, 0, 0, 0.22);
 }
 .phase-switch button {
-  padding: 10px 16px;
+  min-width: 122px;
+  padding: 11px 17px;
   color: var(--parchment-dim);
   border: 0;
   border-right: 1px solid var(--line);
   background: transparent;
   font-family: var(--font-display);
+  font-size: .9rem;
   cursor: pointer;
 }
 .phase-switch button:last-child { border-right: 0; }
 .phase-switch button span { margin-right: 7px; font-size: 0.66rem; }
-.phase-switch button.active { color: #f1e8d6; background: rgba(176, 138, 62, 0.15); box-shadow: inset 0 -2px var(--accent-amber); }
+.phase-switch button.active { color: #f1e8d6; background: var(--phase-accent-soft); box-shadow: inset 0 -2px var(--phase-accent); }
 
-.journey__summary { display: flex; justify-content: flex-end; gap: 18px; color: var(--parchment-dim); font-size: 0.72rem; }
+.journey__summary { display: flex; justify-content: flex-end; gap: 18px; color: var(--parchment-dim); font-size: 0.8rem; }
 .journey__summary span { display: flex; flex-direction: column; align-items: flex-end; }
 .journey__summary b { color: var(--parchment); font-size: 1rem; font-weight: 500; }
 .journey__close {
@@ -704,6 +803,32 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   cursor: pointer;
 }
 .journey__close:hover { color: #fff; border-color: var(--accent); }
+
+.phase-story {
+  min-height: 96px;
+  display: grid;
+  grid-template-columns: minmax(360px, .92fr) minmax(560px, 1.08fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 70px);
+  padding: 14px clamp(24px, 3.2vw, 50px);
+  border-bottom: 1px solid var(--phase-border);
+  background:
+    linear-gradient(100deg, var(--phase-accent-soft), transparent 58%),
+    rgba(255, 255, 255, .012);
+}
+.phase-story__copy { min-width:0; display:grid; grid-template-columns:28px minmax(0,1fr); grid-template-rows:auto auto; align-items:start; column-gap:14px; }
+.phase-story__copy>p { grid-column:1; grid-row:1/3; margin:0; color:var(--phase-accent); font-size:.7rem; letter-spacing:.13em; writing-mode:vertical-rl; transform:rotate(180deg); }
+.phase-story__copy h3 { grid-column:2; grid-row:1; margin:0; font-size:clamp(1.28rem,1.8vw,1.72rem); font-weight:560; line-height:1.25; }
+.phase-story__copy span { grid-column:2; grid-row:2; display:block; max-width:720px; margin-top:4px; color:var(--parchment-muted); font-size:.84rem; line-height:1.55; }
+.phase-story__steps { list-style:none; display:grid; grid-template-columns:repeat(4,1fr); gap:0; margin:0; padding:0; }
+.phase-story__steps li { position:relative; min-width:0; display:grid; gap:3px; padding:8px 8px 8px 18px; color:var(--parchment-faint); border-top:1px solid var(--line-strong); }
+.phase-story__steps li::before { content:""; position:absolute; left:0; top:-4px; width:7px; height:7px; border:1px solid var(--line-strong); background:#0d0c09; transform:rotate(45deg); }
+.journey--review .phase-story__steps li::before { background:#091011; }
+.phase-story__steps li.active { color:var(--parchment); border-top-color:var(--phase-accent); }
+.phase-story__steps li.active::before { border-color:var(--phase-accent); background:var(--phase-accent); box-shadow:0 0 0 4px var(--phase-accent-soft); }
+.phase-story__steps li.current { background:linear-gradient(90deg,var(--phase-accent-soft),transparent); }
+.phase-story__steps b { color:var(--phase-accent); font-size:.66rem; font-weight:600; }
+.phase-story__steps span { overflow:hidden; font-family:var(--font-display); font-size:.82rem; white-space:nowrap; text-overflow:ellipsis; }
 
 .journey__loading {
   flex: 1;
@@ -740,8 +865,8 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .pane-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 13px; }
 .pane-head--tight { align-items: center; }
 .pane-head h3,
-.ledger-block h3 { font-size: 1.08rem; font-weight: 600; }
-.pane-count { color: var(--parchment-dim); font-size: 0.7rem; }
+.ledger-block h3 { font-size: 1.18rem; font-weight: 600; }
+.pane-count { color: var(--parchment-dim); font-size: 0.78rem; }
 .coverage-track { height: 2px; margin-bottom: 15px; background: var(--line-strong); }
 .coverage-track span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-amber)); transition: width 0.5s ease; }
 
@@ -765,15 +890,15 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .knowledge-tab.active { color: var(--parchment); border-color: rgba(176, 138, 62, 0.38); background: linear-gradient(90deg, rgba(176, 138, 62, 0.1), transparent); }
 .knowledge-tab__no { color: var(--parchment-faint); font-size: 0.67rem; text-align: center; }
 .knowledge-tab__copy { min-width: 0; display: grid; }
-.knowledge-tab__copy small { overflow: hidden; color: var(--parchment-dim); font-size: 0.65rem; white-space: nowrap; text-overflow: ellipsis; }
-.knowledge-tab__copy strong { overflow: hidden; font-family: var(--font-display); font-size: 0.88rem; font-weight: 580; white-space: nowrap; text-overflow: ellipsis; }
-.knowledge-tab__copy em { color: var(--parchment-faint); font-size: 0.66rem; font-style: normal; }
+.knowledge-tab__copy small { overflow: hidden; color: var(--parchment-dim); font-size: 0.72rem; white-space: nowrap; text-overflow: ellipsis; }
+.knowledge-tab__copy strong { overflow: hidden; font-family: var(--font-display); font-size: 0.96rem; font-weight: 580; white-space: nowrap; text-overflow: ellipsis; }
+.knowledge-tab__copy em { color: var(--parchment-faint); font-size: 0.72rem; font-style: normal; }
 .knowledge-tab__mark { width: 6px; height: 6px; border-radius: 50%; background: var(--parchment-faint); }
 .knowledge-tab--mastered .knowledge-tab__mark { background: var(--accent-success); }
 .knowledge-tab--partial .knowledge-tab__mark { background: var(--accent-amber); }
 .knowledge-tab--missing .knowledge-tab__mark { background: var(--accent); }
 .knowledge-tab--provisional .knowledge-tab__mark { background: #88aab7; box-shadow: 0 0 0 3px rgba(92, 122, 138, 0.17); }
-.index-note { margin: 16px 5px 0; color: var(--parchment-faint); font-size: 0.7rem; line-height: 1.6; }
+.index-note { margin: 16px 5px 0; color: var(--parchment-faint); font-size: 0.78rem; line-height: 1.6; }
 
 .knowledge-brief {
   position: relative;
@@ -783,14 +908,14 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   border-bottom: 1px solid var(--line);
   background: linear-gradient(110deg, rgba(176, 138, 62, 0.07), transparent 65%);
 }
-.knowledge-brief::before { content: ""; position: absolute; left: 0; top: 18px; bottom: 18px; width: 2px; background: var(--accent-amber); }
+.knowledge-brief::before { content: ""; position: absolute; left: 0; top: 18px; bottom: 18px; width: 2px; background: var(--phase-accent); }
 .knowledge-brief__head { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
 .knowledge-brief h3 { font-size: 1.34rem; font-weight: 620; }
 .review-stamp { padding: 5px 8px; color: rgba(196, 71, 27, 0.9); border: 1px solid rgba(196, 71, 27, 0.46); font-family: var(--font-display); font-size: 0.72rem; transform: rotate(2deg); }
-.knowledge-brief__objective { margin: 11px 0 4px; color: var(--parchment); font-size: 0.94rem; }
-.knowledge-brief__summary { margin: 0; color: var(--parchment-muted); font-size: 0.84rem; }
+.knowledge-brief__objective { margin: 11px 0 4px; color: var(--parchment); font-size: 1.04rem; }
+.knowledge-brief__summary { margin: 0; color: var(--parchment-muted); font-size: 0.93rem; line-height:1.6; }
 .law-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 13px; }
-.law-strip > span { padding: 3px 7px; color: var(--parchment-muted); border: 1px solid var(--line); font-size: 0.68rem; }
+.law-strip > span { padding: 4px 8px; color: var(--parchment-muted); border: 1px solid var(--line); font-size: 0.75rem; }
 .law-strip__label { color: var(--accent-amber) !important; border-color: rgba(176, 138, 62, 0.32) !important; }
 .law-strip__evidence { margin-left: auto; color: var(--parchment-dim) !important; border: 0 !important; }
 
@@ -803,14 +928,18 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
     #15120d;
   box-shadow: 0 30px 70px -48px #000;
 }
+.journey--review .knowledge-brief { border-top-color:var(--phase-border); background:linear-gradient(110deg,var(--phase-accent-soft),transparent 65%); }
+.journey--review .task-sheet { border-color:rgba(119,170,180,.22); background:linear-gradient(180deg,rgba(110,164,175,.055),rgba(255,255,255,.008)),#0d1516; }
+.journey--review .task-sheet::after { border-color:rgba(139,187,196,.055); }
+.journey--review .knowledge-tab.active { border-color:var(--phase-border); background:linear-gradient(90deg,var(--phase-accent-soft),transparent); }
 .task-sheet::after { content: ""; position: absolute; inset: 8px; pointer-events: none; border: 1px solid rgba(236, 228, 211, 0.035); }
 .task-sheet__head { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 16px; }
-.task-sheet__folio { color: var(--accent); font-size: 0.72rem; letter-spacing: 0.12em; }
+.task-sheet__folio { color: var(--phase-accent); font-size: 0.78rem; letter-spacing: 0.12em; }
 .task-sheet__meta { display: flex; gap: 8px; }
-.task-sheet__meta span { padding: 3px 7px; color: var(--parchment-dim); border: 1px solid var(--line); font-size: 0.68rem; }
-.task-sheet__reason { position: relative; z-index: 1; margin: 17px 0 9px; color: var(--accent-amber); font-size: 0.78rem; }
-.task-sheet__stem { position: relative; z-index: 1; max-width: 900px; font-size: clamp(1.08rem, 1.45vw, 1.36rem); font-weight: 520; line-height: 1.65; }
-.task-sheet__instruction { position: relative; z-index: 1; margin: 9px 0 16px; color: var(--parchment-faint); font-size: 0.68rem; }
+.task-sheet__meta span { padding: 4px 8px; color: var(--parchment-dim); border: 1px solid var(--line); font-size: 0.76rem; }
+.task-sheet__reason { position: relative; z-index: 1; margin: 17px 0 9px; color: var(--phase-accent); font-size: 0.88rem; }
+.task-sheet__stem { position: relative; z-index: 1; max-width: 900px; font-size: clamp(1.2rem, 1.55vw, 1.48rem); font-weight: 520; line-height: 1.65; }
+.task-sheet__instruction { position: relative; z-index: 1; margin: 10px 0 17px; color: var(--parchment-faint); font-size: 0.76rem; }
 .option-list { position: relative; z-index: 1; display: grid; gap: 8px; }
 .option-row {
   width: 100%;
@@ -832,10 +961,10 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .option-row.correct { color: #dce8d4; border-color: rgba(122, 153, 98, 0.6); background: rgba(122, 153, 98, 0.1); }
 .option-row.wrong { color: #e0b4a6; border-color: rgba(196, 71, 27, 0.6); background: rgba(196, 71, 27, 0.1); }
 .option-row__key { width: 29px; height: 29px; display: grid; place-items: center; color: var(--accent-amber); border: 1px solid currentColor; }
-.option-row__text { font-size: 0.88rem; line-height: 1.5; }
+.option-row__text { font-size: 0.98rem; line-height: 1.55; }
 .option-row__check { color: var(--parchment); text-align: center; }
 .task-sheet__controls { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--line-strong); }
-.confidence { display: flex; align-items: center; gap: 6px; color: var(--parchment-dim); font-size: 0.7rem; }
+.confidence { display: flex; align-items: center; gap: 6px; color: var(--parchment-dim); font-size: 0.8rem; }
 .confidence > span { margin-right: 5px; }
 .confidence button { width: 26px; height: 25px; color: var(--parchment-dim); border: 1px solid var(--line); background: transparent; cursor: pointer; }
 .confidence button.active { color: var(--ink-900); border-color: var(--accent-amber); background: var(--accent-amber); }
@@ -851,6 +980,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   font-family: var(--font-display);
   cursor: pointer;
 }
+.journey--review .submit-seal,.journey--review .confusion-submit { color:#eefafa; border-color:#6ca0ab; background:linear-gradient(180deg,#356f7b,#214a54); }
 .submit-seal:disabled,
 .confusion-submit:disabled { opacity: 0.35; cursor: not-allowed; }
 .action-error { position: relative; z-index: 1; margin-top: 13px; padding: 9px 11px; color: #e4ad9d; border-left: 2px solid var(--accent); background: rgba(196, 71, 27, 0.08); font-size: 0.78rem; }
@@ -882,14 +1012,14 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .ledger-metrics div { padding: 9px 5px; text-align: center; border-right: 1px solid var(--line); }
 .ledger-metrics div:last-child { border-right: 0; }
 .ledger-metrics b { display: block; color: var(--parchment); font-family: var(--font-mono); font-size: 1rem; font-weight: 500; }
-.ledger-metrics span { color: var(--parchment-faint); font-size: 0.62rem; }
-.selected-ledger { padding: 11px; border-left: 2px solid var(--accent-amber); background: rgba(176, 138, 62, 0.055); }
-.selected-ledger > p { margin: 0; color: var(--parchment-muted); font-size: 0.74rem; }
+.ledger-metrics span { color: var(--parchment-faint); font-size: 0.7rem; }
+.selected-ledger { padding: 11px; border-left: 2px solid var(--phase-accent); background: var(--phase-accent-soft); }
+.selected-ledger > p { margin: 0; color: var(--parchment-muted); font-size: 0.82rem; }
 .selected-ledger > strong { display: block; margin: 2px 0 9px; font-family: var(--font-display); font-size: 0.98rem; }
 .selected-ledger dl { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; }
 .selected-ledger dl div { text-align: center; }
-.selected-ledger dt { color: var(--parchment-faint); font-size: 0.61rem; }
-.selected-ledger dd { margin: 1px 0 0; color: var(--parchment-muted); font-family: var(--font-mono); font-size: 0.72rem; }
+.selected-ledger dt { color: var(--parchment-faint); font-size: 0.68rem; }
+.selected-ledger dd { margin: 1px 0 0; color: var(--parchment-muted); font-family: var(--font-mono); font-size: 0.8rem; }
 .tone--mastered { color: var(--accent-success); }
 .tone--partial,
 .tone--provisional { color: var(--accent-amber); }
@@ -914,14 +1044,14 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .queue-list button.active { border-color: var(--line-strong); background: rgba(236, 228, 211, 0.025); }
 .queue-list button > span { color: var(--parchment-faint); font-size: 0.64rem; }
 .queue-list button div { min-width: 0; display: grid; }
-.queue-list strong { overflow: hidden; font-family: var(--font-display); font-size: 0.78rem; font-weight: 560; white-space: nowrap; text-overflow: ellipsis; }
-.queue-list small { overflow: hidden; color: var(--parchment-faint); font-size: 0.64rem; white-space: nowrap; text-overflow: ellipsis; }
+.queue-list strong { overflow: hidden; font-family: var(--font-display); font-size: 0.86rem; font-weight: 560; white-space: nowrap; text-overflow: ellipsis; }
+.queue-list small { overflow: hidden; color: var(--parchment-faint); font-size: 0.7rem; white-space: nowrap; text-overflow: ellipsis; }
 .queue-empty { color: var(--parchment-faint); font-size: 0.72rem; }
-.subjective-entry{width:100%;display:grid;gap:3px;margin-top:10px;padding:10px;color:var(--parchment-muted);text-align:left;border:1px solid rgba(176,138,62,.32);background:linear-gradient(110deg,rgba(176,138,62,.08),transparent);cursor:pointer}.subjective-entry>span{color:var(--accent-amber);font-size:.61rem;letter-spacing:.11em}.subjective-entry strong{font-family:var(--font-display);font-size:.8rem;font-weight:560}.subjective-entry small{color:var(--parchment-faint);font-size:.62rem}
+.subjective-entry{width:100%;display:grid;gap:4px;margin-top:10px;padding:11px;color:var(--parchment-muted);text-align:left;border:1px solid var(--phase-border);background:linear-gradient(110deg,var(--phase-accent-soft),transparent);cursor:pointer}.subjective-entry>span{color:var(--phase-accent);font-size:.68rem;letter-spacing:.11em}.subjective-entry strong{font-family:var(--font-display);font-size:.9rem;font-weight:560}.subjective-entry small{color:var(--parchment-faint);font-size:.7rem;line-height:1.45}
 
 .confusion-block__head { display: flex; justify-content: space-between; align-items: center; }
 .confusion-block__head button { color: var(--accent-amber); border: 0; border-bottom: 1px solid rgba(176, 138, 62, 0.35); background: transparent; cursor: pointer; }
-.confusion-note { margin: 10px 0 0; color: var(--parchment-faint); font-size: 0.7rem; line-height: 1.55; }
+.confusion-note { margin: 10px 0 0; color: var(--parchment-faint); font-size: 0.77rem; line-height: 1.55; }
 .confusion-saved { display:grid; gap:7px; margin:10px 0; padding:8px; color:#bfd2b2; border-left:2px solid var(--accent-success); background:rgba(122,153,98,.07); font-size:.7rem; }
 .confusion-saved button { justify-self:start; padding:0 0 2px; color:#b9ced6; border:0; border-bottom:1px solid rgba(92,122,138,.45); background:transparent; font-family:var(--font-display); cursor:pointer; }
 .ledger-input { width: 100%; margin-top: 9px; padding: 8px 9px; color: var(--parchment); border: 1px solid var(--line-strong); border-radius: 0; background: #0e0c09; font-family: var(--font-body); }
@@ -929,7 +1059,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .confusion-submit { width: 100%; margin-top: 8px; padding: 8px; border-color: var(--accent-amber); background: rgba(176, 138, 62, 0.12); color: #ead8af; }
 .boundary-note { display: grid; grid-template-columns: 37px 1fr; gap: 9px; padding: 10px; border: 1px dashed rgba(236, 228, 211, 0.13); }
 .boundary-note span { color: var(--accent); font-family: var(--font-display); }
-.boundary-note p { margin: 0; color: var(--parchment-faint); font-size: 0.66rem; line-height: 1.5; }
+.boundary-note p { margin: 0; color: var(--parchment-faint); font-size: 0.73rem; line-height: 1.5; }
 
 @keyframes docket-pulse { 50% { opacity: 0.55; transform: rotate(2deg) scale(0.96); } }
 @keyframes verdict-in { from { opacity: 0; transform: translateY(8px); } }
@@ -966,6 +1096,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   }
   .ledger-block { margin: 0; }
   .task-pane { padding: 18px; }
+  .phase-story { grid-template-columns:1fr; gap:12px; padding:14px 18px; }
 }
 
 @media (max-width: 720px) {
@@ -980,5 +1111,10 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   .task-sheet__controls,
   .feedback-sheet__foot { align-items: flex-start; flex-direction: column; }
   .task-sheet__meta { flex-wrap: wrap; }
+  .phase-story__copy { grid-template-columns:1fr; grid-template-rows:auto auto auto; }
+  .phase-story__copy>p { grid-column:1; grid-row:1; writing-mode:initial; transform:none; }
+  .phase-story__copy h3 { grid-column:1; grid-row:2; }
+  .phase-story__copy span { grid-column:1; grid-row:3; }
+  .phase-story__steps { grid-template-columns:repeat(2,1fr); row-gap:8px; }
 }
 </style>

@@ -23,16 +23,16 @@
 推荐直接本地启动完整效果，不需要Docker：
 
 ```powershell
-# 首次使用：把用户授权的外部配置按白名单写入本地、Git 忽略的 .env
+# 首次使用（可选）：把外部配置按白名单写入本地、Git 忽略的 .env
 uv run --isolated --with-requirements requirements.lock.txt -- `
-  python start.py --sync-env-from E:\guabangjieshuai\EduBrain\.env.example
+  python start.py --sync-env-from "<外部配置文件路径>"
 
 # 之后直接从仓库 .env 启动
 uv run --isolated --with-requirements requirements.lock.txt -- `
   python start.py
 ```
 
-首次命令只复制模型、讯飞和JWT运行所需的白名单键，不复制无关字段；后续命令使用本地`.env`启动完整SQLite、backend、adaptive与Vite前端。正常优先OpenCode，429/用量窗口/服务暂不可用时自动回退DeepSeek官方API。密钥不打印、不提交仓库；访问`http://127.0.0.1:5173`，按`Ctrl+C`停止。
+首次命令只复制模型、讯飞和JWT运行所需的白名单键，不复制无关字段；也可以直接从`.env.example`复制出`.env`后手工填写。后续命令使用本地`.env`启动完整SQLite、backend、adaptive与Vite前端。正常优先OpenCode，429/用量窗口/服务暂不可用时自动回退DeepSeek官方API。密钥不打印、不提交仓库；访问`http://127.0.0.1:5173`，按`Ctrl+C`停止。
 
 本地SQLite启用WAL和30秒busy timeout；密码哈希在写事务前完成，短注册事务仅对`database is locked`做有界退避；sandbox记录先提交再初始化seed文件。学生与教师同时首次注册/建sandbox已通过真实并发浏览器门禁，不需要为本地试用换Docker/PostgreSQL。
 
@@ -111,7 +111,7 @@ EvidencePack中的检索相关性和coverage只是待语义审核候选，不等
 
 `POST /api/adaptive/confusions`生成独立`confusion_annotation`。困惑是学生自报与教师聚合信号，不会冒充答错证据或直接降低掌握状态。推荐/题目接口始终无答案，正确选项和解析只在服务端判分后返回给当前登录学生。契约、示例、三次证据/两道任务门槛和正式考试边界见[`docs/TASK_ATTEMPT_CONTRACTS.md`](docs/TASK_ATTEMPT_CONTRACTS.md)。
 
-登录后点击顶部“自主学习”即可进入学生连续旅程：10个知识卷宗、课程目标与法源索引、个性化任务、作答把握、服务端判分、误概念反馈、证据账本、困惑便笺和下一任务在同一页面闭环。桌面为三栏卷宗，窄屏改为单列并保留困惑入口。页面形态与可复现浏览器冒烟见[`docs/STUDENT_LEARNING_JOURNEY.md`](docs/STUDENT_LEARNING_JOURNEY.md)。
+登录后点击顶部“自主学习”即可进入学生连续旅程：10个知识卷宗、课程目标与法源索引、个性化任务、作答把握、服务端判分、误概念反馈、证据账本、困惑便笺和下一任务在同一页面闭环。课前以“带着问题进入课堂”的暖色问题单为主，课后以“用证据完成一次复盘”的冷色证据台为主；两者共享TaskAttempt契约但不混淆学习目的。桌面为三栏卷宗，窄屏改为单列并保留困惑入口。页面形态与可复现浏览器冒烟见[`docs/STUDENT_LEARNING_JOURNEY.md`](docs/STUDENT_LEARNING_JOURNEY.md)。
 
 顶部“认知诊断”是比赛展示核心页：在线Evidence-KT保守画像与学生事件时间线、ORCDF V0/V1/V2真实shadow实验、选择/短答/案件/角色互换七步路径和四任务Model Adapter路由集中展示。ORCDF明确来自MOOCCubeX民法/宪法、mastery未校准且不进入当前刑法学生画像；微调未连接时显示`not_connected`。展示口径、来源SHA和浏览器脚本见[`docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md`](docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md)。
 

@@ -74,9 +74,19 @@ try {
   await dialog.waitFor();
   await page.getByText("刑法学科技术证据总账", { exact: true }).waitFor();
   await page.locator(".pipeline article").first().waitFor({ timeout: 30000 });
+  const purposeText = await page.locator(".tech-purpose").innerText();
+  if (
+    !purposeText.includes("比赛 / 答辩只读视图")
+    || !purposeText.includes("不参与学生作答、评分、LearningEvent或长期画像")
+  ) throw new Error(`Technical evidence purpose is unclear: ${purposeText}`);
 
   const overviewPipeline = await page.locator(".pipeline article").count();
   const overviewCards = await page.locator(".overview-grid article").count();
+  const readability = {
+    tab_font_px: Number.parseFloat(await page.locator(".tech-tabs button").first().evaluate((node) => getComputedStyle(node).fontSize)),
+    pipeline_note_font_px: Number.parseFloat(await page.locator(".pipeline p").first().evaluate((node) => getComputedStyle(node).fontSize)),
+    boundary_font_px: Number.parseFloat(await page.locator(".global-boundary p").first().evaluate((node) => getComputedStyle(node).fontSize)),
+  };
   const overviewText = await page.locator(".tech-content").innerText();
   if (
     overviewPipeline !== 5
@@ -87,6 +97,9 @@ try {
     || !overviewText.includes("PENDING")
   ) {
     throw new Error(`Overview incomplete: pipeline=${overviewPipeline} cards=${overviewCards}`);
+  }
+  if (readability.tab_font_px < 12 || readability.pipeline_note_font_px < 10.5 || readability.boundary_font_px < 10) {
+    throw new Error(`Technical evidence text too small for recording: ${JSON.stringify(readability)}`);
   }
   const overflow = { overview: await contentOverflow() };
   await page.screenshot({ path: path.join(artifactDir, "01-overview.png") });
@@ -166,6 +179,8 @@ try {
     viewport: `${viewport.width}x${viewport.height}`,
     overview_pipeline: overviewPipeline,
     overview_cards: overviewCards,
+    purpose_visible: true,
+    readability,
     data_ledger_rows: ledgerRows,
     reasoning_checks: checks,
     negative_fixtures: fixtures,
