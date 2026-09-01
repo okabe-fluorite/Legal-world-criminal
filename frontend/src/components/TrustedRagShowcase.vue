@@ -3,6 +3,8 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 import { api } from "../lib/api";
 import type { CitationAuditResponse, TypicalQuestionCase, TypicalQuestionReport } from "../lib/types";
 import AITutor from "./AITutor.vue";
+import EvidenceCitations from "./EvidenceCitations.vue";
+import { typicalSourceReference } from "../lib/evidence";
 
 const emit = defineEmits<{ close: [] }>();
 const loading = ref(true);
@@ -20,6 +22,15 @@ const selected = computed<TypicalQuestionCase | null>(() =>
 const requiredSources = computed(() => {
   const row = selected.value;
   return row?.sources.filter((source) => row.required_source_ids.includes(source.source_id)) ?? [];
+});
+const requiredReferences = computed(() => requiredSources.value.map(typicalSourceReference));
+const modelReferences = computed(() => {
+  const row = selected.value;
+  if (!row) return [];
+  return row.model_output.citations
+    .map((citation) => row.sources.find((source) => source.source_id === citation.source_id))
+    .filter((source) => Boolean(source))
+    .map((source) => typicalSourceReference(source!));
 });
 const gateSummary = computed(() => [
   { label: "结构JSON", passed: selected.value?.run_status === "model_completed" },
@@ -152,7 +163,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 
           <div v-if="badAudit" class="evidence-tutor"><AITutor context="evidence" :speech-text="evidenceWarningSpeech" compact /></div>
 
-          <section class="ai-answer"><header><span class="ai-stamp">AI</span><div><p class="kicker mono">GOVERNED MODEL OUTPUT</p><h3>系统回答</h3><span>置信度 {{ Math.round((selected.model_output.confidence ?? 0) * 100) }}% · 非正式法律意见</span></div></header><p class="answer-text">{{ selected.model_output.answer }}</p><ol><li v-for="step in selected.model_output.rule_steps" :key="step">{{ step }}</li></ol><blockquote><strong>结论</strong>{{ selected.model_output.conclusion }}</blockquote><p class="uncertainty"><b>边界：</b>{{ selected.model_output.uncertainty || '模型未声明额外不确定性；仍需专家复核。' }}</p></section>
+          <section class="ai-answer"><header><span class="ai-stamp">AI</span><div><p class="kicker mono">GOVERNED MODEL OUTPUT</p><h3>系统回答</h3><span>置信度 {{ Math.round((selected.model_output.confidence ?? 0) * 100) }}% · 非正式法律意见</span></div></header><p class="answer-text"><span>{{ selected.model_output.answer }}</span><EvidenceCitations :references="modelReferences" /></p><ol><li v-for="step in selected.model_output.rule_steps" :key="step">{{ step }}</li></ol><blockquote><strong>结论</strong><span>{{ selected.model_output.conclusion }}</span><EvidenceCitations :references="modelReferences" compact /></blockquote><p class="uncertainty"><b>边界：</b>{{ selected.model_output.uncertainty || '模型未声明额外不确定性；仍需专家复核。' }}</p></section>
 
           <section class="gate-strip"><article v-for="gate in gateSummary" :key="gate.label" :class="{ pass: gate.passed }"><span>{{ gate.passed ? '✓' : '×' }}</span><strong>{{ gate.label }}</strong></article><div><b>{{ Math.round(selected.point_coverage * 100) }}%</b><span>标准要点覆盖</span></div></section>
 
@@ -162,7 +173,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
         <aside class="evidence-column">
           <section class="expert-status"><span>师</span><div><p class="kicker mono">INDEPENDENT REVIEW</p><h3>法学专家：待复核</h3><p>自动3/3不等于专家确认准确；此状态必须保留到真实审核完成。</p></div></section>
 
-          <section class="standard-answer"><p class="kicker mono">REFERENCE ANSWER</p><h3>标准答案对照</h3><p>{{ selected.standard_answer }}</p></section>
+          <section class="standard-answer"><p class="kicker mono">REFERENCE ANSWER</p><h3>标准答案对照</h3><p><span>{{ selected.standard_answer }}</span><EvidenceCitations :references="requiredReferences" compact /></p></section>
 
           <section class="sources"><header><div><p class="kicker mono">GOVERNED SOURCES</p><h3>权威Evidence</h3></div><span>{{ requiredSources.length }} sources</span></header><article v-for="source in requiredSources" :key="source.source_id"><div class="source-head"><span>{{ source.source_type === '法律条文' ? '法' : '案' }}</span><div><strong>{{ source.title }}</strong><small>{{ source.article_ref }} · {{ source.authority }}</small></div></div><blockquote>{{ source.quote }}</blockquote><dl><div><dt>Evidence</dt><dd>{{ source.source_id }}</dd></div><div><dt>版本</dt><dd>{{ shortHash(source.version) }}</dd></div><div><dt>来源</dt><dd>{{ source.source_url || '本地受治理快照' }}</dd></div></dl></article></section>
 

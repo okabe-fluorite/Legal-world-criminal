@@ -3,6 +3,8 @@ import { computed, onMounted, ref } from "vue";
 import { api } from "../lib/api";
 import type { LearningSupportSeed, LearningSupportSession } from "../lib/types";
 import AITutor from "./AITutor.vue";
+import EvidenceCitations from "./EvidenceCitations.vue";
+import { toEvidenceReference } from "../lib/evidence";
 
 const props = defineProps<{ seed: LearningSupportSeed }>();
 const emit = defineEmits<{ close: []; retryTask: [] }>();
@@ -35,6 +37,20 @@ const layerRows = computed(() => {
     { no: "03", key: "application", label: "事实适用", content: result.value.layers.application.content },
     { no: "04", key: "dispute", label: "争议边界", content: result.value.layers.dispute.content },
   ];
+});
+const normReferences = computed(() => {
+  if (!result.value) return [];
+  return result.value.layers.norm.citations.map((citation, index) => {
+    const audited = result.value?.citation_audit?.items[index]?.evidence;
+    return toEvidenceReference(audited || {
+      id: `support:${citation.title}:${citation.article_ref}`,
+      source_type: "法律条文",
+      title: citation.title,
+      article_ref: citation.article_ref,
+      quote: citation.quote,
+      authority: "法律",
+    }, `support-${index + 1}`);
+  });
 });
 const tutorSpeech = computed(() => {
   if (!result.value) return "";
@@ -174,13 +190,7 @@ onMounted(() => void createSession());
               <div class="layer-grid">
                 <article v-for="row in layerRows" :key="row.key" :class="`layer-card layer-card--${row.key}`">
                   <header><span class="mono">{{ row.no }}</span><h3>{{ row.label }}</h3></header>
-                  <p>{{ row.content }}</p>
-                  <div v-if="row.key === 'norm'" class="citation-stack">
-                    <blockquote v-for="citation in result.layers.norm.citations" :key="`${citation.title}:${citation.article_ref}`">
-                      <cite>{{ citation.title }} {{ citation.article_ref }}</cite>
-                      <span>{{ citation.quote }}</span>
-                    </blockquote>
-                  </div>
+                  <p><span>{{ row.content }}</span><EvidenceCitations v-if="row.key === 'norm'" :references="normReferences" /></p>
                 </article>
               </div>
 
@@ -254,10 +264,6 @@ onMounted(() => void createSession());
 .layer-card header span { color:#88aab7; font-size:.62rem; }
 .layer-card h3 { font-size:.98rem; font-weight:600; }
 .layer-card > p { color:var(--parchment-muted); font-size:.8rem; line-height:1.65; }
-.citation-stack { display:grid; gap:7px; margin-top:10px; }
-.citation-stack blockquote { margin:0; padding:8px 9px; border-left:1px solid var(--accent-amber); background:rgba(176,138,62,.045); }
-.citation-stack cite { display:block; color:var(--accent-amber); font-size:.68rem; font-style:normal; }
-.citation-stack span { color:var(--parchment-dim); font-size:.68rem; line-height:1.5; }
 .next-action-note { display:flex; justify-content:space-between; align-items:center; gap:15px; margin-top:14px; padding:15px; border:1px solid rgba(92,122,138,.35); background:rgba(92,122,138,.04); }
 .next-action-note h3 { font-size:.9rem; font-weight:550; }
 .teacher-review-note { padding:10px; color:#deb28e; border-left:2px solid var(--accent); background:rgba(196,71,27,.06); font-size:.72rem; }

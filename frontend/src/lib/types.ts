@@ -556,6 +556,21 @@ export interface TypicalQuestionSource {
   local_source_sha256?: string;
 }
 
+export interface EvidenceReference {
+  id: string;
+  source_type: string;
+  title: string;
+  article_ref: string;
+  quote: string;
+  authority: string;
+  effective_status: string;
+  version: string;
+  source_url: string;
+  source_snapshot_id: string;
+  sha256: string;
+  risk_flags: string[];
+}
+
 export interface TypicalQuestionCase {
   case_id: string;
   title: string;
@@ -620,6 +635,21 @@ export interface CitationAuditResponse {
     quote_status: string;
     claim_support_status: string;
     risk_flags: string[];
+    evidence?: {
+      evidence_id?: string;
+      source_type?: string;
+      title?: string;
+      source_title?: string;
+      article_ref?: string;
+      quote?: string;
+      authority_level?: string;
+      effective_from?: string;
+      effective_status?: string;
+      source_url?: string;
+      source_snapshot_id?: string;
+      source_bundle_sha256?: string;
+      risk_flags?: string[];
+    } | null;
   }>;
   summary: Record<string, number> & { total: number };
   semantic_boundary: string;
@@ -762,6 +792,7 @@ export interface LearningSupportResult {
   teacher_review_required: boolean;
   warnings?: string[];
   fallback_reason?: string;
+  citation_audit?: CitationAuditResponse;
 }
 
 export interface LearningSupportSession {

@@ -18,10 +18,18 @@ export interface RealtimeVoiceMessage {
   citation_ids?: string[];
   evidences?: Array<{
     evidence_id: string;
+    source_type: string;
+    title: string;
     source_title: string;
     article_ref: string;
     quote: string;
+    authority_level: string;
+    effective_from: string;
     effective_status: string;
+    source_url: string;
+    source_snapshot_id: string;
+    source_bundle_sha256: string;
+    risk_flags: string[];
   }>;
   coverage_status?: string;
   source?: string;
@@ -37,6 +45,8 @@ export interface RealtimeVoiceMessage {
     sha256: string;
     duration_seconds: number;
     provider_sid_present: boolean;
+    voice: string;
+    preferred_voice_used: boolean;
     ai_generated_disclosure: true;
   };
   evidence_eligibility?: {
@@ -156,11 +166,17 @@ export class RealtimeVoiceClient {
   private closed = false;
   private readyResolver: ((message: RealtimeVoiceMessage) => void) | null = null;
   private readyRejecter: ((reason: Error) => void) | null = null;
+  private microphoneName = "";
 
   constructor(
     private readonly onMessage: (message: RealtimeVoiceMessage) => void,
     private readonly onPhase: (phase: RealtimeVoicePhase) => void,
+    private readonly onAudioLevel: (level: number) => void = () => undefined,
   ) {}
+
+  get activeMicrophoneName(): string {
+    return this.microphoneName;
+  }
 
   private async ensureSocket(): Promise<WebSocket> {
     if (this.socket?.readyState === WebSocket.OPEN) return this.socket;
@@ -235,8 +251,15 @@ export class RealtimeVoiceClient {
   }
 
   private async prepareMicrophone(): Promise<void> {
+    const localHost = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+    if (!window.isSecureContext && !localHost) {
+      throw new Error("浏览器只允许在HTTPS或localhost使用麦克风；当前页面不是安全上下文。");
+    }
     if (!navigator.mediaDevices?.getUserMedia) {
       throw new Error("当前浏览器不支持麦克风实时采集。");
+    }
+    if (!("AudioWorkletNode" in window)) {
+      throw new Error("当前浏览器不支持AudioWorklet，请使用新版Chrome或Edge。");
     }
     this.onPhase("requesting_permission");
     this.stream = await navigator.mediaDevices.getUserMedia({
@@ -248,6 +271,7 @@ export class RealtimeVoiceClient {
       },
       video: false,
     });
+    this.microphoneName = this.stream.getAudioTracks()[0]?.label || "默认麦克风";
     const context = new AudioContext({ sampleRate: 16000, latencyHint: "interactive" });
     this.context = context;
     await context.audioWorklet.addModule("/audio-worklets/pcm16-capture.js");
@@ -265,7 +289,12 @@ export class RealtimeVoiceClient {
     this.frames = new PcmFrameAccumulator(640);
     this.worklet.port.onmessage = (event: MessageEvent<Float32Array>) => {
       if (!this.capturing || !this.resampler || !this.frames) return;
-      const pcm = this.resampler.push(new Float32Array(event.data));
+      const samples = new Float32Array(event.data);
+      let energy = 0;
+      for (const sample of samples) energy += sample * sample;
+      const rms = Math.sqrt(energy / Math.max(1, samples.length));
+      this.onAudioLevel(Math.min(1, rms * 9));
+      const pcm = this.resampler.push(samples);
       for (const frame of this.frames.push(pcm)) this.sendAudioFrame(frame);
     };
   }
@@ -353,6 +382,7 @@ export class RealtimeVoiceClient {
     this.silentGain = null;
     this.resampler = null;
     this.frames = null;
+    this.onAudioLevel(0);
   }
 
   async close(): Promise<void> {

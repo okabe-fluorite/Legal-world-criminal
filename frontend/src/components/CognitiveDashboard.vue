@@ -605,7 +605,7 @@ onUnmounted(() => {
             <div class="media-truth"><span>实时麦克风 + 多轮语音</span><strong>LearningEvent 0</strong><small>ASR固定needs_review · 数字人后置</small></div>
           </section>
 
-          <RealtimeVoicePanel @verified="refreshMediaCapabilities" />
+          <RealtimeVoicePanel :asr-status="mediaCapabilityStatus('speech_to_text')" :tts-status="mediaCapabilityStatus('text_to_speech')" @verified="refreshMediaCapabilities" />
 
           <section v-if="mediaCatalog" class="media-capability-grid">
             <article v-for="row in mediaCatalog.capabilities" :key="row.capability_id" :class="{ ready: row.connection_status === 'available' }">
