@@ -103,3 +103,5 @@
 - 前端实时语音桌面回归（1500×980/2轮）通过：385 PCM、56 partial、2 final、2次Evidence回复、2段TTS、3项能力可用、文件上传0、LearningEvent 0→0、私有字段/console/page/HTTP/request错误0。fixture首字可能从句中间开始，按既有边界不作为ASR准确率结论。
 - 根目录`.env`布尔配置审计通过：OpenCode主模型、DeepSeek回退、讯飞三项凭据均已加载；输出明确不含密钥值。
 - 前端构建与后端全量单测在文档同步前已通过（build成功；128/128）。
+- 阶段12拆分提交并推送：`12cb291 feat: add governed evidence citations`、`f6e4a4d fix: improve realtime speech diagnostics`、`64c8ef2 docs: publish stage twelve evidence`；远端`okabe/main`已核验与本地HEAD `64c8ef2d3d8e131a7e2f7f60ca7b49b3fbe1a72e`一致。
+- 阶段12机器范围收口为`completed_machine_scope`。工作树仍保留历史未跟踪规划、PPT和素材，未删除、未纳入本轮提交；本地`.env`未跟踪且未推送。
