@@ -5,6 +5,7 @@ import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.testclient import TestClient
@@ -77,7 +78,7 @@ class MediaServiceTests(unittest.TestCase):
             self.assertNotIn("secret-api-secret", serialized)
             rows = {row["capability_id"]: row for row in payload["capabilities"]}
             self.assertEqual(rows["private_asset_upload"]["implementation_status"], "implemented")
-            self.assertEqual(rows["speech_to_text"]["connection_status"], "not_connected")
+            self.assertEqual(rows["speech_to_text"]["connection_status"], "configured_not_verified")
             self.assertEqual(rows["speech_to_text"]["endpoint"], "WS /ws/realtime-voice")
             self.assertIn("realtime_pcm_primary", rows["speech_to_text"]["modes"])
             self.assertEqual(rows["digital_human"]["priority"], "P2")
@@ -88,7 +89,7 @@ class MediaServiceTests(unittest.TestCase):
                 for row in self.service.capabilities()["capabilities"]
             }
             self.assertEqual(verified_rows["speech_to_text"]["connection_status"], "available")
-            self.assertEqual(verified_rows["text_to_speech"]["connection_status"], "not_connected")
+            self.assertEqual(verified_rows["text_to_speech"]["connection_status"], "configured_not_verified")
         finally:
             for name, value in previous.items():
                 if value is None:
@@ -198,7 +199,11 @@ class MediaServiceTests(unittest.TestCase):
                 service=self.service,
             )
         )
-        with TestClient(app) as client:
+        with patch.dict(
+            os.environ,
+            {"XFYUN_APP_ID": "", "XFYUN_API_KEY": "", "XFYUN_API_SECRET": ""},
+            clear=False,
+        ), TestClient(app) as client:
             capabilities = client.get("/api/media/capabilities")
             self.assertEqual(capabilities.status_code, 200)
             upload = client.post(

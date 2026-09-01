@@ -7,12 +7,14 @@ Example:
 The optional model file may contain repeated ``api_key/baseurl/model`` groups.
 The OpenCode group is mapped to the preferred OPENAI_* endpoint; the official
 DeepSeek group is mapped to the transient-error fallback. Keys are never
-printed or copied into this repository.
+printed. With explicit user authorization, ``sync_local_env_from_external``
+can copy only the required values into the Git-ignored repository ``.env``.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import secrets
 import shutil
@@ -125,6 +127,76 @@ def apply_iflytek_config(env: dict[str, str], path: Path) -> dict[str, str]:
     return env
 
 
+LOCAL_ENV_ALLOWLIST = (
+    "OPENAI_API_KEY",
+    "OPENAI_API_BASE_URL",
+    "OPENAI_MODEL_NAME",
+    "SIMLAW_FALLBACK_MODEL_API_KEY",
+    "SIMLAW_FALLBACK_MODEL_API_BASE_URL",
+    "SIMLAW_FALLBACK_MODEL_NAME",
+    "SIMLAW_FALLBACK_MODEL_TIMEOUT_SECONDS",
+    "SIMLAW_FALLBACK_CIRCUIT_SECONDS",
+    "XFYUN_APP_ID",
+    "XFYUN_API_KEY",
+    "XFYUN_API_SECRET",
+    "XFYUN_TTS_VOICE",
+    "XFYUN_TTS_FALLBACK_VOICE",
+    "JWT_SECRET",
+)
+
+
+def sync_local_env_from_external(
+    source: Path,
+    *,
+    target: Path = ROOT_ENV_PATH,
+) -> tuple[str, ...]:
+    """Copy an allowlisted runtime config into a Git-ignored local .env.
+
+    This is intentionally opt-in because it writes secrets. Values are never
+    returned or printed; tests and callers receive only the written key names.
+    """
+
+    resolved = Path(source).expanduser().resolve()
+    if not resolved.is_file():
+        raise FileNotFoundError(resolved)
+    env = read_env_file(target)
+    apply_grouped_model_config(env, resolved)
+    apply_iflytek_config(env, resolved)
+    env.setdefault("XFYUN_TTS_VOICE", "x4_yezi")
+    env.setdefault("XFYUN_TTS_FALLBACK_VOICE", "xiaoyan")
+    env.setdefault("JWT_SECRET", secrets.token_urlsafe(48))
+    required = (
+        "OPENAI_API_KEY",
+        "OPENAI_API_BASE_URL",
+        "OPENAI_MODEL_NAME",
+        "XFYUN_APP_ID",
+        "XFYUN_API_KEY",
+        "XFYUN_API_SECRET",
+    )
+    missing = [name for name in required if not str(env.get(name) or "").strip()]
+    if missing:
+        raise RuntimeError(f"External config is missing required runtime groups: {', '.join(missing)}")
+    rows = [
+        "# Local LegalWorld runtime secrets. Git ignored; do not share or commit.",
+        "# Generated only after explicit user authorization.",
+    ]
+    written = []
+    for name in LOCAL_ENV_ALLOWLIST:
+        value = str(env.get(name) or "").strip()
+        if not value:
+            continue
+        if any(char in value for char in ("\r", "\n", "\x00")):
+            raise RuntimeError(f"Unsafe newline in local environment value: {name}")
+        rows.append(f"{name}={json.dumps(value, ensure_ascii=False)}")
+        written.append(name)
+    destination = Path(target)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_name(f"{destination.name}.tmp")
+    temporary.write_text("\n".join(rows) + "\n", encoding="utf-8")
+    temporary.replace(destination)
+    return tuple(written)
+
+
 def build_backend_env(model_config: Path | None = None) -> dict[str, str]:
     # Explicit process environment wins over repository .env and grouped file.
     env = {**read_env_file(ROOT_ENV_PATH), **os.environ}
@@ -186,6 +258,11 @@ def _ensure_frontend_dependencies() -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model-config", type=Path)
+    parser.add_argument(
+        "--sync-env-from",
+        type=Path,
+        help="copy allowlisted model/speech values into the Git-ignored .env before starting",
+    )
     parser.add_argument("--no-adaptive", action="store_true")
     parser.add_argument("--no-frontend", action="store_true")
     args = parser.parse_args()
@@ -195,6 +272,9 @@ def main() -> int:
     if sys.platform == "win32":
         signal.signal(signal.SIGBREAK, lambda *_: cleanup())
 
+    if args.sync_env_from is not None:
+        written = sync_local_env_from_external(args.sync_env_from)
+        print(f"Synced {len(written)} allowlisted runtime settings into Git-ignored .env")
     env = build_backend_env(args.model_config.resolve() if args.model_config else None)
     backend_host = env.get("BACKEND_HOST", DEFAULT_BACKEND_HOST)
     backend_port = env.get("BACKEND_PORT", DEFAULT_BACKEND_PORT)

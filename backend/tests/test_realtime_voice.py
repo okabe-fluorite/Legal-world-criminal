@@ -3,8 +3,9 @@ from __future__ import annotations
 import asyncio
 import base64
 import unittest
+from unittest.mock import patch
 
-from src.media.providers import IflytekAudioResult
+from src.media.providers import IflytekAudioResult, ProviderUnavailableError
 from src.media.realtime import (
     RealtimeLegalReplyService,
     RealtimeVoiceConnection,
@@ -71,6 +72,7 @@ class FakeProvider:
     def __init__(self) -> None:
         self.streams: list[FakeStreamingIAT] = []
         self.tts_texts: list[str] = []
+        self.tts_voices: list[str] = []
 
     def streaming_iat_session(self, **_kwargs) -> FakeStreamingIAT:
         stream = FakeStreamingIAT()
@@ -78,8 +80,9 @@ class FakeProvider:
         return stream
 
     def synthesize(self, *, text: str, voice: str, audio_format: str):
-        _ = voice, audio_format
+        _ = audio_format
         self.tts_texts.append(text)
+        self.tts_voices.append(voice)
         return IflytekAudioResult(
             audio=b"\x00\x00" * 1600,
             content_type="audio/wav",
@@ -179,7 +182,46 @@ class RealtimeVoiceConnectionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(all(row["audio"]["ai_generated_disclosure"] for row in replies))
         self.assertTrue(all(not row["evidence_eligibility"]["learning_event_created"] for row in replies))
         self.assertEqual(len(self.provider.tts_texts), 2)
+        self.assertEqual(self.provider.tts_voices, ["x4_yezi", "x4_yezi"])
+        self.assertTrue(all(row["audio"]["preferred_voice_used"] for row in replies))
         self.assertTrue(all(stream.closed for stream in self.provider.streams))
+
+    async def test_iat_and_tts_capabilities_promote_at_their_real_success_boundaries(self) -> None:
+        verified: list[str] = []
+        self.connection = RealtimeVoiceConnection(
+            send_json=self._send,
+            provider=self.provider,
+            reply_service=self.reply,
+            on_capabilities_verified=lambda *values: verified.extend(values),
+            final_timeout=1.0,
+        )
+        await self._one_turn("turn-capabilities")
+        self.assertEqual(verified, ["speech_to_text", "text_to_speech"])
+
+    async def test_unavailable_preferred_voice_falls_back_without_exposing_provider_error(self) -> None:
+        class FallbackProvider(FakeProvider):
+            def synthesize(self, *, text: str, voice: str, audio_format: str):
+                self.tts_voices.append(voice)
+                if voice == "x4_yezi":
+                    raise ProviderUnavailableError("iflytek_tts_api_error:11200")
+                return super().synthesize(text=text, voice=voice, audio_format=audio_format)
+
+        provider = FallbackProvider()
+        self.connection = RealtimeVoiceConnection(
+            send_json=self._send,
+            provider=provider,
+            reply_service=self.reply,
+            final_timeout=1.0,
+        )
+        with patch.dict(
+            "os.environ",
+            {"XFYUN_TTS_VOICE": "x4_yezi", "XFYUN_TTS_FALLBACK_VOICE": "xiaoyan"},
+        ):
+            await self._one_turn("turn-fallback")
+        reply = next(row for row in reversed(self.messages) if row["type"] == "voice_reply")
+        self.assertEqual(reply["audio"]["voice"], "xiaoyan")
+        self.assertFalse(reply["audio"]["preferred_voice_used"])
+        self.assertNotIn("11200", str(reply))
 
     async def test_out_of_order_audio_resets_turn_without_secret_text(self) -> None:
         await self.connection.handle_message(

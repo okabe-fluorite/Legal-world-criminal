@@ -127,10 +127,18 @@ class RealtimeLegalReplyService:
     def _public_evidence(row: dict[str, Any]) -> dict[str, Any]:
         return {
             "evidence_id": str(row.get("evidence_id") or ""),
+            "source_type": str(row.get("source_type") or "法律条文"),
+            "title": str(row.get("title") or row.get("source_title") or ""),
             "source_title": str(row.get("source_title") or ""),
             "article_ref": str(row.get("article_ref") or ""),
             "quote": str(row.get("quote") or "")[:1200],
+            "authority_level": str(row.get("authority_level") or ""),
+            "effective_from": str(row.get("effective_from") or ""),
             "effective_status": str(row.get("effective_status") or ""),
+            "source_url": str(row.get("source_url") or ""),
+            "source_snapshot_id": str(row.get("source_snapshot_id") or ""),
+            "source_bundle_sha256": str(row.get("source_bundle_sha256") or ""),
+            "risk_flags": list(row.get("risk_flags") or []),
         }
 
     def _prompt(
@@ -292,7 +300,7 @@ class RealtimeVoiceConnection:
         send_json: Callable[[dict[str, Any]], Awaitable[None]],
         provider: IflytekSpeechProvider,
         reply_service: RealtimeLegalReplyService | None = None,
-        on_capabilities_verified: Callable[[str, str], None] | None = None,
+        on_capabilities_verified: Callable[..., None] | None = None,
         max_turn_seconds: int = MAX_TURN_SECONDS,
         final_timeout: float = 35.0,
     ) -> None:
@@ -409,6 +417,8 @@ class RealtimeVoiceConnection:
             sample_rate=sample_rate,
         )
         await iat.start()
+        if self.on_capabilities_verified is not None:
+            self.on_capabilities_verified("speech_to_text")
         turn = _VoiceTurn(turn_id=turn_id, iat=iat, sample_rate=sample_rate)
         self.turn = turn
         turn.receive_task = asyncio.create_task(self._receive_iat(turn))
@@ -538,16 +548,29 @@ class RealtimeVoiceConnection:
             }
         )
         turn.state = "synthesizing"
-        voice = str(os.getenv("XFYUN_TTS_VOICE", "xiaoyan") or "xiaoyan")
-        tts = await asyncio.to_thread(
-            self.provider.synthesize,
-            text=str(reply["reply_text"]),
-            voice=voice,
-            audio_format="wav",
-        )
+        preferred_voice = str(os.getenv("XFYUN_TTS_VOICE", "x4_yezi") or "x4_yezi")
+        fallback_voice = str(os.getenv("XFYUN_TTS_FALLBACK_VOICE", "xiaoyan") or "xiaoyan")
+        voice_used = preferred_voice
+        try:
+            tts = await asyncio.to_thread(
+                self.provider.synthesize,
+                text=str(reply["reply_text"]),
+                voice=preferred_voice,
+                audio_format="wav",
+            )
+        except ProviderUnavailableError:
+            if fallback_voice == preferred_voice:
+                raise
+            voice_used = fallback_voice
+            tts = await asyncio.to_thread(
+                self.provider.synthesize,
+                text=str(reply["reply_text"]),
+                voice=fallback_voice,
+                audio_format="wav",
+            )
         wav_audio = _pcm_to_wav(tts.audio, sample_rate=tts.sample_rate)
         if self.on_capabilities_verified is not None:
-            self.on_capabilities_verified("speech_to_text", "text_to_speech")
+            self.on_capabilities_verified("text_to_speech")
         await self._send(
             {
                 "type": "voice_reply",
@@ -562,6 +585,8 @@ class RealtimeVoiceConnection:
                         len(tts.audio) / max(1, tts.sample_rate * 2), 3
                     ),
                     "provider_sid_present": bool(tts.provider_sid),
+                    "voice": voice_used,
+                    "preferred_voice_used": voice_used == preferred_voice,
                     "ai_generated_disclosure": True,
                 },
                 "evidence_eligibility": dict(EVIDENCE_BOUNDARY),

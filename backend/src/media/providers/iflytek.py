@@ -428,7 +428,13 @@ def build_iflytek_provider_catalog(*, verified: bool = False) -> dict[str, Any]:
         "provider_family": "iflytek_websocket_api",
         "reference_license": "Apache-2.0 reference SDK; adapter is project code",
         "credentials_present": credentials_present,
-        "connection_status": "available" if credentials_present and verified else "not_connected",
+        "connection_status": (
+            "available"
+            if credentials_present and verified
+            else "configured_not_verified"
+            if credentials_present
+            else "not_configured"
+        ),
         "adapter_status": "implemented_realtime_websocket",
         "clients": {
             "speech_to_text": ["streaming_iat_v2", "streaming_iat_v2_live_pcm"],

@@ -56,7 +56,7 @@ class LightweightTutorTests(unittest.TestCase):
             catalog = build_iflytek_provider_catalog()
         serialized = json.dumps(catalog, ensure_ascii=False)
         self.assertTrue(catalog["credentials_present"])
-        self.assertEqual(catalog["connection_status"], "not_connected")
+        self.assertEqual(catalog["connection_status"], "configured_not_verified")
         self.assertEqual(catalog["adapter_status"], "implemented_realtime_websocket")
         self.assertIn("online_tts_v2", serialized)
         self.assertIn("streaming_iat_v2", serialized)

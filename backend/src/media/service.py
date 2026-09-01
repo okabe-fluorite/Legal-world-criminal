@@ -134,6 +134,12 @@ class MediaService:
         )
         azure_credentials = _env_present("AZURE_SPEECH_KEY", "AZURE_SPEECH_REGION")
         local_asr_slot = bool(str(os.getenv("SIMLAW_FASTER_WHISPER_MODEL", "")).strip())
+
+        def speech_status(capability_id: str) -> str:
+            if capability_id in self._verified_capabilities:
+                return "available"
+            return "configured_not_verified" if xfyun_credentials else "not_configured"
+
         return {
             "schema_version": "simlaw-media-capabilities-v1",
             "provider_reference_catalog": {"iflytek": xfyun_reference},
@@ -152,11 +158,7 @@ class MediaService:
                     "capability_id": "speech_to_text",
                     "priority": "P1",
                     "implementation_status": "implemented",
-                    "connection_status": (
-                        "available"
-                        if "speech_to_text" in self._verified_capabilities
-                        else "not_connected"
-                    ),
+                    "connection_status": speech_status("speech_to_text"),
                     "endpoint": "WS /ws/realtime-voice",
                     "modes": ["realtime_pcm_primary", "file_compatibility"],
                     "provider_options": [
@@ -184,11 +186,7 @@ class MediaService:
                     "capability_id": "text_to_speech",
                     "priority": "P1",
                     "implementation_status": "implemented",
-                    "connection_status": (
-                        "available"
-                        if "text_to_speech" in self._verified_capabilities
-                        else "not_connected"
-                    ),
+                    "connection_status": speech_status("text_to_speech"),
                     "endpoint": "POST /api/speech/synthesis",
                     "client_fallback": {
                         "provider_id": "browser_speech_synthesis",
@@ -490,7 +488,7 @@ class MediaService:
                 requested_format = str(request_payload.get("audio_format") or "mp3")
                 requested_voice = str(request_payload.get("voice") or "standard_zh")
                 voice = (
-                    str(os.getenv("XFYUN_TTS_VOICE", "xiaoyan"))
+                    str(os.getenv("XFYUN_TTS_VOICE", "x4_yezi"))
                     if requested_voice == "standard_zh"
                     else requested_voice
                 )

@@ -72,6 +72,35 @@ APIPassword=password-not-used-by-iat-tts
         self.assertEqual(env["XFYUN_API_SECRET"], "secret-from-file")
         self.assertNotIn("APIPassword", env)
 
+    def test_explicit_sync_writes_only_allowlisted_local_runtime_values(self) -> None:
+        content = """
+api_key=primary-secret
+baseurl=https://opencode.ai/zen/go/v1
+model=deepseek-v4-flash
+
+api_key=fallback-secret
+baseurl=https://api.deepseek.com
+model=deepseek-chat
+
+APPID=app-from-file
+APIKey=key-from-file
+APISecret=secret-from-file
+APIPassword=must-not-copy
+""".strip()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "external.env.example"
+            target = root / ".env"
+            source.write_text(content, encoding="utf-8")
+            written = START.sync_local_env_from_external(source, target=target)
+            values = START.read_env_file(target)
+            raw = target.read_text(encoding="utf-8")
+        self.assertIn("XFYUN_APP_ID", written)
+        self.assertEqual(values["XFYUN_TTS_VOICE"], "x4_yezi")
+        self.assertEqual(values["XFYUN_TTS_FALLBACK_VOICE"], "xiaoyan")
+        self.assertNotIn("APIPassword", values)
+        self.assertNotIn("must-not-copy", raw)
+
 
 if __name__ == "__main__":
     unittest.main()
