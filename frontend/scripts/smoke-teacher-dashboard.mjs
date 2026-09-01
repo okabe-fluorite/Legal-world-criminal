@@ -152,19 +152,19 @@ try {
   await page.locator(".case__version").first().waitFor({ state: "visible", timeout: 60000 });
   await page.getByRole("button", { name: "自主学习" }).click();
   await page.getByRole("dialog", { name: "刑法自主学习卷宗" }).waitFor();
-  await page.getByText("知识卷宗", { exact: true }).waitFor();
+  await page.getByText("本课知识地图", { exact: true }).waitFor();
   await page.locator(".option-row").first().waitFor({ state: "visible", timeout: 60000 });
   await page.locator(".option-row").first().click();
-  await page.getByRole("button", { name: "提交取证" }).click();
+  await page.getByRole("button", { name: "完成课前摸底" }).click();
   await page.locator(".feedback-sheet").waitFor();
   await page.getByRole("button", { name: "填写" }).click();
-  await page.getByPlaceholder("具体写下你卡住的条件、事实或证据……").fill(
+  await page.getByPlaceholder(/写下.*条件、事实或证据|写下.*规则边界、错因或证据缺口/).fill(
     "teacher-smoke-private-confusion-note",
   );
-  await page.getByRole("button", { name: "归入证据账本" }).click();
+  await page.getByRole("button", { name: "加入课前问题单" }).click();
   await page.getByText("困惑已进入证据账本，后续任务会优先回应。").waitFor();
 
-  await page.getByRole("button", { name: /进入主观论证与角色互换/ }).click();
+  await page.getByRole("button", { name: /写下课前初步论证|完成课后重写或角色互换/ }).click();
   await page.getByRole("dialog", { name: "刑法主观论证训练" }).waitFor();
   await page.getByPlaceholder(/先写争点/).fill(subjectiveResponse);
   await page.getByRole("button", { name: /提交教师复核/ }).click();
@@ -257,7 +257,7 @@ try {
   await login(studentEmail);
   await page.getByRole("button", { name: "自主学习" }).click();
   await page.getByRole("dialog", { name: "刑法自主学习卷宗" }).waitFor();
-  await page.getByRole("button", { name: /进入主观论证与角色互换/ }).click();
+  await page.getByRole("button", { name: /写下课前初步论证|完成课后重写或角色互换/ }).click();
   await page.getByRole("dialog", { name: "刑法主观论证训练" }).waitFor();
   const revisionReturn = page.locator(".teacher-return--request_revision");
   await revisionReturn.waitFor({ timeout: 30000 });
@@ -307,7 +307,7 @@ try {
   await login(studentEmail);
   await page.getByRole("button", { name: "自主学习" }).click();
   await page.getByRole("dialog", { name: "刑法自主学习卷宗" }).waitFor();
-  await page.getByRole("button", { name: /进入主观论证与角色互换/ }).click();
+  await page.getByRole("button", { name: /写下课前初步论证|完成课后重写或角色互换/ }).click();
   await page.getByRole("dialog", { name: "刑法主观论证训练" }).waitFor();
   const approvalReturn = page.locator(".teacher-return--approve");
   await approvalReturn.waitFor({ timeout: 30000 });

@@ -72,13 +72,13 @@ try {
   await page.getByRole("dialog", { name: "刑法自主学习卷宗" }).waitFor();
   await page.locator(".option-row").first().waitFor({ timeout: 60000 });
   await page.locator(".option-row").first().click();
-  await page.getByRole("button", { name: "提交取证" }).click();
+  await page.getByRole("button", { name: "完成课前摸底" }).click();
   await page.locator(".feedback-sheet").waitFor();
   await page.getByRole("button", { name: "填写" }).click();
-  await page.getByPlaceholder("具体写下你卡住的条件、事实或证据……").fill(
+  await page.getByPlaceholder(/写下.*条件、事实或证据|写下.*规则边界、错因或证据缺口/).fill(
     "我不确定该规范的边界条件如何对应题目事实，需要进一步比较。",
   );
-  await page.getByRole("button", { name: "归入证据账本" }).click();
+  await page.getByRole("button", { name: "加入课前问题单" }).click();
   await page.getByText("困惑已进入证据账本，后续任务会优先回应。").waitFor();
   await page.getByRole("button", { name: "关闭自主学习" }).click();
 

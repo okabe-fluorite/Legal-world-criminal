@@ -114,3 +114,5 @@
 - 阶段13最终证据已替换为最新截图/报告并更新SHA；`learning-phases/README.md`和`technical-evidence/README.md`均可直接复核。
 - 阶段13机器范围收口为`completed_machine_scope`。保留真实用户试用、学习增益、专家审核和团队终审等总体目标边界。
 - 阶段13首次commit命令因中文双引号被PowerShell解释为参数边界而失败；Git索引未变，改用here-string重试。
+- 2026-09-02兼容性审计：`smoke:cognitive`完整通过；`smoke:teacher`在进入主观任务前因旧按钮文案超时，已同步为阶段化入口正则，准备重跑。
+- 教师冒烟第二轮已越过新主观入口，随后因普通本地栈未配置teacher白名单而无“教师驾驶舱”；保持权限门禁不变，改用测试专用唯一teacher白名单重启验证。
