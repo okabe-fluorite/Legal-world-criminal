@@ -151,8 +151,8 @@ def build_source_zip(path: Path) -> tuple[int, dict[str, str]]:
 
 
 def public_materials() -> dict[str, Path]:
-    return {
-        "01-作品方案/星火智学_作品方案_Guizang_DRAFT.pptx": SUBMISSION / "04-作品方案" / "星火智学_作品方案_Guizang_DRAFT.pptx",
+    materials = {
+        "01-作品方案/星火智学_作品方案_技术主线V3_DRAFT.pptx": SUBMISSION / "04-作品方案" / "星火智学_作品方案_技术主线V3_DRAFT.pptx",
         "02-演示视频/星火智学_真实交互演示_AI配音_DRAFT.mp4": VIDEO,
         "03-效果验证/星火智学效果验证报告_DRAFT.pdf": SUBMISSION / "06-效果验证" / "效果验证报告包_DRAFT" / "public" / "星火智学效果验证报告_DRAFT.pdf",
         "03-效果验证/EVIDENCE_INDEX.json": SUBMISSION / "06-效果验证" / "效果验证报告包_DRAFT" / "public" / "EVIDENCE_INDEX.json",
@@ -164,14 +164,21 @@ def public_materials() -> dict[str, Path]:
         "06-公开审计/FROZEN_DEMO_AUDIT.json": SUBMISSION / "03-Demo" / "FROZEN_DEMO_AUDIT.json",
         "06-公开审计/THREE_ROUTE_REHEARSAL_AUDIT.json": SUBMISSION / "03-Demo" / "THREE_ROUTE_REHEARSAL_AUDIT.json",
         "06-公开审计/THREE_ROUTE_REHEARSAL_AUDIT.md": SUBMISSION / "03-Demo" / "THREE_ROUTE_REHEARSAL_AUDIT.md",
-        "06-公开审计/25帧视觉接触表.png": SUBMISSION / "06-效果验证" / "视频审片包_DRAFT" / "25帧视觉接触表.png",
-        "06-公开审计/视频技术审计与时间轴.pdf": SUBMISSION / "06-效果验证" / "视频审片包_DRAFT" / "public" / "视频技术审计与时间轴.pdf",
         "06-公开审计/专家审核包_MANIFEST_DRAFT.md": SUBMISSION / "06-效果验证" / "专家审核包_MANIFEST_DRAFT.md",
         "06-公开审计/目标用户试用包_MANIFEST_DRAFT.md": SUBMISSION / "06-效果验证" / "目标用户试用包_MANIFEST_DRAFT.md",
         "06-公开审计/伦理签署包_MANIFEST_DRAFT.md": SUBMISSION / "02-伦理与安全" / "伦理签署包_MANIFEST_DRAFT.md",
         "06-公开审计/视频审片包_MANIFEST_DRAFT.md": SUBMISSION / "06-效果验证" / "视频审片包_MANIFEST_DRAFT.md",
         "06-公开审计/效果验证报告包_MANIFEST_DRAFT.md": SUBMISSION / "06-效果验证" / "效果验证报告包_MANIFEST_DRAFT.md",
+        "06-公开说明/HYBRID_RAG_INDEX_V1_REPORT.md": REPO / "docs" / "HYBRID_RAG_INDEX_V1_REPORT.md",
+        "06-公开说明/HYBRID_RAG_ABLATION_V1.md": REPO / "docs" / "HYBRID_RAG_ABLATION_V1.md",
+        "06-公开说明/HYBRID_RAG_NLI_TRIAGE_V1.md": REPO / "docs" / "HYBRID_RAG_NLI_TRIAGE_V1.md",
     }
+    optional = {
+        "06-公开审计/25帧视觉接触表.png": SUBMISSION / "06-效果验证" / "视频审片包_DRAFT" / "25帧视觉接触表.png",
+        "06-公开审计/视频技术审计与时间轴.pdf": SUBMISSION / "06-效果验证" / "视频审片包_DRAFT" / "public" / "视频技术审计与时间轴.pdf",
+    }
+    materials.update({target: source for target, source in optional.items() if source.is_file()})
+    return materials
 
 
 def scan_source_zip(path: Path, sensitive_values: dict[str, str]) -> dict[str, Any]:
@@ -278,6 +285,7 @@ def main() -> int:
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     materials = public_materials()
+    video_audit = load(SUBMISSION / "03-Demo" / "NARRATED_VIDEO_DRAFT_AUDIT.json")
     missing = [target for target, source in materials.items() if not source.is_file()]
     if missing:
         raise SystemExit(f"Missing public materials: {missing}")
@@ -307,9 +315,7 @@ def main() -> int:
     manifest_bytes = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
     readme = f"""# 星火智学 XH-202620 公开提交包（DRAFT）
 
-源码commit：`{manifest['source_git_commit']}`
-
-本包包含源码、PPT、121.6秒AI配音视频DRAFT、效果验证报告、伦理正文和公开审计。源码ZIP中的`.env.example`已自动脱敏，所有Key、密码、JWT、数据库URL和角色邮箱字段为空。
+本包包含源码、13页技术主线V3 PPT、{video_audit['duration_seconds']}秒AI配音视频DRAFT、效果验证报告、伦理正文和公开技术说明。源码ZIP中的`.env.example`已自动脱敏，所有Key、密码、JWT、数据库URL和角色邮箱字段为空。
 
 ## 尚未完成
 
@@ -319,7 +325,7 @@ def main() -> int:
 - 内容/技术/隐私三人完整审片批准；
 - 内容/数据/教学三人批准效果报告。
 
-在上述事项完成前，本包必须保留`DRAFT/PENDING`，不得作为最终提交或学习效果证明。
+在上述事项完成前，本包保持DRAFT，不得作为最终提交或学习效果证明。
 """.encode("utf-8")
     package_zip = output / "星火智学_XH-202620_公开提交包_DRAFT.zip"
     zip_write(package_zip, output, deliverables, {"MANIFEST.json": manifest_bytes, "README_DRAFT.md": readme})
