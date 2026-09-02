@@ -91,3 +91,4 @@
 | 项目.venv导出PPTX缺少python-pptx | 1 | 不污染项目依赖；使用Codex工作区已配置的文档Python继续导出 |
 | 工作区Python没有markitdown可做PPTX文本提取 | 1 | PPTX为逐页验收图，改用python-pptx核对13页/16:9/每页1张全页图，并用HTML源做占位词与禁用词检查 |
 | 从仓库根误运行Guizang相对路径build/validator | 1 | 未改文件；切回deck目录按原脚本约定运行，不再重复错误cwd |
+| 项目.venv重建效果报告缺少pypdf | 1 | 不修改项目依赖；改用Codex工作区文档Python执行报告构建 |

@@ -1,6 +1,6 @@
 {
   "schema": "effect-report-evidence-index-v1",
-  "source_git_commit": "b2378db8d86332c666e6e741536ed390734d73b3",
+  "source_git_commit": "e29ff2cdb3d6a3cf1a255cf61c3ad356ce5c5ccb",
   "sources": [
     {
       "id": "frozen",
@@ -28,15 +28,33 @@
     },
     {
       "id": "web_ppt",
-      "path": "competition_submission/04-作品方案/guizang/qa/report.json",
-      "bytes": 5912,
-      "sha256": "8073f1f937c7ca2053af0bb3c4594095b7f5069b9420e371752c4c0a460fe1d4"
+      "path": "competition_submission/04-作品方案/guizang-tech-v2/qa/report.json",
+      "bytes": 5485,
+      "sha256": "792c511647bed2165302b30e1cc830c054d20a302f6d6452546061241ca29e71"
     },
     {
       "id": "pptx",
-      "path": "competition_submission/04-作品方案/guizang/qa/pptx-report.json",
-      "bytes": 910,
-      "sha256": "caef06849e2f07f9f92015135958a7f77d3a6ac2b70be0844fc204438151692c"
+      "path": "competition_submission/04-作品方案/guizang-tech-v2/qa/pptx-report.json",
+      "bytes": 5602,
+      "sha256": "c215d7f913322738b5377c58be6d50b571d861a57ba07cbadfae52ded9eebe1b"
+    },
+    {
+      "id": "hybrid_index",
+      "path": "docs/HYBRID_RAG_INDEX_V1_REPORT.json",
+      "bytes": 1315,
+      "sha256": "17186c3a1d6a2ae6b63e8725770641f0493789998b5cf3183dd38f4ce710b573"
+    },
+    {
+      "id": "hybrid_ablation",
+      "path": "docs/HYBRID_RAG_ABLATION_V1.json",
+      "bytes": 2059,
+      "sha256": "7c42aa1a34f8fee7cb4a085f3dcbfe946be4c7b8d8f2ac5b360c72a8540218c8"
+    },
+    {
+      "id": "hybrid_nli",
+      "path": "docs/HYBRID_RAG_NLI_TRIAGE_V1.json",
+      "bytes": 749,
+      "sha256": "21c02776431a2aefe603d1609f73440a1202505008d36597ae0b022633387cf2"
     },
     {
       "id": "typical",
@@ -47,14 +65,14 @@
     {
       "id": "cognitive",
       "path": "docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md",
-      "bytes": 6385,
-      "sha256": "bc8bb37a3d7ebbfc3a8627ef708666f166f4abeb0097eb13a166fadbc495e54d"
+      "bytes": 7479,
+      "sha256": "91f6eaaf37dc6fc3b7d549380a74d22e21cfd00635232a79effdaf9233fdb7ed"
     },
     {
       "id": "media",
       "path": "docs/MULTIMODAL_AVATAR_ARCHITECTURE.md",
-      "bytes": 10040,
-      "sha256": "60d5eeaa8155e929a81f470d48beee610fd5941797fa0725a92b9e12228f33eb"
+      "bytes": 11277,
+      "sha256": "54bc54ef2ae230a1e808bcafee2940208596f82b024367629f32c6648195ee0e"
     },
     {
       "id": "expert",

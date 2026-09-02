@@ -50,8 +50,11 @@ SOURCES = {
     "legal": SUBMISSION / "03-Demo" / "LEGAL_SOURCE_CURRENCY_AUDIT.json",
     "video": SUBMISSION / "03-Demo" / "NARRATED_VIDEO_DRAFT_AUDIT.json",
     "rehearsal": SUBMISSION / "03-Demo" / "THREE_ROUTE_REHEARSAL_AUDIT.json",
-    "web_ppt": SUBMISSION / "04-作品方案" / "guizang" / "qa" / "report.json",
-    "pptx": SUBMISSION / "04-作品方案" / "guizang" / "qa" / "pptx-report.json",
+    "web_ppt": SUBMISSION / "04-作品方案" / "guizang-tech-v2" / "qa" / "report.json",
+    "pptx": SUBMISSION / "04-作品方案" / "guizang-tech-v2" / "qa" / "pptx-report.json",
+    "hybrid_index": REPO / "docs" / "HYBRID_RAG_INDEX_V1_REPORT.json",
+    "hybrid_ablation": REPO / "docs" / "HYBRID_RAG_ABLATION_V1.json",
+    "hybrid_nli": REPO / "docs" / "HYBRID_RAG_NLI_TRIAGE_V1.json",
     "typical": REPO / "docs" / "TYPICAL_QUESTION_EVALUATION.json",
     "cognitive": REPO / "docs" / "COGNITIVE_DIAGNOSIS_SHOWCASE.md",
     "media": REPO / "docs" / "MULTIMODAL_AVATAR_ARCHITECTURE.md",
@@ -103,15 +106,18 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
     video_review = data["video_review"]
     web_ppt = data["web_ppt"]
     pptx = data["pptx"]
+    hybrid_index = data["hybrid_index"]
+    hybrid_ablation = data["hybrid_ablation"]
+    hybrid_nli = data["hybrid_nli"]
+    hybrid_r4 = hybrid_ablation["conditions"]["R4_Reranked"]
     web_errors = sum(len(web_ppt.get(key) or []) for key in ("consoleErrors", "pageErrors", "failedRequests"))
     story: list[Any] = [
         p("星火智学效果验证报告", st["title"]),
         p("DRAFT · L1软件证据已形成，L2专家、L3真实用户、L4学习效果均未完成", st["subtitle"]),
         label_value_table(
             [
-                ("Git commit", data["commit"]),
-                ("证据索引SHA-256", evidence_sha),
                 ("报告状态", "DRAFT · 待内容、数据、教学三角色批准"),
+                ("证据范围", "软件机制、模型接口、真实API探针与候选消融"),
                 ("最终提交就绪", "否"),
             ],
             st,
@@ -122,7 +128,7 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
             ("层级", "要回答的问题", "当前证据", "当前结论"),
             [
                 ("L1 软件机制", "功能是否按契约运行", "自动化、三案例浏览器彩排、真实配置E2E、媒体QA", "已验证到本报告列明范围"),
-                ("L2 法学内容", "三题结论和边界是否可靠", "自动门禁3/3；A/B专家包", "自动门禁通过，真实专家未审核"),
+                ("L2 法学内容", "三题结论和边界是否可靠", "自动检查3/3；A/B专家包", "自动检查通过，真实专家未审核"),
                 ("L3 用户可用性", "目标用户能否理解并完成任务", "U01/U02标准化空白材料", "真实参与者0人，无用户结论"),
                 ("L4 学习效果", "是否提高保持、迁移或成绩", "前后测、延迟测、对照实验", "尚未开展，不作效果声称"),
             ],
@@ -131,18 +137,20 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
         ),
         Spacer(1, 5 * mm),
         p("二、报告允许表达的总论", st["h1"]),
-        p("当前证据支持“比赛演示版的软件闭环、来源治理、媒体质量和人工门禁机制可复现”，不支持“已证明刑法认知诊断有效、个性化路径提高成绩、微调模型优于基线、专家已认可或用户已满意”。", st["body"]),
+        p("当前证据支持“比赛演示版的软件闭环、来源治理、媒体质量和教师复核机制可复现”，不支持“已证明刑法认知诊断有效、个性化路径提高成绩、微调模型优于基线、专家已认可或用户已满意”。", st["body"]),
         PageBreak(),
         p("三、L1软件机制证据", st["h1"]),
         row_table(
             ("机制", "当前结果", "证据边界"),
             [
-                ("Evidence-KT", "10个刑法知识点；证据不足和provisional门槛；事件与困惑可追溯", "状态不是校准掌握概率"),
+                ("Evidence-KT", "10个刑法知识点；证据不足和临时画像门槛；事件与困惑可追溯", "状态不是校准掌握概率"),
                 ("ORCDF shadow", "同47题AUC V0/V1/V2=0.7272/0.7489/0.7528", "数据来自MOOCCubeX民法/宪法；不可用主范围比较Q矩阵优劣"),
                 ("七步路径", "薄弱点、先修、选择、主观、案件、角色互换、复习", "候选排序，不宣称因果最优"),
-                ("Model Adapter", "OpenCode/DeepSeek基线；四任务统一路由", "微调not_connected，不称LoRA/SFT完成"),
+                ("Model Adapter", "火山引擎Ark基线；DeepSeek官方瞬态回退；任务统一路由", "队友微调模型待交付，不称LoRA/SFT完成"),
+                ("Hybrid RAG", f"{hybrid_index['totals']['records']:,}条三库索引；候选Recall@5={hybrid_r4['recall_at_5']:.2f}；无答案误返回={hybrid_r4['no_answer_false_positive_rate']:.0f}", "120条qrels教师复核0；候选结果不等于正式准确率"),
+                ("NLI模板初筛", f"{hybrid_nli['predicted_pairs']}/{hybrid_nli['input_pairs']}完成；三类各60；模型候选一致率{hybrid_nli['candidate_model_agreement']:.2f}", "教师Gold为0；模型一致不等于NLI准确率"),
                 ("知识图/实时语音", "10节点、10条先修边、6步论证模板；讯飞实时IAT partial/final、Evidence回复与TTS多轮通过", "ASR需复核、媒体不进入画像；OCR/数字人未连接"),
-                ("可信RAG", f"三题自动门禁{typical['automated_gate_pass_count']}/{typical['case_count']}；错误引用2/2拒绝", "自动门禁不等于专家准确率"),
+                ("可信RAG", f"三题自动检查{typical['automated_gate_pass_count']}/{typical['case_count']}；错误引用2/2拒绝", "自动检查不等于专家准确率"),
                 ("教师HITL", "退回-原文修订-批准；同稿单决定、单事件", "合成账号浏览器闭环，不是用户试用"),
                 ("case3 Agent", f"{frozen['case3_e2e']['elapsed_seconds']}秒、{frozen['case3_e2e']['fixed_response_count']}次固定回答、3/3 Agent退场、0错误", "不是29名用户；不起诉分支非专家结论"),
             ],
@@ -157,9 +165,9 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
                 ("冻结演示库", f"源{frozen['semantic_audit']['source_check_count']}/24、恢复{frozen['semantic_audit']['restore_check_count']}/24", "备份恢复语义一致", "真实课堂稳定性"),
                 ("关键法条", f"{legal['target_article_pass_count']}/{legal['target_article_count']}", "5条来源、版本、文本一致", "全量法库或具体适法正确"),
                 ("三案例彩排", f"{rehearsal['routes_passed']}/{rehearsal['route_count']}、{rehearsal['duration_seconds']}秒、浏览器错误{rehearsal['browser_error_total']}", "同一本地栈三条UI路线可重复", "真实用户认可或学习效果"),
-                ("网页PPT", f"12页、浏览器错误{web_errors}、溢出0", "主要视口可用", "目标用户可用性"),
-                ("PPTX", "12页、1,549,008字节；PowerPoint COM回渲染12页；最大像素差0.094643", "PPTX结构、视觉源和实际PowerPoint渲染一致", "内容专家认可"),
-                ("演示视频", f"{video['duration_seconds']}秒、12/12、{video['qa']['max_voice_speed_factor']}×、静音{video['audio']['analysis']['silence_over_threshold_count']}", "≤180秒、内容覆盖、实时语音与媒体门禁", "团队批准或用户认可"),
+                ("网页PPT", f"{len(web_ppt['slides'])}页、浏览器错误{web_errors}、溢出0", "主要视口可用", "目标用户可用性"),
+                ("PPTX", f"{pptx['slides']}页、{pptx['pptx_bytes']:,}字节；PowerPoint回渲染{pptx['rendered_slides']}页；最大像素差{pptx['max_mean_absolute_pixel_difference']}", "PPTX结构、视觉源和实际PowerPoint渲染一致", "内容专家认可"),
+                ("演示视频", f"{video['duration_seconds']}秒、12/12、{video['qa']['max_voice_speed_factor']}×、静音{video['audio']['analysis']['silence_over_threshold_count']}", "≤180秒、内容覆盖、实时语音与媒体检查", "团队批准或用户认可"),
             ],
             [31, 45, 50, 45],
             st,
@@ -167,18 +175,18 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
         Spacer(1, 5 * mm),
         p("五、ORCDF受控解释", st["h1"]),
         bullet("V0：1,256题、126,073作答、180个原始exercise_id；同47题AUC 0.7272。", st),
-        bullet("V1：590可训练题、124,121作答、74个llm_provisional概念、741条Q边；同47题AUC 0.7489。", st),
+        bullet("V1：590可训练题、124,121作答、74个LLM候选概念、741条Q边；同47题AUC 0.7489。", st),
         bullet("V2：47题、7,356作答、97个教师知识点、105条Q边；同47题AUC 0.7528。", st),
         bullet("V1-V0同47题差0.0299，seed42学生聚类bootstrap 95%CI [0.0037,0.0537]；这不等于刑法课堂效果。", st),
         bullet("V2 mastery集中在0.5附近且未校准，只能称相对状态；新刑法课堂只做通用层初始化与scratch对照。", st),
         PageBreak(),
         p("六、L2法学内容验证", st["h1"]),
         row_table(
-            ("题目", "自动门禁", "专家状态", "允许结论"),
+            ("题目", "自动检查", "专家状态", "允许结论"),
             [
-                ("罪刑法定与从旧兼从轻", "通过", "PENDING", "仅称结构/要点/引用门禁通过"),
-                ("正当防卫与特殊防卫", "通过", "PENDING", "case3适法仍需专家判断"),
-                ("抢劫罪基本构成", "通过", "PENDING", "价值低不当然排除仍需专家复核"),
+                ("罪刑法定与从旧兼从轻", "通过", "待复核", "仅称结构/要点/引用检查通过"),
+                ("正当防卫与特殊防卫", "通过", "待复核", "case3适法仍需专家判断"),
+                ("抢劫罪基本构成", "通过", "待复核", "价值低不当然排除仍需专家复核"),
             ],
             [55, 30, 30, 56],
             st,
@@ -208,7 +216,7 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
         p("九、材料批准与剩余缺口", st["h1"]),
         label_value_table(
             [
-                ("视频技术状态", f"draft_ready；团队批准{video_review['real_approval_count']}/{video_review['required_reviewer_count']}"),
+                ("视频技术状态", f"DRAFT待批准；团队批准{video_review['real_approval_count']}/{video_review['required_reviewer_count']}"),
                 ("伦理签署", f"{ethics['real_signature_count']}/{ethics['required_signature_count']}"),
                 ("专家审核", "0个完成签署结论"),
                 ("目标用户", f"{users['real_participant_count']}/2"),
@@ -232,7 +240,7 @@ def report_story(data: dict[str, Any], evidence_sha: str, st: dict[str, Any]) ->
 def approval_story(report_sha: str, index_sha: str, commit: str, st: dict[str, Any]) -> list[Any]:
     checks = [
         ("L1结论仅限软件机制与列明范围", "[复核]"),
-        ("L2专家仍PENDING，未计算专家准确率", "[复核]"),
+        ("L2专家仍待复核，未计算专家准确率", "[复核]"),
         ("L3真实参与者0人，未报告用户结论", "[复核]"),
         ("L4未开展，不报告学习增益", "[复核]"),
         ("ORCDF数据、同47题范围、CI和未校准边界准确", "[复核]"),
@@ -326,10 +334,10 @@ def main() -> int:
     private_sha.write_text(f"{sha256(private_zip)}  {private_zip.name}\n", encoding="utf-8")
     public_text = pdf_text(report_path)
     private_text = pdf_text(approval_path)
-    required_public = ["L1 软件机制", "L2 法学内容", "L3 用户可用性", "L4 学习效果", "真实参与者0人", "不作效果声称", "不支持的结论", "微调not_connected", "专家状态", "PENDING", "三案例彩排", "讯飞实时IAT", "ASR需复核"]
+    required_public = ["L1 软件机制", "L2 法学内容", "L3 用户可用性", "L4 学习效果", "真实参与者0人", "不作效果声称", "不支持的结论", "队友微调模型待交付", "专家状态", "待复核", "三案例彩排", "讯飞实时IAT", "ASR需复核", "Hybrid RAG", "57,051", "候选Recall@5=0.86"]
     missing_public = [value for value in required_public if value not in public_text]
     compact_public = re.sub(r"\s+", "", public_text)
-    required_compact = ["PowerPointCOM回渲染12页", "OCR/数字人未连接"]
+    required_compact = ["PowerPoint回渲染13页", "OCR/数字人未连接"]
     missing_public.extend(
         value for value in required_compact if value not in compact_public
     )
@@ -363,8 +371,6 @@ def main() -> int:
     write_json(audit_path, audit)
     readme = output / "README.md"
     readme.write_text(f"""# 效果验证报告包（DRAFT）
-
-报告SHA：`{sha256(report_path)}`
 
 1. 公开PDF按L1-L4区分证据，不把自动化与演示数据写成学习效果。
 2. 内容、数据、教学三名复核人核对PDF和EVIDENCE_INDEX.json。

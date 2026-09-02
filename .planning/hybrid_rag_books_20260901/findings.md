@@ -44,4 +44,6 @@
 - PPTX是13张1600×900验收图组成的16:9提交预览，每页恰好1张全页图；可编辑源为同目录`slides.html`+`index.html`。未在可见页面出现SHA或机器状态码。
 - README和离线演示说明仍残留用户已否定的`--sync-env-from <外部配置文件路径>`，并错误声称OpenCode优先、Hybrid调用0；已改为直接复制/填写本地`.env`、火山引擎主路由与57,051条真实索引现状。
 - 视频V3预制作方案已冻结：保持约162秒/1920×1080，只替换18.6秒技术说明段，加入57,051条Hybrid RAG、R4候选Recall@5 0.86和无答案保护；建议统一讯飞`x4_yezi`女声。按视频skill硬确认规则，未重新录制或生成成片。
+- 效果验证报告已从13项证据源扩为16项，新增Hybrid索引/消融/NLI初筛；公开PDF仍5页、私密批准表2页，真实批准0。公开正文移除Git/SHA和`draft_ready/false/provisional/not_connected/PENDING`式机器词，改为读者友好状态。
+- PDF五页已用Poppler渲染检查：表格无裁切、跨页错位或低对比问题；首轮发现机器词后修复并二次渲染确认。
 - 计划文档：`docs/HYBRID_RAG_BOOKS_QUESTIONS_PLAN.md`。

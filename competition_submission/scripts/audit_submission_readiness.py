@@ -138,7 +138,7 @@ def main() -> int:
     effect_package_ready = (
         effect_package_audit.get("public_pdf_pages") == 5
         and effect_package_audit.get("private_pdf_pages") == 2
-        and effect_package_audit.get("source_count") == 13
+        and effect_package_audit.get("source_count") == 16
         and {"rehearsal", "media"}.issubset(
             {
                 str(source.get("id") or "")
