@@ -72,6 +72,25 @@ APIPassword=password-not-used-by-iat-tts
         self.assertEqual(env["XFYUN_API_SECRET"], "secret-from-file")
         self.assertNotIn("APIPassword", env)
 
+    def test_siliconflow_section_preserves_embedding_and_reranker_models(self) -> None:
+        content = """
+siliconflow:
+api_key=rag-secret
+baseurl=https://api.siliconflow.ai/v1/embeddings
+model=Qwen/Qwen3-Embedding-8B
+model=Qwen/Qwen3-Reranker-8B
+""".strip()
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "models.env.example"
+            path.write_text(content, encoding="utf-8")
+            env = {"LAW_RERANKER_MODEL": "explicit-reranker"}
+            START.apply_hybrid_rag_config(env, path)
+        self.assertEqual(env["LAW_EMBEDDING_API_KEY"], "rag-secret")
+        self.assertEqual(env["LAW_EMBEDDING_API_BASE_URL"], "https://api.siliconflow.ai/v1/embeddings")
+        self.assertEqual(env["LAW_EMBEDDING_MODEL"], "Qwen/Qwen3-Embedding-8B")
+        self.assertEqual(env["LAW_RERANKER_API_BASE_URL"], "https://api.siliconflow.ai/v1/rerank")
+        self.assertEqual(env["LAW_RERANKER_MODEL"], "explicit-reranker")
+
     def test_explicit_sync_writes_only_allowlisted_local_runtime_values(self) -> None:
         content = """
 api_key=primary-secret
@@ -81,6 +100,12 @@ model=deepseek-v4-flash
 api_key=fallback-secret
 baseurl=https://api.deepseek.com
 model=deepseek-chat
+
+siliconflow:
+api_key=rag-secret
+baseurl=https://api.siliconflow.ai/v1/embeddings
+model=Qwen/Qwen3-Embedding-8B
+model=Qwen/Qwen3-Reranker-8B
 
 APPID=app-from-file
 APIKey=key-from-file
@@ -98,6 +123,9 @@ APIPassword=must-not-copy
         self.assertIn("XFYUN_APP_ID", written)
         self.assertEqual(values["XFYUN_TTS_VOICE"], "x4_yezi")
         self.assertEqual(values["XFYUN_TTS_FALLBACK_VOICE"], "xiaoyan")
+        self.assertEqual(values["LAW_EMBEDDING_MODEL"], "Qwen/Qwen3-Embedding-8B")
+        self.assertEqual(values["LAW_RERANKER_MODEL"], "Qwen/Qwen3-Reranker-8B")
+        self.assertIn("LAW_RERANKER_API_KEY", written)
         self.assertNotIn("APIPassword", values)
         self.assertNotIn("must-not-copy", raw)
 

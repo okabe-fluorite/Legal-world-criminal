@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://legalworld.local/schemas/hybrid-rag-qrel-v1.schema.json",
+  "title": "Hybrid RAG Candidate Qrel",
+  "type": "object",
+  "required": ["schema_version", "query_id", "query_type", "query", "target_tier", "positive_ids", "candidate_grade", "review_status", "is_gold"],
+  "properties": {
+    "schema_version": { "const": "hybrid-rag-qrel-v1" },
+    "query_id": { "type": "string", "pattern": "^QREL_[A-F0-9]{20}$" },
+    "query_type": { "enum": ["exact_article", "judicial_rule", "case_rule", "textbook_explanation", "similar_question", "no_answer"] },
+    "query": { "type": "string", "minLength": 1 },
+    "target_tier": { "enum": ["legal_authority", "textbook_explanation", "question_teaching_public"] },
+    "positive_ids": { "type": "array", "items": { "type": "string" } },
+    "positive_parent_ids": { "type": "array", "items": { "type": "string" } },
+    "candidate_grade": { "type": "integer", "minimum": 0, "maximum": 2 },
+    "review_status": { "const": "candidate_requires_teacher_review" },
+    "is_gold": { "const": false }
+  },
+  "additionalProperties": true
+}

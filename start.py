@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import secrets
 import shutil
 import signal
@@ -79,6 +80,30 @@ def read_repeated_model_groups(path: Path) -> list[dict[str, str]]:
     return groups
 
 
+def read_named_config_sections(path: Path) -> dict[str, dict[str, list[str]]]:
+    """Read sectioned config while preserving repeated keys such as model=."""
+
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    sections: dict[str, dict[str, list[str]]] = {"root": {}}
+    section = "root"
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.endswith(":") and "=" not in line:
+            section = line[:-1].strip().lower() or "root"
+            sections.setdefault(section, {})
+            continue
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip().lower()
+        value = value.strip().strip('"').strip("'")
+        sections.setdefault(section, {}).setdefault(key, []).append(value)
+    return sections
+
+
 def apply_grouped_model_config(env: dict[str, str], path: Path) -> dict[str, str]:
     groups = read_repeated_model_groups(path)
     primary = next(
@@ -127,6 +152,32 @@ def apply_iflytek_config(env: dict[str, str], path: Path) -> dict[str, str]:
     return env
 
 
+def apply_hybrid_rag_config(env: dict[str, str], path: Path) -> dict[str, str]:
+    """Map SiliconFlow embedding and reranker models into separate settings."""
+
+    section = read_named_config_sections(path).get("siliconflow") or {}
+    api_keys = [value for value in section.get("api_key", []) if value]
+    bases = [value.rstrip() for value in section.get("baseurl", []) if value]
+    models = [value for value in section.get("model", []) if value]
+    if not api_keys or not bases:
+        return env
+    embedding_model = next((value for value in models if "embedding" in value.lower()), "")
+    reranker_model = next((value for value in models if "reranker" in value.lower()), "")
+    api_root = re.sub(r"/(?:embeddings|rerank)$", "", bases[0].rstrip("/"), flags=re.IGNORECASE)
+
+    def set_if_empty(name: str, value: str) -> None:
+        if value and not str(env.get(name) or "").strip():
+            env[name] = value
+
+    set_if_empty("LAW_EMBEDDING_API_KEY", api_keys[0])
+    set_if_empty("LAW_EMBEDDING_API_BASE_URL", f"{api_root}/embeddings")
+    set_if_empty("LAW_EMBEDDING_MODEL", embedding_model)
+    set_if_empty("LAW_RERANKER_API_KEY", api_keys[0])
+    set_if_empty("LAW_RERANKER_API_BASE_URL", f"{api_root}/rerank")
+    set_if_empty("LAW_RERANKER_MODEL", reranker_model)
+    return env
+
+
 LOCAL_ENV_ALLOWLIST = (
     "OPENAI_API_KEY",
     "OPENAI_API_BASE_URL",
@@ -141,6 +192,12 @@ LOCAL_ENV_ALLOWLIST = (
     "XFYUN_API_SECRET",
     "XFYUN_TTS_VOICE",
     "XFYUN_TTS_FALLBACK_VOICE",
+    "LAW_EMBEDDING_API_KEY",
+    "LAW_EMBEDDING_API_BASE_URL",
+    "LAW_EMBEDDING_MODEL",
+    "LAW_RERANKER_API_KEY",
+    "LAW_RERANKER_API_BASE_URL",
+    "LAW_RERANKER_MODEL",
     "JWT_SECRET",
 )
 
@@ -162,6 +219,7 @@ def sync_local_env_from_external(
     env = read_env_file(target)
     apply_grouped_model_config(env, resolved)
     apply_iflytek_config(env, resolved)
+    apply_hybrid_rag_config(env, resolved)
     env.setdefault("XFYUN_TTS_VOICE", "x4_yezi")
     env.setdefault("XFYUN_TTS_FALLBACK_VOICE", "xiaoyan")
     env.setdefault("JWT_SECRET", secrets.token_urlsafe(48))
@@ -203,6 +261,7 @@ def build_backend_env(model_config: Path | None = None) -> dict[str, str]:
     if model_config is not None:
         apply_grouped_model_config(env, model_config)
         apply_iflytek_config(env, model_config)
+        apply_hybrid_rag_config(env, model_config)
 
     RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
     database_path = (RUNTIME_DIR / "legalworld-local.db").resolve().as_posix()

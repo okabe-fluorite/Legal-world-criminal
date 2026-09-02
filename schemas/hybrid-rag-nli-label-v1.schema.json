@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://legalworld.local/schemas/hybrid-rag-nli-label-v1.schema.json",
+  "title": "Hybrid RAG Candidate NLI Label",
+  "type": "object",
+  "required": ["schema_version", "pair_id", "pair_type", "premise_source_id", "premise", "hypothesis", "candidate_label", "gold_label", "review_status"],
+  "properties": {
+    "schema_version": { "const": "hybrid-rag-nli-label-v1" },
+    "pair_id": { "type": "string", "pattern": "^NLI_[A-F0-9]{20}$" },
+    "pair_type": { "enum": ["exact_fragment_entailment", "explicit_presence_contradiction", "cross_document_neutral_candidate"] },
+    "premise_source_id": { "type": "string", "minLength": 1 },
+    "premise": { "type": "string", "minLength": 1 },
+    "hypothesis": { "type": "string", "minLength": 1 },
+    "candidate_label": { "enum": ["entailment", "contradiction", "neutral"] },
+    "gold_label": { "type": ["string", "null"], "enum": ["entailment", "contradiction", "neutral", null] },
+    "review_status": { "const": "candidate_requires_teacher_review" }
+  },
+  "additionalProperties": true
+}
