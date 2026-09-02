@@ -5,10 +5,11 @@ Example:
       python start.py --model-config E:\\path\\to\\model-groups.env.example
 
 The optional model file may contain repeated ``api_key/baseurl/model`` groups.
-The OpenCode group is mapped to the preferred OPENAI_* endpoint; the official
-DeepSeek group is mapped to the transient-error fallback. Keys are never
-printed. With explicit user authorization, ``sync_local_env_from_external``
-can copy only the required values into the Git-ignored repository ``.env``.
+The local ``.env`` may select any OpenAI-compatible primary gateway through
+``SIMLAW_PRIMARY_MODEL_*`` while retaining an independent transient-error
+fallback. Keys are never printed. With explicit user authorization,
+``sync_local_env_from_external`` can copy only the required values into the
+Git-ignored repository ``.env``.
 """
 
 from __future__ import annotations
@@ -410,8 +411,8 @@ def main() -> int:
     )
     print(
         "Primary:   "
-        f"{env.get('OPENAI_MODEL_NAME') or 'not configured'} @ "
-        f"{_safe_endpoint_label(env.get('OPENAI_API_BASE_URL', ''))}"
+        f"{env.get('SIMLAW_PRIMARY_MODEL_NAME') or env.get('OPENAI_MODEL_NAME') or 'not configured'} @ "
+        f"{_safe_endpoint_label(env.get('SIMLAW_PRIMARY_MODEL_API_BASE_URL') or env.get('OPENAI_API_BASE_URL', ''))}"
     )
     print(
         "Fallback:  "

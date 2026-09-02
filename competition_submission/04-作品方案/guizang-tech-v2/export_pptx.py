@@ -9,21 +9,21 @@ from pptx.util import Inches
 
 HERE = Path(__file__).resolve().parent
 SCREEN_DIR = HERE / "qa" / "screens"
-OUTPUT = HERE.parent / "星火智学_作品方案_技术主线V2_DRAFT.pptx"
+OUTPUT = HERE.parent / "星火智学_作品方案_技术主线V3_DRAFT.pptx"
 
 
 def main() -> None:
     images = sorted(SCREEN_DIR.glob("slide-*.png"))
-    if len(images) != 12:
+    if len(images) != 13:
         raise SystemExit(
-            "Expected 12 QA screenshots. Run: node qa_screenshots.mjs"
+            "Expected 13 QA screenshots. Run: node qa_screenshots.mjs"
         )
 
     deck = Presentation()
     deck.slide_width = Inches(13.333333)
     deck.slide_height = Inches(7.5)
     deck.core_properties.title = "星火智学：刑法学科模型可信推理技术体系"
-    deck.core_properties.subject = "XH-202620 比赛作品方案 技术主线V2"
+    deck.core_properties.subject = "XH-202620 比赛作品方案 技术主线V3"
     deck.core_properties.author = "星火智学团队"
     deck.core_properties.comments = (
         "由Guizang网页PPT的1600x900视觉验收截图生成；"

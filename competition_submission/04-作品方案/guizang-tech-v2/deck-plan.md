@@ -1,15 +1,17 @@
-# 星火智学 技术主线V2 Guizang Deck
+# 星火智学 技术主线V3 Guizang Deck
 
-- 风格：B 瑞士国际主义；主题：IKB克莱因蓝；12页；只使用登记版式S01/S13/S17/S20/S05/S08/S15/S11/S16/S21/S22/S10。
-- 叙事：问题 → 技术架构 → 数据治理 → 模型接口 → Evidence推理 → LegalEduEval → Agent消融 → 真实应用 → 个性化 → 实时语音多模态实证 → 边界。
+- 风格：B 瑞士国际主义；主题：IKB克莱因蓝；13页；只使用登记版式S01/S13/S17/S20/S07/S05/S08/S15/S11/S16/S21/S22/S10。
+- 叙事：问题 → 技术架构 → 数据治理 → Hybrid RAG真实消融 → 模型接口 → Evidence推理 → LegalEduEval → Agent消融 → 真实应用 → 个性化 → 实时语音多模态实证 → 边界。
+- Hybrid RAG只展示最终可用链路与候选消融：57,051条分层索引；BM25F+Dense→RRF→条号/弃权保护→Reranker；候选Recall@5为0.86、无答案误返回率0。120条qrels教师复核仍为0，不称专家准确率。
 - ORCDF外部只展示一条受控结论：同47题seed42 V1−V0 `+0.02994`，95%CI `[0.00372,0.05366]`；不平铺三版实验。
 - 微调模型、100题教师Gold、Agent双教师盲评、2名用户与伦理签字均保持pending。
-- 产物不覆盖旧Guizang草案；新PPTX名为`星火智学_作品方案_技术主线V2_DRAFT.pptx`。
+- 产物不覆盖旧Guizang草案；新PPTX名为`星火智学_作品方案_技术主线V3_DRAFT.pptx`。
 
 ## QA结果
 
-- Guizang Swiss validator：12页通过；使用12种登记版式。
+- Guizang Swiss validator：13页通过；使用13种登记版式。
 - 1600×900浏览器：overflow 0、图片失败0、console/page/request错误0；首轮发现并修复S16槽位、S20账单、S11标题、S16/S22对比度与KPI溢底。
-- PowerPoint实际打开并导出12页PNG；PPTX 1,549,008字节，16:9，低于100MB。
-- PowerPoint回渲染与浏览器验收图最大平均绝对像素差0.094643。
-- 第11页保持S22登记版式，以同一实时问答页面的关键区域保真拼接替换旧文件式TTS→IAT能力卡；展示384个PCM分片、54个partial、2个final、两轮Evidence/TTS及文件上传0，并明确不称课堂ASR准确率。
+- 1600×900浏览器：overflow 0、图片失败0、console/page/request错误0；首轮发现并修复模型接口蓝色栏末行贴边。
+- PowerPoint实际打开并导出13页PNG；PPTX 1,640,817字节，16:9，低于100MB。
+- PowerPoint回渲染与浏览器验收图最大平均绝对像素差1.824442；缩略图逐页视觉复核无裁切、错页或内容缺失。
+- 第12页保持S22登记版式，以同一实时问答页面的关键区域保真拼接；展示384个PCM分片、54个partial、2个final、两轮Evidence/TTS及文件上传0，并明确不称课堂ASR准确率。

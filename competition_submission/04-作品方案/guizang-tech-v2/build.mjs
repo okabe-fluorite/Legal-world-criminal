@@ -20,8 +20,8 @@ if (markerStart < 0 || deckEnd < 0) {
 }
 
 const layoutIds = [...slides.matchAll(/data-layout="(S\d{2})"/g)].map((m) => m[1]);
-if (layoutIds.length !== 12) {
-  throw new Error(`Expected 12 data-layout slides, found ${layoutIds.length}`);
+if (layoutIds.length !== 13) {
+  throw new Error(`Expected 13 data-layout slides, found ${layoutIds.length}`);
 }
 
 let output = template

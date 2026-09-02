@@ -48,7 +48,7 @@ page.on("pageerror", (error) => pageErrors.push(String(error)));
 page.on("requestfailed", (request) => failedRequests.push(`${request.url()} :: ${request.failure()?.errorText || "failed"}`));
 
 const slides = [];
-for (let index = 1; index <= 12; index += 1) {
+for (let index = 1; index <= 13; index += 1) {
   await page.goto(`http://127.0.0.1:8765/index.html?slide=${index}`, { waitUntil: "networkidle" });
   await page.evaluate(() => window.__setLowPowerMode?.(true, { persist: false }));
   await page.waitForTimeout(200);

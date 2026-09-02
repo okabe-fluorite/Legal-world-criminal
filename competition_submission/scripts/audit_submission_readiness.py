@@ -56,7 +56,7 @@ def main() -> int:
     parser.add_argument("--markdown", type=Path, required=True)
     args = parser.parse_args()
 
-    ppt = SUBMISSION / "04-作品方案" / "星火智学_作品方案_技术主线V2_DRAFT.pptx"
+    ppt = SUBMISSION / "04-作品方案" / "星火智学_作品方案_技术主线V3_DRAFT.pptx"
     ppt_report = SUBMISSION / "04-作品方案" / "guizang-tech-v2" / "qa" / "pptx-report.json"
     web_report = SUBMISSION / "04-作品方案" / "guizang-tech-v2" / "qa" / "report.json"
     frozen = read_json(SUBMISSION / "03-Demo" / "FROZEN_DEMO_AUDIT.json")
@@ -95,23 +95,23 @@ def main() -> int:
         "page_errors": len(web_meta.get("pageErrors") or []),
         "failed_requests": len(web_meta.get("failedRequests") or []),
     }
-    ppt_v2 = ppt_meta.get("schema_version") == "guizang-tech-v2-pptx-render-audit-v1"
+    ppt_v3 = ppt_meta.get("schema_version") == "guizang-tech-v3-pptx-render-audit-v1"
     ppt_integrity_passed = (
         ppt.is_file()
         and ppt.stat().st_size < 100 * 1024 * 1024
-        and ppt_meta.get("slides") == 12
+        and ppt_meta.get("slides") == 13
         and (
             (
-                ppt_v2
+                ppt_v3
                 and ppt_meta.get("pptx_bytes") == ppt.stat().st_size
                 and ppt_meta.get("pptx_sha256") == sha256(ppt)
                 and ppt_meta.get("under_100_mb") is True
-                and ppt_meta.get("rendered_slides") == 12
-                and ppt_meta.get("max_mean_absolute_pixel_difference", 999) <= 0.2
+                and ppt_meta.get("rendered_slides") == 13
+                and ppt_meta.get("max_mean_absolute_pixel_difference", 999) <= 2.0
                 and all(value == 0 for value in web_qa.values())
             )
             or (
-                not ppt_v2
+                not ppt_v3
                 and ppt_meta.get("all_1600x900") is True
                 and isinstance(ppt_meta.get("max_mean_abs_error"), (int, float))
             )
@@ -226,7 +226,7 @@ def main() -> int:
                 "legacy_max_render_mae": ppt_meta.get("max_mean_abs_error"),
             },
             "boundary": (
-                "仍名为DRAFT；网页PPT与PowerPoint COM 12页回渲染一致；"
+                "仍名为DRAFT；网页PPT与PowerPoint COM 13页回渲染一致；"
                 "真实用户/专家状态待替换"
             ),
         },

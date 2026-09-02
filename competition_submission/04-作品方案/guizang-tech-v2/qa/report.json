@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-31T12:58:49.759Z",
+  "generatedAt": "2026-09-02T13:45:37.814Z",
   "viewport": "1600x900",
   "slides": [
     {
@@ -61,6 +61,20 @@
     {
       "index": 5,
       "screenshot": "qa/screens/slide-05.png",
+      "layout": "S07",
+      "slideRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      },
+      "overflow": [],
+      "images": [],
+      "title": "Embedding不是替代词法而是加入受控链路"
+    },
+    {
+      "index": 6,
+      "screenshot": "qa/screens/slide-06.png",
       "layout": "S05",
       "slideRect": {
         "x": 0,
@@ -73,8 +87,8 @@
       "title": "训练由队友负责，接口与验收先冻结"
     },
     {
-      "index": 6,
-      "screenshot": "qa/screens/slide-06.png",
+      "index": 7,
+      "screenshot": "qa/screens/slide-07.png",
       "layout": "S08",
       "slideRect": {
         "x": 0,
@@ -87,8 +101,8 @@
       "title": "让法律推理可以被代码拒绝"
     },
     {
-      "index": 7,
-      "screenshot": "qa/screens/slide-07.png",
+      "index": 8,
+      "screenshot": "qa/screens/slide-08.png",
       "layout": "S15",
       "slideRect": {
         "x": 0,
@@ -101,8 +115,8 @@
       "title": "100题先把“怎么证明”固定下来"
     },
     {
-      "index": 8,
-      "screenshot": "qa/screens/slide-08.png",
+      "index": 9,
+      "screenshot": "qa/screens/slide-09.png",
       "layout": "S11",
       "slideRect": {
         "x": 0,
@@ -115,8 +129,8 @@
       "title": "Agent增加反方，也显著增加成本"
     },
     {
-      "index": 9,
-      "screenshot": "qa/screens/slide-09.png",
+      "index": 10,
+      "screenshot": "qa/screens/slide-10.png",
       "layout": "S16",
       "slideRect": {
         "x": 0,
@@ -134,14 +148,14 @@
             980
           ],
           "rect": [
-            95.48307037353516,
-            292.8228454589844,
-            679.5949096679688,
-            264.1054992675781,
-            292.8228454589844,
-            775.0779800415039,
-            556.9283447265625,
-            95.48307037353516
+            95.51793670654297,
+            292.39349365234375,
+            679.5147094726562,
+            263.89483642578125,
+            292.39349365234375,
+            775.0326461791992,
+            556.288330078125,
+            95.51793670654297
           ]
         },
         {
@@ -152,22 +166,22 @@
             1080
           ],
           "rect": [
-            824.06884765625,
-            300.9560241699219,
-            681.1021728515625,
-            268.0898132324219,
-            300.9560241699219,
-            1505.1710205078125,
-            569.0458374023438,
-            824.06884765625
+            824.1149291992188,
+            300.5132751464844,
+            681.0208129882812,
+            267.8731994628906,
+            300.5132751464844,
+            1505.1357421875,
+            568.386474609375,
+            824.1149291992188
           ]
         }
       ],
       "title": "同一Evidence纪律进入真实交互"
     },
     {
-      "index": 10,
-      "screenshot": "qa/screens/slide-10.png",
+      "index": 11,
+      "screenshot": "qa/screens/slide-11.png",
       "layout": "S21",
       "slideRect": {
         "x": 0,
@@ -180,8 +194,8 @@
       "title": "无课堂历史数据，也能从第一题开始个性化"
     },
     {
-      "index": 11,
-      "screenshot": "qa/screens/slide-11.png",
+      "index": 12,
+      "screenshot": "qa/screens/slide-12.png",
       "layout": "S22",
       "slideRect": {
         "x": 0,
@@ -199,22 +213,22 @@
             464
           ],
           "rect": [
-            -9.07080078125,
-            -3.163421630859375,
-            1618.1416015625,
-            564.326904296875,
-            -3.163421630859375,
-            1609.07080078125,
-            561.1634826660156,
-            -9.07080078125
+            -9.9019775390625,
+            -3.45330810546875,
+            1619.803955078125,
+            564.9066162109375,
+            -3.45330810546875,
+            1609.9019775390625,
+            561.4533081054688,
+            -9.9019775390625
           ]
         }
       ],
       "title": ""
     },
     {
-      "index": 12,
-      "screenshot": "qa/screens/slide-12.png",
+      "index": 13,
+      "screenshot": "qa/screens/slide-13.png",
       "layout": "S10",
       "slideRect": {
         "x": 0,

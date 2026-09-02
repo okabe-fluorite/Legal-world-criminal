@@ -87,6 +87,7 @@ tmp_*
 temp_*.py
 .codex-artifacts/
 output/playwright/
+competition_submission/04-作品方案/guizang-tech-v2/qa/pptx-render*/
 .superpowers/
 
 # Optional local tools or benchmarks

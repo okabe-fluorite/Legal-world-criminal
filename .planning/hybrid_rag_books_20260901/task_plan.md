@@ -87,3 +87,7 @@
 | 会话中断导致embed_text索引重建进程句柄消失 | 1 | build_state已保留590/1702批，确认无活动构建进程后按相同参数断点续跑，不从头开始 |
 | NLI模型初筛12批均遇OpenCode CreditsError 401 | 1 | 这是用户明确授权回退的额度耗尽而非无效Key；仅将CreditsError/Insufficient balance识别为瞬态，普通401仍不回退，改走DeepSeek官方 |
 | embed_text索引1702批中2批国内端点连接失败后全球端点401 | 1 | 1700批状态已保存；按断点续跑只重试2个失败批次，不重复已完成数据 |
+| Guizang V3首次截图模型接口蓝色中栏末行贴边 | 1 | 将说明拆为两行并重新渲染，保持S05原骨架和投屏字号 |
+| 项目.venv导出PPTX缺少python-pptx | 1 | 不污染项目依赖；使用Codex工作区已配置的文档Python继续导出 |
+| 工作区Python没有markitdown可做PPTX文本提取 | 1 | PPTX为逐页验收图，改用python-pptx核对13页/16:9/每页1张全页图，并用HTML源做占位词与禁用词检查 |
+| 从仓库根误运行Guizang相对路径build/validator | 1 | 未改文件；切回deck目录按原脚本约定运行，不再重复错误cwd |
