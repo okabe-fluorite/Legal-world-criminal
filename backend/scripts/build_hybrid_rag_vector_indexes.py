@@ -21,7 +21,7 @@ def legal_records(corpus_dir: Path) -> list[IndexRecord]:
     return [
         IndexRecord(
             retrieval_id=str(row["chunk_id"]),
-            text=str(row["content"]),
+            text=str(row.get("embed_text") or row["content"]),
             metadata=row,
         )
         for row in read_jsonl(corpus_dir / "legal_chunks.jsonl")
@@ -32,7 +32,7 @@ def textbook_records(corpus_dir: Path) -> list[IndexRecord]:
     return [
         IndexRecord(
             retrieval_id=str(row["chunk_id"]),
-            text=str(row["content"]),
+            text=str(row.get("embed_text") or row["content"]),
             metadata=row,
         )
         for row in read_jsonl(corpus_dir / "textbook_chunks.jsonl")

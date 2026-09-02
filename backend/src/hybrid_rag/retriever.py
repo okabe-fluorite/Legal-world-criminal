@@ -44,6 +44,14 @@ def _rrf(rankings: Sequence[Sequence[int]], *, k: int = 60) -> dict[int, float]:
     return scores
 
 
+def rerank_instruction(collection: str) -> str:
+    if collection == "textbook_explanation":
+        return "优先返回与法学概念、教材章节和小节直接匹配的解释材料。"
+    if collection == "question_public":
+        return "优先返回考查知识点、事实结构和题型最相近的公开练习。"
+    return "优先返回与法律问题直接相关、法名条号或裁判规则匹配的材料。"
+
+
 class HybridCollection:
     def __init__(self, index_dir: Path, *, case_parent_path: Path | None = None) -> None:
         self.index_dir = Path(index_dir)
@@ -246,7 +254,7 @@ class HybridRagRetriever:
                     [str(index.records[item].get("retrieval_text") or index.records[item].get("content") or "") for item in candidates],
                     top_n=len(candidates),
                     return_documents=False,
-                    instruction="优先返回与法律问题直接相关、法名条号或裁判规则匹配的材料。",
+                    instruction=rerank_instruction(collection),
                 )
                 rerank_scores = {candidates[item.index]: item.relevance_score for item in reranked.items}
                 candidates = [candidates[item.index] for item in reranked.items]
@@ -323,4 +331,9 @@ def public_search_result(value: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-__all__ = ["HybridCollection", "HybridRagRetriever", "public_search_result"]
+__all__ = [
+    "HybridCollection",
+    "HybridRagRetriever",
+    "public_search_result",
+    "rerank_instruction",
+]

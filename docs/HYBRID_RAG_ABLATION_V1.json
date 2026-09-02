@@ -1,0 +1,68 @@
+{
+  "schema_version": "hybrid-rag-candidate-ablation-public-v1",
+  "status": "candidate_metrics_not_gold",
+  "qrels": {
+    "total": 120,
+    "positive": 100,
+    "no_answer": 20,
+    "teacher_reviewed": 0
+  },
+  "conditions": {
+    "R0_BM25F": {
+      "recall_at_5": 0.8,
+      "mrr_at_10": 0.7484,
+      "ndcg_at_10": 0.7705,
+      "exact_article_at_1": 0.75,
+      "no_answer_false_positive_rate": 1.0
+    },
+    "R1_Dense": {
+      "recall_at_5": 0.85,
+      "mrr_at_10": 0.7825,
+      "ndcg_at_10": 0.804,
+      "exact_article_at_1": 0.875,
+      "no_answer_false_positive_rate": 1.0
+    },
+    "R2_RRF": {
+      "recall_at_5": 0.81,
+      "mrr_at_10": 0.7807,
+      "ndcg_at_10": 0.8017,
+      "exact_article_at_1": 0.9167,
+      "no_answer_false_positive_rate": 1.0
+    },
+    "R3_RRF_Protected": {
+      "recall_at_5": 0.83,
+      "mrr_at_10": 0.7979,
+      "ndcg_at_10": 0.8152,
+      "exact_article_at_1": 0.9583,
+      "no_answer_false_positive_rate": 0.0
+    },
+    "R4_Reranked": {
+      "recall_at_5": 0.86,
+      "mrr_at_10": 0.794,
+      "ndcg_at_10": 0.8156,
+      "exact_article_at_1": 0.9583,
+      "no_answer_false_positive_rate": 0.0,
+      "recall_at_5_by_type": {
+        "exact_article": 1.0,
+        "judicial_rule": 0.8125,
+        "case_rule": 1.0,
+        "textbook_explanation": 0.45,
+        "similar_question": 1.0
+      }
+    }
+  },
+  "api_usage": {
+    "embedding_requests": 4,
+    "rerank_requests": 100
+  },
+  "embedding_text": "source type, title, article or chapter fields, plus body text",
+  "content_only_comparison": {
+    "dense_recall_at_5_before": 0.62,
+    "dense_recall_at_5_after": 0.85,
+    "dense_exact_article_recall_at_5_before": 0.2917,
+    "dense_exact_article_recall_at_5_after": 1.0,
+    "dense_judicial_rule_recall_at_5_before": 0.5,
+    "dense_judicial_rule_recall_at_5_after": 0.8125
+  },
+  "evidence_boundary": "The qrels were automatically generated from indexed documents and have not been reviewed by a legal teacher. These metrics diagnose system behavior and are not final retrieval accuracy."
+}

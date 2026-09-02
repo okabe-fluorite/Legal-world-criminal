@@ -84,3 +84,6 @@
 | PowerShell单行Python索引审计出现ScriptBlock解析错误 | 1 | 改用单引号here-string传入Python代码，审计成功；不重复复杂内联转义 |
 | 真实检索smoke从backend目录运行却把backend误当仓库根目录 | 1 | 使用`Path.cwd().parent`明确仓库根；索引与客户端专项测试已通过，不涉及索引重建 |
 | 从仓库根直接加载`test_knowledge_contracts`缺少backend模块路径 | 1 | 按该测试既有运行约定切到backend目录执行，不修改业务代码规避测试上下文问题 |
+| 会话中断导致embed_text索引重建进程句柄消失 | 1 | build_state已保留590/1702批，确认无活动构建进程后按相同参数断点续跑，不从头开始 |
+| NLI模型初筛12批均遇OpenCode CreditsError 401 | 1 | 这是用户明确授权回退的额度耗尽而非无效Key；仅将CreditsError/Insufficient balance识别为瞬态，普通401仍不回退，改走DeepSeek官方 |
+| embed_text索引1702批中2批国内端点连接失败后全球端点401 | 1 | 1700批状态已保存；按断点续跑只重试2个失败批次，不重复已完成数据 |

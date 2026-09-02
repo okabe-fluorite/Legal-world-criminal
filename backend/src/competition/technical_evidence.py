@@ -15,6 +15,8 @@ ARTIFACTS = {
     "legal_edu_eval": Path("backend/evaluation/legal_edu_eval_v1_manifest.json"),
     "agent_ablation": Path("docs/AGENT_ABLATION_V1.json"),
     "tutor_assets": Path("frontend/src/assets/tutor/manifest.json"),
+    "hybrid_rag_index": Path("docs/HYBRID_RAG_INDEX_V1_REPORT.json"),
+    "hybrid_rag_ablation": Path("docs/HYBRID_RAG_ABLATION_V1.json"),
 }
 
 
@@ -82,6 +84,8 @@ def build_technical_evidence_snapshot(
     benchmark = loaded["legal_edu_eval"]
     ablation = loaded["agent_ablation"]
     tutor = loaded["tutor_assets"]
+    hybrid_index = loaded["hybrid_rag_index"]
+    hybrid_ablation = loaded["hybrid_rag_ablation"]
 
     governance_gates = dict(governance.get("gates") or {})
     reasoning_checks = []
@@ -109,6 +113,8 @@ def build_technical_evidence_snapshot(
     comparison = dict(law_version.get("comparison") or {})
     agent_comparison = dict(ablation.get("automatic_comparison") or {})
     tutor_states = list(tutor.get("states") or [])
+    hybrid_totals = dict(hybrid_index.get("totals") or {})
+    hybrid_r4 = dict((hybrid_ablation.get("conditions") or {}).get("R4_Reranked") or {})
 
     pending = [
         {
@@ -143,6 +149,7 @@ def build_technical_evidence_snapshot(
             "benchmark_items": int(eval_counts.get("items") or 0),
             "agent_conditions": 2,
             "tutor_states": len(tutor_states),
+            "hybrid_records": int(hybrid_totals.get("records") or 0),
         },
         "data_governance": {
             "snapshot_date": governance.get("snapshot_date"),
@@ -254,6 +261,26 @@ def build_technical_evidence_snapshot(
                 (tutor.get("learning_boundary") or {}).get("formal_grading_eligible")
             ),
             "label": (tutor.get("identity") or {}).get("role"),
+        },
+        "hybrid_rag": {
+            "status": hybrid_index.get("status"),
+            "records": int(hybrid_totals.get("records") or 0),
+            "collections": {
+                key: int((value or {}).get("records") or 0)
+                for key, value in (hybrid_index.get("collections") or {}).items()
+            },
+            "embedding_model": hybrid_index.get("embedding_model"),
+            "vector_dimension": int(hybrid_index.get("vector_dimension") or 0),
+            "retrieval_pipeline": "BM25F + Dense → RRF → 条号/弃权保护 → Reranker",
+            "candidate_qrels": int((hybrid_ablation.get("qrels") or {}).get("total") or 0),
+            "teacher_reviewed_qrels": int((hybrid_ablation.get("qrels") or {}).get("teacher_reviewed") or 0),
+            "candidate_recall_at_5": float(hybrid_r4.get("recall_at_5") or 0.0),
+            "candidate_ndcg_at_10": float(hybrid_r4.get("ndcg_at_10") or 0.0),
+            "no_answer_false_positive_rate": float(
+                hybrid_r4.get("no_answer_false_positive_rate") or 0.0
+            ),
+            "private_question_index": hybrid_index.get("private_question_index"),
+            "boundary": hybrid_ablation.get("evidence_boundary"),
         },
         "pending": pending,
         "provenance": provenance,

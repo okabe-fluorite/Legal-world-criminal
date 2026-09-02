@@ -89,7 +89,7 @@ try {
   };
   const overviewText = await page.locator(".tech-content").innerText();
   if (
-    overviewPipeline !== 5
+    overviewPipeline !== 6
     || overviewCards !== 4
     || !overviewText.includes("4,173")
     || !overviewText.includes("813")
@@ -109,10 +109,11 @@ try {
   const ledgerRows = await page.locator(".data-ledger article").count();
   const dataText = await page.locator(".tech-content").innerText();
   if (
-    ledgerRows !== 4
+    ledgerRows !== 5
     || !dataText.includes("2024-03-01")
     || !dataText.includes("7/7")
     || !dataText.includes("493/505")
+    || !dataText.includes("57,051")
     || !dataText.includes("拒绝")
   ) {
     throw new Error(`Data governance incomplete: rows=${ledgerRows}`);
@@ -132,6 +133,9 @@ try {
     || fixtures !== 6
     || evalTypes !== 5
     || evalRoutes !== 4
+    || !reasoningText.includes("候选Recall@5")
+    || !reasoningText.includes("0.8600")
+    || !reasoningText.includes("不存在法条误返回")
     || !reasoningText.includes("候选评测集")
     || !reasoningText.includes("待模型交付")
   ) {

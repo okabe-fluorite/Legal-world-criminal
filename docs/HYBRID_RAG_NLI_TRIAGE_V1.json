@@ -1,0 +1,25 @@
+{
+  "schema_version": "hybrid-rag-nli-triage-public-v1",
+  "status": "succeeded_model_triage_not_gold",
+  "model_provider": "Volcengine Ark",
+  "model": "deepseek-v4-flash",
+  "input_pairs": 180,
+  "predicted_pairs": 180,
+  "failed_batches": 0,
+  "candidate_labels": {
+    "entailment": 60,
+    "contradiction": 60,
+    "neutral": 60
+  },
+  "model_labels": {
+    "entailment": 60,
+    "contradiction": 60,
+    "neutral": 60
+  },
+  "candidate_model_agreement": 1.0,
+  "minimum_model_confidence": 0.9,
+  "mean_model_confidence": 0.9792,
+  "teacher_reviewed": 0,
+  "gold_labels": 0,
+  "evidence_boundary": "Model triage only. Agreement with automatically constructed candidate labels is not NLI accuracy, legal entailment accuracy, or teacher Gold."
+}

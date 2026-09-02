@@ -13,7 +13,7 @@ if str(BACKEND) not in sys.path:
     sys.path.insert(0, str(BACKEND))
 
 from src.hybrid_rag.lexical_index import build_lexical_index  # noqa: E402
-from src.hybrid_rag.retriever import HybridRagRetriever, public_search_result  # noqa: E402
+from src.hybrid_rag.retriever import HybridRagRetriever, public_search_result, rerank_instruction  # noqa: E402
 from src.hybrid_rag.siliconflow import EmbeddingResult, RerankItem, RerankResult  # noqa: E402
 from src.hybrid_rag.vector_index import IndexRecord  # noqa: E402
 
@@ -44,6 +44,11 @@ class FakeClient:
 
 
 class HybridRagRetrieverTests(unittest.TestCase):
+    def test_reranker_instruction_is_collection_specific(self) -> None:
+        self.assertIn("教材章节", rerank_instruction("textbook_explanation"))
+        self.assertIn("公开练习", rerank_instruction("question_public"))
+        self.assertIn("法名条号", rerank_instruction("legal_authority"))
+
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
         root = Path(self.temp.name)

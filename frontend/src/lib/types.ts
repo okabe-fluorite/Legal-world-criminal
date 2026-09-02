@@ -1050,6 +1050,7 @@ export interface TechnicalEvidenceSnapshot {
     benchmark_items: number;
     agent_conditions: number;
     tutor_states: number;
+    hybrid_records: number;
   };
   data_governance: {
     snapshot_date: string;
@@ -1125,6 +1126,21 @@ export interface TechnicalEvidenceSnapshot {
     creates_learning_event: boolean;
     formal_grading_eligible: boolean;
     label: string;
+  };
+  hybrid_rag: {
+    status: string;
+    records: number;
+    collections: Record<string, number>;
+    embedding_model: string;
+    vector_dimension: number;
+    retrieval_pipeline: string;
+    candidate_qrels: number;
+    teacher_reviewed_qrels: number;
+    candidate_recall_at_5: number;
+    candidate_ndcg_at_10: number;
+    no_answer_false_positive_rate: number;
+    private_question_index: string;
+    boundary: string;
   };
   pending: Array<{ item: string; status: string; required_evidence: string }>;
   provenance: Array<{
