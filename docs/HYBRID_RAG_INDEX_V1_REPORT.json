@@ -1,0 +1,39 @@
+{
+  "schema_version": "hybrid-rag-index-public-report-v1",
+  "status": "ready",
+  "embedding_model": "Qwen/Qwen3-Embedding-8B",
+  "vector_dimension": 1024,
+  "vector_dtype": "float16",
+  "normalized": true,
+  "lexical_ranker": "SQLite FTS5 BM25F-style weighted fields",
+  "collections": {
+    "legal_authority": {
+      "records": 54463,
+      "embedding_requests": 1702,
+      "input_tokens": 4925165,
+      "case_parent_expansion": true
+    },
+    "textbook_explanation": {
+      "records": 1404,
+      "embedding_requests": 44,
+      "input_tokens": 1023606,
+      "authority_separated_from_law": true
+    },
+    "question_public": {
+      "records": 1184,
+      "embedding_requests": 37,
+      "input_tokens": 172112,
+      "answer_fields_included": false
+    }
+  },
+  "totals": {
+    "records": 57051,
+    "embedding_requests": 1783,
+    "input_tokens": 6120883,
+    "active_index_mib": 510.93
+  },
+  "private_question_index": "disabled_by_design",
+  "local_artifact_directory": ".codex-artifacts/hybrid-rag-index-v1",
+  "git_release_policy": "Generated vectors, lexical databases, full metadata and third-party text remain outside Git.",
+  "evidence_boundary": "Ready means the local indexes are structurally usable. Retrieval relevance and legal applicability require evaluation and legal-teacher review."
+}

@@ -22,4 +22,8 @@
 - 官方文档来源：`https://api-docs.siliconflow.cn/docs/api/embeddings-post`、`https://api-docs.siliconflow.cn/docs/api/rerank-post`。
 - SiliconFlow阶段4真实结果：国内官方端点完成300块Embedding（六类各50、19请求、1024维、p50 1184ms、p95 4332ms、65,572输入token）和30次Rerank（每次8候选、Top5、p50 606ms、p95 1161ms、80,649输入token），错误0。
 - 30个自动qrels候选的positive@1/@5均为1.0，但qrels尚未教师复核，所以只能称候选行为探针，不能作为正式Recall/NDCG或专家准确率。
+- 阶段5完成三库索引：legal_authority 54,463、textbook_explanation 1,404、question_public 1,184，共57,051条；每库向量、metadata和SQLite FTS5行数完全一致。
+- 向量均为1024维归一化float16，真实Embedding请求1,783次、输入token 6,120,883；有效索引约510.93MiB。完整向量、词法库、全文metadata位于Git忽略目录。
+- 公开题向量使用题干+选项的`embed_text`；私有答案索引禁用。法源与教材仍分库，案例子块保留parent_id供命中后回填。
+- 三条真实运行时查询已通过BM25F+Dense+RRF+Reranker；正当防卫案例能回填父段。法名版本后缀会干扰精确匹配的问题已修正，`刑法(2024年最新版)`现可识别为刑法别名并触发条号保护。
 - 计划文档：`docs/HYBRID_RAG_BOOKS_QUESTIONS_PLAN.md`。

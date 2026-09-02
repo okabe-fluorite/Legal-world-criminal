@@ -4,7 +4,7 @@
 先制定计划，再按确认后的阶段实现法律全库混合检索、教材解释RAG和题目相似检索。法律Dense Embedding使用EduBrain现有SiliconFlow配置，并在融合候选后使用Reranker；当前不调用API、不修改业务代码。
 
 ## 当前阶段
-阶段5：三库向量索引（进行中）
+阶段6：Hybrid集成（进行中）
 
 ## 阶段
 
@@ -37,11 +37,11 @@
 - **状态：** completed（真实API成功；候选相关性仍待教师复核）
 
 ### 阶段5：三库向量索引
-- [ ] legal_authority
-- [ ] textbook_explanation
-- [ ] question_public/question_private
-- [ ] float16 NPY+metadata+manifest+断点续跑
-- **状态：** pending
+- [x] legal_authority：54,463块
+- [x] textbook_explanation：1,404块
+- [x] question_public：1,184题；question_private明确禁用
+- [x] 1024维归一化float16 NPY+metadata+manifest+断点续跑+SQLite词法索引
+- **状态：** completed（57,051条真实索引，三路行数/向量/词法索引一致）
 
 ### 阶段6：Hybrid集成
 - [ ] BM25F+Dense并行
@@ -80,3 +80,6 @@
 | 隐藏媒体hash后认知冒烟仍要求3行证明字段 | 1 | 页面正确减少为状态/范围2行；更新测试断言，不把hash恢复到用户界面 |
 | 媒体状态人性化后认知冒烟仍等待旧“契约已调用”文案 | 1 | 页面改为“接口已准备/尚未连接”，同步测试等待新用户文案 |
 | SiliconFlow最小探针经`.ai`降级到全球`.com`后401 | 1 | 用户补充的是国内官方文档；调整为`.ai`失败后优先国内`.cn`，再保留全球端点，不改Key |
+| 尝试删除生成的题目旧索引被命令安全策略拒绝 | 1 | 不再删除；把旧索引在同一生成目录内改名留档，再生成包含题干与选项的新索引 |
+| PowerShell单行Python索引审计出现ScriptBlock解析错误 | 1 | 改用单引号here-string传入Python代码，审计成功；不重复复杂内联转义 |
+| 真实检索smoke从backend目录运行却把backend误当仓库根目录 | 1 | 使用`Path.cwd().parent`明确仓库根；索引与客户端专项测试已通过，不涉及索引重建 |
