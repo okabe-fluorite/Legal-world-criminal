@@ -1,0 +1,50 @@
+{
+  "schema_version": "official-source-verification-summary-v1",
+  "documents": 2024,
+  "by_source_type": {
+    "law": 335,
+    "regulation": 610,
+    "judicial_interpretation": 549,
+    "case": 530
+  },
+  "by_evidence_source_type": {
+    "law": 335,
+    "administrative_regulation": 610,
+    "judicial_normative_document": 251,
+    "judicial_interpretation": 298,
+    "guiding_case": 530
+  },
+  "by_effective_status": {
+    "verified_current": 1045,
+    "repealed": 13,
+    "unresolved": 363,
+    "verified_historical": 598,
+    "superseded": 5
+  },
+  "by_verification_status": {
+    "verified": 1131,
+    "partially_verified": 893
+  },
+  "metadata_coverage": {
+    "document_number": 1007,
+    "issuing_authority": 2024,
+    "promulgated_date": 1789,
+    "effective_date": 1255,
+    "revision_date": 654,
+    "expiry_date": 277,
+    "official_source_url": 1131
+  },
+  "local_source_matched": 2024,
+  "multiple_local_versions": 0,
+  "manual_confirmation_candidates": [],
+  "unresolved_non_blocking": true,
+  "hard_blockers": [],
+  "checked_at": "2026-09-03",
+  "agent_record_files_used": [
+    "laws_luna_resolved.jsonl",
+    "regulations_luna_resolved.jsonl",
+    "judicial_luna.jsonl",
+    "judicial_luna_resolved_round2.jsonl"
+  ],
+  "schema_errors": 0
+}

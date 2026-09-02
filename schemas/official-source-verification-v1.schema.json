@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://legalworld.local/schemas/official-source-verification-v1.schema.json",
+  "title": "Official Source Verification V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "document_id", "source_type", "evidence_source_type",
+    "authority_level", "allowed_usage", "title", "document_number",
+    "issuing_authority", "promulgated_date", "effective_date", "revision_date",
+    "expiry_date", "effective_status", "version", "official_source_url",
+    "verification_method", "verification_status", "source_use", "usage_notes",
+    "local_source_matches", "local_version_candidates", "content_sha256", "checked_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "official-source-verification-v1"},
+    "document_id": {"type": "string", "pattern": "^RAGD_[A-F0-9]{24}$"},
+    "source_type": {"enum": ["law", "regulation", "judicial_interpretation", "case"]},
+    "evidence_source_type": {"enum": ["law", "administrative_regulation", "judicial_interpretation", "judicial_normative_document", "guiding_case", "typical_case"]},
+    "authority_level": {"type": "string", "minLength": 1},
+    "official_category": {"type": "string"},
+    "allowed_usage": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["normative_rule", "judicial_application", "case_reference", "teaching_explanation", "learning_resource"]}},
+    "title": {"type": "string", "minLength": 1},
+    "document_number": {"type": "string"},
+    "issuing_authority": {"type": "string"},
+    "promulgated_date": {"type": "string"},
+    "effective_date": {"type": "string"},
+    "revision_date": {"type": "string"},
+    "expiry_date": {"type": "string"},
+    "effective_status": {"enum": ["verified_current", "verified_historical", "superseded", "repealed", "unresolved"]},
+    "version": {"type": "string"},
+    "official_source_url": {"type": "string"},
+    "verification_method": {"type": "string", "minLength": 1},
+    "verification_status": {"enum": ["verified", "partially_verified", "unresolved"]},
+    "source_use": {"type": "string", "minLength": 1},
+    "usage_notes": {"type": "array", "items": {"type": "string"}},
+    "local_source_matches": {"type": "integer", "minimum": 0},
+    "local_version_candidates": {"type": "array", "items": {"type": "string"}},
+    "metadata_conflicts": {"type": "array", "items": {"type": "string"}},
+    "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "checked_at": {"type": "string", "format": "date"}
+  }
+}
