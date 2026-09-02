@@ -27,6 +27,95 @@ def load_jsonl(name: str) -> list[dict]:
 
 
 class KnowledgeContractTests(unittest.TestCase):
+    def test_multisource_evidence_pack_keeps_identity_usage_and_parent_context(self) -> None:
+        class FakeHybridRetriever:
+            def search(self, query, *, collection, **kwargs):
+                common = {
+                    "stages": {"dense": "succeeded", "reranker": "succeeded"},
+                    "abstained": False,
+                }
+                if collection == "legal_authority":
+                    return {
+                        **common,
+                        "results": [{
+                            "retrieval_id": "J1",
+                            "document_id": "RAGD_" + "C" * 24,
+                            "source_type": "judicial_interpretation",
+                            "authority_level": "司法解释",
+                            "allowed_usage": ["judicial_application"],
+                            "title": "测试司法解释",
+                            "source_title": "测试司法解释",
+                            "document_number": "法释〔2026〕1号",
+                            "article_ref": "第一条",
+                            "quote": "测试司法解释原文。",
+                            "issuing_authority": "最高人民法院",
+                            "promulgated_date": "2026-01-01",
+                            "effective_date": "2026-02-01",
+                            "effective_status": "verified_current",
+                            "version": "2026-01-01",
+                            "official_source_url": "https://www.court.gov.cn/test",
+                            "verification_method": "official_primary_page_match",
+                            "verification_status": "verified",
+                            "source_use": "用于说明司法适用口径。",
+                            "source_snapshot_id": "official-test",
+                            "content_sha256": "c" * 64,
+                            "risk_flags": [],
+                            "scores": {"reranker": 0.9},
+                        }],
+                    }
+                if collection == "textbook_explanation":
+                    return {
+                        **common,
+                        "results": [{
+                            "retrieval_id": "T1",
+                            "document_id": "T1",
+                            "source_type": "textbook_explanation",
+                            "authority_level": "教材解释",
+                            "allowed_usage": ["teaching_explanation"],
+                            "title": "刑法教材",
+                            "quote": "教材用于解释构成要件。",
+                            "effective_status": "edition_unknown",
+                            "source_use": "教材解释不得覆盖现行法。",
+                            "source_snapshot_id": "book-test",
+                            "content_sha256": "d" * 64,
+                            "scores": {"reranker": 0.8},
+                        }],
+                    }
+                return {**common, "results": []}
+
+        service = KnowledgeService(hybrid_retriever=FakeHybridRetriever())
+        result = service.search(
+            query="测试司法解释与教材说明",
+            top_k=3,
+            collections=["legal_authority", "textbook_explanation"],
+        )
+        source_types = {row["source_type"] for row in result["evidences"]}
+        self.assertIn("judicial_interpretation", source_types)
+        self.assertIn("textbook_explanation", source_types)
+        judicial = next(row for row in result["evidences"] if row["source_type"] == "judicial_interpretation")
+        self.assertEqual(judicial["allowed_usage"], ["judicial_application"])
+        self.assertEqual(judicial["document_number"], "法释〔2026〕1号")
+        self.assertEqual(result["usage_policy"]["teaching_explanation"], ["textbook_explanation"])
+        pack_schema = json.loads((SCHEMA_DIR / "evidence-pack-v1.schema.json").read_text(encoding="utf-8"))
+        Draft202012Validator(pack_schema).validate(result)
+        self.assertNotIn("answer_private", json.dumps(result, ensure_ascii=False))
+
+    def test_explicit_missing_law_abstention_does_not_fall_back_to_similar_article(self) -> None:
+        class AbstainingRetriever:
+            def search(self, query, **kwargs):
+                return {
+                    "stages": {"dense": "succeeded", "reranker": "skipped_by_exact_reference_check"},
+                    "abstained": True,
+                    "results": [],
+                }
+
+        result = KnowledgeService(hybrid_retriever=AbstainingRetriever()).search(
+            query="请查找《不存在测试法》第九百九十九条",
+            top_k=3,
+        )
+        self.assertEqual(result["evidences"], [])
+        self.assertEqual(next(iter(result["coverage"].values()))["status"], "insufficient_evidence")
+
     def test_hybrid_candidates_are_projected_back_to_governed_articles(self) -> None:
         class FakeHybridRetriever:
             def search(self, query, **kwargs):
@@ -34,6 +123,7 @@ class KnowledgeContractTests(unittest.TestCase):
                     "stages": {"dense": "succeeded", "reranker": "succeeded"},
                     "results": [
                         {
+                            "source_type": "law",
                             "title": "中华人民共和国刑法（2024年最新版）",
                             "article_ref": "第二十条",
                             "quote": "候选来源中的文本不能直接替代治理法源。",
@@ -45,7 +135,7 @@ class KnowledgeContractTests(unittest.TestCase):
         result = service.search(query="刑法第二十条正当防卫", top_k=3)
         article = next(row for row in result["evidences"] if row["article_ref"] == "第二十条")
         self.assertNotEqual(article["quote"], "候选来源中的文本不能直接替代治理法源。")
-        self.assertEqual(article["match_reasons"], ["hybrid_retrieval", "governed_article_projection"])
+        self.assertEqual(article["match_reasons"], ["hybrid_retrieval", "core_norm_projection"])
         self.assertIn("词法与语义融合检索", " ".join(result["warnings"]))
 
     def test_manifest_and_frozen_contracts_are_governed(self) -> None:

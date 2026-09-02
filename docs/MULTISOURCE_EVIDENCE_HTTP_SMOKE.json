@@ -1,0 +1,95 @@
+{
+  "schema_version": "multisource-evidence-http-smoke-v1",
+  "generated_at": "2026-09-02T18:42:41.639187+00:00",
+  "checks": [
+    {
+      "check_id": "exact_law",
+      "http_status": 200,
+      "evidence_count": 8,
+      "expected_source_type": "法律条文",
+      "expected_type_count": 6,
+      "schema_errors": 0,
+      "parent_context_count": 2,
+      "unresolved_notice_count": 0,
+      "private_answer_leak": false,
+      "passed": true
+    },
+    {
+      "check_id": "judicial_interpretation",
+      "http_status": 200,
+      "evidence_count": 10,
+      "expected_source_type": "judicial_normative_document",
+      "expected_type_count": 5,
+      "schema_errors": 0,
+      "parent_context_count": 0,
+      "unresolved_notice_count": 0,
+      "private_answer_leak": false,
+      "passed": true
+    },
+    {
+      "check_id": "case_parent",
+      "http_status": 200,
+      "evidence_count": 10,
+      "expected_source_type": "guiding_case",
+      "expected_type_count": 4,
+      "schema_errors": 0,
+      "parent_context_count": 4,
+      "unresolved_notice_count": 0,
+      "private_answer_leak": false,
+      "passed": true
+    },
+    {
+      "check_id": "textbook",
+      "http_status": 200,
+      "evidence_count": 5,
+      "expected_source_type": "textbook_explanation",
+      "expected_type_count": 5,
+      "schema_errors": 0,
+      "parent_context_count": 0,
+      "unresolved_notice_count": 0,
+      "private_answer_leak": false,
+      "passed": true
+    },
+    {
+      "check_id": "similar_question",
+      "http_status": 200,
+      "evidence_count": 5,
+      "expected_source_type": "learning_resource",
+      "expected_type_count": 5,
+      "schema_errors": 0,
+      "parent_context_count": 0,
+      "unresolved_notice_count": 5,
+      "private_answer_leak": false,
+      "passed": true
+    },
+    {
+      "check_id": "explicit_missing_law",
+      "http_status": 200,
+      "evidence_count": 0,
+      "coverage": [
+        "insufficient_evidence"
+      ],
+      "passed": true
+    },
+    {
+      "check_id": "embedding_fallback",
+      "http_status": 200,
+      "retrieval_method": "词法检索（语义服务暂不可用）",
+      "result_count": 5,
+      "public_internal_leaks": [],
+      "passed": true
+    },
+    {
+      "check_id": "reranker_fallback",
+      "http_status": 200,
+      "retrieval_method": "词法与语义融合（重排服务暂不可用）",
+      "result_count": 5,
+      "public_internal_leaks": [],
+      "passed": true
+    }
+  ],
+  "passed": 8,
+  "total": 8,
+  "all_passed": true,
+  "evidence_boundary": "HTTP and software behavior only; retrieval relevance and legal application are not expert conclusions."
+}

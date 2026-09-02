@@ -89,34 +89,40 @@ class KnowledgeService:
             return "中华人民共和国刑法"
         return None
 
-    def _hybrid_formal_hits(self, query: str, top_k: int) -> tuple[list[dict[str, Any]], str]:
+    def _hybrid_results(
+        self,
+        query: str,
+        top_k: int,
+        collections: list[str],
+    ) -> tuple[list[dict[str, Any]], str, bool]:
         if self.hybrid_retriever is None:
-            return [], "词法检索"
-        try:
-            result = self.hybrid_retriever.search(
-                query,
-                collection="legal_authority",
-                top_k=max(5, top_k),
-            )
-        except Exception:
-            return [], "词法检索（语义服务暂不可用）"
-        hits: list[dict[str, Any]] = []
-        for candidate in result.get("results") or []:
-            title = self._canonical_formal_title(candidate.get("title"))
-            article_ref = str(candidate.get("article_ref") or "").strip()
-            if not title or not article_ref:
+            return [], "词法检索", False
+        rows: list[dict[str, Any]] = []
+        methods: set[str] = set()
+        abstained = False
+        for collection in collections:
+            try:
+                result = self.hybrid_retriever.search(
+                    query,
+                    collection=collection,
+                    top_k=max(5, top_k),
+                )
+            except Exception:
+                methods.add("词法检索（语义服务暂不可用）")
                 continue
-            article = law_corpus.resolve_article(title, article_ref)
-            if article is None:
-                continue
-            hits.append({**article, "score": 1.0, "_hybrid_candidate": True})
-        if result.get("stages", {}).get("dense") == "fallback_to_bm25f":
-            method = "词法检索（语义服务暂不可用）"
-        elif result.get("stages", {}).get("reranker") == "fallback_to_rrf":
-            method = "词法与语义融合（重排服务暂不可用）"
-        else:
-            method = "词法与语义融合检索"
-        return hits, method
+            abstained = abstained or bool(result.get("abstained"))
+            rows.extend(result.get("results") or [])
+            if result.get("stages", {}).get("dense") == "fallback_to_bm25f":
+                methods.add("词法检索（语义服务暂不可用）")
+            elif result.get("stages", {}).get("reranker") == "fallback_to_rrf":
+                methods.add("词法与语义融合（重排服务暂不可用）")
+            else:
+                methods.add("词法与语义融合检索")
+        return (
+            [] if abstained else rows,
+            "；".join(sorted(methods)) or "词法检索",
+            abstained,
+        )
 
     @staticmethod
     def public_task(task: dict[str, Any]) -> dict[str, Any]:
@@ -186,7 +192,71 @@ class KnowledgeService:
             }
         row["relevance"] = float(hit.get("score") or 0.0)
         row["match_reasons"] = ["bm25_retrieval"]
+        row.setdefault("allowed_usage", ["normative_rule"])
+        row.setdefault("document_number", "")
+        row.setdefault("parent_context", None)
+        row.setdefault("issuing_authority", "全国人民代表大会或其常务委员会")
+        row.setdefault("promulgated_date", "")
+        row.setdefault("effective_date", str(row.get("effective_from") or ""))
+        row.setdefault("expiry_date", str(row.get("effective_to") or ""))
+        row.setdefault("version", str(row.get("source_snapshot_id") or row.get("effective_from") or ""))
+        row.setdefault("official_source_url", str(row.get("source_url") or ""))
+        row.setdefault("verification_method", "governed_core_manifest")
+        row.setdefault("verification_status", "legacy_governed_core")
+        row.setdefault("source_use", "刑法课程核心规范，可作为规范依据使用。")
         return row
+
+    def _evidence_from_hybrid(self, candidate: dict[str, Any]) -> dict[str, Any]:
+        source_type = str(candidate.get("source_type") or "")
+        title = str(candidate.get("source_title") or candidate.get("title") or "")
+        article_ref = str(candidate.get("article_ref") or "")
+        if source_type == "law" and article_ref:
+            formal_title = self._canonical_formal_title(title)
+            article = law_corpus.resolve_article(formal_title, article_ref) if formal_title else None
+            if article is not None:
+                row = self._evidence_from_hit({**article, "score": 1.0})
+                row["match_reasons"] = ["hybrid_retrieval", "core_norm_projection"]
+                return row
+        quote = str(candidate.get("quote") or "")
+        content_hash = str(candidate.get("content_sha256") or "")
+        if not re.fullmatch(r"[a-f0-9]{64}", content_hash):
+            content_hash = hashlib.sha256(quote.encode("utf-8")).hexdigest()
+        source_url = str(candidate.get("official_source_url") or candidate.get("source_url") or "")
+        scores = candidate.get("scores") if isinstance(candidate.get("scores"), dict) else {}
+        relevance = float(scores.get("reranker") or scores.get("rrf") or scores.get("dense_cosine") or 0.0)
+        return {
+            "schema_version": "evidence-pack-item-v1",
+            "evidence_id": _stable_id("EVID", str(candidate.get("retrieval_id") or content_hash)),
+            "source_type": source_type or "learning_resource",
+            "document_id": str(candidate.get("document_id") or candidate.get("retrieval_id") or "resource"),
+            "title": f"{title}{article_ref}",
+            "source_title": title,
+            "article_ref": article_ref,
+            "quote": quote,
+            "authority_level": str(candidate.get("authority_level") or "学习资源"),
+            "effective_from": str(candidate.get("effective_date") or ""),
+            "effective_to": str(candidate.get("expiry_date") or "") or None,
+            "effective_status": str(candidate.get("effective_status") or "unresolved"),
+            "source_url": source_url,
+            "source_url_scope": "official_detail" if source_url else "official_archive_no_direct_detail",
+            "source_snapshot_id": str(candidate.get("source_snapshot_id") or candidate.get("version") or "hybrid-rag-v1"),
+            "source_bundle_sha256": content_hash,
+            "risk_flags": list(candidate.get("risk_flags") or []),
+            "relevance": relevance,
+            "match_reasons": ["hybrid_retrieval"],
+            "allowed_usage": list(candidate.get("allowed_usage") or ["learning_resource"]),
+            "document_number": str(candidate.get("document_number") or ""),
+            "parent_context": candidate.get("parent_context"),
+            "issuing_authority": str(candidate.get("issuing_authority") or ""),
+            "promulgated_date": str(candidate.get("promulgated_date") or ""),
+            "effective_date": str(candidate.get("effective_date") or ""),
+            "expiry_date": str(candidate.get("expiry_date") or ""),
+            "version": str(candidate.get("version") or ""),
+            "official_source_url": source_url,
+            "verification_method": str(candidate.get("verification_method") or "local_index_metadata"),
+            "verification_status": str(candidate.get("verification_status") or "unresolved"),
+            "source_use": str(candidate.get("source_use") or "请结合来源身份和效力提示使用。"),
+        }
 
     def search(
         self,
@@ -196,23 +266,34 @@ class KnowledgeService:
         top_k: int = 5,
         knowledge_ids: list[str] | None = None,
         key_judgments: list[str] | None = None,
+        collections: list[str] | None = None,
     ) -> dict[str, Any]:
         query_text = str(query or "").strip()
         if not query_text:
             raise ValueError("query is required")
         top_k = max(1, min(int(top_k), 10))
-        hybrid_hits, retrieval_method = self._hybrid_formal_hits(query_text, top_k)
-        hits = hybrid_hits + law_corpus.search_law(
-            query_text,
-            top_k=top_k,
-            title="中华人民共和国刑法",
+        selected_collections = list(
+            dict.fromkeys(collections or ["legal_authority"])
+        )
+        allowed_collections = {"legal_authority", "textbook_explanation", "question_public"}
+        if not selected_collections or any(value not in allowed_collections for value in selected_collections):
+            raise ValueError("collections contains an unsupported retrieval layer")
+        hybrid_candidates, retrieval_method, explicit_abstention = self._hybrid_results(
+            query_text, top_k, selected_collections
+        )
+        hits = [] if explicit_abstention or "legal_authority" not in selected_collections else law_corpus.search_law(
+            query_text, top_k=top_k, title="中华人民共和国刑法"
         )
         evidence_rows: list[dict[str, Any]] = []
         seen: set[str] = set()
+        for candidate in hybrid_candidates:
+            row = self._evidence_from_hybrid(candidate)
+            if row["evidence_id"] in seen:
+                continue
+            seen.add(row["evidence_id"])
+            evidence_rows.append(row)
         for hit in hits:
             row = self._evidence_from_hit(hit)
-            if hit.get("_hybrid_candidate"):
-                row["match_reasons"] = ["hybrid_retrieval", "governed_article_projection"]
             if row["evidence_id"] in seen:
                 continue
             seen.add(row["evidence_id"])
@@ -228,6 +309,13 @@ class KnowledgeService:
                 if evidence_id in seen or evidence_id not in self.evidence_by_id:
                     continue
                 row = dict(self.evidence_by_id[evidence_id])
+                row = self._evidence_from_hit({
+                    **row,
+                    "source_title": row.get("source_title"),
+                    "article_ref": row.get("article_ref"),
+                    "content": row.get("quote"),
+                    "score": 1.0,
+                })
                 row["relevance"] = 1.0
                 row["match_reasons"] = ["knowledge_card_standard"]
                 evidence_rows.append(row)
@@ -245,7 +333,7 @@ class KnowledgeService:
         if not judgments:
             judgments = [query_text]
         for judgment in judgments:
-            claim_hits = law_corpus.search_law(
+            claim_hits = [] if explicit_abstention or "legal_authority" not in selected_collections else law_corpus.search_law(
                 judgment, top_k=min(3, top_k), title="中华人民共和国刑法"
             )
             ids = [self._evidence_from_hit(hit)["evidence_id"] for hit in claim_hits]
@@ -273,17 +361,76 @@ class KnowledgeService:
                 "recheck legal validity before each real classroom term",
                 f"retrieval method: {retrieval_method}",
             ],
+            "usage_policy": {
+                "hierarchy": ["law", "administrative_regulation", "judicial_interpretation", "judicial_normative_document", "guiding_case", "typical_case", "textbook_explanation", "learning_resource"],
+                "normative_rule": ["law", "administrative_regulation"],
+                "judicial_application": ["judicial_interpretation", "judicial_normative_document"],
+                "case_reference": ["guiding_case", "typical_case"],
+                "teaching_explanation": ["textbook_explanation"],
+                "learning_resource": ["learning_resource"],
+                "rule": "教材、案例和题目不得覆盖法律、行政法规或司法解释；unresolved来源必须显示效力尚未完全核实。",
+            },
         }
 
     def audit_citations(self, citations: list[dict[str, Any]]) -> dict[str, Any]:
         rows = []
-        counts = {"valid": 0, "invalid_title": 0, "invalid_article": 0}
+        counts = {"valid": 0, "invalid_title": 0, "invalid_article": 0, "source_not_found": 0}
         for index, citation in enumerate(citations):
             title = str(citation.get("title") or "").strip()
             article_ref = str(citation.get("article_ref") or "").strip()
+            requested_type = str(citation.get("source_type") or "").strip()
+            hybrid_matches = (
+                self.hybrid_retriever.resolve_source(
+                    title=title,
+                    article_ref=article_ref,
+                    source_type=requested_type,
+                    top_k=3,
+                )
+                if self.hybrid_retriever is not None
+                else []
+            )
+            if hybrid_matches and not (
+                self._canonical_formal_title(title) and article_ref
+            ):
+                candidate = hybrid_matches[0]
+                evidence = self._evidence_from_hybrid(candidate)
+                expected_quote = str(citation.get("quote") or "").strip()
+                quote_status = "not_requested"
+                risk_flags = []
+                if expected_quote:
+                    quote_status = (
+                        "exact_fragment"
+                        if _normalize(expected_quote) in _normalize(evidence.get("quote"))
+                        else "quote_mismatch"
+                    )
+                    if quote_status == "quote_mismatch":
+                        risk_flags.append("quote_mismatch")
+                claim = str(citation.get("claim") or "").strip()
+                overlap = _lexical_overlap(claim, str(evidence.get("quote") or "")) if claim else None
+                usage = list(evidence.get("allowed_usage") or [])
+                if claim and not set(usage) & {"normative_rule", "judicial_application"}:
+                    risk_flags.append("source_cannot_prove_normative_conclusion")
+                if evidence.get("effective_status") == "unresolved":
+                    risk_flags.append("effect_not_fully_verified")
+                counts["valid"] += 1
+                rows.append(
+                    {
+                        "index": index,
+                        "status": "valid",
+                        "title": evidence.get("source_title") or title,
+                        "article_ref": evidence.get("article_ref") or article_ref,
+                        "quote_status": quote_status,
+                        "claim_support_status": (
+                            "candidate_requires_semantic_audit" if claim else "not_requested"
+                        ),
+                        "lexical_overlap": overlap,
+                        "evidence": evidence,
+                        "risk_flags": list(dict.fromkeys(risk_flags)),
+                    }
+                )
+                continue
             result = law_corpus.verify_citation(title, article_ref)
             status = result["status"]
-            counts[status] = counts.get(status, 0) + 1
             risk_flags: list[str] = []
             evidence = None
             quote_status = "not_requested"
@@ -311,13 +458,25 @@ class KnowledgeService:
                     )
                     risk_flags.append("semantic_entailment_not_evaluated")
             else:
-                risk_flags.append(status)
+                if hybrid_matches:
+                    evidence = self._evidence_from_hybrid(hybrid_matches[0])
+                    status = "valid"
+                    quote = str(citation.get("quote") or "").strip()
+                    quote_status = (
+                        "exact_fragment"
+                        if not quote or _normalize(quote) in _normalize(evidence.get("quote"))
+                        else "quote_mismatch"
+                    )
+                    risk_flags.extend(evidence.get("risk_flags") or [])
+                else:
+                    risk_flags.append(status)
+            counts[status] = counts.get(status, 0) + 1
             rows.append(
                 {
                     "index": index,
                     "status": status,
-                    "title": result.get("title") or title,
-                    "article_ref": article_ref,
+                    "title": (evidence or {}).get("source_title") or result.get("title") or title,
+                    "article_ref": (evidence or {}).get("article_ref") or article_ref,
                     "quote_status": quote_status,
                     "claim_support_status": claim_status,
                     "lexical_overlap": overlap,

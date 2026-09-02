@@ -20,19 +20,46 @@ const uniqueReferences = computed(() => {
   });
 });
 
-function sourceKind(row: EvidenceReference): "law" | "case" | "course" {
+type SourceKind = "law" | "regulation" | "judicial" | "case" | "course" | "resource";
+
+function sourceKind(row: EvidenceReference): SourceKind {
   const value = `${row.source_type} ${row.id}`.toLowerCase();
   if (value.includes("case") || value.includes("案例") || value.includes("裁判")) return "case";
-  if (value.includes("card") || value.includes("课程") || value.includes("knowledge")) return "course";
+  if (value.includes("judicial") || value.includes("司法解释") || value.includes("司法规范")) return "judicial";
+  if (value.includes("regulation") || value.includes("行政法规")) return "regulation";
+  if (value.includes("textbook") || value.includes("card") || value.includes("教材") || value.includes("课程") || value.includes("knowledge")) return "course";
+  if (value.includes("resource") || value.includes("question") || value.includes("题目") || value.includes("练习")) return "resource";
   return "law";
 }
 
 function kindLabel(row: EvidenceReference): string {
-  return ({ law: "法", case: "案", course: "课" })[sourceKind(row)];
+  return ({ law: "法", regulation: "规", judicial: "司", case: "案", course: "教", resource: "练" })[sourceKind(row)];
 }
 
 function typeLabel(row: EvidenceReference): string {
-  return ({ law: "法律条文", case: "指导/典型案例", course: "课程解释" })[sourceKind(row)];
+  return ({ law: "法律", regulation: "行政法规", judicial: "司法解释 / 司法文件", case: "指导性 / 典型案例", course: "教材解释", resource: "公开学习资源" })[sourceKind(row)];
+}
+
+function statusLabel(row: EvidenceReference): string {
+  const status = String(row.effective_status || "");
+  if (status === "verified_current" || status === "effective_as_of_download_snapshot") return "已核实当前版本";
+  if (status === "verified_historical") return "已核实发布记录";
+  if (status === "superseded") return "已有后续版本";
+  if (status === "repealed") return "已废止";
+  if (status === "unresolved") return "效力尚未完全核实";
+  if (status === "edition_unknown") return "教材版次待补充";
+  if (status === "not_applicable_learning_resource") return "学习资源不适用法律效力状态";
+  return status || "效力信息待补充";
+}
+
+function usageLabel(value: string): string {
+  return ({
+    normative_rule: "规范依据",
+    judicial_application: "司法适用依据",
+    case_reference: "裁判参考 / 事实示例",
+    teaching_explanation: "课堂与学理解释",
+    learning_resource: "相似题 / 练习推荐",
+  } as Record<string, string>)[value] ?? value;
 }
 
 function versionLabel(row: EvidenceReference): string {
@@ -58,6 +85,8 @@ function riskLabel(value: string): string {
     case_relevance_not_legal_entailment: "相关案例不代表结论必然成立",
     edition_unknown: "教材版本信息待补充",
     textbook_does_not_override_current_law: "教材解释不能替代现行法",
+    effect_not_fully_verified: "效力尚未完全核实",
+    source_cannot_prove_normative_conclusion: "该来源不能单独证明规范结论",
   } as Record<string, string>)[value] ?? value.replaceAll("_", " ");
 }
 
@@ -137,7 +166,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
       <div v-if="selected" class="evidence-drawer-backdrop" @click.self="closeDrawer">
         <aside class="evidence-drawer" role="dialog" aria-modal="true" aria-labelledby="evidence-drawer-title">
           <header class="drawer-head">
-            <div><p>权威来源 · 可查看原文</p><h2 id="evidence-drawer-title">{{ citationTitle(selected) }}</h2></div>
+            <div><p>来源详情 · 可查看原文</p><h2 id="evidence-drawer-title">{{ citationTitle(selected) }}</h2></div>
             <button type="button" aria-label="关闭完整证据" @click="closeDrawer">×</button>
           </header>
           <div class="drawer-scroll">
@@ -146,7 +175,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
               <dl>
                 <div><dt>类型</dt><dd>{{ typeLabel(selected) }}</dd></div>
                 <div><dt>效力层级</dt><dd>{{ selected.authority || "待复核" }}</dd></div>
-                <div><dt>版本 / 时效</dt><dd>{{ versionLabel(selected) }}</dd></div>
+                <div><dt>版本</dt><dd>{{ versionLabel(selected) }}</dd></div>
               </dl>
             </section>
             <section class="drawer-quote">
@@ -156,9 +185,19 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
             <section class="drawer-provenance">
               <h3>来源与适用信息</h3>
               <dl>
-                <div><dt>状态</dt><dd>{{ selected.effective_status || "需结合当前学期复核" }}</dd></div>
-                <div><dt>来源</dt><dd>{{ selected.source_url ? "可打开原始来源" : "课程资料库" }}</dd></div>
+                <div><dt>效力状态</dt><dd>{{ statusLabel(selected) }}</dd></div>
+                <div v-if="selected.document_number"><dt>文号</dt><dd>{{ selected.document_number }}</dd></div>
+                <div v-if="selected.issuing_authority"><dt>发布机关</dt><dd>{{ selected.issuing_authority }}</dd></div>
+                <div v-if="selected.promulgated_date"><dt>公布 / 印发</dt><dd>{{ selected.promulgated_date }}</dd></div>
+                <div v-if="selected.effective_date"><dt>施行时间</dt><dd>{{ selected.effective_date }}</dd></div>
+                <div><dt>来源</dt><dd>{{ selected.source_url ? "可打开官方来源" : "国家法律资料本地归档" }}</dd></div>
               </dl>
+            </section>
+            <section v-if="selected.allowed_usage.length" class="drawer-risks drawer-usage">
+              <h3>允许用途</h3><span v-for="usage in selected.allowed_usage" :key="usage">{{ usageLabel(usage) }}</span>
+            </section>
+            <section v-if="selected.parent_context?.content" class="drawer-parent">
+              <p>CASE PARENT CONTEXT</p><h3>{{ selected.parent_context.section_title || selected.parent_context.title || "完整语义父段" }}</h3><blockquote>{{ selected.parent_context.content }}</blockquote>
             </section>
             <section v-if="selected.risk_flags.length" class="drawer-risks">
               <h3>使用提示</h3><span v-for="risk in selected.risk_flags" :key="risk">{{ riskLabel(risk) }}</span>
@@ -166,8 +205,8 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
           </div>
           <footer class="drawer-actions">
             <button type="button" @click="copyCitation(selected)">复制引用</button>
-            <a v-if="selected.source_url" :href="selected.source_url" target="_blank" rel="noopener noreferrer">打开原始来源 ↗</a>
-            <span>检索相关不等于法律蕴含 · 争议问题仍需教师/专家复核</span>
+            <a v-if="selected.source_url" :href="selected.source_url" target="_blank" rel="noopener noreferrer">打开官方来源 ↗</a>
+            <span>{{ selected.source_use || "检索相关不等于法律蕴含；请结合来源身份和效力层级使用。" }}</span>
           </footer>
         </aside>
       </div>
@@ -183,4 +222,5 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 .evidence-tooltip{z-index:3980!important}
 .evidence-drawer-backdrop{background:rgba(1,2,2,.94)!important;backdrop-filter:blur(6px)!important;isolation:isolate}
 .evidence-drawer{background:#0b0e0c!important;isolation:isolate}
+.citation-mark--regulation{color:#d8c89a;border-color:rgba(190,157,75,.58);background:rgba(190,157,75,.09)}.citation-mark--regulation:hover,.citation-mark--regulation:focus-visible{background:#88702f}.citation-mark--judicial{color:#b2a8d8;border-color:rgba(132,116,181,.6);background:rgba(132,116,181,.1)}.citation-mark--judicial:hover,.citation-mark--judicial:focus-visible{background:#66558e}.citation-mark--resource{color:#d1ab96;border-color:rgba(179,115,80,.58);background:rgba(179,115,80,.09)}.citation-mark--resource:hover,.citation-mark--resource:focus-visible{background:#86533a}.drawer-identity .kind--regulation{color:#d8c89a}.drawer-identity .kind--judicial{color:#b2a8d8}.drawer-identity .kind--resource{color:#d1ab96}.drawer-parent{margin-top:22px}.drawer-parent>p{margin:0 0 5px;color:#83aebb;font:600 .59rem var(--font-mono);letter-spacing:.12em}.drawer-parent h3{margin:0 0 8px;font-size:.8rem}.drawer-parent blockquote{margin:0;padding:13px 15px;color:#cbd5d7;border-left:2px solid #648b99;background:rgba(100,139,153,.065);font-family:var(--font-display);font-size:.78rem;line-height:1.75;white-space:pre-wrap}.drawer-usage span{color:#b9cba9;border-color:rgba(122,153,98,.38)}
 </style>

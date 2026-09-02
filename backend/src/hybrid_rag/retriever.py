@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import re
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from pathlib import Path
 from threading import Lock
 from typing import Any, Sequence
@@ -53,7 +53,13 @@ def rerank_instruction(collection: str) -> str:
 
 
 class HybridCollection:
-    def __init__(self, index_dir: Path, *, case_parent_path: Path | None = None) -> None:
+    def __init__(
+        self,
+        index_dir: Path,
+        *,
+        case_parent_path: Path | None = None,
+        verification_path: Path | None = None,
+    ) -> None:
         self.index_dir = Path(index_dir)
         self.manifest = json.loads((self.index_dir / "manifest.json").read_text(encoding="utf-8"))
         self.records = _load_jsonl(self.index_dir / self.manifest["metadata_file"])
@@ -64,6 +70,15 @@ class HybridCollection:
         self.parents: dict[str, dict[str, Any]] = {}
         if case_parent_path and case_parent_path.is_file():
             self.parents = {str(row["parent_id"]): row for row in _load_jsonl(case_parent_path)}
+        self.verification: dict[str, dict[str, Any]] = {}
+        if verification_path and verification_path.is_file():
+            self.verification = {
+                str(row["document_id"]): row for row in _load_jsonl(verification_path)
+            }
+        self.indices_by_title: dict[str, list[int]] = defaultdict(list)
+        for index, record in enumerate(self.records):
+            for alias in _title_aliases(record.get("title") or record.get("subject") or ""):
+                self.indices_by_title[alias].append(index)
 
     def lexical(self, query: str, limit: int) -> list[tuple[int, float]]:
         return lexical_search(self.lexical_path, query, limit=limit)
@@ -117,26 +132,78 @@ class HybridCollection:
     def project(self, document_index: int, scores: dict[str, Any]) -> dict[str, Any]:
         record = self.records[document_index]
         parent = self.parents.get(str(record.get("parent_id") or ""))
-        governance = str(record.get("governance_status") or "")
-        if governance in {"pilot_teacher_approved", "approved", "formal_evidence"}:
-            source_use = "可作为已审核来源使用"
-        elif governance == "candidate_requires_legal_review":
-            source_use = "候选来源，使用前需法学教师复核"
+        verification = self.verification.get(str(record.get("document_id") or ""), {})
+        source_type = str(
+            verification.get("evidence_source_type")
+            or record.get("source_type")
+            or ("learning_resource" if self.manifest.get("collection") == "question_public" else "")
+        )
+        if source_type == "textbook_explanation":
+            allowed_usage = ["teaching_explanation"]
+            source_use = "教材解释可用于课堂说明，不得覆盖法律、行政法规或司法解释。"
+        elif source_type in {"question", "learning_resource"}:
+            allowed_usage = ["learning_resource"]
+            source_use = "仅用于相似题、练习推荐和诊断任务，不参与法律结论证明。"
         else:
-            source_use = "参考资料，不能单独作为正式结论依据"
+            allowed_usage = list(verification.get("allowed_usage") or [])
+            source_use = str(verification.get("source_use") or "效力尚未完全核实，使用时请结合来源和时效提示。")
+        effective_status = str(
+            verification.get("effective_status")
+            or record.get("effective_status")
+            or (
+                "edition_unknown"
+                if source_type == "textbook_explanation"
+                else "not_applicable_learning_resource"
+                if source_type in {"question", "learning_resource"}
+                else "unresolved"
+            )
+        )
+        obsolete_flags = {
+            "candidate_not_formal_authority",
+            "effective_status_requires_review",
+            "case_personal_information_review_required",
+            "third_party_case_redistribution_review_required",
+            "source_terms_and_exact_item_provenance_require_review",
+            "unreviewed_inventory",
+            "isolated_reference",
+            "isolated_outside_scope",
+            "no_case_personal_data_indicated_by_collection",
+        }
+        risk_flags = [
+            str(value)
+            for value in record.get("risk_flags") or []
+            if str(value) not in obsolete_flags
+        ]
+        if effective_status == "unresolved":
+            risk_flags.append("effect_not_fully_verified")
         result = {
             "retrieval_id": record.get("retrieval_id"),
-            "source_type": record.get("source_type") or ("question" if self.manifest.get("collection") == "question_public" else ""),
-            "authority_level": record.get("authority_level"),
+            "document_id": record.get("document_id") or record.get("retrieval_id"),
+            "parent_id": record.get("parent_id") or "",
+            "source_type": source_type,
+            "authority_level": verification.get("authority_level") or record.get("authority_level") or "学习资源",
+            "allowed_usage": allowed_usage,
             "title": record.get("title") or record.get("subject") or "",
+            "source_title": record.get("title") or record.get("subject") or "",
+            "document_number": verification.get("document_number") or "",
             "article_ref": record.get("article_ref") or "",
             "section_title": record.get("section_title") or "",
             "quote": record.get("content") or record.get("retrieval_text") or "",
-            "effective_date": record.get("effective_date") or "",
-            "effective_status": record.get("effective_status") or "",
-            "source_url": record.get("source_url") or "",
+            "issuing_authority": verification.get("issuing_authority") or record.get("issuing_authority") or "",
+            "promulgated_date": verification.get("promulgated_date") or record.get("promulgated_date") or "",
+            "effective_date": verification.get("effective_date") or record.get("effective_date") or "",
+            "revision_date": verification.get("revision_date") or "",
+            "expiry_date": verification.get("expiry_date") or "",
+            "effective_status": effective_status,
+            "version": verification.get("version") or record.get("source_snapshot_id") or "",
+            "official_source_url": verification.get("official_source_url") or record.get("source_url") or "",
+            "source_url": verification.get("official_source_url") or record.get("source_url") or "",
+            "verification_method": verification.get("verification_method") or "local_index_metadata",
+            "verification_status": verification.get("verification_status") or "unresolved",
             "source_use": source_use,
-            "governance_status": governance,
+            "risk_flags": list(dict.fromkeys(risk_flags)),
+            "source_snapshot_id": record.get("source_snapshot_id") or "",
+            "content_sha256": record.get("content_sha256") or "",
             "scores": scores,
         }
         if parent:
@@ -156,11 +223,13 @@ class HybridRagRetriever:
         index_root: Path,
         corpus_root: Path,
         client: SiliconFlowClient,
+        verification_path: Path | None = None,
         cache_size: int = 128,
     ) -> None:
         self.index_root = Path(index_root)
         self.corpus_root = Path(corpus_root)
         self.client = client
+        self.verification_path = Path(verification_path) if verification_path else None
         self.cache_size = max(1, cache_size)
         self._collections: dict[str, HybridCollection] = {}
         self._embedding_cache: OrderedDict[str, list[float]] = OrderedDict()
@@ -173,6 +242,7 @@ class HybridRagRetriever:
             self._collections[name] = HybridCollection(
                 self.index_root / name,
                 case_parent_path=(self.corpus_root / "case_parents.jsonl") if name == "legal_authority" else None,
+                verification_path=self.verification_path if name == "legal_authority" else None,
             )
         return self._collections[name]
 
@@ -190,6 +260,76 @@ class HybridRagRetriever:
             while len(self._embedding_cache) > self.cache_size:
                 self._embedding_cache.popitem(last=False)
         return vector
+
+    def resolve_source(
+        self,
+        *,
+        title: str,
+        article_ref: str = "",
+        source_type: str = "",
+        top_k: int = 5,
+    ) -> list[dict[str, Any]]:
+        """Deterministically resolve a cited source without model/API calls."""
+
+        title_aliases = _title_aliases(title)
+        normalized_article = _normalize(article_ref)
+        if not title_aliases:
+            return []
+        if source_type in {"textbook_explanation"}:
+            collections = ["textbook_explanation"]
+        elif source_type in {"learning_resource", "question"}:
+            collections = ["question_public"]
+        else:
+            collections = ["legal_authority", "textbook_explanation", "question_public"]
+        matches: list[dict[str, Any]] = []
+        seen: set[tuple[str, str]] = set()
+        for collection_name in collections:
+            collection = self.collection(collection_name)
+            candidate_indices = sorted(
+                {
+                    index
+                    for alias in title_aliases
+                    for index in collection.indices_by_title.get(alias, [])
+                }
+            )
+            for index in candidate_indices:
+                record = collection.records[index]
+                record_title = record.get("title") or record.get("subject") or ""
+                aliases = _title_aliases(record_title)
+                if not (title_aliases & aliases):
+                    continue
+                if normalized_article and _normalize(record.get("article_ref")) != normalized_article:
+                    continue
+                projected = collection.project(
+                    index,
+                    {
+                        "bm25f": 0.0,
+                        "dense_cosine": 0.0,
+                        "rrf": 0.0,
+                        "reranker": None,
+                        "exact_article_protected": bool(normalized_article),
+                    },
+                )
+                if source_type:
+                    requested = source_type.lower()
+                    actual = str(projected.get("source_type") or "").lower()
+                    aliases_by_type = {
+                        "司法解释": {"judicial_interpretation", "judicial_normative_document"},
+                        "案例": {"guiding_case", "typical_case"},
+                        "教材": {"textbook_explanation"},
+                        "题目": {"learning_resource", "question"},
+                    }
+                    allowed = aliases_by_type.get(source_type, {requested})
+                    if actual not in allowed:
+                        continue
+                key = (str(projected.get("document_id") or ""), str(projected.get("parent_id") or normalized_article))
+                if key in seen:
+                    continue
+                seen.add(key)
+                matches.append(projected)
+                if len(matches) >= max(1, int(top_k)):
+                    return matches
+        return matches
 
     def search(
         self,
@@ -308,15 +448,25 @@ def public_search_result(value: dict[str, Any]) -> dict[str, Any]:
             {
                 "source_type": result.get("source_type") or "资料",
                 "authority_level": result.get("authority_level") or "层级待复核",
+                "allowed_usage": result.get("allowed_usage") or [],
                 "title": result.get("title") or "",
+                "document_number": result.get("document_number") or "",
                 "article_ref": result.get("article_ref") or "",
                 "section_title": result.get("section_title") or "",
                 "quote": result.get("quote") or "",
                 "parent_context": result.get("parent_context"),
+                "issuing_authority": result.get("issuing_authority") or "",
+                "promulgated_date": result.get("promulgated_date") or "",
                 "effective_date": result.get("effective_date") or "",
+                "expiry_date": result.get("expiry_date") or "",
                 "effective_status": result.get("effective_status") or "",
-                "source_url": result.get("source_url") or "",
+                "version": result.get("version") or "",
+                "official_source_url": result.get("official_source_url") or "",
+                "source_url": result.get("official_source_url") or result.get("source_url") or "",
+                "verification_method": result.get("verification_method") or "",
+                "verification_status": result.get("verification_status") or "",
                 "source_use": result.get("source_use") or "使用前请复核",
+                "risk_flags": result.get("risk_flags") or [],
             }
         )
     return {

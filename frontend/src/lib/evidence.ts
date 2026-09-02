@@ -20,6 +20,17 @@ export interface EvidenceLike {
   source_bundle_sha256?: string;
   local_source_sha256?: string;
   risk_flags?: string[];
+  allowed_usage?: string[];
+  document_number?: string;
+  parent_context?: EvidenceReference["parent_context"];
+  issuing_authority?: string;
+  promulgated_date?: string;
+  effective_date?: string;
+  expiry_date?: string;
+  official_source_url?: string;
+  verification_method?: string;
+  verification_status?: string;
+  source_use?: string;
 }
 
 export function toEvidenceReference(value: EvidenceLike, fallbackId = "evidence"): EvidenceReference {
@@ -38,6 +49,17 @@ export function toEvidenceReference(value: EvidenceLike, fallbackId = "evidence"
     source_snapshot_id: String(value.source_snapshot_id || ""),
     sha256: String(value.sha256 || value.source_bundle_sha256 || value.local_source_sha256 || ""),
     risk_flags: Array.isArray(value.risk_flags) ? value.risk_flags.map(String) : [],
+    allowed_usage: Array.isArray(value.allowed_usage) ? value.allowed_usage.map(String) : [],
+    document_number: String(value.document_number || ""),
+    parent_context: value.parent_context ?? null,
+    issuing_authority: String(value.issuing_authority || ""),
+    promulgated_date: String(value.promulgated_date || ""),
+    effective_date: String(value.effective_date || value.effective_from || ""),
+    expiry_date: String(value.expiry_date || ""),
+    official_source_url: String(value.official_source_url || value.source_url || ""),
+    verification_method: String(value.verification_method || ""),
+    verification_status: String(value.verification_status || ""),
+    source_use: String(value.source_use || ""),
   };
 }
 

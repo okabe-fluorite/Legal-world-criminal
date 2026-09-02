@@ -569,6 +569,17 @@ export interface EvidenceReference {
   source_snapshot_id: string;
   sha256: string;
   risk_flags: string[];
+  allowed_usage: string[];
+  document_number: string;
+  parent_context?: { title?: string; section_type?: string; section_title?: string; content?: string } | null;
+  issuing_authority: string;
+  promulgated_date: string;
+  effective_date: string;
+  expiry_date: string;
+  official_source_url: string;
+  verification_method: string;
+  verification_status: string;
+  source_use: string;
 }
 
 export interface TypicalQuestionCase {

@@ -13,6 +13,7 @@ from .siliconflow import SiliconFlowClient
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_INDEX_ROOT = REPO_ROOT / ".codex-artifacts" / "hybrid-rag-index-v1"
 DEFAULT_CORPUS_ROOT = REPO_ROOT / ".codex-artifacts" / "hybrid-rag-corpus-v1"
+DEFAULT_VERIFICATION_PATH = REPO_ROOT / "data_governance" / "OFFICIAL_SOURCE_VERIFICATION_V1.jsonl"
 TRUE_VALUES = {"1", "true", "yes", "on", "enabled"}
 
 
@@ -48,7 +49,15 @@ def get_hybrid_rag_retriever() -> HybridRagRetriever | None:
         reranker_url=reranker_url,
         reranker_model=reranker_model,
     )
-    return HybridRagRetriever(index_root=index_root, corpus_root=corpus_root, client=client)
+    verification_path = Path(
+        os.environ.get("SIMLAW_OFFICIAL_VERIFICATION_PATH") or DEFAULT_VERIFICATION_PATH
+    )
+    return HybridRagRetriever(
+        index_root=index_root,
+        corpus_root=corpus_root,
+        client=client,
+        verification_path=verification_path,
+    )
 
 
 def clear_hybrid_rag_runtime_cache() -> None:

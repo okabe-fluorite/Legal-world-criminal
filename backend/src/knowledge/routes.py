@@ -19,11 +19,13 @@ class KnowledgeSearchBody(BaseModel):
     top_k: int = Field(default=5, ge=1, le=10)
     knowledge_ids: list[str] = Field(default_factory=list, max_length=20)
     key_judgments: list[str] = Field(default_factory=list, max_length=10)
+    collections: list[str] = Field(default_factory=lambda: ["legal_authority"], max_length=3)
 
 
 class CitationItem(BaseModel):
     title: str = Field(min_length=1, max_length=128)
-    article_ref: str = Field(min_length=1, max_length=64)
+    article_ref: str = Field(default="", max_length=64)
+    source_type: str = Field(default="", max_length=64)
     quote: str = Field(default="", max_length=5000)
     claim: str = Field(default="", max_length=5000)
 
