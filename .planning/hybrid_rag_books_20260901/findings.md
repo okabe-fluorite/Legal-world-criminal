@@ -42,4 +42,5 @@
 - Guizang瑞士风V3更新为13页/13种登记版式，新增独立S07 Hybrid RAG候选消融页；只展示最终R4和必要对照，不平铺内部ORCDF三版。
 - V3网页验证：13页、overflow 0、图片失败0、console/page/request错误0；首轮模型接口蓝色栏文字贴边已修复并复验。最终PPTX 1,640,817字节，PowerPoint实开/13页回渲染成功，最大平均像素差1.824442，缩略图无裁切/错页/缺页。
 - PPTX是13张1600×900验收图组成的16:9提交预览，每页恰好1张全页图；可编辑源为同目录`slides.html`+`index.html`。未在可见页面出现SHA或机器状态码。
+- README和离线演示说明仍残留用户已否定的`--sync-env-from <外部配置文件路径>`，并错误声称OpenCode优先、Hybrid调用0；已改为直接复制/填写本地`.env`、火山引擎主路由与57,051条真实索引现状。
 - 计划文档：`docs/HYBRID_RAG_BOOKS_QUESTIONS_PLAN.md`。

@@ -20,7 +20,7 @@ Xinference、Ollama 网关或云端微调模型。
 | `closing_summary` | 单案结案反馈 |
 | `eval` | 离线评测裁判 |
 
-默认全部使用 `.env` 中的 `OPENAI_*` 主模型。微调小模型只接管显式列出的任务：
+默认优先使用`.env`中的`SIMLAW_PRIMARY_MODEL_*`主模型，也兼容旧`OPENAI_*`。微调小模型只接管显式列出的任务：
 
 ```dotenv
 SIMLAW_SMALL_MODEL_API_KEY=local-or-hosted-key
@@ -39,16 +39,16 @@ SIMLAW_MODEL_TEACHING_JUDGE_API_KEY=local-key
 SIMLAW_MODEL_TEACHING_JUDGE_TIMEOUT_SECONDS=180
 ```
 
-优先级为：调用方显式值 > 单任务配置 > 小模型任务列表 > `OPENAI_*`主模型。
+优先级为：调用方显式值 > 单任务配置 > 小模型任务列表 > `SIMLAW_PRIMARY_MODEL_*` > 旧`OPENAI_*`主模型。
 
-## OpenCode优先与DeepSeek官方自动回退
+## OpenAI兼容主网关与DeepSeek官方自动回退
 
 可同时配置主端点和fallback：
 
 ```dotenv
-OPENAI_API_BASE_URL=https://opencode.ai/zen/go/v1
-OPENAI_API_KEY=...
-OPENAI_MODEL_NAME=deepseek-v4-flash
+SIMLAW_PRIMARY_MODEL_API_BASE_URL=https://ark.cn-beijing.volces.com/api/coding/v3
+SIMLAW_PRIMARY_MODEL_API_KEY=...
+SIMLAW_PRIMARY_MODEL_NAME=deepseek-v4-flash
 
 SIMLAW_FALLBACK_MODEL_API_BASE_URL=https://api.deepseek.com
 SIMLAW_FALLBACK_MODEL_API_KEY=...
@@ -57,7 +57,7 @@ SIMLAW_FALLBACK_MODEL_TIMEOUT_SECONDS=180
 SIMLAW_FALLBACK_CIRCUIT_SECONDS=900
 ```
 
-正常请求始终优先OpenCode。只有429/用量窗口、502—504、超时和连接中断等瞬态错误才自动回退；第一次失败后按主端点主机开启进程内共享熔断，避免每个新Agent重复撞限流。401、400、模型名错误等配置问题不会被fallback静默掩盖。`GET /api/model/catalog`只展示主/备模型名、端点主机、是否配置和熔断状态，不返回Key或URL私有路径。
+当前演示环境优先火山引擎Ark。只有429、明确的`CreditsError/Insufficient balance`、502—504、超时和连接中断等瞬态错误才自动回退；第一次失败后按主端点主机开启进程内共享熔断，避免每个新Agent重复撞限流。普通401无效Key、400和模型名错误不会被fallback静默掩盖。`GET /api/model/catalog`只展示主/备模型名、端点主机、是否配置和熔断状态，不返回Key或URL私有路径。
 
 要为单任务指定不同fallback，可配置`SIMLAW_MODEL_<TASK>_FALLBACK_NAME`、`_FALLBACK_API_BASE_URL`、`_FALLBACK_API_KEY`和`_FALLBACK_TIMEOUT_SECONDS`。
 

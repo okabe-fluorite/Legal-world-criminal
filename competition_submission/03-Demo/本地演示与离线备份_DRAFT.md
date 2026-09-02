@@ -12,15 +12,14 @@
 在仓库根目录执行：
 
 ```powershell
-# 首次准备：从外部配置按白名单生成仓库本地 .env
-uv run --isolated --with-requirements requirements.lock.txt -- `
-  python start.py --sync-env-from "<外部配置文件路径>"
+# 首次准备：复制模板并只在本机填写 .env
+Copy-Item .env.example .env
 
-# 后续每次直接使用仓库 .env 启动
+# 每次直接使用仓库 .env 启动
 uv run --isolated --with-requirements requirements.lock.txt -- python start.py
 ```
 
-同步命令只写入Git忽略的`.env`白名单；`.env`不录屏、不提交Git。OpenCode为优先端点，DeepSeek官方仅在瞬态故障时fallback。若只回放离线快照，可不触发新的模型调用，但必须在讲解中说明“真实E2E审计快照”。
+`.env`不录屏、不提交Git。当前演示环境以火山引擎Ark为基线端点，DeepSeek官方仅在明确额度耗尽或其他瞬态故障时回退。若只回放离线快照，可不触发新的模型调用，但必须在讲解中说明“真实E2E审计快照”。
 
 该命令会持续占用第一个PowerShell窗口。以下健康检查、教师授权和浏览器录制均在第二个PowerShell窗口执行。
 

@@ -23,16 +23,15 @@
 推荐直接本地启动完整效果，不需要Docker：
 
 ```powershell
-# 首次使用（可选）：把外部配置按白名单写入本地、Git 忽略的 .env
-uv run --isolated --with-requirements requirements.lock.txt -- `
-  python start.py --sync-env-from "<外部配置文件路径>"
+# 首次使用：复制模板，在本地 .env 填写模型、SiliconFlow和讯飞配置
+Copy-Item .env.example .env
 
-# 之后直接从仓库 .env 启动
+# 后续直接从仓库 .env 启动
 uv run --isolated --with-requirements requirements.lock.txt -- `
   python start.py
 ```
 
-首次命令只复制模型、讯飞和JWT运行所需的白名单键，不复制无关字段；也可以直接从`.env.example`复制出`.env`后手工填写。后续命令使用本地`.env`启动完整SQLite、backend、adaptive与Vite前端。正常优先OpenCode，429/用量窗口/服务暂不可用时自动回退DeepSeek官方API。密钥不打印、不提交仓库；访问`http://127.0.0.1:5173`，按`Ctrl+C`停止。
+启动器直接读取本地`.env`，启动SQLite、backend、adaptive与Vite前端。当前演示环境使用火山引擎Ark的OpenAI兼容端点作为基线，DeepSeek官方API作为明确额度耗尽或其他瞬态故障的回退；普通401无效密钥、400和模型名错误不会被静默掩盖。密钥不打印、不提交仓库；访问`http://127.0.0.1:5173`，按`Ctrl+C`停止。
 
 本地SQLite启用WAL和30秒busy timeout；密码哈希在写事务前完成，短注册事务仅对`database is locked`做有界退避；sandbox记录先提交再初始化seed文件。学生与教师同时首次注册/建sandbox已通过真实并发浏览器门禁，不需要为本地试用换Docker/PostgreSQL。
 
@@ -43,7 +42,7 @@ uv run --isolated --with-requirements requirements.lock.txt -- `
 本地测试：
 
 ```powershell
-# 若尚未执行上面的同步命令，也可以从仓库模板复制后手工填写
+# 从仓库模板复制后手工填写本地配置
 Copy-Item .env.example .env
 uv venv .venv --python 3.11
 uv pip install --python .venv\Scripts\python.exe -r requirements.lock.txt
@@ -75,8 +74,8 @@ Compose包含PostgreSQL、后端、自适应服务和Nginx前端。前端容器�
 
 ## 主模型、微调小模型与自适应服务
 
-- 主模型继续使用`OPENAI_*`配置。
-- 主模型可配置为OpenCode，`SIMLAW_FALLBACK_MODEL_*`配置DeepSeek官方API；仅瞬态错误自动回退并共享熔断。
+- 主模型优先使用`SIMLAW_PRIMARY_MODEL_*`配置，也兼容旧`OPENAI_*`；当前本地演示选择火山引擎Ark。
+- `SIMLAW_FALLBACK_MODEL_*`配置DeepSeek官方API；仅明确额度耗尽或其他瞬态错误自动回退并共享熔断。
 - 微调/本地小模型通过统一Model Adapter按任务灰度接入，不需要修改Agent业务代码。
 - `GET /api/model/catalog`可查看脱敏路由状态。
 - 精学模块产出`learning-event-v2`，先幂等写入数据库，再可选推送EduBrain自适应服务。
@@ -105,7 +104,7 @@ Compose包含PostgreSQL、后端、自适应服务和Nginx前端。前端容器�
 
 EvidencePack中的检索相关性和coverage只是待语义审核候选，不等于法条支持某个法律论断。三个Schema、答案隔离和构建规则见[`docs/KNOWLEDGE_CONTRACTS.md`](docs/KNOWLEDGE_CONTRACTS.md)。
 
-全库Hybrid RAG数据底座已完成离线canonical与分块：2,024个法律/行政法规/司法文件/案例候选形成54,463个检索块；案例采用整案→1,591个语义父段→1,599个检索子块；JEC-QA教材形成1,404个解释块；30客观题、13主观题和1,141道JEC-QA刑法题形成1,184组严格隔离的public/private记录。运行时目标固定为`BM25F + Qwen3-Embedding-8B → RRF → Reranker`，并保留Reranker→RRF、Embedding→BM25F降级和精确条号保护。当前Embedding/Reranker仍为0调用，尚未形成检索效果结论；构建器、Schema和公开hash审计见[`docs/HYBRID_RAG_BOOKS_QUESTIONS_PLAN.md`](docs/HYBRID_RAG_BOOKS_QUESTIONS_PLAN.md)与[`docs/HYBRID_RAG_CORPUS_V1_AUDIT.md`](docs/HYBRID_RAG_CORPUS_V1_AUDIT.md)。
+全库Hybrid RAG已完成真实构建和运行时接入：2,024个法律/行政法规/司法文件/案例候选形成54,463个检索块；案例采用整案→1,591个语义父段→1,599个检索子块；JEC-QA教材形成1,404个解释块；1,184道公开题用于相似题检索，私有答案层明确不做Embedding。三库共57,051条1024维float16向量和对应SQLite词法索引，运行时为`BM25F + Qwen3-Embedding-8B → RRF → 精确条号/弃权保护 → Qwen3-Reranker-8B`。Embedding失败降级BM25F，Reranker失败降级保护后的RRF；案例命中子块后回填语义父段。120条自动候选qrels上的最终候选Recall@5为0.86、无答案误返回率为0，但教师复核仍为0，不能称正式检索准确率。报告见[`docs/HYBRID_RAG_INDEX_V1_REPORT.md`](docs/HYBRID_RAG_INDEX_V1_REPORT.md)、[`docs/HYBRID_RAG_ABLATION_V1.md`](docs/HYBRID_RAG_ABLATION_V1.md)和[`docs/HYBRID_RAG_SILICONFLOW_PROBE.md`](docs/HYBRID_RAG_SILICONFLOW_PROBE.md)。
 
 ## 预习与复习服务端闭环
 
