@@ -18,4 +18,8 @@
 - 阶段3已真实生成120条qrels候选和180对NLI候选；qrels覆盖精确条号24、司法文件16、案例父子段20、教材20、相似题20、无答案20，NLI三类各60。全部保持待教师复核，人工Gold为0。
 - SiliconFlow配置段存在两个重复`model=`键；通用解析会覆盖前一个模型。启动器现按命名段保留重复键并分别映射Embedding与Reranker配置，显式本地环境变量仍优先。
 - 用户再次确认：普通用户不需要SHA、内部审计和门禁术语；后续检索trace、索引manifest和探针报告只供开发/技术材料使用，产品界面仅显示有助理解和追溯的来源信息。
+- 2026-09-02核对SiliconFlow国内官方文档：Embedding为`POST https://api.siliconflow.cn/v1/embeddings`，Qwen3-Embedding-8B支持批量字符串、`encoding_format=float`和1024维；Rerank为`POST https://api.siliconflow.cn/v1/rerank`，Qwen3-Reranker-8B支持`instruction`、`top_n`、`return_documents`，新版token用量位于`meta.tokens`。实现同时兼容旧版顶层`tokens`。
+- 官方文档来源：`https://api-docs.siliconflow.cn/docs/api/embeddings-post`、`https://api-docs.siliconflow.cn/docs/api/rerank-post`。
+- SiliconFlow阶段4真实结果：国内官方端点完成300块Embedding（六类各50、19请求、1024维、p50 1184ms、p95 4332ms、65,572输入token）和30次Rerank（每次8候选、Top5、p50 606ms、p95 1161ms、80,649输入token），错误0。
+- 30个自动qrels候选的positive@1/@5均为1.0，但qrels尚未教师复核，所以只能称候选行为探针，不能作为正式Recall/NDCG或专家准确率。
 - 计划文档：`docs/HYBRID_RAG_BOOKS_QUESTIONS_PLAN.md`。

@@ -1,0 +1,49 @@
+{
+  "schema_version": "hybrid-rag-siliconflow-public-probe-v1",
+  "run_time": "2026-09-02T08:18:50Z",
+  "status": "succeeded",
+  "embedding": {
+    "provider": "SiliconFlow",
+    "endpoint_host": "api.siliconflow.cn",
+    "model": "Qwen/Qwen3-Embedding-8B",
+    "input_count": 300,
+    "request_count": 19,
+    "strata": {
+      "law": 50,
+      "regulation": 50,
+      "judicial_interpretation": 50,
+      "case_child": 50,
+      "textbook": 50,
+      "question_public": 50
+    },
+    "vector_dimension": 1024,
+    "all_vectors_finite": true,
+    "latency_ms": {
+      "mean": 1655.175,
+      "p50": 1184.013,
+      "p95": 4331.562,
+      "max": 4679.674
+    },
+    "prompt_tokens": 65572
+  },
+  "reranker": {
+    "provider": "SiliconFlow",
+    "endpoint_host": "api.siliconflow.cn",
+    "model": "Qwen/Qwen3-Reranker-8B",
+    "query_count": 30,
+    "request_count": 30,
+    "documents_per_query": 8,
+    "top_n": 5,
+    "candidate_positive_at_1": 1.0,
+    "candidate_positive_at_5": 1.0,
+    "latency_ms": {
+      "mean": 715.158,
+      "p50": 606.379,
+      "p95": 1161.192,
+      "max": 1177.932
+    },
+    "input_tokens": 80649
+  },
+  "errors": [],
+  "evidence_boundary": "API compatibility and automatically generated candidate-template behavior only; retrieval relevance still requires legal-teacher review."
+}

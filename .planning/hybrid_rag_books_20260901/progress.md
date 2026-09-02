@@ -21,3 +21,6 @@
 - 新增两份Schema、模板构建器和专项测试；本地启动配置可从同一SiliconFlow段分别读取Embedding与Reranker模型且不覆盖显式环境变量。
 - `test_local_start`与`test_hybrid_rag_eval_templates`共7项通过；下一步进入真实API最小探针，再扩到200—500块分层探针。
 - 按最新产品原则，SHA与内部门禁仅保留在开发证据中，普通用户界面不展示；非关键质量提醒不得阻塞整体任务。
+- SiliconFlow首次6段/3组最小探针未成功：配置`.ai`路径失败后全球`.com`返回401；未泄漏或改写密钥。根据用户提供的国内官方文档，下一次改为优先尝试`.cn`。
+- 调整为国内`.cn`优先后最小探针成功；随后完成300块分层Embedding和30组Rerank真实探针，49次请求全部成功，公开脱敏结果写入`docs/HYBRID_RAG_SILICONFLOW_PROBE.*`。
+- 阶段4完成，进入阶段5三库向量索引；用户界面仍不展示内部hash、trace或机器状态码。
