@@ -1,6 +1,6 @@
 {
   "schema": "effect-report-evidence-index-v1",
-  "source_git_commit": "e29ff2cdb3d6a3cf1a255cf61c3ad356ce5c5ccb",
+  "source_git_commit": "e3542df23c54e3a081e579f1ec042ad759eba878",
   "sources": [
     {
       "id": "frozen",
@@ -29,14 +29,14 @@
     {
       "id": "web_ppt",
       "path": "competition_submission/04-作品方案/guizang-tech-v2/qa/report.json",
-      "bytes": 5485,
-      "sha256": "792c511647bed2165302b30e1cc830c054d20a302f6d6452546061241ca29e71"
+      "bytes": 5490,
+      "sha256": "965e5c844400497106226691e415f8d774e2978ca787bb81f76142028f71f748"
     },
     {
       "id": "pptx",
       "path": "competition_submission/04-作品方案/guizang-tech-v2/qa/pptx-report.json",
-      "bytes": 5602,
-      "sha256": "c215d7f913322738b5377c58be6d50b571d861a57ba07cbadfae52ded9eebe1b"
+      "bytes": 5600,
+      "sha256": "4000af4fa1847f1e120b0238f93ac754ceb5815bcb9cf216316cdc9a7fc04f91"
     },
     {
       "id": "hybrid_index",

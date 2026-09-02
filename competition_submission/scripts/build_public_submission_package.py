@@ -46,6 +46,10 @@ REQUIRED_SOURCE_ENTRIES = {
     "adaptive_service/requirements.txt",
     "adaptive_service/src/edubrain_adaptive/api.py",
     "schemas/evidence-pack-v1.schema.json",
+    "backend/src/hybrid_rag/retriever.py",
+    "backend/src/hybrid_rag/vector_index.py",
+    "backend/scripts/build_hybrid_rag_vector_indexes.py",
+    "docs/HYBRID_RAG_ABLATION_V1.md",
     "competition_submission/scripts/build_narrated_demo.py",
 }
 
@@ -77,7 +81,7 @@ def source_allowed(path: Path) -> bool:
         return False
     if value.startswith("competition_submission/"):
         return value.startswith("competition_submission/scripts/")
-    if value.startswith((".git/", ".claude/", ".codex-artifacts/", "tmp/")):
+    if value.startswith((".git/", ".claude/", ".planning/", ".codex-artifacts/", "tmp/")):
         return False
     return True
 

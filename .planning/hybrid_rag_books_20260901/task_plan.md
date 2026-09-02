@@ -93,3 +93,5 @@
 | 从仓库根误运行Guizang相对路径build/validator | 1 | 未改文件；切回deck目录按原脚本约定运行，不再重复错误cwd |
 | 项目.venv重建效果报告缺少pypdf | 1 | 不修改项目依赖；改用Codex工作区文档Python执行报告构建 |
 | 公开包缺旧视频审片25帧接触表而停止 | 1 | 视频V3尚待确认且接触表非核心赛题交付；改为存在则纳入，核心PPT/视频/报告/伦理/源码仍保持缺失阻断 |
+| 首次PPT批注提交命令的中文引号被Git误解析为pathspec | 1 | 暂存内容未丢失；改用PowerShell单引号消息重试并成功提交 |
+| 公开包覆盖旧ZIP时Windows返回Invalid argument | 1 | 效果报告已成功；把旧DRAFT ZIP非破坏性移到tmp留存，解除目标占用后再生成 |

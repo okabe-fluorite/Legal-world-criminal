@@ -1,12 +1,12 @@
 {
   "schema": "xh-202620-public-submission-draft-manifest-v1",
-  "source_git_commit": "313d2fab804d2526cf4625cf603b4ff5845c63ee",
+  "source_git_commit": "e3542df23c54e3a081e579f1ec042ad759eba878",
   "package_build_date": "2026-08-30",
   "files": [
     {
-      "path": "01-作品方案/星火智学_作品方案_Guizang_DRAFT.pptx",
-      "bytes": 1501286,
-      "sha256": "9717389ec3c4728508594d6926574a52cdde8887418411afe47a577f5d49564d"
+      "path": "01-作品方案/星火智学_作品方案_技术主线V3_DRAFT.pptx",
+      "bytes": 1663471,
+      "sha256": "a66c8853f96b8d89d80537521a8427c52caa829b2961c1e3a121587db58ca5b8"
     },
     {
       "path": "02-演示视频/星火智学_真实交互演示_AI配音_DRAFT.mp4",
@@ -15,13 +15,13 @@
     },
     {
       "path": "03-效果验证/EVIDENCE_INDEX.json",
-      "bytes": 3331,
-      "sha256": "6754ccdc0640696420427e88a6c1df7afc41e5b282cbc12efc6aba363ba253bd"
+      "bytes": 3959,
+      "sha256": "d20d6c7d381183fa2ea59a84d9f2083a0e97e3312bdefe06ed7d84aa1412c47e"
     },
     {
       "path": "03-效果验证/星火智学效果验证报告_DRAFT.pdf",
-      "bytes": 266871,
-      "sha256": "e9a36e228dd58f5ed1f4f68f0a5342cb40c4cb7fbb676d782a7aec4282bc5860"
+      "bytes": 276609,
+      "sha256": "3d45f390483274a4065571a1423fc82ec1e318c766e2cc34aa53bbb4c39b6f39"
     },
     {
       "path": "04-伦理与安全/伦理与安全合规声明正文.pdf",
@@ -35,13 +35,8 @@
     },
     {
       "path": "05-代码/LegalWorld-星火智学-源码_DRAFT.zip",
-      "bytes": 14745135,
-      "sha256": "a035bf88d7771bee84c4dbd400d814e443983ddfa4525262db605478d2035e2f"
-    },
-    {
-      "path": "06-公开审计/25帧视觉接触表.png",
-      "bytes": 1377277,
-      "sha256": "ba3e65a627d11609c1e189137e1022143e71a1e5999e3a31527e347887eeeb7a"
+      "bytes": 16114546,
+      "sha256": "f795f9b51d6884ea65ff8285177565af9c7b831ce30c6a42c72b087e4dd2a40e"
     },
     {
       "path": "06-公开审计/FROZEN_DEMO_AUDIT.json",
@@ -60,8 +55,8 @@
     },
     {
       "path": "06-公开审计/NARRATED_VIDEO_DRAFT_AUDIT.json",
-      "bytes": 8697,
-      "sha256": "7baf68482053824d4365d144646d7c8504e8bfef57319b64fad06c4141272927"
+      "bytes": 12180,
+      "sha256": "d9f7408ae065bfc6ee5ccc91de5317242e10bbecf4f21cc84054baa135d5d8cd"
     },
     {
       "path": "06-公开审计/THREE_ROUTE_REHEARSAL_AUDIT.json",
@@ -86,7 +81,7 @@
     {
       "path": "06-公开审计/效果验证报告包_MANIFEST_DRAFT.md",
       "bytes": 2151,
-      "sha256": "bf6b0ca3ad6a3cbd9ca7a50efb338ef1c5a7e2236cadd840614163675ca1120d"
+      "sha256": "4d812c97d5309818fcacd2e15326331d1d8abb76d981e1947c7cf70df2414e4f"
     },
     {
       "path": "06-公开审计/目标用户试用包_MANIFEST_DRAFT.md",
@@ -95,18 +90,33 @@
     },
     {
       "path": "06-公开审计/视频审片包_MANIFEST_DRAFT.md",
-      "bytes": 2031,
-      "sha256": "f8632486a9dfae0c83d8f108e86f013e0596f0ee45627aa1856ee2c7e388a9e5"
+      "bytes": 2067,
+      "sha256": "524073cb325a9f48d1462bc98700b759d84233b66321302d327e9ee6aa743fc3"
     },
     {
       "path": "06-公开审计/视频技术审计与时间轴.pdf",
-      "bytes": 132276,
-      "sha256": "9a127098c531f543067b1b30920acb51a90704a266b971d261e8e2e6b49a2c06"
+      "bytes": 154099,
+      "sha256": "301e9513b6de08d9a1c37affe41a04806c9f57d46b5ecae13f141143d735c70c"
+    },
+    {
+      "path": "06-公开说明/HYBRID_RAG_ABLATION_V1.md",
+      "bytes": 2274,
+      "sha256": "666030fd21c9f607d4792d8601282ddfb404b3a4a3a81935d84e76a6bda91fba"
+    },
+    {
+      "path": "06-公开说明/HYBRID_RAG_INDEX_V1_REPORT.md",
+      "bytes": 1827,
+      "sha256": "ed24e9c22cd4cf8dfaa64e5f1c6d21c7aee8a6857a39fa67564188c495a27f75"
+    },
+    {
+      "path": "06-公开说明/HYBRID_RAG_NLI_TRIAGE_V1.md",
+      "bytes": 959,
+      "sha256": "a1bb008bbe0ecbcaa1c876084a5b0c86db3eeb33e7a73688f0b0e93e1ab57876"
     }
   ],
   "source_code": {
-    "entry_count": 407,
-    "sha256": "a035bf88d7771bee84c4dbd400d814e443983ddfa4525262db605478d2035e2f",
+    "entry_count": 513,
+    "sha256": "f795f9b51d6884ea65ff8285177565af9c7b831ce30c6a42c72b087e4dd2a40e",
     "sanitized_env": true
   },
   "pending": {

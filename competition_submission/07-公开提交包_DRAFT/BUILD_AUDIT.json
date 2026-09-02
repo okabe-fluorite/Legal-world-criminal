@@ -1,14 +1,14 @@
 {
   "schema": "xh-202620-public-submission-draft-build-audit-v1",
-  "source_git_commit": "313d2fab804d2526cf4625cf603b4ff5845c63ee",
+  "source_git_commit": "e3542df23c54e3a081e579f1ec042ad759eba878",
   "package_file": "星火智学_XH-202620_公开提交包_DRAFT.zip",
-  "package_bytes": 27727682,
-  "package_sha256": "6c72e9d91443c6da0c109d1a3bda8e0a80bf808c51507c1b4475e87ac2bc76a2",
-  "package_entry_count": 22,
-  "total_uncompressed_bytes": 28073961,
+  "package_bytes": 27916769,
+  "package_sha256": "e6f2199d731f47dd3ec92751b22452b724edc1aea6ebb19d4e40a12a7955ed43",
+  "package_entry_count": 24,
+  "total_uncompressed_bytes": 28269048,
   "under_100_mb": true,
   "source_code_scan": {
-    "entry_count": 407,
+    "entry_count": 513,
     "forbidden_entries": [],
     "private_path_hits": [],
     "secret_token_hits": [],
@@ -19,13 +19,13 @@
       "school.edu"
     ],
     "disallowed_email_domains": [],
-    "required_entry_count": 11,
+    "required_entry_count": 15,
     "required_entries_missing": [],
     "sanitized_env_present": true,
     "passed": true
   },
   "public_material_scan": {
-    "file_count": 19,
+    "file_count": 21,
     "forbidden_name_hits": [],
     "private_path_hits": [],
     "secret_token_hits": [],
