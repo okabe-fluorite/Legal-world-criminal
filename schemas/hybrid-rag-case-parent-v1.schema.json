@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://legalworld.local/schemas/hybrid-rag-case-parent-v1.schema.json",
+  "title": "Hybrid RAG Case Semantic Parent",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "parent_id",
+    "document_id",
+    "retrieval_tier",
+    "source_type",
+    "title",
+    "section_index",
+    "section_type",
+    "section_title",
+    "content",
+    "source_path",
+    "content_sha256"
+  ],
+  "properties": {
+    "schema_version": { "const": "hybrid-rag-case-parent-v1" },
+    "parent_id": { "type": "string", "pattern": "^RAGP_[A-F0-9]{24}$" },
+    "document_id": { "type": "string", "pattern": "^RAGD_[A-F0-9]{24}$" },
+    "retrieval_tier": { "const": "case_parent_context" },
+    "source_type": { "const": "case" },
+    "title": { "type": "string", "minLength": 1 },
+    "section_index": { "type": "integer", "minimum": 1 },
+    "section_type": { "type": "string", "minLength": 1 },
+    "section_title": { "type": "string", "minLength": 1 },
+    "content": { "type": "string", "minLength": 1 },
+    "source_path": { "type": "string", "pattern": "^laws/output_cases/" },
+    "content_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": true
+}

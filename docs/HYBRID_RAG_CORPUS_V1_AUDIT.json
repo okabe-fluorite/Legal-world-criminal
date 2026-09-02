@@ -1,0 +1,91 @@
+{
+  "schema_version": "hybrid-rag-corpus-public-audit-v1",
+  "generated_at": "2026-09-01T17:20:42.957567+00:00",
+  "snapshot_date": "2026-09-02",
+  "builder": "hybrid-rag-corpus-builder-v1",
+  "counts": {
+    "physical_sources": 2024,
+    "canonical_documents": 2024,
+    "duplicate_sources": 0,
+    "legal_chunks": 54463,
+    "case_parents": 1591,
+    "case_child_chunks": 1599,
+    "textbook_chunks": 1404,
+    "question_public": 1184,
+    "question_private": 1184,
+    "inventory_metadata_documents": 2024
+  },
+  "by_source_type": {
+    "law": 22571,
+    "regulation": 23283,
+    "judicial_interpretation": 7010,
+    "case": 1599
+  },
+  "case_parent_section_types": {
+    "summary": 530,
+    "facts": 530,
+    "rule_reasoning": 459,
+    "case_section": 72
+  },
+  "textbook_by_subject": {
+    "中国特色社会主义法治理论": 23,
+    "刑事诉讼法": 412,
+    "刑法": 404,
+    "司法制度和法律职业道德": 204,
+    "宪法": 158,
+    "法理学": 106,
+    "目录和中国法律史": 97
+  },
+  "question_by_dataset": {
+    "legalworld_product_objective": 30,
+    "CAIL2020_JECQA": 1141,
+    "legalworld_product_subjective": 13
+  },
+  "retrieval_contract": {
+    "sparse": "BM25F",
+    "dense": "Qwen/Qwen3-Embedding-8B_pending_probe",
+    "fusion": "RRF_pending_runtime",
+    "reranker": "required_after_rrf_pending_probe",
+    "exact_article_protection": true,
+    "fallbacks": [
+      "reranker_to_rrf",
+      "embedding_to_bm25f"
+    ]
+  },
+  "output_hashes": {
+    "source_manifest": "244de07da50eae1aa9f61e27679890a6186d1f9780e14d243208d4752bc65635",
+    "canonical_documents": "78c083d2fb8b87bfd7c82f39ebd8385d2fb1e85832afa322833583463ecabd7b",
+    "legal_chunks": "bb3e203d2e99fc6cb2c3dd13d95301902fdff2ac3f846524a73de33500a6459b",
+    "case_parents": "efa5f4188a0ddcb00dd0f06dd25ae35d5184f0f5bd7712eeb90084c44eab0dc4",
+    "textbook_chunks": "ff61a0b2415a61a394ee9032d6b85c1fc45ef464c56d09262a326828d9872567",
+    "question_public": "71411eae9f46af2c12a3369369881faffd72a7cf58840d46a449708f8cd4c096",
+    "question_private": "3ddb5d85c7dae15c576465c6661321f351be17eaec6bea369e69eec2ef2b65d3",
+    "audit": "f038500d2c4669b37e3a35799881bce64d8638dec51f4467021839fda329e8b5"
+  },
+  "gates": {
+    "source_accounting_exact": true,
+    "canonical_document_ids_unique": true,
+    "inventory_metadata_all_or_none": true,
+    "legal_chunk_ids_unique": true,
+    "case_parent_ids_unique": true,
+    "case_children_all_have_parent": true,
+    "case_parent_child_document_match": true,
+    "non_case_chunks_have_no_parent": true,
+    "textbook_chunk_ids_unique": true,
+    "all_chunks_nonempty": true,
+    "question_public_private_ids_match": true,
+    "question_public_private_keys_absent": true,
+    "question_private_embedding_disabled": true,
+    "absolute_paths_absent": true,
+    "model_network_calls_zero": true,
+    "schema_validation_passed": true
+  },
+  "all_passed": true,
+  "execution": {
+    "embedding_calls": 0,
+    "reranker_calls": 0,
+    "model_calls": 0,
+    "network_calls": 0
+  },
+  "evidence_boundary": "canonical and chunk artifacts are retrieval candidates; they do not establish current legal validity, semantic entailment, teacher approval, or learning effects"
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://legalworld.local/schemas/hybrid-rag-textbook-chunk-v1.schema.json",
+  "title": "Hybrid RAG Textbook Explanation Chunk",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "chunk_id",
+    "retrieval_tier",
+    "source_type",
+    "authority_level",
+    "subject",
+    "chapter_title",
+    "section_title",
+    "content",
+    "embed_text",
+    "effective_status",
+    "governance_status",
+    "source_path",
+    "source_file_sha256",
+    "content_sha256"
+  ],
+  "properties": {
+    "schema_version": { "const": "hybrid-rag-textbook-chunk-v1" },
+    "chunk_id": { "type": "string", "pattern": "^RAGT_[A-F0-9]{24}$" },
+    "retrieval_tier": { "const": "textbook_explanation" },
+    "source_type": { "const": "textbook_explanation" },
+    "authority_level": { "const": "教材解释" },
+    "subject": { "type": "string", "minLength": 1 },
+    "chapter_title": { "type": "string", "minLength": 1 },
+    "section_title": { "type": "string", "minLength": 1 },
+    "content": { "type": "string", "minLength": 1 },
+    "embed_text": { "type": "string", "minLength": 1 },
+    "effective_status": { "const": "edition_unknown" },
+    "governance_status": { "const": "teaching_reference_requires_review" },
+    "source_path": { "type": "string", "pattern": "^JEC-QA/reference_book/" },
+    "source_file_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "content_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": true
+}

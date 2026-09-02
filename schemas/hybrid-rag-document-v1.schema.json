@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://legalworld.local/schemas/hybrid-rag-document-v1.schema.json",
+  "title": "Hybrid RAG Canonical Document",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "document_id",
+    "source_type",
+    "authority_level",
+    "title",
+    "effective_status",
+    "governance_status",
+    "source_path",
+    "source_file_sha256",
+    "document_content_sha256",
+    "risk_flags"
+  ],
+  "properties": {
+    "schema_version": { "const": "hybrid-rag-document-v1" },
+    "document_id": { "type": "string", "pattern": "^RAGD_[A-F0-9]{24}$" },
+    "source_type": { "enum": ["law", "regulation", "judicial_interpretation", "case"] },
+    "authority_level": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "effective_status": { "type": "string", "minLength": 1 },
+    "governance_status": { "type": "string", "minLength": 1 },
+    "source_path": { "type": "string", "pattern": "^laws/" },
+    "source_file_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "document_content_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "risk_flags": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}

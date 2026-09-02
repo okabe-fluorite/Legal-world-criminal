@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://legalworld.local/schemas/hybrid-rag-question-private-v1.schema.json",
+  "title": "Hybrid RAG Private Teaching Question",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "question_id",
+    "visibility",
+    "student_retrieval_allowed",
+    "embedding_enabled",
+    "source_dataset",
+    "source_path",
+    "content_sha256"
+  ],
+  "properties": {
+    "schema_version": { "const": "hybrid-rag-question-private-v1" },
+    "question_id": { "type": "string", "minLength": 1 },
+    "visibility": { "const": "private" },
+    "student_retrieval_allowed": { "const": false },
+    "embedding_enabled": { "const": false },
+    "source_dataset": { "type": "string", "minLength": 1 },
+    "source_path": { "type": "string", "minLength": 1 },
+    "content_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "not": { "required": ["embed_text"] },
+  "additionalProperties": true
+}

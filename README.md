@@ -105,6 +105,8 @@ Compose包含PostgreSQL、后端、自适应服务和Nginx前端。前端容器�
 
 EvidencePack中的检索相关性和coverage只是待语义审核候选，不等于法条支持某个法律论断。三个Schema、答案隔离和构建规则见[`docs/KNOWLEDGE_CONTRACTS.md`](docs/KNOWLEDGE_CONTRACTS.md)。
 
+全库Hybrid RAG数据底座已完成离线canonical与分块：2,024个法律/行政法规/司法文件/案例候选形成54,463个检索块；案例采用整案→1,591个语义父段→1,599个检索子块；JEC-QA教材形成1,404个解释块；30客观题、13主观题和1,141道JEC-QA刑法题形成1,184组严格隔离的public/private记录。运行时目标固定为`BM25F + Qwen3-Embedding-8B → RRF → Reranker`，并保留Reranker→RRF、Embedding→BM25F降级和精确条号保护。当前Embedding/Reranker仍为0调用，尚未形成检索效果结论；构建器、Schema和公开hash审计见[`docs/HYBRID_RAG_BOOKS_QUESTIONS_PLAN.md`](docs/HYBRID_RAG_BOOKS_QUESTIONS_PLAN.md)与[`docs/HYBRID_RAG_CORPUS_V1_AUDIT.md`](docs/HYBRID_RAG_CORPUS_V1_AUDIT.md)。
+
 ## 预习与复习服务端闭环
 
 登录学生现在可以通过`POST /api/adaptive/attempts`完成推荐TaskItem：adaptive服务私有判分，生成不可变`task_attempt_assessment`，backend持久化事件、画像与推荐，然后返回形成性反馈和下一任务。相同`attempt_id`重试幂等，同ID改payload返回409；旧`content_version`被拒绝，已完成任务默认从后续推荐排除。

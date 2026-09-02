@@ -1,0 +1,16 @@
+# 发现
+
+- SiliconFlow配置已填写，模型为`Qwen/Qwen3-Embedding-8B`；本轮未输出Key、未调用API。
+- 当前正式学生RAG仍是BM25F+KnowledgeCard标准Evidence。
+- `laws`四类派生文本约335法律、610行政法规、549司法文件、530案例；raw/派生/ZIP/汇总存在重复角色。
+- JEC-QA reference_book包含刑法约40章、刑诉法24章以及法理/宪法等；副本目录重复。
+- CAIL/JEC-QA中显式刑法司法考试题约1,141道；广义法律Q&A/SFT数据规模更大，但不能直接变正式学生题。
+- 题目需要Embedding，但作为推荐候选层；Q矩阵/答案/教师门禁仍是权威控制。
+- 用户补充：RAG必须使用Embedding+BM25等语义/词法混合索引，并在RRF融合后接Reranker；Reranker与Embedding均需保留可观测失败降级，不能把单一路召回当最终方案。
+- 用户补充：案例采用父子分段。当前决定为`document_id`标识整案，`parent_id`标识摘要/案情/规则/理由/结果等完整语义父段，检索子块保留`parent_id`；命中后回填父段与同案元数据。
+- 阶段2真实构建：2,024个物理/唯一canonical候选源，54,463个法律/法规/司法/案例检索块；案例1,591个语义父段和1,599个检索子块；教材1,404块；题目1,184组public/private（30产品客观+13产品主观+1,141 JEC-QA刑法题）。
+- 2,024个canonical文档全部与既有`corpus_inventory.json`匹配并验证文件SHA；来源、层级候选、时效、隐私、再分发与治理决定已进入manifest。案例仍保留第三方再分发/个人信息风险，不因进入检索候选而晋级正式Evidence。
+- 所有public题无答案/解析/Rubric/错因私有字段；private题明确`student_retrieval_allowed=false`和`embedding_enabled=false`。public/private ID一一匹配。
+- 七类Schema对真实数据全量验证通过，块ID、父ID、文档ID唯一；案例无孤儿子块和跨案父段；绝对路径0；Embedding/Reranker/模型/网络调用均为0。
+- 本地完整JSONL约148MiB，保存在Git忽略的`.codex-artifacts/hybrid-rag-corpus-v1/`；Git只提交构建器、Schema、测试及公开计数/hash审计，避免把第三方案例/教材/私有答案直接推送。
+- 计划文档：`docs/HYBRID_RAG_BOOKS_QUESTIONS_PLAN.md`。

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://legalworld.local/schemas/hybrid-rag-chunk-v1.schema.json",
+  "title": "Hybrid RAG Retrieval Chunk",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "chunk_id",
+    "document_id",
+    "parent_id",
+    "retrieval_unit",
+    "retrieval_tier",
+    "source_type",
+    "title",
+    "section_type",
+    "section_index",
+    "content",
+    "embed_text",
+    "source_path",
+    "content_sha256"
+  ],
+  "properties": {
+    "schema_version": { "const": "hybrid-rag-chunk-v1" },
+    "chunk_id": { "type": "string", "pattern": "^RAGC_[A-F0-9]{24}$" },
+    "document_id": { "type": "string", "pattern": "^RAGD_[A-F0-9]{24}$" },
+    "parent_id": { "type": "string", "pattern": "^(|RAGP_[A-F0-9]{24})$" },
+    "retrieval_unit": { "enum": ["chunk", "child"] },
+    "retrieval_tier": { "const": "legal_authority" },
+    "source_type": { "enum": ["law", "regulation", "judicial_interpretation", "case"] },
+    "title": { "type": "string", "minLength": 1 },
+    "section_type": { "type": "string", "minLength": 1 },
+    "section_index": { "type": "integer", "minimum": 1 },
+    "content": { "type": "string", "minLength": 1 },
+    "embed_text": { "type": "string", "minLength": 1 },
+    "source_path": { "type": "string", "pattern": "^laws/" },
+    "content_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": true
+}

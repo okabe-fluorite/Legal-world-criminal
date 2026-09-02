@@ -182,7 +182,8 @@ teaching/
 ### 法条检索
 
 - 本地法条库 `backend/legal_corpus/processed/*.jsonl`由国家法律法规数据库DOCX构建：2020刑法正文精确合并修正案十二（505条）+ 2018刑诉法（308条）；manifest保存源/输出SHA与隔离源。检索使用**BM25(k1=1.5, b=0.75) + BM25F 字段加权**（content 1.0 / article_ref 4.0 / 条号精确命中 ×3），纯stdlib离线可用
-- 不接 Qdrant/远程向量库：词法检索已满足条号+语义兜底需求，语义检索留作增强
+- 当前学生正式Evidence仍使用已验证BM25F与精确条号保护；全库Hybrid RAG已完成canonical/父子分块和答案隔离，目标运行时为`BM25F + Qwen3-Embedding-8B → RRF → Reranker`。Reranker失败降级RRF，Embedding失败降级BM25F；没有真实索引和消融结果前不得把semantic/rerank标为ready。
+- 第一版Dense索引使用本地float16 NPY+metadata，不为技术名先引入Qdrant；后续只有规模/并发证据要求时再替换向量存储。
 - Dify 法条 API（`DifyCitationSource`）为可插拔设计，接口修通后启用
 - 元典 MCP 工具已注册常驻，依赖外网，失败降级不阻断
 
