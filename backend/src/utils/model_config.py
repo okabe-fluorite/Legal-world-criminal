@@ -37,6 +37,8 @@ _TRANSIENT_MODEL_ERROR_HINTS = (
     "429",
     "rate limit",
     "usage limit",
+    "creditserror",
+    "insufficient balance",
     "5-hour",
     "5 hour",
     "too many requests",
@@ -286,9 +288,15 @@ def resolve_model_endpoint(
     small_model = _normalize_model_name(os.environ.get("SIMLAW_SMALL_MODEL_NAME"))
     use_small = small_enabled and bool(small_model)
 
-    primary_model = resolve_openai_chat_model()
-    primary_base = _normalize_model_name(os.environ.get("OPENAI_API_BASE_URL"))
-    primary_key = _normalize_model_name(os.environ.get("OPENAI_API_KEY"))
+    primary_model = _normalize_model_name(
+        os.environ.get("SIMLAW_PRIMARY_MODEL_NAME")
+    ) or resolve_openai_chat_model()
+    primary_base = _normalize_model_name(
+        os.environ.get("SIMLAW_PRIMARY_MODEL_API_BASE_URL")
+    ) or _normalize_model_name(os.environ.get("OPENAI_API_BASE_URL"))
+    primary_key = _normalize_model_name(
+        os.environ.get("SIMLAW_PRIMARY_MODEL_API_KEY")
+    ) or _normalize_model_name(os.environ.get("OPENAI_API_KEY"))
 
     if task_model:
         provider = "task_override"

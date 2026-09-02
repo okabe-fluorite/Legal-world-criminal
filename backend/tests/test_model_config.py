@@ -20,6 +20,9 @@ MODEL_ENV_KEYS = {
     "OPENAI_API_KEY",
     "OPENAI_API_BASE_URL",
     "OPENAI_MODEL_NAME",
+    "SIMLAW_PRIMARY_MODEL_API_KEY",
+    "SIMLAW_PRIMARY_MODEL_API_BASE_URL",
+    "SIMLAW_PRIMARY_MODEL_NAME",
     "SIMLAW_SMALL_MODEL_API_KEY",
     "SIMLAW_SMALL_MODEL_API_BASE_URL",
     "SIMLAW_SMALL_MODEL_NAME",
@@ -204,6 +207,41 @@ class ModelRoutingTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "401"):
             backend._run([])
         self.assertEqual(fallback.calls, 0)
+
+    def test_explicit_opencode_credit_exhaustion_uses_official_fallback(self) -> None:
+        primary = FakeBackend(
+            error=RuntimeError("401 CreditsError: Insufficient balance")
+        )
+        fallback = FakeBackend(result="official-fallback")
+        backend = FailoverModelBackend(
+            primary=primary,
+            fallback=fallback,
+            primary_endpoint=ModelEndpoint(
+                "agent", "primary", "primary-model", "https://opencode.ai/v1", "x", 20
+            ),
+            fallback_endpoint=ModelEndpoint(
+                "agent", "automatic_fallback", "deepseek-chat", "https://api.deepseek.com/v1", "y", 20
+            ),
+            circuit_seconds=60,
+        )
+        self.assertEqual(backend._run([]), "official-fallback")
+        self.assertEqual(fallback.calls, 1)
+
+    def test_named_primary_gateway_overrides_legacy_openai_route(self) -> None:
+        os.environ.update(
+            {
+                "OPENAI_API_KEY": "legacy-key",
+                "OPENAI_API_BASE_URL": "https://opencode.ai/v1",
+                "OPENAI_MODEL_NAME": "legacy-model",
+                "SIMLAW_PRIMARY_MODEL_API_KEY": "ark-key",
+                "SIMLAW_PRIMARY_MODEL_API_BASE_URL": "https://ark.example/v3",
+                "SIMLAW_PRIMARY_MODEL_NAME": "deepseek-v4-flash",
+            }
+        )
+        endpoint = resolve_model_endpoint("agent")
+        self.assertEqual(endpoint.model_name, "deepseek-v4-flash")
+        self.assertEqual(endpoint.api_base_url, "https://ark.example/v3")
+        self.assertEqual(endpoint.api_key, "ark-key")
 
     def test_fallback_catalog_is_secret_free(self) -> None:
         os.environ.update(
