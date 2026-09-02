@@ -537,12 +537,12 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
             <dl class="review-counts">
               <div><dt>待人工复核</dt><dd>{{ subjectiveAttempts.length }}</dd></div>
               <div><dt>AI主动弃权</dt><dd>{{ subjectiveAbstainedCount }}</dd></div>
-              <div><dt>引用门禁通过</dt><dd>{{ subjectiveCitationPassedCount }}</dd></div>
+              <div><dt>引用检查通过</dt><dd>{{ subjectiveCitationPassedCount }}</dd></div>
               <div><dt>长期画像更新</dt><dd>0（待批准）</dd></div>
             </dl>
             <p class="review-boundary">{{ subjectiveQueue?.privacy }}</p>
             <div class="subjective-boundary-card">
-              <strong>双重门禁</strong>
+              <strong>AI建议 + 教师确认</strong>
               <p>AI只给修改建议。教师批准前，分数、掌握状态和推荐路径都不会变化。</p>
             </div>
           </aside>
@@ -552,7 +552,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
               <div>
                 <p class="teacher-kicker mono">ANONYMOUS FORMATIVE QUEUE</p>
                 <h3>匿名形成性复核队列</h3>
-                <p>阅读学生原文、AI弃权原因和引用门禁，再作独立教学判断。</p>
+                <p>阅读学生原文、AI反馈状态和引用检查结果，再作独立教学判断。</p>
               </div>
               <span class="privacy-stamp">仅自有班级</span>
             </header>
@@ -576,7 +576,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
                   </span>
                   <span>置信度 {{ Math.round(row.ai_confidence * 100) }}%</span>
                   <span :class="row.citation_audit.passed ? 'audit--ok' : 'audit--warn'">
-                    引用门禁{{ row.citation_audit.passed ? "通过" : "未通过" }}
+                    引用检查{{ row.citation_audit.passed ? "通过" : "需要处理" }}
                   </span>
                   <span>把握度 {{ row.confidence ?? "未填" }}/5</span>
                 </div>
@@ -674,7 +674,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
         <section class="review-dialog subjective-review-dialog" role="dialog" aria-label="教师主观稿件复核">
           <header>
             <div>
-              <p class="teacher-kicker mono">TEACHER GATE · {{ selectedSubjective.student_ref }}</p>
+              <p class="teacher-kicker mono">TEACHER REVIEW · {{ selectedSubjective.student_ref }}</p>
               <h3>{{ selectedSubjective.task.knowledge_names.join(" / ") }}</h3>
             </div>
             <button aria-label="关闭主观复核" @click="selectedSubjective = null">×</button>

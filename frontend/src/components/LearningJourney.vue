@@ -475,7 +475,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
                   <p class="pane-kicker mono">SELECTED DOCKET · {{ selectedCard.version }}</p>
                   <h3>{{ selectedCard.canonical_name }}</h3>
                 </div>
-                <span class="review-stamp">教师门禁</span>
+                <span class="review-stamp">教师确认</span>
               </div>
               <p class="knowledge-brief__objective">{{ selectedCard.learning_objective }}</p>
               <p class="knowledge-brief__summary">{{ selectedCard.summary }}</p>

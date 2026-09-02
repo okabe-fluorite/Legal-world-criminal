@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T15:32:52.441Z",
+  "generated_at": "2026-09-02T07:01:40.553Z",
   "viewport": "780x900",
   "overview_pipeline": 5,
   "overview_cards": 4,
@@ -39,9 +39,10 @@
     }
   },
   "private_leaks": [],
+  "technical_leaks": [],
   "console_errors": [],
   "page_errors": [],
   "http_errors": [],
   "request_failures": [],
-  "artifact_dir": ".codex-artifacts/stage13/final-technical-narrow"
+  "artifact_dir": ".codex-artifacts/hybrid-rag-stage2/technical-ui-user-narrow"
 }

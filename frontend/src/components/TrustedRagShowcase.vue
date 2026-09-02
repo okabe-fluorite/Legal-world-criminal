@@ -33,10 +33,10 @@ const modelReferences = computed(() => {
     .map((source) => typicalSourceReference(source!));
 });
 const gateSummary = computed(() => [
-  { label: "结构JSON", passed: selected.value?.run_status === "model_completed" },
-  { label: "标准要点", passed: selected.value?.point_coverage === 1 },
-  { label: "Evidence范围", passed: selected.value?.citation_audit.passed ?? false },
-  { label: "逐字引用", passed: selected.value?.citation_audit.passed ?? false },
+  { label: "结构完整", passed: selected.value?.run_status === "model_completed" },
+  { label: "要点覆盖", passed: selected.value?.point_coverage === 1 },
+  { label: "来源匹配", passed: selected.value?.citation_audit.passed ?? false },
+  { label: "原文一致", passed: selected.value?.citation_audit.passed ?? false },
 ]);
 const rejectedBadCitationCount = computed(() =>
   badAudit.value?.items.filter(
@@ -44,7 +44,7 @@ const rejectedBadCitationCount = computed(() =>
   ).length ?? 0,
 );
 const evidenceWarningSpeech = computed(() => badAudit.value
-  ? `本次错误引用门禁拒绝${rejectedBadCitationCount.value}条引用。条号存在和逐字片段可以由规则核验，但是否支持当前法律结论仍需人工判断。`
+  ? `本次引用检查发现${rejectedBadCitationCount.value}条明显错误。条号和原文可以自动核对，但是否支持当前法律结论仍需人工判断。`
   : "",
 );
 
@@ -91,8 +91,12 @@ async function runBadCitationAudit(): Promise<void> {
   }
 }
 
-function shortHash(value?: string): string {
-  return value ? `${value.slice(0, 12)}…` : "—";
+function versionLabel(value?: string): string {
+  const text = String(value || "").trim();
+  if (!text) return "版本信息待补充";
+  if (/^[a-f0-9]{40,}$/i.test(text)) return "课程版本已记录";
+  if (text.startsWith("npc-flk-")) return "国家法律法规数据库资料版本";
+  return text.length > 36 ? "资料版本已记录" : text;
 }
 
 function auditStatusLabel(value: string): string {
@@ -136,7 +140,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
     <section class="rag-board" role="dialog" aria-modal="true" aria-label="可信RAG与三个典型问题验证">
       <header class="rag-head">
         <div class="rag-brand"><span class="rag-seal">证</span><div><p class="kicker mono">TRUSTED RAG · EXACT EVIDENCE · HUMAN REVIEW</p><h2>刑法可信问答验证台</h2></div></div>
-        <div class="rag-score" v-if="report"><div><b>{{ report.automated_gate_pass_count }}/{{ report.case_count }}</b><span>自动门禁</span></div><div><b>3</b><span>典型问题</span></div><div><b>PENDING</b><span>法学专家复核</span></div></div>
+        <div class="rag-score" v-if="report"><div><b>{{ report.automated_gate_pass_count }}/{{ report.case_count }}</b><span>引用检查</span></div><div><b>3</b><span>典型问题</span></div><div><b>PENDING</b><span>法学专家复核</span></div></div>
         <div class="rag-badges mono"><span>AI生成内容</span><span>权威来源</span><span>逐字引用</span></div>
         <button class="rag-close" aria-label="关闭可信RAG验证" @click="emit('close')">×</button>
       </header>
@@ -149,17 +153,16 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
           <div class="index-title"><p class="kicker mono">CONTENT QUALITY · 20 POINTS</p><h3>三个典型问题</h3><span>模型不自评</span></div>
           <div class="question-list">
             <button v-for="(row, index) in report.cases" :key="row.case_id" :class="{ active: row.case_id === selected.case_id }" @click="selectCase(row)">
-              <span class="mono">0{{ index + 1 }}</span><div><strong>{{ row.title }}</strong><small>{{ row.automated_gate_pass ? '自动门禁PASS' : '自动门禁FAIL' }} · 专家{{ row.expert_review_status }}</small></div><i :class="{ pass: row.automated_gate_pass }"></i>
+              <span class="mono">0{{ index + 1 }}</span><div><strong>{{ row.title }}</strong><small>{{ row.automated_gate_pass ? '引用检查通过' : '引用需要处理' }} · 专家{{ row.expert_review_status }}</small></div><i :class="{ pass: row.automated_gate_pass }"></i>
             </button>
           </div>
-          <section class="suite-boundary"><strong>证据分层</strong><p>自动门禁检查JSON、标准要点和Evidence逐字引用；只有独立法学专家才能确认结论准确。</p></section>
-          <dl class="suite-sha mono"><div><dt>suite</dt><dd>{{ shortHash(report.suite_sha256) }}</dd></div><div><dt>law</dt><dd>{{ shortHash(report.law_manifest_sha256) }}</dd></div><div><dt>case</dt><dd>{{ shortHash(report.case_bundle_manifest_sha256) }}</dd></div></dl>
-          <button class="bad-audit-action" :disabled="auditing" @click="runBadCitationAudit">{{ auditing ? '正在核验…' : '运行错误引用门禁 →' }}</button>
-          <section v-if="badAudit" class="bad-audit-result"><header><span>拦</span><div><p class="kicker mono">LIVE CITATION GATE</p><h3>{{ rejectedBadCitationCount }}/{{ badAudit.items.length }} 已拒绝</h3></div></header><article v-for="row in badAudit.items" :key="row.index"><strong>{{ row.title }} {{ row.article_ref }}</strong><span>{{ auditStatusLabel(row.status) }} · {{ quoteStatusLabel(row.quote_status) }}</span><small>{{ row.risk_flags.map(riskLabel).join(' / ') }}</small></article><p>条号存在与逐字引文由规则确定性核验；词法重叠不等于法律语义支持，仍需人工判断。</p></section>
+          <section class="suite-boundary"><strong>来源说明</strong><p>系统会检查条号、来源和引用原文；只有独立法学专家才能确认争议结论是否正确。</p></section>
+          <button class="bad-audit-action" :disabled="auditing" @click="runBadCitationAudit">{{ auditing ? '正在检查…' : '演示错误引用检查 →' }}</button>
+          <section v-if="badAudit" class="bad-audit-result"><header><span>拦</span><div><p class="kicker mono">引用检查</p><h3>{{ rejectedBadCitationCount }}/{{ badAudit.items.length }} 条错误已发现</h3></div></header><article v-for="row in badAudit.items" :key="row.index"><strong>{{ row.title }} {{ row.article_ref }}</strong><span>{{ auditStatusLabel(row.status) }} · {{ quoteStatusLabel(row.quote_status) }}</span><small>{{ row.risk_flags.map(riskLabel).join(' / ') }}</small></article><p>条号与引用原文可自动核对；是否支持当前结论仍需教师或专家判断。</p></section>
         </aside>
 
         <main class="answer-column">
-          <section class="question-brief"><p class="kicker mono">STUDENT QUESTION · {{ selected.case_id }}</p><h3>{{ selected.question }}</h3><div><span>当前基线：{{ selected.model_route?.model_name ?? 'unknown' }}</span><span>{{ selected.model_route?.provider ?? 'unknown' }}</span><span>AI生成内容</span></div></section>
+          <section class="question-brief"><p class="kicker mono">典型问题</p><h3>{{ selected.question }}</h3><div><span>当前AI基线回答</span><span>引用来源可展开查看</span><span>AI生成内容</span></div></section>
 
           <div v-if="badAudit" class="evidence-tutor"><AITutor context="evidence" :speech-text="evidenceWarningSpeech" compact /></div>
 
@@ -167,7 +170,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 
           <section class="gate-strip"><article v-for="gate in gateSummary" :key="gate.label" :class="{ pass: gate.passed }"><span>{{ gate.passed ? '✓' : '×' }}</span><strong>{{ gate.label }}</strong></article><div><b>{{ Math.round(selected.point_coverage * 100) }}%</b><span>标准要点覆盖</span></div></section>
 
-          <section class="point-audit"><header><p class="kicker mono">INDEPENDENT DETERMINISTIC GATE</p><h3>标准要点匹配</h3></header><div><span v-for="point in selected.point_audit" :key="point.point_id" :class="{ pass: point.passed }"><i>{{ point.passed ? '✓' : '×' }}</i>{{ point.label }}</span></div></section>
+          <section class="point-audit"><header><p class="kicker mono">回答质量检查</p><h3>应覆盖的关键要点</h3></header><div><span v-for="point in selected.point_audit" :key="point.point_id" :class="{ pass: point.passed }"><i>{{ point.passed ? '✓' : '×' }}</i>{{ point.label }}</span></div></section>
         </main>
 
         <aside class="evidence-column">
@@ -175,9 +178,9 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 
           <section class="standard-answer"><p class="kicker mono">REFERENCE ANSWER</p><h3>标准答案对照</h3><p><span>{{ selected.standard_answer }}</span><EvidenceCitations :references="requiredReferences" compact /></p></section>
 
-          <section class="sources"><header><div><p class="kicker mono">GOVERNED SOURCES</p><h3>权威Evidence</h3></div><span>{{ requiredSources.length }} sources</span></header><article v-for="source in requiredSources" :key="source.source_id"><div class="source-head"><span>{{ source.source_type === '法律条文' ? '法' : '案' }}</span><div><strong>{{ source.title }}</strong><small>{{ source.article_ref }} · {{ source.authority }}</small></div></div><blockquote>{{ source.quote }}</blockquote><dl><div><dt>Evidence</dt><dd>{{ source.source_id }}</dd></div><div><dt>版本</dt><dd>{{ shortHash(source.version) }}</dd></div><div><dt>来源</dt><dd>{{ source.source_url || '本地受治理快照' }}</dd></div></dl></article></section>
+          <section class="sources"><header><div><p class="kicker mono">权威来源</p><h3>法律与案例依据</h3></div><span>{{ requiredSources.length }} 项</span></header><article v-for="source in requiredSources" :key="source.source_id"><div class="source-head"><span>{{ source.source_type === '法律条文' ? '法' : '案' }}</span><div><strong>{{ source.title }}</strong><small>{{ source.article_ref }} · {{ source.authority }}</small></div></div><blockquote>{{ source.quote }}</blockquote><dl><div><dt>版本</dt><dd>{{ versionLabel(source.version) }}</dd></div><div><dt>来源</dt><dd>{{ source.source_url || '课程资料库' }}</dd></div></dl></article></section>
 
-          <section class="citation-proof"><p class="kicker mono">MODEL CITATIONS</p><h3>模型逐字引用</h3><article v-for="citation in selected.model_output.citations" :key="`${citation.source_id}:${citation.quote}`"><span>✓</span><div><strong>{{ citation.title }} {{ citation.article_ref }}</strong><p>{{ citation.quote }}</p><small class="mono">{{ citation.source_id }}</small></div></article></section>
+          <section class="citation-proof"><p class="kicker mono">回答引用</p><h3>系统实际使用的原文</h3><article v-for="citation in selected.model_output.citations" :key="`${citation.source_id}:${citation.quote}`"><span>✓</span><div><strong>{{ citation.title }} {{ citation.article_ref }}</strong><p>{{ citation.quote }}</p></div></article></section>
         </aside>
       </div>
     </section>

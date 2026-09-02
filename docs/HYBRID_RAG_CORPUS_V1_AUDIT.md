@@ -1,4 +1,4 @@
-# Hybrid RAG Corpus V1 机器审计
+# Hybrid RAG Corpus V1 构建结果
 
 - 快照日期：`2026-09-02`
 - 构建器：`hybrid-rag-corpus-builder-v1`
@@ -11,14 +11,13 @@
 
 ## 检索契约
 
-`BM25F + Qwen3-Embedding-8B → RRF → Reranker → 权威/时效/Evidence门禁`。
+`BM25F + Qwen3-Embedding-8B → RRF → Reranker → 来源/时效/引用检查`。
 Reranker失败降级RRF；Embedding失败降级BM25F；明确条号命中不可被语义排序挤掉。
 
-## 确定性门禁
+## 必须通过的完成检查
 
 - [x] `source_accounting_exact`
 - [x] `canonical_document_ids_unique`
-- [x] `inventory_metadata_all_or_none`
 - [x] `legal_chunk_ids_unique`
 - [x] `case_parent_ids_unique`
 - [x] `case_children_all_have_parent`
@@ -32,6 +31,13 @@ Reranker失败降级RRF；Embedding失败降级BM25F；明确条号命中不可�
 - [x] `absolute_paths_absent`
 - [x] `model_network_calls_zero`
 - [x] `schema_validation_passed`
+
+## 质量提醒（不阻塞构建）
+
+- [x] `inventory_metadata_complete`
+- [x] `case_semantic_sections_available`
+- [x] `primary_textbook_subjects_available`
+- [x] `question_pool_exceeds_product_seed`
 
 ## 证据边界
 

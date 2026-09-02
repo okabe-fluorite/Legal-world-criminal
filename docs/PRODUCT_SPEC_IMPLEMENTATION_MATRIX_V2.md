@@ -37,7 +37,7 @@
 | LearnerProfile | §5.4、§6.1 | 无 | Evidence-KT在线画像、事件门槛、错误/困惑 | `implemented_with_boundary` | 非校准概率、无充分课堂数据 | ORCDF继续shadow |
 | Recommendation | §5.4、§6.1 | 无 | 规则候选、先修回退、七步路径、原因码 | `implemented_with_boundary` | 非因果最优、间隔调度有限 | 保持诚实说明 |
 | 可信RAG与引用审查 | §5.2 | 工具接口可参考 | 三典型题、错误引用拒绝、法源版本/SHA | `implemented_with_boundary` | 专家结论仍pending | 无需改动 |
-| 正文行末Evidence引用 | §5.2、§5.6 P0 | citation/tool接口 | 统一行末编号、悬停截断摘要、点击完整Evidence抽屉、原始来源/版本/SHA/风险字段 | `implemented_with_boundary` | 抽屉不替代法律蕴含判断，专家复核仍pending | 本轮新增并接入RAG/解惑/实时语音 |
+| 正文行末Evidence引用 | §5.2、§5.6 P0 | citation/tool接口 | 统一行末编号、悬停截断摘要、点击完整来源抽屉、原始来源/版本时效/引用原文/使用提示 | `implemented_with_boundary` | 内部ID和SHA只留后端；抽屉不替代法律蕴含判断，专家复核仍pending | 已接入RAG/解惑/实时语音 |
 | 混合/向量/图检索 | §5.2 | 可选向量索引 | BM25 + 轻量先修图；向量可插拔 | `implemented_with_boundary` | 未启用向量不影响P0 | 不引入未治理远程向量 |
 | 智能体显式状态机 | §5.3、§7.2 | 核心参考来源 | 刑事六阶段FSM、Agent/Tool分离 | `implemented` | 未换LangGraph | 现有显式FSM足够，不为技术名重写 |
 | Model Adapter | §5.5 | 模型配置/运行层 | 任务路由、fallback、small-model not_connected | `implemented_with_boundary` | 无正式LoRA/SFT | 保持接口和真实状态 |

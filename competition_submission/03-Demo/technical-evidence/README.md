@@ -1,8 +1,8 @@
-# 技术证据 Demo 截图与机器报告
+# 技术说明 Demo 截图与机器报告
 
-本目录保存“技术证据”真实 Demo 入口的去标识验收材料，用于技术主线视频第 10—84 秒和作品方案第 4、6、7、8 页。
+本目录保存“技术说明”真实 Demo 入口的去标识验收材料，用于技术主线视频和作品方案中的数据、推理、评测与Agent说明。
 
-页面顶部明确标注“比赛 / 答辩只读视图”：它用于集中展示数据治理、推理门禁、LegalEduEval、Agent消融、哈希和pending边界，不参与学生作答、评分、LearningEvent或长期画像。它不是第二套课程事实源，也不是学生学习页面。
+页面顶部明确标注“比赛 / 答辩只读视图”：它用于集中展示数据治理、推理检查、LegalEduEval、Agent对比和下一步事项，不参与学生作答、评分、LearningEvent或长期画像。SHA、内部ID和文件审计细节不在界面展示，只保留在机器报告中。
 
 ## 文件
 
@@ -28,10 +28,10 @@
 
 | 文件 | SHA-256 |
 |---|---|
-| `desktop-01-overview.png` | `26112bfef20cce856e0be7d934f8d20223c67a00930cf36ca18f33b015992bf9` |
-| `desktop-02-data-governance.png` | `9215ca72b252e823d7be001bd4d49329a7d52252016144555356aa253462054d` |
-| `desktop-03-reasoning-eval.png` | `f446ee4b24455158485a158638b289c03b9e3a4e131d9f8ea51de006b93855df` |
-| `desktop-04-agent-boundary.png` | `a42990e3e3a96a1922a7ed2ceb6517402a3bdb0de1c358dabd0c1afc8aa2494c` |
-| `desktop-report.json` | `6a97a31a2f1cebdecf152f4b8b4059c03911726e794c5444f536dbd7e57218f2` |
-| `narrow-04-agent-boundary.png` | `0e4ce387043f9f7d754f7cff60900e789cbd8ce02e6ff2df549e13d6c9cc0ad8` |
-| `narrow-report.json` | `37e188987e6e0caa6c499afc64a5d342a5b106dd8e3fdf0602547a4950c13e96` |
+| `desktop-01-overview.png` | `e70212a4aa0c016848a8c219512e13d4be35d814c5658d280acd4bc7ad981888` |
+| `desktop-02-data-governance.png` | `ec26dbb8ed3b2030c0ab5b81894b429bd6fe1b8f2a7c3054d7ee2d1437c39642` |
+| `desktop-03-reasoning-eval.png` | `53362a8007be5298adcab7a1d24f6f94a227ef78aaf179591ebdeb45b7d470bc` |
+| `desktop-04-agent-boundary.png` | `e7c884b0763492da84ceb140be024401a99ed8c71e43783a29fe2a4d32aa8405` |
+| `desktop-report.json` | `a01be0fdb227aca7716ddb5ea3777666428eca435372ca89f0d03b561227ad7a` |
+| `narrow-04-agent-boundary.png` | `00f48e020834a54c09150bfc2fb31b2c0468417ee4d933e99e08b0e664b4e4ad` |
+| `narrow-report.json` | `dbbadcd5d6d6731360e835fb9feb03469a167e5f79e70886190e89be80f31677` |

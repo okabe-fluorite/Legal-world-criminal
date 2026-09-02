@@ -111,10 +111,10 @@ const accent = computed(() => stageAccent(session.state.caseState));
         </button>
         <button
           class="btn hdr__evidence"
-          title="比赛/答辩用只读技术审计，不参与学生学习或画像"
+          title="比赛/答辩用只读技术说明，不参与学生学习或画像"
           @click="showTechnicalEvidence = true"
         >
-          技术证据
+          技术说明
         </button>
         <button v-if="isTeacher" class="btn hdr__teacher" @click="showTeacher = true">
           教师驾驶舱

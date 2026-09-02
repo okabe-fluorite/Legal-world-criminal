@@ -31,8 +31,34 @@ function kindLabel(row: EvidenceReference): string {
   return ({ law: "法", case: "案", course: "课" })[sourceKind(row)];
 }
 
+function typeLabel(row: EvidenceReference): string {
+  return ({ law: "法律条文", case: "指导/典型案例", course: "课程解释" })[sourceKind(row)];
+}
+
+function versionLabel(row: EvidenceReference): string {
+  const value = String(row.version || row.effective_status || "").trim();
+  if (!value) return "版本信息待补充";
+  if (/^[a-f0-9]{40,}$/i.test(value)) return "资料版本已记录";
+  if (value.startsWith("npc-flk-")) return "国家法律法规数据库资料版本";
+  if (value === "以冻结版本为准") return "以当前课程资料版本为准";
+  return value;
+}
+
 function citationTitle(row: EvidenceReference): string {
   return `${row.title}${row.article_ref ? ` ${row.article_ref}` : ""}`;
+}
+
+function riskLabel(value: string): string {
+  return ({
+    official_item_url_not_preserved: "原始详情页待补充",
+    recheck_validity_before_classroom_term: "开课前请复核时效",
+    official_item_url_not_preserved_in_download: "原始详情页待补充",
+    candidate_requires_semantic_audit: "适用关系需进一步判断",
+    teacher_review_required: "建议教师复核",
+    case_relevance_not_legal_entailment: "相关案例不代表结论必然成立",
+    edition_unknown: "教材版本信息待补充",
+    textbook_does_not_override_current_law: "教材解释不能替代现行法",
+  } as Record<string, string>)[value] ?? value.replaceAll("_", " ");
 }
 
 function showTooltip(row: EvidenceReference, event: Event): void {
@@ -111,16 +137,16 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
       <div v-if="selected" class="evidence-drawer-backdrop" @click.self="closeDrawer">
         <aside class="evidence-drawer" role="dialog" aria-modal="true" aria-labelledby="evidence-drawer-title">
           <header class="drawer-head">
-            <div><p>GOVERNED EVIDENCE · {{ selected.id }}</p><h2 id="evidence-drawer-title">{{ citationTitle(selected) }}</h2></div>
+            <div><p>权威来源 · 可查看原文</p><h2 id="evidence-drawer-title">{{ citationTitle(selected) }}</h2></div>
             <button type="button" aria-label="关闭完整证据" @click="closeDrawer">×</button>
           </header>
           <div class="drawer-scroll">
             <section class="drawer-identity">
               <span :class="`kind kind--${sourceKind(selected)}`">{{ kindLabel(selected) }}</span>
               <dl>
-                <div><dt>类型</dt><dd>{{ selected.source_type }}</dd></div>
+                <div><dt>类型</dt><dd>{{ typeLabel(selected) }}</dd></div>
                 <div><dt>效力层级</dt><dd>{{ selected.authority || "待复核" }}</dd></div>
-                <div><dt>版本 / 时效</dt><dd>{{ selected.version || selected.effective_status || "未标注" }}</dd></div>
+                <div><dt>版本 / 时效</dt><dd>{{ versionLabel(selected) }}</dd></div>
               </dl>
             </section>
             <section class="drawer-quote">
@@ -128,16 +154,14 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
               <blockquote>{{ selected.quote || "当前证据未返回可公开全文片段。" }}</blockquote>
             </section>
             <section class="drawer-provenance">
-              <h3>来源与可复核字段</h3>
+              <h3>来源与适用信息</h3>
               <dl>
-                <div><dt>Evidence ID</dt><dd>{{ selected.id }}</dd></div>
-                <div v-if="selected.source_snapshot_id"><dt>快照</dt><dd>{{ selected.source_snapshot_id }}</dd></div>
-                <div v-if="selected.sha256"><dt>SHA-256</dt><dd>{{ selected.sha256 }}</dd></div>
                 <div><dt>状态</dt><dd>{{ selected.effective_status || "需结合当前学期复核" }}</dd></div>
+                <div><dt>来源</dt><dd>{{ selected.source_url ? "可打开原始来源" : "课程资料库" }}</dd></div>
               </dl>
             </section>
             <section v-if="selected.risk_flags.length" class="drawer-risks">
-              <h3>审查提示</h3><span v-for="risk in selected.risk_flags" :key="risk">{{ risk }}</span>
+              <h3>使用提示</h3><span v-for="risk in selected.risk_flags" :key="risk">{{ riskLabel(risk) }}</span>
             </section>
           </div>
           <footer class="drawer-actions">

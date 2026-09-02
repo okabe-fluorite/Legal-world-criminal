@@ -182,7 +182,7 @@ onMounted(() => void createSession());
                   </p>
                   <h3>{{ result.diagnosis.summary }}</h3>
                   <span>
-                    {{ isFallback ? "模型输出未通过结构或引用门禁，已使用受治理知识卡解释。" : "引用已通过条号与逐字片段检查；法律蕴含仍未自动确认。" }}
+                    {{ isFallback ? "模型输出不完整，已使用课程知识卡提供稳定解释。" : "引用已完成条号与原文检查；争议问题仍需教师判断。" }}
                   </span>
                 </div>
               </section>

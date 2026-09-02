@@ -66,7 +66,7 @@
 
 媒体页展示私有资产、ASR、视觉、TTS和数字人五项能力。主交互为浏览器AudioWorklet实时采集麦克风、重采样为16kHz PCM并通过`/ws/realtime-voice`分片发送；讯飞IAT持续返回partial/final，final进入受治理Evidence短答，再由讯飞TTS回传WAV自动播放并支持下一轮。文件上传和TTS→IAT回送只保留为兼容/Provider审计工具。成功后当前进程的ASR/TTS状态为`available`；ASR固定`needs_review`，媒体不会创建LearningEvent。视觉和数字人继续`not_connected`，浏览器朗读仅作fallback。
 
-实时回复正文已统一使用行末Evidence标记：鼠标悬停显示法源/案例的截断摘要，点击标记打开完整Evidence抽屉，可查看条号、版本/时效、逐字quote、快照、SHA、风险提示和原始来源。抽屉固定提示“检索相关不等于法律蕴含”，不把检索结果包装成自动法律结论。ASR/TTS能力状态区分`not_configured`、`configured_not_verified`和`available`；页面同步显示麦克风权限、设备名和真实输入电平，避免用CSS波形代替麦克风反馈。
+实时回复正文已统一使用行末引用标记：鼠标悬停显示法源/案例的截断摘要，点击标记打开完整来源抽屉，可查看条号、版本/时效、引用原文、使用提示和原始来源。SHA、内部Evidence ID和快照标识只保留在后端与技术报告，不在学生界面显示。抽屉固定提示“检索相关不等于法律蕴含”，不把检索结果包装成自动法律结论。ASR/TTS能力状态区分`not_configured`、`configured_not_verified`和`available`；页面同步显示麦克风权限、设备名和真实输入电平，避免用CSS波形代替麦克风反馈。
 
 接口、讯飞/Azure/LiveKit选型、AI标识和肖像同意门禁见[`MULTIMODAL_AVATAR_ARCHITECTURE.md`](MULTIMODAL_AVATAR_ARCHITECTURE.md)。
 

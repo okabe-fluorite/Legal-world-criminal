@@ -13,4 +13,6 @@
 - 所有public题无答案/解析/Rubric/错因私有字段；private题明确`student_retrieval_allowed=false`和`embedding_enabled=false`。public/private ID一一匹配。
 - 七类Schema对真实数据全量验证通过，块ID、父ID、文档ID唯一；案例无孤儿子块和跨案父段；绝对路径0；Embedding/Reranker/模型/网络调用均为0。
 - 本地完整JSONL约148MiB，保存在Git忽略的`.codex-artifacts/hybrid-rag-corpus-v1/`；Git只提交构建器、Schema、测试及公开计数/hash审计，避免把第三方案例/教材/私有答案直接推送。
+- 用户要求普通界面不显示SHA、内部Evidence ID或过多审计/门禁术语。已将这些信息保留在后端/技术报告，学生和普通演示页面改为友好的来源、版本、原文、使用提示和质量检查文案。
+- 门禁原则调整：安全/正确性检查继续硬阻断；库存元数据、章节覆盖等改为非阻断质量提醒；Reranker失败降级RRF、Embedding失败降级BM25F，优先保证整体任务可用。
 - 计划文档：`docs/HYBRID_RAG_BOOKS_QUESTIONS_PLAN.md`。

@@ -50,18 +50,38 @@ const pipeline = computed(() => {
   return [
     { no: "01", label: "候选材料", metric: row.summary.candidate_files.toLocaleString(), note: "文件库存，不等于训练集" },
     { no: "02", label: "正式法源", metric: row.summary.formal_articles.toLocaleString(), note: "505刑法 + 308刑诉法" },
-    { no: "03", label: "推理门禁", metric: `${row.summary.reasoning_gate_checks}项`, note: "结构与Evidence纪律" },
-    { no: "04", label: "统一评测", metric: `${row.summary.benchmark_items}题`, note: "candidate / not_gold" },
+    { no: "03", label: "推理检查", metric: `${row.summary.reasoning_gate_checks}项`, note: "结构、来源与引用检查" },
+    { no: "04", label: "统一评测", metric: `${row.summary.benchmark_items}题`, note: "候选题 · 待教师确认" },
     { no: "05", label: "应用验证", metric: "4场景", note: "问答·案件·主观·路径" },
   ];
 });
 const evalTypes = computed(() => Object.entries(evidence.value?.legal_edu_eval.by_type ?? {}).map(
   ([key, value]) => ({ key, label: typeLabels[key] ?? key, value }),
 ));
-const artifactHash = (value: string) => value ? `${value.slice(0, 12)}…` : "—";
 const ratio = (value: number) => Number(value || 0).toFixed(4);
 const seconds = (value: number) => `${(Number(value || 0) / 1000).toFixed(1)}s`;
 const routeName = computed(() => String(evidence.value?.agent_ablation.model_route.model_name ?? "unknown"));
+const conditionLabels: Record<string, string> = {
+  E0_base_model: "基础模型",
+  E1_prompt_few_shot: "Prompt / Few-shot",
+  E2_trusted_rag: "可信RAG",
+  E3_rag_finetuned_model: "RAG + 微调模型",
+};
+function statusLabel(value: unknown): string {
+  const status = String(value ?? "");
+  if (status === "pending_model_delivery") return "待模型交付";
+  if (status.includes("pending")) return "待运行";
+  if (status === "not_gold") return "候选评测集";
+  return status || "待确认";
+}
+function boundaryLabel(value: string): string {
+  const text = String(value || "");
+  if (text.includes("automatic gates")) return "自动检查用于发现软件和引用错误，不代表法学专家准确率";
+  if (text.includes("MOOCCubeX")) return "ORCDF来自民法/宪法实验，不能直接当作刑法课堂掌握度";
+  if (text.includes("candidate benchmark")) return "100题仍是候选评测集，需要教师逐题确认";
+  if (text.includes("fixed scripted E2E")) return "当前软件测试证明流程可运行，不等同真实学习效果";
+  return text;
+}
 
 async function load(): Promise<void> {
   loading.value = true;
@@ -79,51 +99,50 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 
 <template>
   <div class="tech-layer">
-    <section class="tech-board" role="dialog" aria-modal="true" aria-label="学科技术证据总账">
+    <section class="tech-board" role="dialog" aria-modal="true" aria-label="学科技术说明">
       <header class="tech-head">
-        <div class="tech-brand"><span class="tech-seal">证</span><div><p class="kicker mono">TECHNICAL EVIDENCE · HASH BOUND · HONEST PENDING</p><h2>刑法学科技术证据总账</h2></div></div>
-        <nav class="tech-tabs" aria-label="技术证据分区"><button v-for="item in tabs" :key="item.id" :class="{ active: tab === item.id }" @click="tab = item.id">{{ item.label }}</button></nav>
-        <div v-if="evidence" class="tech-state mono"><span>6 ARTIFACTS</span><strong>READ ONLY</strong></div>
-        <button class="tech-close" aria-label="关闭技术证据总账" @click="emit('close')">×</button>
+        <div class="tech-brand"><span class="tech-seal">证</span><div><p class="kicker mono">TECHNICAL EVIDENCE · TRACEABLE · HONEST PENDING</p><h2>刑法学科技术说明</h2></div></div>
+        <nav class="tech-tabs" aria-label="技术说明分区"><button v-for="item in tabs" :key="item.id" :class="{ active: tab === item.id }" @click="tab = item.id">{{ item.label }}</button></nav>
+        <div v-if="evidence" class="tech-state mono"><span>核心技术结果</span><strong>只读展示</strong></div>
+        <button class="tech-close" aria-label="关闭技术说明" @click="emit('close')">×</button>
       </header>
 
-      <div v-if="loading" class="tech-loading"><span class="tech-seal">验</span><p>正在重算审计文件签名并生成安全投影……</p></div>
-      <div v-else-if="error || !evidence" class="tech-loading tech-loading--error"><span>!</span><p>{{ error || "技术证据不可用" }}</p><button @click="load">重新读取</button></div>
+      <div v-if="loading" class="tech-loading"><span class="tech-seal">验</span><p>正在读取技术结果与当前状态……</p></div>
+      <div v-else-if="error || !evidence" class="tech-loading tech-loading--error"><span>!</span><p>{{ error || "技术结果暂不可用" }}</p><button @click="load">重新读取</button></div>
 
       <main v-else class="tech-content">
-        <section class="tech-purpose" role="note" aria-label="技术证据页面用途">
+        <section class="tech-purpose" role="note" aria-label="技术说明页面用途">
           <strong>比赛 / 答辩只读视图</strong>
-          <p>用于展示数据治理、推理门禁、评测、Agent消融、哈希与未完成边界，让技术主张可以被现场复核。</p>
+          <p>用于展示数据治理、推理检查、评测、Agent对比与未完成事项，让核心技术在现场能够快速看懂。</p>
           <span>不参与学生作答、评分、LearningEvent或长期画像</span>
         </section>
         <template v-if="tab === 'overview'">
-          <section class="overview-statement"><div><p class="kicker mono">ONE LEDGER · SIX AUDITS</p><h3>不是“功能很多”，<br>而是每项技术都有证据边界</h3></div><div class="overview-number"><b>{{ evidence.summary.formal_articles }}</b><span>正式法源</span><small>{{ evidence.data_governance.version_as_of }}版本链</small></div></section>
+          <section class="overview-statement"><div><p class="kicker mono">核心技术结果</p><h3>不是“功能很多”，<br>而是数据、推理与应用相互支撑</h3></div><div class="overview-number"><b>{{ evidence.summary.formal_articles }}</b><span>正式法源</span><small>{{ evidence.data_governance.version_as_of }}版本</small></div></section>
           <section class="pipeline"><article v-for="(item, index) in pipeline" :key="item.no"><span class="mono">{{ item.no }}</span><strong>{{ item.metric }}</strong><h4>{{ item.label }}</h4><p>{{ item.note }}</p><i v-if="index < pipeline.length - 1">→</i></article></section>
-          <section class="overview-grid"><article><p class="kicker mono">DATA</p><b>{{ evidence.data_governance.gates_passed }}/{{ evidence.data_governance.gates_total }}</b><h4>治理门禁</h4><span>模型调用{{ evidence.data_governance.model_calls }}</span></article><article><p class="kicker mono">REASONING</p><b>{{ evidence.legal_reasoning.positive_passed }} / {{ evidence.legal_reasoning.negative_blocked }}</b><h4>正例通过 / 负例阻断</h4><span>网络调用{{ evidence.legal_reasoning.network_calls }}</span></article><article><p class="kicker mono">EVAL</p><b>{{ evidence.legal_edu_eval.by_split.dev }} / {{ evidence.legal_edu_eval.by_split.test }}</b><h4>dev / test</h4><span>跨家族重叠{{ evidence.legal_edu_eval.cross_split_family_overlap }}</span></article><article class="pending"><p class="kicker mono">HUMAN EVIDENCE</p><b>PENDING</b><h4>专家 · 用户 · 签署</h4><span>不由系统代填</span></article></section>
-          <section class="global-boundary"><strong>证据等级</strong><p v-for="item in evidence.global_boundary" :key="item"><span>!</span>{{ item }}</p></section>
+          <section class="overview-grid"><article><p class="kicker mono">DATA</p><b>{{ evidence.data_governance.gates_passed }}/{{ evidence.data_governance.gates_total }}</b><h4>资料检查完成</h4><span>{{ evidence.summary.formal_articles }}条正式法源</span></article><article><p class="kicker mono">REASONING</p><b>{{ evidence.legal_reasoning.positive_passed }} / {{ evidence.legal_reasoning.negative_blocked }}</b><h4>正常示例 / 错误示例</h4><span>关键错误可自动发现</span></article><article><p class="kicker mono">EVAL</p><b>{{ evidence.legal_edu_eval.by_split.dev }} / {{ evidence.legal_edu_eval.by_split.test }}</b><h4>开发集 / 测试集</h4><span>按来源分组避免泄漏</span></article><article class="pending"><p class="kicker mono">真实人员</p><b>待完成</b><h4>专家 · 用户 · 签署</h4><span>等待真实人员完成</span></article></section>
+          <section class="global-boundary"><strong>使用说明</strong><p v-for="item in evidence.global_boundary" :key="item"><span>!</span>{{ boundaryLabel(item) }}</p></section>
         </template>
 
         <template v-else-if="tab === 'data'">
-          <section class="section-title"><div><p class="kicker mono">4,173 → GOVERNANCE → 813</p><h3>文件库存与正式Evidence严格分层</h3></div><span class="status-pass">{{ evidence.data_governance.gates_passed }}/{{ evidence.data_governance.gates_total }} GATES</span></section>
+          <section class="section-title"><div><p class="kicker mono">4,173 → GOVERNANCE → 813</p><h3>候选资料与正式法源分层</h3></div><span class="status-pass">资料检查已完成</span></section>
           <div class="data-grid"><section class="data-ledger"><article><b>{{ evidence.data_governance.inventory_files.toLocaleString() }}</b><div><h4>候选文件库存</h4><p>原始文档、派生文本、压缩包、脚本和缓存</p></div><span>RAW</span></article><article><b>{{ evidence.data_governance.formal_articles }}</b><div><h4>正式规范法源</h4><p>{{ evidence.data_governance.criminal_law_articles }}刑法 + {{ evidence.data_governance.criminal_procedure_articles }}刑诉法</p></div><span>L1</span></article><article><b>{{ evidence.data_governance.l2_candidates }} / {{ evidence.data_governance.l3_candidates }}</b><div><h4>司法解释 / 案例候选</h4><p>保持法律、版权与隐私复核状态</p></div><span>L2/L3</span></article><article><b>{{ evidence.data_governance.knowledge_evidence_links }}</b><div><h4>知识—Evidence链接</h4><p>课程知识、正式法条与CaseBundle锚定</p></div><span>LINK</span></article></section>
             <section class="version-audit"><header><p class="kicker mono">2024 CRIMINAL LAW AUDIT</p><h3>年份正确，不代表文件可直接准入</h3></header><div class="version-hero"><b>{{ evidence.data_governance.version_as_of }}</b><span>刑法修正案十二施行版本</span></div><dl><div><dt>七处修正案匹配</dt><dd>{{ evidence.data_governance.amendment_12_matches }}/7</dd></div><div><dt>清理后逐字一致</dt><dd>{{ evidence.data_governance.reference_exact_articles }}/{{ evidence.data_governance.criminal_law_articles }}</dd></div><div><dt>剩余差异条文</dt><dd>{{ evidence.data_governance.reference_differences }}</dd></div><div><dt>参考文件正式准入</dt><dd class="reject">{{ evidence.data_governance.reference_formal_admission ? "允许" : "拒绝" }}</dd></div></dl><footer>正式库继续采用官方正文 + 官方修正案确定性合并；真实课堂前仍需核验届时有效性。</footer></section></div>
         </template>
 
         <template v-else-if="tab === 'reasoning'">
-          <section class="section-title"><div><p class="kicker mono">LEGAL REASONING GATE</p><h3>结构化推理与100题评测共用Evidence纪律</h3></div><span class="status-pass">{{ evidence.legal_reasoning.fixtures }}/{{ evidence.legal_reasoning.fixtures }} EXPECTED</span></section>
-          <div class="reasoning-grid"><section class="gate-panel"><header><div><p class="kicker mono">11 DETERMINISTIC CHECKS</p><h3>输出可被代码拒绝</h3></div><div class="gate-score"><b>{{ evidence.legal_reasoning.positive_passed }}</b><span>正例</span><b>{{ evidence.legal_reasoning.negative_blocked }}</b><span>负例阻断</span></div></header><div class="check-grid"><span v-for="check in evidence.legal_reasoning.checks" :key="check"><i>✓</i>{{ checkLabels[check] ?? check }}</span></div><div class="fixture-list"><article v-for="row in evidence.legal_reasoning.negative_fixtures" :key="row.fixture_id"><strong>{{ fixtureLabels[row.fixture_id] ?? row.fixture_id }}</strong><small class="mono">{{ row.failed_checks.join(' / ') }}</small></article></div><footer>通过Gate只证明结构与Evidence纪律，不证明规范涵摄正确。</footer></section>
-            <section class="eval-panel"><header><p class="kicker mono">LEGALEDUEVAL-V1 · CANDIDATE</p><h3>{{ evidence.legal_edu_eval.items }}题模型无关评测</h3><span>{{ evidence.legal_edu_eval.gold_status }}</span></header><div class="eval-types"><article v-for="row in evalTypes" :key="row.key"><b>{{ row.value }}</b><span>{{ row.label }}</span></article></div><div class="split-proof"><div><b>{{ evidence.legal_edu_eval.by_split.dev }} / {{ evidence.legal_edu_eval.by_split.test }}</b><span>dev / test</span></div><div><b>{{ evidence.legal_edu_eval.cross_split_family_overlap }}</b><span>来源家族跨split</span></div></div><div class="eval-matrix"><article v-for="(status, condition) in evidence.legal_edu_eval.evaluation_matrix" :key="condition"><span class="mono">{{ condition }}</span><strong :class="{ pending: String(status).includes('pending') }">{{ status }}</strong></article></div><footer v-if="evidence.legal_edu_eval.training_manifest_check_required">训练manifest必须检查同源污染；当前100题不是教师Gold。</footer></section></div>
+          <section class="section-title"><div><p class="kicker mono">LEGAL REASONING CHECKS</p><h3>结构化推理与100题评测共用来源检查</h3></div><span class="status-pass">{{ evidence.legal_reasoning.fixtures }}/{{ evidence.legal_reasoning.fixtures }} 示例符合预期</span></section>
+          <div class="reasoning-grid"><section class="gate-panel"><header><div><p class="kicker mono">11 AUTOMATED CHECKS</p><h3>关键错误可以自动发现</h3></div><div class="gate-score"><b>{{ evidence.legal_reasoning.positive_passed }}</b><span>正常示例</span><b>{{ evidence.legal_reasoning.negative_blocked }}</b><span>错误示例</span></div></header><div class="check-grid"><span v-for="check in evidence.legal_reasoning.checks" :key="check"><i>✓</i>{{ checkLabels[check] ?? check }}</span></div><div class="fixture-list"><article v-for="row in evidence.legal_reasoning.negative_fixtures" :key="row.fixture_id"><strong>{{ fixtureLabels[row.fixture_id] ?? row.fixture_id }}</strong><small>{{ row.failed_checks.map(check => checkLabels[check] ?? check).join(' / ') }}</small></article></div><footer>自动检查用于发现明显错误，争议性法律判断仍由教师或专家确认。</footer></section>
+            <section class="eval-panel"><header><p class="kicker mono">LEGALEDUEVAL-V1 · CANDIDATE</p><h3>{{ evidence.legal_edu_eval.items }}题模型无关评测</h3><span>{{ statusLabel(evidence.legal_edu_eval.gold_status) }}</span></header><div class="eval-types"><article v-for="row in evalTypes" :key="row.key"><b>{{ row.value }}</b><span>{{ row.label }}</span></article></div><div class="split-proof"><div><b>{{ evidence.legal_edu_eval.by_split.dev }} / {{ evidence.legal_edu_eval.by_split.test }}</b><span>开发集 / 测试集</span></div><div><b>{{ evidence.legal_edu_eval.cross_split_family_overlap }}</b><span>来源重复</span></div></div><div class="eval-matrix"><article v-for="(status, condition) in evidence.legal_edu_eval.evaluation_matrix" :key="condition"><span>{{ conditionLabels[String(condition)] ?? condition }}</span><strong :class="{ pending: String(status).includes('pending') }">{{ statusLabel(status) }}</strong></article></div><footer v-if="evidence.legal_edu_eval.training_manifest_check_required">接入训练模型前需检查测试题是否与训练数据重复；当前100题仍待教师逐题确认。</footer></section></div>
         </template>
 
         <template v-else>
           <section class="section-title"><div><p class="kicker mono">AGENT C0 / C1 · SAME CASE · SAME MODEL</p><h3>增加反方的收益，必须与成本一起展示</h3></div><span class="status-pending">TEACHER {{ evidence.agent_ablation.teacher_blind_review }}</span></section>
-          <div class="agent-grid"><section class="condition"><header><span>C0</span><div><p class="kicker mono">STATIC RESPONSE</p><h3>静态材料 + 单次提示</h3></div></header><div class="condition-metrics"><div><b>{{ evidence.agent_ablation.c0.required_element_coverage }}/{{ evidence.agent_ablation.c0.required_element_total }}</b><span>要件</span></div><div><b>{{ evidence.agent_ablation.c0.counterargument_count }}</b><span>反方</span></div><div><b>{{ seconds(evidence.agent_ablation.c0.elapsed_ms) }}</b><span>耗时</span></div><div><b>{{ evidence.agent_ablation.c0.total_tokens.toLocaleString() }}</b><span>tokens</span></div></div><footer><span :class="{ pass: evidence.agent_ablation.c0.gate_pass }">最终Gate {{ evidence.agent_ablation.c0.gate_pass ? "PASS" : "FAIL" }}</span><small>{{ routeName }}</small></footer></section>
+          <div class="agent-grid"><section class="condition"><header><span>C0</span><div><p class="kicker mono">STATIC RESPONSE</p><h3>静态材料 + 单次提示</h3></div></header><div class="condition-metrics"><div><b>{{ evidence.agent_ablation.c0.required_element_coverage }}/{{ evidence.agent_ablation.c0.required_element_total }}</b><span>要件</span></div><div><b>{{ evidence.agent_ablation.c0.counterargument_count }}</b><span>反方</span></div><div><b>{{ seconds(evidence.agent_ablation.c0.elapsed_ms) }}</b><span>耗时</span></div><div><b>{{ evidence.agent_ablation.c0.total_tokens.toLocaleString() }}</b><span>tokens</span></div></div><footer><span :class="{ pass: evidence.agent_ablation.c0.gate_pass }">结果检查 {{ evidence.agent_ablation.c0.gate_pass ? "通过" : "需处理" }}</span><small>{{ routeName }}</small></footer></section>
             <section class="agent-delta"><p class="kicker mono">C1 / C0 COST</p><div><b>+{{ evidence.agent_ablation.comparison.counterargument_count_delta }}</b><span>反方观点</span></div><div><strong>×{{ ratio(evidence.agent_ablation.comparison.elapsed_ratio_c1_over_c0) }}</strong><small>耗时</small></div><div><strong>×{{ ratio(evidence.agent_ablation.comparison.token_ratio_c1_over_c0) }}</strong><small>tokens</small></div></section>
-            <section class="condition c1"><header><span>C1</span><div><p class="kicker mono">ORCHESTRATED REASONING</p><h3>事实审查 → 质询 → 修订</h3></div></header><div class="condition-metrics"><div><b>{{ evidence.agent_ablation.c1.required_element_coverage }}/{{ evidence.agent_ablation.c1.required_element_total }}</b><span>要件</span></div><div><b>{{ evidence.agent_ablation.c1.counterargument_count }}</b><span>反方</span></div><div><b>{{ seconds(evidence.agent_ablation.c1.elapsed_ms) }}</b><span>耗时</span></div><div><b>{{ evidence.agent_ablation.c1.total_tokens.toLocaleString() }}</b><span>tokens</span></div></div><footer><span :class="{ pass: evidence.agent_ablation.c1.gate_pass }">最终Gate {{ evidence.agent_ablation.c1.gate_pass ? "PASS" : "FAIL" }}</span><small>原始Schema {{ evidence.agent_ablation.c1.raw_schema_pass ? "PASS" : "FAIL→ID归一" }}</small></footer></section></div>
-          <section class="agent-bottom"><article><p class="kicker mono">DETERMINISTIC NORMALIZATION</p><h4>0额外模型调用 · 0法律语义字段改写</h4><p>只把不合法的反方标识符归一为稳定ID；原始输出仍保留在审计中。</p></article><article><p class="kicker mono">LIGHTWEIGHT TUTOR</p><h4>{{ evidence.interaction.tutor_states }}态 · {{ evidence.interaction.allowed_contexts.length }}场景 · 画像更新0</h4><p>{{ evidence.interaction.label }}；不是Live2D或已连接的讯飞数字人。</p></article><section class="pending-list"><header><p class="kicker mono">REQUIRED HUMAN / MODEL EVIDENCE</p><h4>仍需真实完成</h4></header><div><article v-for="row in evidence.pending" :key="row.item"><span>{{ row.status }}</span><strong>{{ row.item }}</strong><p>{{ row.required_evidence }}</p></article></div></section></section>
+            <section class="condition c1"><header><span>C1</span><div><p class="kicker mono">ORCHESTRATED REASONING</p><h3>事实检查 → 质询 → 修订</h3></div></header><div class="condition-metrics"><div><b>{{ evidence.agent_ablation.c1.required_element_coverage }}/{{ evidence.agent_ablation.c1.required_element_total }}</b><span>要件</span></div><div><b>{{ evidence.agent_ablation.c1.counterargument_count }}</b><span>反方</span></div><div><b>{{ seconds(evidence.agent_ablation.c1.elapsed_ms) }}</b><span>耗时</span></div><div><b>{{ evidence.agent_ablation.c1.total_tokens.toLocaleString() }}</b><span>tokens</span></div></div><footer><span :class="{ pass: evidence.agent_ablation.c1.gate_pass }">结果检查 {{ evidence.agent_ablation.c1.gate_pass ? "通过" : "需处理" }}</span><small>{{ evidence.agent_ablation.c1.raw_schema_pass ? "格式完整" : "已自动整理格式" }}</small></footer></section></div>
+          <section class="agent-bottom"><article><p class="kicker mono">FORMAT NORMALIZATION</p><h4>不增加模型调用 · 不改变法律判断</h4><p>只整理结果格式，原始结果保留在内部实验记录中。</p></article><article><p class="kicker mono">LIGHTWEIGHT TUTOR</p><h4>{{ evidence.interaction.tutor_states }}态 · {{ evidence.interaction.allowed_contexts.length }}场景 · 画像更新0</h4><p>{{ evidence.interaction.label }}；不是Live2D或已连接的讯飞数字人。</p></article><section class="pending-list"><header><p class="kicker mono">NEXT STEPS</p><h4>下一步仍需完成</h4></header><div><article v-for="row in evidence.pending" :key="row.item"><span>{{ statusLabel(row.status) }}</span><strong>{{ row.item }}</strong><p>{{ row.required_evidence }}</p></article></div></section></section>
         </template>
 
-        <footer class="artifact-strip"><span v-for="row in evidence.provenance" :key="row.artifact_id"><b>{{ row.artifact_id }}</b><i class="mono">{{ artifactHash(row.sha256) }}</i></span></footer>
       </main>
     </section>
   </div>

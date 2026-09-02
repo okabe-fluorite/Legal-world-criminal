@@ -127,6 +127,9 @@ class HybridRagCorpusTests(unittest.TestCase):
     def test_builds_canonical_parent_child_and_private_isolation(self) -> None:
         manifest, audit = build_corpus(self.config)
         self.assertTrue(audit["all_passed"], audit)
+        self.assertTrue(audit["required_checks_passed"])
+        self.assertIn("inventory_metadata_complete", audit["quality_warnings"])
+        self.assertFalse(audit["quality_checks_passed"])
         self.assertEqual(manifest["counts"]["physical_sources"], 5)
         self.assertEqual(manifest["counts"]["canonical_documents"], 4)
         self.assertEqual(manifest["counts"]["duplicate_sources"], 1)

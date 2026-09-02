@@ -69,10 +69,10 @@ try {
     throw new Error(`Registration bootstrap failed: ${auth.status()}/${sandbox.status()}`);
   }
   await page.locator(".case__version").first().waitFor({ timeout: 60000 });
-  await page.getByRole("button", { name: "技术证据" }).click();
-  const dialog = page.getByRole("dialog", { name: "学科技术证据总账" });
+  await page.getByRole("button", { name: "技术说明" }).click();
+  const dialog = page.getByRole("dialog", { name: "学科技术说明" });
   await dialog.waitFor();
-  await page.getByText("刑法学科技术证据总账", { exact: true }).waitFor();
+  await page.getByText("刑法学科技术说明", { exact: true }).waitFor();
   await page.locator(".pipeline article").first().waitFor({ timeout: 30000 });
   const purposeText = await page.locator(".tech-purpose").innerText();
   if (
@@ -94,7 +94,7 @@ try {
     || !overviewText.includes("4,173")
     || !overviewText.includes("813")
     || !overviewText.includes("100题")
-    || !overviewText.includes("PENDING")
+    || !overviewText.includes("待完成")
   ) {
     throw new Error(`Overview incomplete: pipeline=${overviewPipeline} cards=${overviewCards}`);
   }
@@ -105,7 +105,7 @@ try {
   await page.screenshot({ path: path.join(artifactDir, "01-overview.png") });
 
   await page.getByRole("button", { name: "数据治理" }).click();
-  await page.getByText("文件库存与正式Evidence严格分层", { exact: true }).waitFor();
+  await page.getByText("候选资料与正式法源分层", { exact: true }).waitFor();
   const ledgerRows = await page.locator(".data-ledger article").count();
   const dataText = await page.locator(".tech-content").innerText();
   if (
@@ -121,7 +121,7 @@ try {
   await page.screenshot({ path: path.join(artifactDir, "02-data-governance.png") });
 
   await page.getByRole("button", { name: "推理 / 评测" }).click();
-  await page.getByText("结构化推理与100题评测共用Evidence纪律", { exact: true }).waitFor();
+  await page.getByText("结构化推理与100题评测共用来源检查", { exact: true }).waitFor();
   const checks = await page.locator(".check-grid span").count();
   const fixtures = await page.locator(".fixture-list article").count();
   const evalTypes = await page.locator(".eval-types article").count();
@@ -132,8 +132,8 @@ try {
     || fixtures !== 6
     || evalTypes !== 5
     || evalRoutes !== 4
-    || !reasoningText.includes("not_gold")
-    || !reasoningText.includes("pending_model_delivery")
+    || !reasoningText.includes("候选评测集")
+    || !reasoningText.includes("待模型交付")
   ) {
     throw new Error(
       `Reasoning/eval incomplete: checks=${checks} fixtures=${fixtures} types=${evalTypes} routes=${evalRoutes}`,
@@ -152,7 +152,7 @@ try {
     || pendingRows !== 4
     || !agentText.includes("×5.7753")
     || !agentText.includes("×2.7167")
-    || !agentText.includes("FAIL→ID归一")
+    || !agentText.includes("已自动整理格式")
     || !agentText.includes("画像更新0")
   ) {
     throw new Error(`Agent/boundary incomplete: conditions=${conditions} pending=${pendingRows}`);
@@ -175,6 +175,11 @@ try {
       "e:\\guabangjieshuai",
     ].filter((value) => text.includes(value));
   });
+  const technicalLeaks = await dialog.evaluate((body) => {
+    const text = (body.textContent || "").toLowerCase();
+    return ["sha256", "sha-256", "not_gold", "pending_model_delivery", "fail→id", "artifact_id"]
+      .filter((value) => text.includes(value));
+  });
   const output = {
     viewport: `${viewport.width}x${viewport.height}`,
     overview_pipeline: overviewPipeline,
@@ -190,6 +195,7 @@ try {
     pending_rows: pendingRows,
     horizontal_overflow: overflow,
     private_leaks: privateLeaks,
+    technical_leaks: technicalLeaks,
     console_errors: consoleErrors,
     page_errors: pageErrors,
     http_errors: httpErrors,
@@ -205,6 +211,7 @@ try {
   if (
     Object.values(overflow).some((row) => row.overflow)
     || privateLeaks.length
+    || technicalLeaks.length
     || consoleErrors.length
     || pageErrors.length
     || httpErrors.length

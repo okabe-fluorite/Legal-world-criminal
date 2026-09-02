@@ -1,6 +1,6 @@
 {
   "schema_version": "hybrid-rag-corpus-public-audit-v1",
-  "generated_at": "2026-09-01T17:20:42.957567+00:00",
+  "generated_at": "2026-09-02T05:56:05.038958+00:00",
   "snapshot_date": "2026-09-02",
   "builder": "hybrid-rag-corpus-builder-v1",
   "counts": {
@@ -60,12 +60,11 @@
     "textbook_chunks": "ff61a0b2415a61a394ee9032d6b85c1fc45ef464c56d09262a326828d9872567",
     "question_public": "71411eae9f46af2c12a3369369881faffd72a7cf58840d46a449708f8cd4c096",
     "question_private": "3ddb5d85c7dae15c576465c6661321f351be17eaec6bea369e69eec2ef2b65d3",
-    "audit": "f038500d2c4669b37e3a35799881bce64d8638dec51f4467021839fda329e8b5"
+    "audit": "d63f771ecab1e541180195bf59999b575ce8cc55dd918ac3c3d563dbdfc5d6e0"
   },
-  "gates": {
+  "required_checks": {
     "source_accounting_exact": true,
     "canonical_document_ids_unique": true,
-    "inventory_metadata_all_or_none": true,
     "legal_chunk_ids_unique": true,
     "case_parent_ids_unique": true,
     "case_children_all_have_parent": true,
@@ -80,6 +79,14 @@
     "model_network_calls_zero": true,
     "schema_validation_passed": true
   },
+  "quality_checks": {
+    "inventory_metadata_complete": true,
+    "case_semantic_sections_available": true,
+    "primary_textbook_subjects_available": true,
+    "question_pool_exceeds_product_seed": true
+  },
+  "required_checks_passed": true,
+  "quality_warnings": [],
   "all_passed": true,
   "execution": {
     "embedding_calls": 0,

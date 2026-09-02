@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T15:32:52.371Z",
+  "generated_at": "2026-09-02T06:40:54.386Z",
   "viewport": "1500x980",
   "overview_pipeline": 5,
   "overview_cards": 4,
@@ -39,9 +39,10 @@
     }
   },
   "private_leaks": [],
+  "technical_leaks": [],
   "console_errors": [],
   "page_errors": [],
   "http_errors": [],
   "request_failures": [],
-  "artifact_dir": ".codex-artifacts/stage13/final-technical-desktop"
+  "artifact_dir": ".codex-artifacts/hybrid-rag-stage2/technical-ui-user-final"
 }

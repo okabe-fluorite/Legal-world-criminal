@@ -4,7 +4,7 @@
 
 ## 复核内容
 
-- `01-case-evidence-drawer.png`：可信 RAG 案例引用的完整 Evidence 抽屉，包含 Evidence ID、法源层级、完整 quote、快照、SHA、状态、风险提示和原始来源链接；底层 RAG 页面不再透出。
+- `01-case-evidence-drawer.png`：可信 RAG 案例引用的完整来源抽屉，面向用户只展示来源类型、效力层级、版本/时效、引用原文、使用提示和原始来源链接；内部ID与SHA不在界面显示。
 - `02-voice-evidence-natural-tts.png`：实时语音回复中的法条行末引用及完整 Evidence 抽屉；页面显示讯飞 TTS 小露女声和 AI 形成性反馈边界。
 - `report.json`：本轮机器验收结果，包含引用数量、ASR 状态、真实输入电平、PCM/partial/final、TTS 音色、文件上传和 LearningEvent 边界，以及错误计数。
 - `x4_yezi.wav`：讯飞在线 TTS 真实生成的试听文件，16kHz WAV，180,942 bytes；SHA-256 为 `be4950d12f267f492df5731110a51f5367393b4312935467c906eaff5d5876cb`。

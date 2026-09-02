@@ -150,8 +150,8 @@ try {
   await page.getByText(/讯飞ASR已返回真实转写/).waitFor({ timeout: 60000 });
   const roundTripStatus = await page.locator(".media-result").innerText();
   if (
-    !roundTripStatus.includes("iflytek_websocket")
-    || !roundTripStatus.includes("needs_review")
+    !roundTripStatus.includes("讯飞在线语音")
+    || !roundTripStatus.includes("待复核")
     || !roundTripStatus.includes("罪刑法定")
   ) {
     throw new Error(`iFlytek UI round trip incomplete: ${roundTripStatus}`);
@@ -160,22 +160,22 @@ try {
   await page.locator(".media-upload input").setInputFiles(verificationAudio);
   await page.getByText(/讯飞ASR已生成真实转写/).waitFor({ timeout: 60000 });
   const mediaProofRows = await page.locator(".media-proof div").count();
-  if (mediaProofRows !== 3) throw new Error(`Expected 3 media proof rows, received ${mediaProofRows}`);
+  if (mediaProofRows !== 2) throw new Error(`Expected user-facing status/scope rows, received ${mediaProofRows}`);
   const availableCapabilities = await page.locator(".media-capability-grid article.ready").count();
   if (availableCapabilities !== 3) {
     throw new Error(`Expected upload/ASR/TTS available, received ${availableCapabilities}`);
   }
   await page.getByRole("button", { name: "调用预留接口验证状态" }).click();
-  await page.getByText(/数字人异步契约已真实调用/).waitFor();
+  await page.getByText(/数字人接口已准备/).waitFor();
   const mediaStatus = await page.locator(".media-result").innerText();
-  if (!mediaStatus.includes("not_connected")) {
+  if (!mediaStatus.includes("尚未连接")) {
     throw new Error(`Media provider boundary missing: ${mediaStatus}`);
   }
   await page.screenshot({ path: path.join(artifactDir, "07-media-avatar-boundary.png"), fullPage: false });
 
   const privateLeaks = await page.locator(".cog-board").evaluate((body) => {
     const text = body.textContent || "";
-    return ["answer_private", "rationale_private", "api_key", "source_response_sha256", "storage_root"].filter(
+    return ["answer_private", "rationale_private", "api_key", "source_response_sha256", "storage_root", "sha-256", "evidence id"].filter(
       (key) => text.includes(key),
     );
   });

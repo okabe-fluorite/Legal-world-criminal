@@ -82,7 +82,7 @@ const modeOptions = computed<
               <p>LC事实核验 → INV证据时间轴 → PR刑法第二十条/指导案例 → 检察机关采纳辩护意见、提前结案</p>
               <div class="competition-guide__metrics mono"><span>真实E2E 379.0s</span><span>30次独立回答</span><span>3 LearningEvents</span><span>3/3 Agent退场</span><span>0 runtime issue</span></div>
             </div>
-            <strong>审计快照</strong>
+            <strong>过程回放</strong>
           </section>
 
           <div class="modes">

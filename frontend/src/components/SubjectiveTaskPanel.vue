@@ -211,7 +211,7 @@ onMounted(() => void load());
 
         <main v-if="selectedTask" class="draft-main">
           <section class="task-brief">
-            <div><p class="subjective-kicker mono">{{ selectedTask.task_type.toUpperCase() }} · {{ selectedTask.content_sha256.slice(0, 10) }}</p><h3>{{ selectedTask.knowledge_names.join(" / ") }}</h3></div>
+            <div><p class="subjective-kicker mono">{{ selectedTask.task_type.toUpperCase() }} · 课程任务</p><h3>{{ selectedTask.knowledge_names.join(" / ") }}</h3></div>
             <span>{{ props.phase === "prestudy" ? "课前预习" : "课后复习" }}</span>
           </section>
           <section class="task-prompt"><p class="subjective-kicker mono">PROMPT</p><h3>{{ selectedTask.prompt }}</h3></section>
@@ -239,7 +239,7 @@ onMounted(() => void load());
 
           <section v-if="attempt" :class="['formative-review', { abstained: attempt.ai_abstained }]">
             <header><span class="review-seal">{{ attempt.ai_abstained ? "弃" : "评" }}</span><div><p class="subjective-kicker mono">FORMATIVE ONLY · {{ attempt.status }}</p><h3>{{ attempt.ai_abstained ? "自动评阅已弃权，等待教师复核" : `AI形成性参考 ${(Number(attempt.ai_score) * 10).toFixed(1)}/10` }}</h3><span>置信度 {{ Math.round(attempt.ai_confidence * 100) }}% · 不更新掌握或正式成绩</span></div></header>
-            <div v-if="attempt.ai_abstained" class="abstain-reason">{{ attempt.ai_feedback.abstain_reason || "未通过结构、引用或置信度门禁。" }}</div>
+            <div v-if="attempt.ai_abstained" class="abstain-reason">{{ attempt.ai_feedback.abstain_reason || "AI反馈信息不足，请按提示补充后重试。" }}</div>
             <div class="feedback-columns"><section><h4>已做到</h4><ul><li v-for="item in attempt.ai_feedback.strengths" :key="item">{{ item }}</li><li v-if="!attempt.ai_feedback.strengths.length">等待教师判断</li></ul></section><section><h4>需修订</h4><ul><li v-for="item in attempt.ai_feedback.corrections" :key="item">{{ item }}</li></ul></section></div>
             <p class="revision-note"><b>建议改写：</b>{{ attempt.ai_feedback.suggested_revision }}</p>
             <footer><span>{{ attempt.citation_audit.valid_standard_count }}条标准Evidence引用通过</span><strong>教师复核队列已接收 · {{ attempt.student_ref ?? "匿名学生" }}</strong></footer>

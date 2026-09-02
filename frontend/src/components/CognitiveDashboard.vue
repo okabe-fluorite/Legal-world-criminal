@@ -141,7 +141,7 @@ const argumentTemplate = computed(() => {
     { code: "EVID", title: "受治理证据", detail: `${target?.standard_evidence_ids.length ?? 0}条Evidence · ${target?.law_article_refs.join(" / ") || "待检索"}`, tone: "evidence" },
     { code: "CLAIM", title: "学生主张", detail: "由学生提交，不预生成标准结论", tone: "claim" },
     { code: "CHAL", title: "对抗质询", detail: caseRow ? `${caseRow.title} · AI检查遗漏与反方观点` : "进入案件后生成", tone: "challenge" },
-    { code: "GATE", title: "核验与复盘", detail: "引用审查 + Rubric + 教师门禁", tone: "gate" },
+    { code: "GATE", title: "核验与复盘", detail: "引用检查 + Rubric + 教师确认", tone: "gate" },
   ];
 });
 const pathNodes = computed(() => {
@@ -199,7 +199,7 @@ const pathNodes = computed(() => {
       no: "06",
       type: "角色互换",
       title: roleReversal?.knowledge_names.join(" / ") ?? "等待角色任务",
-      detail: roleReversal ? "反方立场 · 教师门禁" : "未映射",
+      detail: roleReversal ? "反方立场 · 教师确认" : "未映射",
       status: roleReversal ? "ready" : "locked",
       reason: "检验结论能否跨事实与立场迁移",
     },
@@ -234,6 +234,27 @@ const mediaTranscript = computed(() => String(mediaJob.value?.result?.transcript
 function mediaCapabilityStatus(capabilityId: string): string {
   return mediaCatalog.value?.capabilities.find((row) => row.capability_id === capabilityId)?.connection_status
     ?? "not_connected";
+}
+
+function statusLabelFriendly(value?: string): string {
+  return ({
+    available: "可用",
+    configured_not_verified: "已配置，等待首次使用",
+    not_configured: "未配置",
+    not_connected: "尚未连接",
+    succeeded: "已完成",
+    needs_review: "待复核",
+    failed: "处理失败",
+    queued: "排队中",
+    running: "处理中",
+  } as Record<string, string>)[String(value || "")] ?? "状态待确认";
+}
+
+function providerLabel(value?: string): string {
+  const provider = String(value || "").toLowerCase();
+  if (provider.includes("iflytek") || provider.includes("xfyun")) return "讯飞在线语音";
+  if (provider === "none" || !provider) return "暂无外部服务";
+  return "已配置服务";
 }
 
 function stateLabel(state?: AdaptiveKnowledgeEvidence): string {
@@ -358,7 +379,7 @@ async function transcribeLastTts(): Promise<void> {
       mediaMessage.value = `讯飞ASR未成功：${mediaJob.value.error?.code ?? mediaJob.value.status}`;
       return;
     }
-    mediaMessage.value = "讯飞ASR已返回真实转写；结果保持needs_review，不进入画像或正式评分。";
+    mediaMessage.value = "讯飞ASR已返回真实转写；结果需要复核，不进入画像或正式评分。";
     await refreshMediaCapabilities();
   } catch (reason) {
     mediaMessage.value = reason instanceof Error ? reason.message : String(reason);
@@ -379,7 +400,7 @@ async function checkAvatarInterface(): Promise<void> {
       ai_generated_disclosure: true,
       likeness_consent_confirmed: false,
     });
-    mediaMessage.value = "数字人异步契约已真实调用；当前Provider未授权，任务保持not_connected。";
+    mediaMessage.value = "数字人接口已准备，但当前服务尚未连接。";
   } catch (reason) {
     mediaMessage.value = reason instanceof Error ? reason.message : String(reason);
   } finally {
@@ -392,7 +413,7 @@ async function handleAudioUpload(event: Event): Promise<void> {
   const file = input.files?.[0];
   if (!file) return;
   mediaBusy.value = true;
-  mediaMessage.value = "正在写入当前用户私有sandbox并计算SHA-256……";
+  mediaMessage.value = "正在安全保存音频并开始转写……";
   try {
     mediaAsset.value = await api.uploadMediaAsset(file, "transcription");
     mediaJob.value = await api.startTranscription({
@@ -551,7 +572,7 @@ onUnmounted(() => {
           </div>
 
           <section class="generic-init"><div><p class="kicker mono">GENERIC PRETRAINING INITIALIZATION</p><h3>通用层迁移，不搬运旧学生/题目/知识参数</h3></div><div class="init-score"><span>V2 seed42 scratch</span><b>{{ ORCDF_SHADOW.genericInitialization.scratchV2Seed42Auc.toFixed(4) }}</b></div><span class="init-arrow">→</span><div class="init-score"><span>同宇宙初始化实验</span><b>{{ ORCDF_SHADOW.genericInitialization.initializedV2Seed42Auc.toFixed(4) }}</b></div><p>{{ ORCDF_SHADOW.genericInitialization.rule }}</p></section>
-          <section class="shadow-boundaries"><p v-for="item in ORCDF_SHADOW.boundaries" :key="item"><span>!</span>{{ item }}</p><footer class="mono">summary {{ ORCDF_SHADOW.provenance.summarySha256.slice(0, 16) }} · mastery {{ ORCDF_SHADOW.provenance.masterySha256.slice(0, 16) }}</footer></section>
+          <section class="shadow-boundaries"><p v-for="item in ORCDF_SHADOW.boundaries" :key="item"><span>!</span>{{ item }}</p><footer>实验版本和来源已在技术报告中记录</footer></section>
         </template>
 
         <template v-else-if="tab === 'path'">
@@ -595,13 +616,13 @@ onUnmounted(() => {
         <template v-else-if="tab === 'models'">
           <section class="model-hero"><div><p class="kicker mono">MODEL ADAPTER · ROUTE WITHOUT UI CHANGE</p><h3>基础模型 / Prompt / RAG / RAG+微调</h3><p>当前运行基线与预留微调端点分开显示；未连接时不生成模拟指标。</p></div><div class="model-status"><span :class="{ connected: modelCatalog?.small_model_enabled }"></span><strong>{{ modelCatalog?.small_model_enabled ? '微调端点已连接' : '微调端点已预留 · 当前未连接' }}</strong></div></section>
           <section class="route-grid"><article v-for="row in relevantRoutes" :key="row.task"><header><span>{{ row.task.slice(0, 2).toUpperCase() }}</span><div><p class="kicker mono">{{ row.task }}</p><h3>{{ row.route?.model_name || '未配置' }}</h3></div></header><dl><div><dt>当前provider</dt><dd>{{ row.route?.provider ?? 'none' }}</dd></div><div><dt>端点主机</dt><dd>{{ row.route?.api_base ?? 'not_configured' }}</dd></div><div><dt>当前基线端点</dt><dd :class="row.route?.configured ? 'ok' : 'off'">{{ row.route?.configured ? 'connected' : 'not_connected' }}</dd></div><div><dt>RAG+微调</dt><dd :class="row.smallConnected ? 'ok' : 'off'">{{ row.smallConnected ? 'connected' : 'not_connected' }}</dd></div></dl><footer>Key不返回前端 · URL私有路径已脱敏</footer></article></section>
-          <section class="comparison-lane"><article><span>01</span><h3>基础模型</h3><p>只做离线基线，不直接给正式结论</p></article><i>→</i><article><span>02</span><h3>Prompt / Few-shot</h3><p>固定JSON、Rubric与拒答格式</p></article><i>→</i><article><span>03</span><h3>可信RAG</h3><p>权威法条、版本、Evidence门禁</p></article><i>→</i><article class="pending"><span>04</span><h3>RAG + 微调</h3><p>{{ modelCatalog?.small_model_enabled ? '独立金标准验收后灰度接管' : 'not_connected · 不宣称已完成LoRA/SFT' }}</p></article></section>
-          <section class="model-boundary"><strong>验收门禁</strong><p>微调模型必须与基础/Prompt/RAG同条件比较格式遵循、引用忠实度、法学专家评分、拒答、延迟和成本；未通过时继续使用当前基线。</p><span class="mono">failover {{ modelCatalog?.failover.mode }} · {{ modelCatalog?.failover.circuit_seconds }}s circuit</span></section>
+          <section class="comparison-lane"><article><span>01</span><h3>基础模型</h3><p>只做离线基线，不直接给正式结论</p></article><i>→</i><article><span>02</span><h3>Prompt / Few-shot</h3><p>固定回答结构与拒答方式</p></article><i>→</i><article><span>03</span><h3>可信RAG</h3><p>权威法条、版本和引用检查</p></article><i>→</i><article class="pending"><span>04</span><h3>RAG + 微调</h3><p>{{ modelCatalog?.small_model_enabled ? '独立评测通过后逐步接入' : '尚未连接 · 当前继续使用稳定基线' }}</p></article></section>
+          <section class="model-boundary"><strong>接入条件</strong><p>微调模型需要比较引用质量、法学专家评分、拒答、延迟和成本；未达到预期时继续使用当前稳定基线。</p><span class="mono">故障时自动回退 · 不影响主要学习流程</span></section>
         </template>
 
         <template v-else>
           <section class="media-hero">
-            <div><p class="kicker mono">P1 LIVE VOICE CONVERSATION · P2 AVATAR POSTPONED</p><h3>实时语音多模态与数字人边界</h3><p>主交互是浏览器麦克风持续分片→讯飞实时partial/final→Evidence回复→讯飞TTS自动播放；文件上传只作兼容与审计。</p></div>
+            <div><p class="kicker mono">P1 LIVE VOICE CONVERSATION · P2 AVATAR POSTPONED</p><h3>实时语音多模态与数字人边界</h3><p>主交互是浏览器麦克风持续分片→讯飞实时partial/final→Evidence回复→讯飞TTS自动播放；文件上传只作兼容工具。</p></div>
             <div class="media-truth"><span>实时麦克风 + 多轮语音</span><strong>LearningEvent 0</strong><small>ASR固定needs_review · 数字人后置</small></div>
           </section>
 
@@ -609,22 +630,21 @@ onUnmounted(() => {
 
           <section v-if="mediaCatalog" class="media-capability-grid">
             <article v-for="row in mediaCatalog.capabilities" :key="row.capability_id" :class="{ ready: row.connection_status === 'available' }">
-              <header><span>{{ row.priority }}</span><div><p class="kicker mono">{{ row.capability_id }}</p><h3>{{ capabilityLabel(row.capability_id) }}</h3></div></header>
+              <header><span>{{ row.priority }}</span><div><p class="kicker mono">{{ capabilityLabel(row.capability_id) }}</p><h3>{{ capabilityLabel(row.capability_id) }}</h3></div></header>
               <dl>
-                <div><dt>实现</dt><dd>{{ row.implementation_status }}</dd></div>
-                <div><dt>连接</dt><dd :class="row.connection_status === 'available' ? 'ok' : 'off'">{{ row.connection_status }}</dd></div>
-                <div><dt>API</dt><dd>{{ row.endpoint }}</dd></div>
+                <div><dt>功能</dt><dd>{{ row.implementation_status === 'implemented' ? '已实现' : '已预留' }}</dd></div>
+                <div><dt>状态</dt><dd :class="row.connection_status === 'available' ? 'ok' : 'off'">{{ statusLabelFriendly(row.connection_status) }}</dd></div>
               </dl>
-              <footer v-if="row.provider_options?.length"><span v-for="provider in row.provider_options" :key="provider.provider_id">{{ provider.provider_id }} · {{ provider.adapter_status }}</span></footer>
-              <footer v-else><span>{{ row.client_fallback?.provider_id ?? '本地确定性能力' }}</span></footer>
+              <footer v-if="row.provider_options?.length"><span v-for="provider in row.provider_options" :key="provider.provider_id">{{ providerLabel(provider.provider_id) }}</span></footer>
+              <footer v-else><span>{{ row.client_fallback ? '浏览器本地降级可用' : '本地能力' }}</span></footer>
             </article>
           </section>
           <section v-else class="media-missing"><strong>能力目录未加载</strong><p>核心诊断仍可运行；媒体能力不会被假设为已连接。</p></section>
 
-          <section class="compatibility-label"><p class="kicker mono">COMPATIBILITY / AUDIT TOOLS · NOT THE LIVE VOICE MAIN FLOW</p><h3>文件式语音验收与数字人预留</h3><span>以下工具不计作实时语音对话完成证据</span></section>
+          <section class="compatibility-label"><p class="kicker mono">COMPATIBILITY TOOLS · NOT THE LIVE VOICE MAIN FLOW</p><h3>文件式语音兼容与数字人预留</h3><span>以下是兼容工具，不是实时语音主流程</span></section>
           <div class="media-lab-grid">
             <section class="media-lab">
-              <header><div><p class="kicker mono">IFLYTEK ONLINE TTS · CLIENT FALLBACK</p><h3>语音快问快答朗读</h3></div><span :class="mediaCapabilityStatus('text_to_speech') === 'available' ? 'ok' : 'off'">{{ mediaCapabilityStatus('text_to_speech') }}</span></header>
+              <header><div><p class="kicker mono">IFLYTEK ONLINE TTS · CLIENT FALLBACK</p><h3>语音快问快答朗读</h3></div><span :class="mediaCapabilityStatus('text_to_speech') === 'available' ? 'ok' : 'off'">{{ statusLabelFriendly(mediaCapabilityStatus('text_to_speech')) }}</span></header>
               <textarea v-model="speechText" maxlength="2000" aria-label="待朗读文本"></textarea>
               <div class="media-actions"><button :disabled="mediaBusy" @click="checkServerSpeech">生成讯飞WAV</button><button :disabled="mediaBusy || !lastTtsAssetId" @click="transcribeLastTts">将WAV送入ASR</button><button :disabled="!browserSpeechSupported || browserSpeaking" @click="readWithBrowserSpeech">{{ browserSpeaking ? '正在朗读…' : '浏览器降级' }}</button></div>
               <audio v-if="serverAudioUrl" class="media-audio" :src="serverAudioUrl" controls aria-label="讯飞AI合成音频"></audio>
@@ -632,14 +652,14 @@ onUnmounted(() => {
             </section>
 
             <section class="media-lab">
-              <header><div><p class="kicker mono">FILE COMPATIBILITY IAT · NEEDS REVIEW</p><h3>录音文件转写兼容入口</h3></div><span :class="mediaCapabilityStatus('speech_to_text') === 'available' ? 'ok' : 'off'">{{ mediaCapabilityStatus('speech_to_text') }}</span></header>
-              <label class="media-upload"><input type="file" accept="audio/wav,audio/mpeg,audio/mp3,audio/mp4,audio/webm,audio/ogg" :disabled="mediaBusy" @change="handleAudioUpload"><strong>选择≤15MB短音频</strong><span>私有sandbox · SHA-256 · JWT隔离</span></label>
-              <dl v-if="mediaAsset" class="media-proof"><div><dt>asset</dt><dd>{{ mediaAsset.asset_id }}</dd></div><div><dt>hash</dt><dd>{{ mediaAsset.content_sha256.slice(0, 20) }}…</dd></div><div><dt>scope</dt><dd>{{ mediaAsset.storage_scope }}</dd></div></dl>
-              <p>仅用于历史录音兼容和Provider审计，不是实时语音主交互；转写固定needs_review且不形成LearningEvent。</p>
+              <header><div><p class="kicker mono">FILE COMPATIBILITY IAT</p><h3>录音文件转写兼容入口</h3></div><span :class="mediaCapabilityStatus('speech_to_text') === 'available' ? 'ok' : 'off'">{{ statusLabelFriendly(mediaCapabilityStatus('speech_to_text')) }}</span></header>
+              <label class="media-upload"><input type="file" accept="audio/wav,audio/mpeg,audio/mp3,audio/mp4,audio/webm,audio/ogg" :disabled="mediaBusy" @change="handleAudioUpload"><strong>选择≤15MB短音频</strong><span>私有保存 · 登录用户隔离</span></label>
+              <dl v-if="mediaAsset" class="media-proof"><div><dt>状态</dt><dd>已安全保存</dd></div><div><dt>范围</dt><dd>仅当前用户可用</dd></div></dl>
+              <p>仅用于历史录音兼容，不是实时语音主交互；转写需要复核且不形成LearningEvent。</p>
             </section>
 
             <section class="media-lab avatar-lab">
-              <header><div><p class="kicker mono">P2 · EXTERNAL PROVIDER REQUIRED</p><h3>数字人异步渲染契约</h3></div><span class="off">not_connected</span></header>
+              <header><div><p class="kicker mono">P2 · 计划接入</p><h3>数字人异步渲染</h3></div><span class="off">尚未连接</span></header>
               <div class="avatar-flow"><span>审核文本</span><i>→</i><span>TTS / voice</span><i>→</i><span>Avatar render</span><i>→</i><span>AI显著标识</span></div>
               <button :disabled="mediaBusy" @click="checkAvatarInterface">调用预留接口验证状态</button>
               <p>推荐讯飞作为赛事主Provider，Azure作替代；自定义肖像必须确认授权。数字人只负责呈现，不参与评分或画像。</p>
@@ -647,8 +667,8 @@ onUnmounted(() => {
           </div>
 
           <section v-if="mediaMessage || mediaJob" class="media-result">
-            <div><p class="kicker mono">HONEST RUNTIME RESULT</p><h3>{{ mediaMessage || '任务状态已更新' }}</h3></div>
-            <dl v-if="mediaJob"><div><dt>job</dt><dd>{{ mediaJob.job_id }}</dd></div><div><dt>provider</dt><dd>{{ mediaJob.provider_resolved }}</dd></div><div><dt>status</dt><dd :class="['succeeded','needs_review'].includes(mediaJob.status) ? 'ok' : 'off'">{{ mediaJob.status }}</dd></div><div><dt>转写</dt><dd>{{ mediaTranscript || '—' }}</dd></div></dl>
+            <div><p class="kicker mono">处理结果</p><h3>{{ mediaMessage || '任务状态已更新' }}</h3></div>
+            <dl v-if="mediaJob"><div><dt>服务</dt><dd>{{ providerLabel(mediaJob.provider_resolved) }}</dd></div><div><dt>状态</dt><dd :class="['succeeded','needs_review'].includes(mediaJob.status) ? 'ok' : 'off'">{{ statusLabelFriendly(mediaJob.status) }}</dd></div><div><dt>转写</dt><dd>{{ mediaTranscript || '—' }}</dd></div></dl>
           </section>
         </template>
       </main>

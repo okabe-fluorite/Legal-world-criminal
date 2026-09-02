@@ -40,6 +40,11 @@ def main() -> int:
     parser.add_argument("--target-chars", type=int, default=1000)
     parser.add_argument("--max-chars", type=int, default=1400)
     parser.add_argument("--overlap-chars", type=int, default=120)
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="also fail on non-blocking quality warnings; default only fails required correctness/security checks",
+    )
     args = parser.parse_args()
     manifest, audit = build_corpus(
         BuildConfig(
@@ -65,13 +70,16 @@ def main() -> int:
                 "output_dir": str(args.output_dir),
                 "counts": manifest["counts"],
                 "audit_all_passed": audit["all_passed"],
+                "required_checks_passed": audit["required_checks_passed"],
+                "quality_warnings": audit["quality_warnings"],
                 "embedding_calls": audit["execution"]["embedding_calls"],
                 "reranker_calls": audit["execution"]["reranker_calls"],
             },
             ensure_ascii=False,
         )
     )
-    return 0 if audit["all_passed"] else 1
+    success = audit["strict_all_passed"] if args.strict else audit["required_checks_passed"]
+    return 0 if success else 1
 
 
 if __name__ == "__main__":

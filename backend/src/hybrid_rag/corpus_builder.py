@@ -835,15 +835,11 @@ def _build_audit(
     private_ids = [row["question_id"] for row in question_private]
     parent_by_id = {row["parent_id"]: row for row in case_parents}
     case_children = [row for row in legal_chunks if row["source_type"] == "case"]
-    gates = {
+    required_checks = {
         "source_accounting_exact": len(source_manifest)
         == len(canonical_documents) + sum(not row["is_canonical"] for row in source_manifest),
         "canonical_document_ids_unique": len({row["document_id"] for row in canonical_documents})
         == len(canonical_documents),
-        "inventory_metadata_all_or_none": not any(
-            row.get("inventory_metadata_present") for row in canonical_documents
-        )
-        or all(row.get("inventory_metadata_present") for row in canonical_documents),
         "legal_chunk_ids_unique": len({row["chunk_id"] for row in legal_chunks}) == len(legal_chunks),
         "case_parent_ids_unique": len(parent_by_id) == len(case_parents),
         "case_children_all_have_parent": bool(case_children)
@@ -884,10 +880,29 @@ def _build_audit(
         "model_network_calls_zero": True,
         "schema_validation_passed": not schema_errors,
     }
+    quality_checks = {
+        "inventory_metadata_complete": all(
+            row.get("inventory_metadata_present") for row in canonical_documents
+        ),
+        "case_semantic_sections_available": bool(case_parents)
+        and {"summary", "facts"}.issubset({row["section_type"] for row in case_parents}),
+        "primary_textbook_subjects_available": {"刑法", "刑事诉讼法"}.issubset(
+            {row["subject"] for row in textbook_chunks}
+        ),
+        "question_pool_exceeds_product_seed": len(question_public) > 43,
+    }
+    required_checks_passed = all(required_checks.values())
+    quality_warnings = [name for name, passed in quality_checks.items() if not passed]
     return {
         "schema_version": "hybrid-rag-corpus-audit-v1",
-        "gates": gates,
-        "all_passed": all(gates.values()),
+        "required_checks": required_checks,
+        "quality_checks": quality_checks,
+        "required_checks_passed": required_checks_passed,
+        "quality_checks_passed": not quality_warnings,
+        "quality_warnings": quality_warnings,
+        "gates": {**required_checks, **quality_checks},
+        "all_passed": required_checks_passed,
+        "strict_all_passed": required_checks_passed and not quality_warnings,
         "private_leak_keys": private_leak_keys,
         "schema_errors": schema_errors,
         "counts": {
@@ -971,6 +986,8 @@ def _manifest(
             if path.is_file()
         },
         "execution": audit["execution"],
+        "required_checks_passed": audit["required_checks_passed"],
+        "quality_warnings": audit["quality_warnings"],
         "audit_all_passed": audit["all_passed"],
         "evidence_boundary": audit["evidence_boundary"],
     }
@@ -989,7 +1006,10 @@ def _public_audit_payload(manifest: dict[str, Any], audit: dict[str, Any]) -> di
         "question_by_dataset": manifest["question_by_dataset"],
         "retrieval_contract": manifest["retrieval_contract"],
         "output_hashes": {name: row["sha256"] for name, row in manifest["outputs"].items()},
-        "gates": audit["gates"],
+        "required_checks": audit["required_checks"],
+        "quality_checks": audit["quality_checks"],
+        "required_checks_passed": audit["required_checks_passed"],
+        "quality_warnings": audit["quality_warnings"],
         "all_passed": audit["all_passed"],
         "execution": audit["execution"],
         "evidence_boundary": audit["evidence_boundary"],
@@ -998,9 +1018,10 @@ def _public_audit_payload(manifest: dict[str, Any], audit: dict[str, Any]) -> di
 
 def _public_audit_markdown(payload: dict[str, Any]) -> str:
     counts = payload["counts"]
-    gates = payload["gates"]
+    required_checks = payload["required_checks"]
+    quality_checks = payload["quality_checks"]
     lines = [
-        "# Hybrid RAG Corpus V1 机器审计",
+        "# Hybrid RAG Corpus V1 构建结果",
         "",
         f"- 快照日期：`{payload['snapshot_date']}`",
         f"- 构建器：`{payload['builder']}`",
@@ -1013,13 +1034,15 @@ def _public_audit_markdown(payload: dict[str, Any]) -> str:
         "",
         "## 检索契约",
         "",
-        "`BM25F + Qwen3-Embedding-8B → RRF → Reranker → 权威/时效/Evidence门禁`。",
+        "`BM25F + Qwen3-Embedding-8B → RRF → Reranker → 来源/时效/引用检查`。",
         "Reranker失败降级RRF；Embedding失败降级BM25F；明确条号命中不可被语义排序挤掉。",
         "",
-        "## 确定性门禁",
+        "## 必须通过的完成检查",
         "",
     ]
-    lines.extend(f"- [{'x' if passed else ' '}] `{name}`" for name, passed in gates.items())
+    lines.extend(f"- [{'x' if passed else ' '}] `{name}`" for name, passed in required_checks.items())
+    lines.extend(["", "## 质量提醒（不阻塞构建）", ""])
+    lines.extend(f"- [{'x' if passed else ' '}] `{name}`" for name, passed in quality_checks.items())
     lines.extend(
         [
             "",

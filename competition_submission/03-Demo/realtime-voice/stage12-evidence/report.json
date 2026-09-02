@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T08:07:09.080Z",
+  "generated_at": "2026-09-02T06:02:51.594Z",
   "rag_citation_marks": 6,
   "rag_tooltip_concise": true,
   "rag_case_drawer_complete": true,
@@ -9,7 +9,7 @@
   "asr_after_handshake": "available",
   "microphone_level_observed": true,
   "microphone_device_visible": true,
-  "sent_pcm_frames": 201,
+  "sent_pcm_frames": 203,
   "partial_results": 27,
   "final_results": 1,
   "tts_voice": "x4_yezi",

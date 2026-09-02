@@ -85,7 +85,7 @@ async function addLabel(page) {
       "pointer-events:none",
     ].join(";");
     label.innerHTML = [
-      "<div>实时操作 · 技术证据</div>",
+      "<div>实时操作 · 技术说明</div>",
       "<div style=\"font-weight:400;opacity:.82;margin-top:2px\">机器审计投影 · 仅证明软件行为</div>",
     ].join("");
     document.body.appendChild(label);
@@ -135,8 +135,8 @@ try {
 
   await addLabel(page);
   await page.waitForTimeout(900);
-  await page.getByRole("button", { name: "技术证据" }).click();
-  const dialog = page.getByRole("dialog", { name: "学科技术证据总账" });
+  await page.getByRole("button", { name: "技术说明" }).click();
+  const dialog = page.getByRole("dialog", { name: "学科技术说明" });
   await dialog.waitFor();
   await page.locator(".pipeline article").first().waitFor({ timeout: 30000 });
   const visibleChecks = {
@@ -146,12 +146,12 @@ try {
   await page.waitForTimeout(2600);
 
   await page.getByRole("button", { name: "数据治理" }).click();
-  await page.getByText("文件库存与正式Evidence严格分层", { exact: true }).waitFor();
+  await page.getByText("候选资料与正式法源分层", { exact: true }).waitFor();
   visibleChecks.data_ledger_rows = await page.locator(".data-ledger article").count();
   await page.waitForTimeout(3200);
 
   await page.getByRole("button", { name: "推理 / 评测" }).click();
-  await page.getByText("结构化推理与100题评测共用Evidence纪律", { exact: true }).waitFor();
+  await page.getByText("结构化推理与100题评测共用来源检查", { exact: true }).waitFor();
   visibleChecks.reasoning_checks = await page.locator(".check-grid span").count();
   visibleChecks.negative_fixtures = await page.locator(".fixture-list article").count();
   visibleChecks.eval_types = await page.locator(".eval-types article").count();
@@ -224,7 +224,7 @@ try {
       public_audit_uses_relative_paths_only: true,
     },
     video_mapping: {
-      segment: "技术证据→数据治理→推理/评测→Agent/边界",
+      segment: "技术说明→数据治理→推理/评测→Agent/边界",
       ppt_pages: [4, 6, 7, 8],
       scoring: ["技术实现", "技术先进性", "内容质量"],
     },

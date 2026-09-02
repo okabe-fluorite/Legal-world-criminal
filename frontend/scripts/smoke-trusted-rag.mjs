@@ -81,8 +81,8 @@ try {
     });
   }
 
-  await page.getByRole("button", { name: /运行错误引用门禁/ }).click();
-  await page.getByText("2/2 已拒绝", { exact: true }).waitFor();
+  await page.getByRole("button", { name: /演示错误引用检查/ }).click();
+  await page.getByText("2/2 条错误已发现", { exact: true }).waitFor();
   const badRows = await page.locator(".bad-audit-result article").count();
   if (badRows !== 2) throw new Error(`Expected 2 rejected citation rows, received ${badRows}`);
   const evidenceTutor = page.locator(".evidence-tutor .ai-tutor");
@@ -94,14 +94,23 @@ try {
   await page.screenshot({ path: path.join(artifactDir, "04-bad-citation-gate.png"), fullPage: false });
 
   const privateLeaks = await dialog.evaluate((body) => {
-    const text = body.textContent || "";
-    return ["api_key", "teacher_reference_private", "expected_points_private"].filter(
+    const text = (body.textContent || "").toLowerCase();
+    return [
+      "api_key",
+      "teacher_reference_private",
+      "expected_points_private",
+      "sha-256",
+      "sha256",
+      "evidence id",
+      "not_gold",
+      "pending_model_delivery",
+    ].filter(
       (value) => text.includes(value),
     );
   });
   const output = {
     questions: results,
-    automated_gate: "3/3",
+    citation_checks: "3/3",
     expert_review: "pending",
     rejected_bad_citations: badRows,
     evidence_tutor: evidenceTutorText,
