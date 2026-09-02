@@ -26,4 +26,7 @@
 - 向量均为1024维归一化float16，真实Embedding请求1,783次、输入token 6,120,883；有效索引约510.93MiB。完整向量、词法库、全文metadata位于Git忽略目录。
 - 公开题向量使用题干+选项的`embed_text`；私有答案索引禁用。法源与教材仍分库，案例子块保留parent_id供命中后回填。
 - 三条真实运行时查询已通过BM25F+Dense+RRF+Reranker；正当防卫案例能回填父段。法名版本后缀会干扰精确匹配的问题已修正，`刑法(2024年最新版)`现可识别为刑法别名并触发条号保护。
+- 阶段6已接入KnowledgeService：混合全库只负责候选召回，法律类候选按法名/条号回投现有受治理刑法/刑诉法原文后才进入EvidencePack；案例/教材/相似题通过独立公开分库API提供。
+- 真实HTTP验证：Hybrid 5条案例候选5/5父段回填；EvidencePack 5条、1条来自混合候选治理回投，Schema错误0；公开响应无retrieval_id、scores、SHA或机器状态码。
+- 新增明确法名+条号不存在时的可靠弃权，避免Dense相似材料为不存在法条硬给答案。普通用户只看到“词法与语义融合检索”等友好说明。
 - 计划文档：`docs/HYBRID_RAG_BOOKS_QUESTIONS_PLAN.md`。

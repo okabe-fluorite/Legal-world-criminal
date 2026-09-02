@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from ..teaching import law_corpus
+from ..hybrid_rag.runtime import get_hybrid_rag_retriever
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -60,6 +61,7 @@ class KnowledgeService:
         *,
         content_dir: Path = CONTENT_DIR,
         law_manifest_path: Path = LAW_MANIFEST_PATH,
+        hybrid_retriever: Any = ...,
     ) -> None:
         self.content_dir = Path(content_dir)
         self.cards = _read_jsonl(self.content_dir / "knowledge_cards.jsonl")
@@ -74,6 +76,47 @@ class KnowledgeService:
             (row["source_title"], row["article_ref"]): row
             for row in self.evidence_catalog
         }
+        self.hybrid_retriever = (
+            get_hybrid_rag_retriever() if hybrid_retriever is ... else hybrid_retriever
+        )
+
+    @staticmethod
+    def _canonical_formal_title(value: Any) -> str | None:
+        title = str(value or "")
+        if "刑事诉讼法" in title:
+            return "中华人民共和国刑事诉讼法"
+        if "刑法" in title:
+            return "中华人民共和国刑法"
+        return None
+
+    def _hybrid_formal_hits(self, query: str, top_k: int) -> tuple[list[dict[str, Any]], str]:
+        if self.hybrid_retriever is None:
+            return [], "词法检索"
+        try:
+            result = self.hybrid_retriever.search(
+                query,
+                collection="legal_authority",
+                top_k=max(5, top_k),
+            )
+        except Exception:
+            return [], "词法检索（语义服务暂不可用）"
+        hits: list[dict[str, Any]] = []
+        for candidate in result.get("results") or []:
+            title = self._canonical_formal_title(candidate.get("title"))
+            article_ref = str(candidate.get("article_ref") or "").strip()
+            if not title or not article_ref:
+                continue
+            article = law_corpus.resolve_article(title, article_ref)
+            if article is None:
+                continue
+            hits.append({**article, "score": 1.0, "_hybrid_candidate": True})
+        if result.get("stages", {}).get("dense") == "fallback_to_bm25f":
+            method = "词法检索（语义服务暂不可用）"
+        elif result.get("stages", {}).get("reranker") == "fallback_to_rrf":
+            method = "词法与语义融合（重排服务暂不可用）"
+        else:
+            method = "词法与语义融合检索"
+        return hits, method
 
     @staticmethod
     def public_task(task: dict[str, Any]) -> dict[str, Any]:
@@ -158,11 +201,20 @@ class KnowledgeService:
         if not query_text:
             raise ValueError("query is required")
         top_k = max(1, min(int(top_k), 10))
-        hits = law_corpus.search_law(query_text, top_k=top_k, title="中华人民共和国刑法")
+        hybrid_hits, retrieval_method = self._hybrid_formal_hits(query_text, top_k)
+        hits = hybrid_hits + law_corpus.search_law(
+            query_text,
+            top_k=top_k,
+            title="中华人民共和国刑法",
+        )
         evidence_rows: list[dict[str, Any]] = []
         seen: set[str] = set()
         for hit in hits:
             row = self._evidence_from_hit(hit)
+            if hit.get("_hybrid_candidate"):
+                row["match_reasons"] = ["hybrid_retrieval", "governed_article_projection"]
+            if row["evidence_id"] in seen:
+                continue
             seen.add(row["evidence_id"])
             evidence_rows.append(row)
 
@@ -219,6 +271,7 @@ class KnowledgeService:
             "warnings": [
                 "retrieval relevance and coverage are candidates, not semantic entailment judgments",
                 "recheck legal validity before each real classroom term",
+                f"retrieval method: {retrieval_method}",
             ],
         }
 

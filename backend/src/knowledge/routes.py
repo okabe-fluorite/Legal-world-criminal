@@ -6,6 +6,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from .service import get_knowledge_service
+from ..hybrid_rag.retriever import public_search_result
+from ..hybrid_rag.runtime import get_hybrid_rag_retriever
 
 
 router = APIRouter(prefix="/api/knowledge", tags=["knowledge"])
@@ -28,6 +30,12 @@ class CitationItem(BaseModel):
 
 class CitationAuditBody(BaseModel):
     citations: list[CitationItem] = Field(min_length=1, max_length=50)
+
+
+class HybridSearchBody(BaseModel):
+    query: str = Field(min_length=1, max_length=2000)
+    collection: str = Field(default="legal_authority", pattern="^(legal_authority|textbook_explanation|question_public)$")
+    top_k: int = Field(default=5, ge=1, le=20)
 
 
 @router.get("/catalog")
@@ -56,6 +64,19 @@ def audit_citations(body: CitationAuditBody) -> dict[str, Any]:
     return get_knowledge_service().audit_citations(
         [citation.model_dump() for citation in body.citations]
     )
+
+
+@router.post("/hybrid-search")
+def hybrid_search(body: HybridSearchBody) -> dict[str, Any]:
+    retriever = get_hybrid_rag_retriever()
+    if retriever is None:
+        raise HTTPException(status_code=503, detail="混合检索索引尚未连接，当前仍可使用基础法条检索。")
+    try:
+        return public_search_result(
+            retriever.search(body.query, collection=body.collection, top_k=body.top_k)
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 __all__ = ["router"]

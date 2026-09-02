@@ -27,6 +27,27 @@ def load_jsonl(name: str) -> list[dict]:
 
 
 class KnowledgeContractTests(unittest.TestCase):
+    def test_hybrid_candidates_are_projected_back_to_governed_articles(self) -> None:
+        class FakeHybridRetriever:
+            def search(self, query, **kwargs):
+                return {
+                    "stages": {"dense": "succeeded", "reranker": "succeeded"},
+                    "results": [
+                        {
+                            "title": "中华人民共和国刑法（2024年最新版）",
+                            "article_ref": "第二十条",
+                            "quote": "候选来源中的文本不能直接替代治理法源。",
+                        }
+                    ],
+                }
+
+        service = KnowledgeService(hybrid_retriever=FakeHybridRetriever())
+        result = service.search(query="刑法第二十条正当防卫", top_k=3)
+        article = next(row for row in result["evidences"] if row["article_ref"] == "第二十条")
+        self.assertNotEqual(article["quote"], "候选来源中的文本不能直接替代治理法源。")
+        self.assertEqual(article["match_reasons"], ["hybrid_retrieval", "governed_article_projection"])
+        self.assertIn("词法与语义融合检索", " ".join(result["warnings"]))
+
     def test_manifest_and_frozen_contracts_are_governed(self) -> None:
         manifest = json.loads((DATA_DIR / "manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["counts"], {

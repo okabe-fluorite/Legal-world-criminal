@@ -17,6 +17,7 @@ from .siliconflow import SiliconFlowClient
 
 _ARTICLE_RE = re.compile(r"第[一二三四五六七八九十百千万零〇两\d]+条(?:之[一二三四五六七八九十百千零〇两\d]+)?")
 _VERSION_SUFFIX_RE = re.compile(r"(?:\(|（)[^()（）]*(?:年|版|修订|修正)[^()（）]*(?:\)|）)")
+_QUOTED_TITLE_RE = re.compile(r"《([^》]{2,100})》")
 
 
 def _normalize(value: Any) -> str:
@@ -214,6 +215,25 @@ class HybridRagRetriever:
             ]
         )
         exact_indices = index.exact_article_indices(query_text)
+        explicit_missing_article = bool(
+            collection == "legal_authority"
+            and _ARTICLE_RE.search(_normalize(query_text))
+            and _QUOTED_TITLE_RE.search(query_text)
+            and not exact_indices
+        )
+        if explicit_missing_article:
+            return {
+                "schema_version": "hybrid-rag-search-result-v1",
+                "query": query_text,
+                "collection": collection,
+                "stages": {**stages, "reranker": "skipped_by_exact_reference_check"},
+                "fallback_used": False,
+                "abstained": True,
+                "abstention_reason": "explicit_title_article_not_found",
+                "results": [],
+                "errors": errors,
+                "notice": "未找到与指定法名和条号同时匹配的资料，请核对名称、条号或版本。",
+            }
         for position, document_index in enumerate(exact_indices):
             rrf_scores[document_index] = rrf_scores.get(document_index, 0.0) + 1.0 - position * 0.0001
         fused = sorted(rrf_scores, key=lambda document_index: rrf_scores[document_index], reverse=True)
@@ -256,10 +276,51 @@ class HybridRagRetriever:
             "collection": collection,
             "stages": stages,
             "fallback_used": any(value.startswith("fallback") for value in stages.values()),
+            "abstained": False,
             "results": results,
             "errors": errors,
             "notice": "检索结果用于提供候选资料；正式法律结论仍需核对来源、时效和适用关系。",
         }
 
 
-__all__ = ["HybridCollection", "HybridRagRetriever"]
+def public_search_result(value: dict[str, Any]) -> dict[str, Any]:
+    """Remove internal identifiers, raw ranks and machine status codes for product UI."""
+
+    stages = value.get("stages") if isinstance(value.get("stages"), dict) else {}
+    fallback = bool(value.get("fallback_used"))
+    if stages.get("dense") == "fallback_to_bm25f":
+        method = "词法检索（语义服务暂不可用）"
+    elif stages.get("reranker") == "fallback_to_rrf":
+        method = "词法与语义融合（重排服务暂不可用）"
+    else:
+        method = "词法与语义融合检索"
+    rows = []
+    for result in value.get("results") or []:
+        rows.append(
+            {
+                "source_type": result.get("source_type") or "资料",
+                "authority_level": result.get("authority_level") or "层级待复核",
+                "title": result.get("title") or "",
+                "article_ref": result.get("article_ref") or "",
+                "section_title": result.get("section_title") or "",
+                "quote": result.get("quote") or "",
+                "parent_context": result.get("parent_context"),
+                "effective_date": result.get("effective_date") or "",
+                "effective_status": result.get("effective_status") or "",
+                "source_url": result.get("source_url") or "",
+                "source_use": result.get("source_use") or "使用前请复核",
+            }
+        )
+    return {
+        "schema_version": "hybrid-rag-public-search-v1",
+        "query": value.get("query") or "",
+        "collection": value.get("collection") or "",
+        "retrieval_method": method,
+        "fallback_used": fallback,
+        "abstained": bool(value.get("abstained")),
+        "results": rows,
+        "notice": value.get("notice") or "检索结果用于提供候选资料。",
+    }
+
+
+__all__ = ["HybridCollection", "HybridRagRetriever", "public_search_result"]

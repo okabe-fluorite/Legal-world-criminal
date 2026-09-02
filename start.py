@@ -265,6 +265,8 @@ def build_backend_env(model_config: Path | None = None) -> dict[str, str]:
 
     RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
     database_path = (RUNTIME_DIR / "legalworld-local.db").resolve().as_posix()
+    hybrid_manifest = ROOT / ".codex-artifacts" / "hybrid-rag-index-v1" / "index_set_manifest.json"
+    env.setdefault("SIMLAW_HYBRID_RAG_ENABLED", "1" if hybrid_manifest.is_file() else "0")
     env.setdefault("DATABASE_URL", f"sqlite+pysqlite:///{database_path}")
     env.setdefault("JWT_SECRET", secrets.token_urlsafe(48))
     env.setdefault("SIMLAW_PLAYER_LAWYER_MODE", "defendant")

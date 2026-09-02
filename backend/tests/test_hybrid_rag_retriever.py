@@ -13,7 +13,7 @@ if str(BACKEND) not in sys.path:
     sys.path.insert(0, str(BACKEND))
 
 from src.hybrid_rag.lexical_index import build_lexical_index  # noqa: E402
-from src.hybrid_rag.retriever import HybridRagRetriever  # noqa: E402
+from src.hybrid_rag.retriever import HybridRagRetriever, public_search_result  # noqa: E402
 from src.hybrid_rag.siliconflow import EmbeddingResult, RerankItem, RerankResult  # noqa: E402
 from src.hybrid_rag.vector_index import IndexRecord  # noqa: E402
 
@@ -150,6 +150,27 @@ class HybridRagRetrieverTests(unittest.TestCase):
         self.assertEqual(response["stages"]["reranker"], "fallback_to_rrf")
         case = next(row for row in response["results"] if row["retrieval_id"] == "C1")
         self.assertEqual(case["parent_context"]["content"], "完整的裁判规则父段内容。")
+
+    def test_public_projection_hides_internal_ids_scores_and_machine_codes(self) -> None:
+        retriever = HybridRagRetriever(index_root=self.index_root, corpus_root=self.corpus_root, client=FakeClient())
+        internal = retriever.search("张某正当防卫案裁判规则", top_k=3)
+        public = public_search_result(internal)
+        serialized = json.dumps(public, ensure_ascii=False)
+        self.assertNotIn("retrieval_id", serialized)
+        self.assertNotIn('"scores"', serialized)
+        self.assertNotIn("succeeded", serialized)
+        self.assertNotIn("fallback_to_", serialized)
+        case = next(row for row in public["results"] if row["source_type"] == "case")
+        self.assertEqual(case["parent_context"]["content"], "完整的裁判规则父段内容。")
+
+    def test_explicit_nonexistent_law_and_article_abstains(self) -> None:
+        retriever = HybridRagRetriever(index_root=self.index_root, corpus_root=self.corpus_root, client=FakeClient())
+        response = retriever.search("请查找《不存在的测试法》第九百九十九条", top_k=3)
+        self.assertTrue(response["abstained"])
+        self.assertEqual(response["results"], [])
+        public = public_search_result(response)
+        self.assertTrue(public["abstained"])
+        self.assertIn("未找到", public["notice"])
 
 
 if __name__ == "__main__":

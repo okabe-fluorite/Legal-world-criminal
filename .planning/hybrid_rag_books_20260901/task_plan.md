@@ -4,7 +4,7 @@
 先制定计划，再按确认后的阶段实现法律全库混合检索、教材解释RAG和题目相似检索。法律Dense Embedding使用EduBrain现有SiliconFlow配置，并在融合候选后使用Reranker；当前不调用API、不修改业务代码。
 
 ## 当前阶段
-阶段6：Hybrid集成（进行中）
+阶段7：评测与材料（进行中）
 
 ## 阶段
 
@@ -44,12 +44,12 @@
 - **状态：** completed（57,051条真实索引，三路行数/向量/词法索引一致）
 
 ### 阶段6：Hybrid集成
-- [ ] BM25F+Dense并行
-- [ ] RRF融合和精确条号保护
-- [ ] Reranker对RRF候选重排；失败时降级RRF
-- [ ] EvidencePack与feature flag
-- [ ] BM25F fallback
-- **状态：** pending
+- [x] BM25F+Dense并行
+- [x] RRF融合和精确条号保护
+- [x] Reranker对RRF候选重排；失败时降级RRF
+- [x] EvidencePack治理回投、公开分库API与feature flag
+- [x] Embedding失败降级BM25F，明确不存在法名/条号可靠弃权
+- **状态：** completed（真实HTTP验证通过；公开响应内部字段泄漏0）
 
 ### 阶段7：评测与材料
 - [ ] R0—R4检索消融
@@ -83,3 +83,4 @@
 | 尝试删除生成的题目旧索引被命令安全策略拒绝 | 1 | 不再删除；把旧索引在同一生成目录内改名留档，再生成包含题干与选项的新索引 |
 | PowerShell单行Python索引审计出现ScriptBlock解析错误 | 1 | 改用单引号here-string传入Python代码，审计成功；不重复复杂内联转义 |
 | 真实检索smoke从backend目录运行却把backend误当仓库根目录 | 1 | 使用`Path.cwd().parent`明确仓库根；索引与客户端专项测试已通过，不涉及索引重建 |
+| 从仓库根直接加载`test_knowledge_contracts`缺少backend模块路径 | 1 | 按该测试既有运行约定切到backend目录执行，不修改业务代码规避测试上下文问题 |
