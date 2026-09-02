@@ -86,7 +86,7 @@ async function addLabel(page) {
     ].join(";");
     label.innerHTML = [
       "<div>实时操作 · 技术说明</div>",
-      "<div style=\"font-weight:400;opacity:.82;margin-top:2px\">机器审计投影 · 仅证明软件行为</div>",
+      "<div style=\"font-weight:400;opacity:.82;margin-top:2px\">技术结果投影 · 仅证明软件行为</div>",
     ].join("");
     document.body.appendChild(label);
   });
@@ -153,6 +153,11 @@ try {
   await page.getByRole("button", { name: "推理 / 评测" }).click();
   await page.getByText("结构化推理与100题评测共用来源检查", { exact: true }).waitFor();
   visibleChecks.reasoning_checks = await page.locator(".check-grid span").count();
+  visibleChecks.hybrid_records = Number(
+    (await page.locator(".rag-experiment dd").first().innerText()).replaceAll(",", ""),
+  );
+  visibleChecks.hybrid_candidate_recall_at_5 = await page.locator(".rag-experiment dd").nth(1).innerText();
+  visibleChecks.hybrid_no_answer_false_positive = await page.locator(".rag-experiment dd").nth(3).innerText();
   visibleChecks.negative_fixtures = await page.locator(".fixture-list article").count();
   visibleChecks.eval_types = await page.locator(".eval-types article").count();
   visibleChecks.eval_routes = await page.locator(".eval-matrix article").count();
@@ -185,9 +190,12 @@ try {
     Object.entries(errors).map(([key, values]) => [key, values.length]),
   );
   const expectedChecks = {
-    overview_pipeline: 5,
+    overview_pipeline: 6,
     overview_cards: 4,
-    data_ledger_rows: 4,
+    data_ledger_rows: 5,
+    hybrid_records: 57051,
+    hybrid_candidate_recall_at_5: "0.8600",
+    hybrid_no_answer_false_positive: "0.0000",
     reasoning_checks: 11,
     negative_fixtures: 6,
     eval_types: 5,
@@ -224,13 +232,13 @@ try {
       public_audit_uses_relative_paths_only: true,
     },
     video_mapping: {
-      segment: "技术说明→数据治理→推理/评测→Agent/边界",
-      ppt_pages: [4, 6, 7, 8],
+      segment: "技术说明→数据治理→Hybrid RAG与推理/评测→Agent/边界",
+      ppt_pages: [4, 5, 7, 8, 9],
       scoring: ["技术实现", "技术先进性", "内容质量"],
     },
     evidence_boundary: (
-      "real browser interaction from a synthetic local account; automatic gates are software "
-      + "evidence rather than expert legal accuracy; candidate benchmark items remain not_gold; "
+      "real browser interaction from a synthetic local account; automatic checks are software "
+      + "evidence rather than expert legal accuracy; candidate retrieval and benchmark items still require teacher review; "
       + "the segment is silent source material and not the final team-approved video"
     ),
   };

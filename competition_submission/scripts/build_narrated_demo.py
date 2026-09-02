@@ -30,8 +30,8 @@ ITEMS = [
         "kind": "video",
         "source": "technical-evidence.webm",
         "duration": 18.6,
-        "text": "先看机器证据总账。四千一百七十三份候选材料，经治理形成八百一十三条正式法源；十一项推理门禁、百题候选评测和智能体消融都由审计文件哈希绑定。自动门禁不等于专家准确率，百题仍待教师审核。",
-        "caption": "数据治理→Evidence推理→模型无关评测→Agent消融\n自动Gate≠专家准确率；100题仍为not_gold",
+        "text": "先看学科技术总览。四千一百七十三份候选材料治理出八百一十三条正式法源；五万七千零五十一条法源、案例、教材和公开题采用词法与语义混合检索，加入条号和无答案保护，再由重排模型排序。候选召回率零点八六，但一百二十条查询仍待教师复核。",
+        "caption": "4,173候选→813正式法源→57,051条分层检索\nBM25F+Dense→RRF→条号/弃权保护→Reranker；120条查询待教师复核",
     },
     {
         "id": "02-diagnosis",
@@ -47,7 +47,7 @@ ITEMS = [
         "source": "02-trusted-rag.webm",
         "duration": 15.7,
         "text": "可信知识检索把系统输出、标准答案、法条原文、来源版本和逐字证据放在同一界面。三个典型问题自动门禁通过，但专家复核仍待完成；错误引用现场二比二拒绝。",
-        "caption": "系统输出、标准答案与权威Evidence同屏\n错误引用2/2拒绝；专家复核仍pending",
+        "caption": "系统输出、标准答案与权威Evidence同屏\n错误引用2/2拒绝；专家复核待完成",
     },
     {
         "id": "04-student",
@@ -104,7 +104,7 @@ ITEMS = [
         "source": "iflytek-realtime-voice.webm",
         "duration": 22.0,
         "text": "最后是实时语音多模态。浏览器麦克风持续发送十六千赫兹PCM分片，讯飞边听边返回动态转写；结束本轮后，系统检索受治理法源，生成形成性短答并自动播放讯飞合成语音。整个过程没有文件上传，不生成学习事件，数字人仍保持未连接。",
-        "caption": "浏览器麦克风PCM→讯飞partial/final→Evidence短答→TTS播放\n文件上传0、转写needs_review、LearningEvent 0；数字人not_connected",
+        "caption": "浏览器麦克风PCM→讯飞partial/final→Evidence短答→TTS播放\n文件上传0、转写待复核、LearningEvent 0；数字人未连接",
     },
     {
         "id": "11-close",
@@ -120,6 +120,11 @@ REQUIRED_CONTENT = [
     {
         "id": "governed_legal_data",
         "label": "4,173候选材料到813正式法源的数据治理",
+        "items": ["02-technical-evidence"],
+    },
+    {
+        "id": "hybrid_rag",
+        "label": "57,051条三库Hybrid RAG、R0—R4候选消融和无答案保护",
         "items": ["02-technical-evidence"],
     },
     {
@@ -154,7 +159,7 @@ REQUIRED_CONTENT = [
     },
     {
         "id": "model_adapter",
-        "label": "Model Adapter基线与微调not_connected",
+        "label": "Model Adapter基线与微调模型待交付",
         "items": ["02-diagnosis"],
     },
     {
