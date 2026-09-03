@@ -1,7 +1,7 @@
 {
   "schema_version": "product-evidence-audit-v1",
-  "generated_at": "2026-08-29T00:53:23.298785+00:00",
-  "git_commit": "96bca394baec00e3be654b41defab6cb31105db8",
+  "generated_at": "2026-09-03T19:04:48.676009+00:00",
+  "git_commit": "fa69a046c15bead6dd974e107973f062f7887a56",
   "protocol": {
     "seed": 20260827,
     "network_calls": 0,
@@ -10,10 +10,10 @@
     "scope": "deterministic software-mechanism audit"
   },
   "inputs": {
-    "audit_script_sha256": "9b3e5f8628452f4215457bb6f9063948c6f25320cfcbb6b258c960a89e35894e",
+    "audit_script_sha256": "40fd9e1dfea034b2440e76cf858a851d3a929424e34d6854669ceff4a21fbca2",
     "content_manifest_sha256": "fc1e43cfb646d0d24d0c34d748758cbeb536a64cdee2b9a604673c8e3561094f",
     "law_manifest_sha256": "78360315a0e3b29f1c34bceeb3ccfde7ee75aa8b16c56efe3a8f20701f0e76d7",
-    "real_e2e_audit_sha256": "beb44df993acaebbdcc6ea98b726d078495e56414604f46d968cc789b0854afc",
+    "real_e2e_audit_sha256": "0ea8433d5a379e48dffacfae4528a7b9a4f348806babf065f07800da67a70052",
     "case_bundle_manifest_sha256": "881e1a3d53d0e75f02677f45cd2bcaa0a97ab69197e7fb9342112f2bb18a2e93"
   },
   "case_bundles": {
@@ -59,7 +59,7 @@
   },
   "retrieval_and_citation": {
     "query_count": 10,
-    "bm25_expected_hit_rate_at_5": 0.9,
+    "bm25_expected_hit_rate_at_5": 1.0,
     "governed_expected_hit_rate_at_5": 1.0,
     "coverage_status_boundary_passed": true,
     "citation_catalog_count": 22,
@@ -79,6 +79,7 @@
           "第三条",
           "第二百九十六条",
           "第十三条",
+          "第十二条",
           "第四百二十条"
         ],
         "governed_top5_plus_standard_refs": [
@@ -103,6 +104,10 @@
         ],
         "bm25_top5_refs": [
           "第一百六十二条之一",
+          "第三十三条",
+          "第三十二条",
+          "第三十五条",
+          "第三十四条",
           "第十三条",
           "第十条",
           "第四百二十条",
@@ -134,7 +139,8 @@
           "第六十五条",
           "第十七条之一",
           "第十五条",
-          "第十六条"
+          "第十六条",
+          "第十四条"
         ],
         "governed_top5_plus_standard_refs": [
           "第五十三条",
@@ -271,6 +277,7 @@
           "第二十七条",
           "第二十九条",
           "第二十五条",
+          "第二十八条",
           "第二十六条"
         ],
         "governed_top5_plus_standard_refs": [
@@ -297,6 +304,7 @@
           "第三十四条"
         ],
         "bm25_top5_refs": [
+          "第三十三条",
           "第三十二条",
           "第三十五条",
           "第三十四条",
@@ -328,7 +336,8 @@
           "第一百九十二条",
           "第一百二十条之五",
           "第三百八十二条",
-          "第三百零七条之一"
+          "第三百零七条之一",
+          "第二百六十三条"
         ],
         "governed_top5_plus_standard_refs": [
           "第一百九十三条",
@@ -338,7 +347,7 @@
           "第三百零七条之一",
           "第二百六十三条"
         ],
-        "bm25_expected_hit": false,
+        "bm25_expected_hit": true,
         "governed_expected_hit": true,
         "coverage_statuses": [
           "candidate_requires_semantic_audit"
@@ -348,8 +357,9 @@
   },
   "adaptive_mechanism": {
     "knowledge_count": 10,
-    "missing_signal_mean_rank_improvement": 4.5,
-    "missing_signal_rank1_count": 10,
+    "missing_signal_mean_rank_improvement": -4,
+    "missing_signal_rank1_count": 1,
+    "graph_path_policy_pass_count": 10,
     "confusion_signal_mean_rank_improvement": 4.5,
     "confusion_signal_rank1_count": 10,
     "completed_task_exclusion_passed": true,
@@ -357,53 +367,174 @@
     "missing_rank_pairs": [
       {
         "knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "knowledge_name": "罪刑法定原则",
         "cold_rank": 1,
-        "after_missing_rank": 1
+        "after_missing_rank": 1,
+        "next_knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "next_knowledge_name": "罪刑法定原则",
+        "path_action": "collect_or_reinforce_target",
+        "prerequisite_path_names": [],
+        "graph_path_policy_pass": true
       },
       {
         "knowledge_id": "CRIM_KP_BC82753EB8088C13",
+        "knowledge_name": "犯罪概念与但书",
         "cold_rank": 2,
-        "after_missing_rank": 1
+        "after_missing_rank": 7,
+        "next_knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "next_knowledge_name": "罪刑法定原则",
+        "path_action": "diagnose_or_reinforce_prerequisite",
+        "prerequisite_path_names": [
+          [
+            "罪刑法定原则",
+            "犯罪概念与但书"
+          ]
+        ],
+        "graph_path_policy_pass": true
       },
       {
         "knowledge_id": "CRIM_KP_2DD5C021746121C3",
+        "knowledge_name": "故意、过失与意外事件",
         "cold_rank": 3,
-        "after_missing_rank": 1
+        "after_missing_rank": 8,
+        "next_knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "next_knowledge_name": "罪刑法定原则",
+        "path_action": "diagnose_or_reinforce_prerequisite",
+        "prerequisite_path_names": [
+          [
+            "罪刑法定原则",
+            "犯罪概念与但书",
+            "故意、过失与意外事件"
+          ]
+        ],
+        "graph_path_policy_pass": true
       },
       {
         "knowledge_id": "CRIM_KP_B81F51ACC84055A4",
+        "knowledge_name": "刑事责任年龄",
         "cold_rank": 4,
-        "after_missing_rank": 1
+        "after_missing_rank": 9,
+        "next_knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "next_knowledge_name": "罪刑法定原则",
+        "path_action": "diagnose_or_reinforce_prerequisite",
+        "prerequisite_path_names": [
+          [
+            "罪刑法定原则",
+            "犯罪概念与但书",
+            "刑事责任年龄"
+          ]
+        ],
+        "graph_path_policy_pass": true
       },
       {
         "knowledge_id": "CRIM_KP_7B01D1EBC00BC8ED",
+        "knowledge_name": "正当防卫与防卫过当",
         "cold_rank": 5,
-        "after_missing_rank": 1
+        "after_missing_rank": 10,
+        "next_knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "next_knowledge_name": "罪刑法定原则",
+        "path_action": "diagnose_or_reinforce_prerequisite",
+        "prerequisite_path_names": [
+          [
+            "罪刑法定原则",
+            "犯罪概念与但书",
+            "正当防卫与防卫过当"
+          ]
+        ],
+        "graph_path_policy_pass": true
       },
       {
         "knowledge_id": "CRIM_KP_85BF396EA13741B5",
+        "knowledge_name": "紧急避险",
         "cold_rank": 6,
-        "after_missing_rank": 1
+        "after_missing_rank": null,
+        "next_knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "next_knowledge_name": "罪刑法定原则",
+        "path_action": "diagnose_or_reinforce_prerequisite",
+        "prerequisite_path_names": [
+          [
+            "罪刑法定原则",
+            "犯罪概念与但书",
+            "紧急避险"
+          ]
+        ],
+        "graph_path_policy_pass": true
       },
       {
         "knowledge_id": "CRIM_KP_8AABCC5F5D5822AD",
+        "knowledge_name": "犯罪预备、未遂与中止",
         "cold_rank": 7,
-        "after_missing_rank": 1
+        "after_missing_rank": null,
+        "next_knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "next_knowledge_name": "罪刑法定原则",
+        "path_action": "diagnose_or_reinforce_prerequisite",
+        "prerequisite_path_names": [
+          [
+            "罪刑法定原则",
+            "犯罪概念与但书",
+            "故意、过失与意外事件",
+            "犯罪预备、未遂与中止"
+          ]
+        ],
+        "graph_path_policy_pass": true
       },
       {
         "knowledge_id": "CRIM_KP_07D38E1BC70F5155",
+        "knowledge_name": "共同犯罪与主从犯",
         "cold_rank": 8,
-        "after_missing_rank": 1
+        "after_missing_rank": null,
+        "next_knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "next_knowledge_name": "罪刑法定原则",
+        "path_action": "diagnose_or_reinforce_prerequisite",
+        "prerequisite_path_names": [
+          [
+            "罪刑法定原则",
+            "犯罪概念与但书",
+            "故意、过失与意外事件",
+            "共同犯罪与主从犯"
+          ]
+        ],
+        "graph_path_policy_pass": true
       },
       {
         "knowledge_id": "CRIM_KP_A9EE556B77025221",
+        "knowledge_name": "刑罚种类",
         "cold_rank": 9,
-        "after_missing_rank": 1
+        "after_missing_rank": null,
+        "next_knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "next_knowledge_name": "罪刑法定原则",
+        "path_action": "diagnose_or_reinforce_prerequisite",
+        "prerequisite_path_names": [
+          [
+            "罪刑法定原则",
+            "犯罪概念与但书",
+            "刑罚种类"
+          ]
+        ],
+        "graph_path_policy_pass": true
       },
       {
         "knowledge_id": "CRIM_KP_DB1E1940114B4C0F",
+        "knowledge_name": "抢劫罪的基本构成",
         "cold_rank": 10,
-        "after_missing_rank": 1
+        "after_missing_rank": null,
+        "next_knowledge_id": "CRIM_KP_467B1D9FCFABDA50",
+        "next_knowledge_name": "罪刑法定原则",
+        "path_action": "diagnose_or_reinforce_prerequisite",
+        "prerequisite_path_names": [
+          [
+            "罪刑法定原则",
+            "犯罪概念与但书",
+            "故意、过失与意外事件",
+            "抢劫罪的基本构成"
+          ],
+          [
+            "罪刑法定原则",
+            "犯罪概念与但书",
+            "抢劫罪的基本构成"
+          ]
+        ],
+        "graph_path_policy_pass": true
       }
     ],
     "confusion_rank_pairs": [
@@ -481,7 +612,7 @@
     ],
     "safe_catalog_api_key_absent": true,
     "safe_catalog_url_path_absent": true,
-    "failover_behavior_test_file_sha256": "4ea8a403e325c69be31ffb5a50d073566803df08e593fa16c81aa2fc79d00f7e",
+    "failover_behavior_test_file_sha256": "6c71edeef5bd0386cd0c010456c7816a41311befd52f2b8651899ccacb9c5761",
     "live_model_called": false
   },
   "agent_pipeline": {
@@ -494,7 +625,7 @@
     "proves": [
       "governed statute retrieval returns expected course-law candidates",
       "citation existence and exact quote checks are deterministic",
-      "missing/confusion signals change recommendation rank as implemented",
+      "objective weakness follows the recursive prerequisite frontier, while self-reported confusion directly prioritizes the reported knowledge",
       "completed tasks are excluded and public projections omit private fields",
       "model route catalog redacts keys and URL paths"
     ],
@@ -510,7 +641,7 @@
     "retrieval_governed_all_hit": true,
     "citations_all_valid": true,
     "coverage_boundary": true,
-    "missing_signals_rank_first": true,
+    "missing_signals_follow_graph_policy": true,
     "confusion_signals_rank_first": true,
     "completed_task_excluded": true,
     "answer_isolation": true,

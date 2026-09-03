@@ -8,7 +8,7 @@ from typing import Any, Literal
 from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field, model_validator
 
-from .service import AdaptiveService
+from .service import POLICY_VERSION, AdaptiveService
 from .store import AdaptiveStore
 
 
@@ -140,7 +140,7 @@ def recommend(payload: RecommendRequest) -> dict[str, Any]:
             limit=payload.limit,
             context=payload.context,
         ),
-        "policy_version": "hybrid-case-evidence-cold-start-v1",
+        "policy_version": POLICY_VERSION,
     }
 
 

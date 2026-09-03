@@ -79,10 +79,11 @@ Content-Type: application/json
 
 TaskAttempt会生成`task_attempt_assessment`事件，包含学生选项、耗时、置信度、确定性分数、目标能力、知识证据、误概念标签、证据ID、任务版本和辅助信息。
 
-- 正确：知识证据为`mastered`；错误：为`missing`；多选题部分命中时为`partial`；
+- 正确选项集合完全一致：`mastered`；只漏选且没有混入错误项：`partial`；混入任一错误项或完全不命中：`missing`；
 - 难度进入能力证据权重，提示每次降低15%，最低保留0.25形成性权重；
 - 学生声明提交前已查看答案时，仍给即时反馈，但事件不更新长期画像；
 - `provisional`只表示保守临时状态，至少要求3个合格事件且覆盖2道不同任务；
+- 先修节点只有在`latest=mastered`且达到上述`provisional`门槛后才视为已满足；客观薄弱会递归回退到最根部未满足先修，完整路径见[`GRAPH_AWARE_EVIDENCE_PATH.md`](GRAPH_AWARE_EVIDENCE_PATH.md)；
 - 即使达到门槛，也不是校准的ORCDF掌握概率，不能直接用于正式成绩；
 - 当前选项判分无需LLM；未来主观题必须走Rubric、低置信度弃权和教师复核。
 

@@ -45,6 +45,8 @@ const REASON_LABELS: Record<string, string> = {
   insufficient_repeated_evidence: "独立证据不足，继续采集",
   no_evidence_collect_diagnostic: "尚无课堂证据，先做覆盖诊断",
   learner_reported_confusion: "学生主动标记困惑，优先回应",
+  prerequisite_for_observed_gap: "目标知识的先修证据不足，先诊断或补强先修",
+  target_waits_for_prerequisite_evidence: "目标暂缓，先取得可靠先修证据",
 };
 
 const profile = computed(() => adaptive.value?.profile);
@@ -84,7 +86,9 @@ const errorCounts = computed(() => {
 });
 const targetKnowledge = computed(() => {
   const recommendation = recommendations.value[0];
-  return cards.value.find((card) => card.knowledge_id === recommendation?.knowledge_id)
+  const supportedTarget = recommendation?.supports_target_knowledge_ids?.[0];
+  return cards.value.find((card) => card.knowledge_id === supportedTarget)
+    ?? cards.value.find((card) => card.knowledge_id === recommendation?.knowledge_id)
     ?? knowledgeRows.value[0]?.card
     ?? null;
 });
@@ -147,8 +151,9 @@ const argumentTemplate = computed(() => {
 const pathNodes = computed(() => {
   const target = targetKnowledge.value;
   const prerequisites = cards.value.filter((card) => target?.prerequisite_ids.includes(card.knowledge_id));
-  const selection = recommendations.value.find((row) => row.knowledge_id === target?.knowledge_id)
-    ?? recommendations.value[0];
+  const selection = recommendations.value[0];
+  const graphFallback = selection?.path_action === "diagnose_or_reinforce_prerequisite";
+  const prerequisitePath = selection?.prerequisite_path_names?.[0] ?? [];
   const shortAnswer = subjectiveTasks.value.find(
     (row) => row.task_type === "short_answer" && row.knowledge_ids.includes(target?.knowledge_id ?? ""),
   ) ?? subjectiveTasks.value.find((row) => row.task_type === "short_answer");
@@ -166,10 +171,14 @@ const pathNodes = computed(() => {
     {
       no: "02",
       type: "回退先修",
-      title: prerequisites.length ? prerequisites.map((row) => row.canonical_name).join(" / ") : "无需额外先修",
-      detail: prerequisites.length ? `${prerequisites.length}个先修节点` : "直接进入目标任务",
-      status: prerequisites.length ? "ready" : "complete",
-      reason: "只在先修缺失时回退，不让Agent自由跳转",
+      title: graphFallback
+        ? (prerequisitePath.join(" → ") || selection?.knowledge_name || "等待先修任务")
+        : (prerequisites.length ? prerequisites.map((row) => row.canonical_name).join(" / ") : "无需额外先修"),
+      detail: graphFallback
+        ? "从最根部未满足节点开始；每层达到3事件/2题门槛后再解锁下一层"
+        : (prerequisites.length ? "先修证据已满足或当前直接采集" : "直接进入目标任务"),
+      status: graphFallback ? "ready" : "complete",
+      reason: graphFallback ? reasonLabel(selection?.reason_code) : "KnowledgeCard先修关系与Evidence门槛已检查",
     },
     {
       no: "03",

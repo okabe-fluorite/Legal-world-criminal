@@ -108,6 +108,8 @@ const REASON_LABELS: Record<string, string> = {
   insufficient_repeated_evidence: "独立证据仍不足，继续采集",
   no_evidence_collect_diagnostic: "尚无课堂证据，先做覆盖诊断",
   learner_reported_confusion: "你主动标记了困惑，优先回应",
+  prerequisite_for_observed_gap: "目标知识的先修证据不足，先诊断或补强先修",
+  target_waits_for_prerequisite_evidence: "目标暂缓，先取得可靠先修证据",
 };
 
 const CONFUSION_TYPES: Array<{
@@ -145,11 +147,10 @@ const selectedConfusion = computed(() => {
   return knowledgeId ? adaptive.value?.profile?.confusions?.[knowledgeId] : undefined;
 });
 const visibleQueue = computed(() => {
-  if (!selectedKnowledgeId.value) return executableRecommendations.value;
-  const scoped = executableRecommendations.value.filter(
-    (row) => row.knowledge_id === selectedKnowledgeId.value,
-  );
-  return scoped.length ? scoped : executableRecommendations.value;
+  // Keep the queue in global adaptive rank order. Scoping it to the currently
+  // opened card would silently bypass a newly recommended prerequisite after
+  // the learner submits evidence for a more advanced target.
+  return executableRecommendations.value;
 });
 const observedKnowledgeCount = computed(() =>
   cards.value.filter((card) => {
@@ -197,7 +198,12 @@ function stateTone(state?: AdaptiveKnowledgeEvidence): string {
 }
 
 function taskReason(task?: AdaptiveRecommendationItem | null): string {
-  return REASON_LABELS[String(task?.reason_code ?? "")] ?? "根据当前学习证据排序";
+  const reason = REASON_LABELS[String(task?.reason_code ?? "")] ?? "根据当前学习证据排序";
+  const targets = task?.supports_target_knowledge_names ?? [];
+  const path = task?.prerequisite_path_names?.[0] ?? [];
+  return task?.path_action === "diagnose_or_reinforce_prerequisite" && targets.length
+    ? `${reason}：${path.length ? path.join(" → ") : `完成后回到${targets.join(" / ")}`}`
+    : reason;
 }
 
 function startTask(task: AdaptiveRecommendationItem): void {

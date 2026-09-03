@@ -470,6 +470,14 @@ export interface AdaptiveRecommendationItem {
   answer_included?: false;
   content_version?: string;
   standard_evidence_ids?: string[];
+  prerequisite_ids?: string[];
+  unmet_prerequisite_ids?: string[];
+  unmet_prerequisite_names?: string[];
+  supports_target_knowledge_ids?: string[];
+  supports_target_knowledge_names?: string[];
+  prerequisite_path_ids?: string[][];
+  prerequisite_path_names?: string[][];
+  path_action?: "diagnose_or_reinforce_prerequisite" | "collect_or_reinforce_target" | string;
   // The explicitly labelled local fallback uses TeachingReport rows.
   chapter?: string;
   question?: string;

@@ -35,7 +35,7 @@
 | EvidencePack | §5.2、§6.1 | 可选法条检索/citation | 法律、行政法规、司法文件、案例、教材和公开学习资源分层；效力/版本/用途/父段/风险投影 | `implemented_with_boundary` | coverage不是语义蕴含；363份效力尚未完全核实会显式提示 | 已扩多来源Schema与前端详情 |
 | LearningEvent | §6.1 | 无课堂事件 | 不可变事件、版本、幂等和资格门禁 | `implemented_with_boundary` | 部分案件耗时/模型版本不完整 | 媒体事件明确不创建 |
 | LearnerProfile | §5.4、§6.1 | 无 | Evidence-KT在线画像、事件门槛、错误/困惑 | `implemented_with_boundary` | 非校准概率、无充分课堂数据 | ORCDF继续shadow |
-| Recommendation | §5.4、§6.1 | 无 | 规则候选、先修回退、七步路径、原因码 | `implemented_with_boundary` | 非因果最优、间隔调度有限 | 保持诚实说明 |
+| Recommendation | §5.4、§6.1 | 无 | 冷启动覆盖、递归先修前沿、3事件/2题逐层解锁、全局队列、七步路径和原因链 | `implemented_with_boundary` | 非因果最优；当前只直接调度选择题，间隔调度有限 | 图谱先修从展示升级为真实排序约束 |
 | 可信RAG与引用审查 | §5.2 | 工具接口可参考 | 57,051条BM25F+Dense→RRF→保护→Reranker；多来源EvidencePack、三典型题、错误引用拒绝 | `implemented_with_boundary` | 教师qrels与专家结论仍待完成 | Graph×RAG与多来源投影已接入 |
 | 正文行末Evidence引用 | §5.2、§5.6 P0 | citation/tool接口 | 统一行末编号、悬停截断摘要、点击完整来源抽屉、原始来源/版本时效/引用原文/使用提示 | `implemented_with_boundary` | 内部ID和SHA只留后端；抽屉不替代法律蕴含判断，专家复核仍pending | 已接入RAG/解惑/实时语音 |
 | 混合/向量/图检索 | §5.2 | 可选向量索引 | 57,051条Qwen3-Embedding-8B向量+BM25F+RRF+Qwen3-Reranker；知识点/条号/先修扩展查询 | `implemented_with_boundary` | 教材候选Recall@5仍为0.45；教师qrels复核0 | 保留Embedding/Reranker失败降级 |

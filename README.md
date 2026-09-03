@@ -112,7 +112,7 @@ EvidencePack现按来源身份分层容纳法律、行政法规、司法解释/�
 
 `POST /api/adaptive/confusions`生成独立`confusion_annotation`。困惑是学生自报与教师聚合信号，不会冒充答错证据或直接降低掌握状态。推荐/题目接口始终无答案，正确选项和解析只在服务端判分后返回给当前登录学生。契约、示例、三次证据/两道任务门槛和正式考试边界见[`docs/TASK_ATTEMPT_CONTRACTS.md`](docs/TASK_ATTEMPT_CONTRACTS.md)。
 
-登录后点击顶部“自主学习”即可进入学生连续旅程：10个知识卷宗、课程目标与法源索引、个性化任务、作答把握、服务端判分、误概念反馈、证据账本、困惑便笺和下一任务在同一页面闭环。课前以“带着问题进入课堂”的暖色问题单为主，课后以“用证据完成一次复盘”的冷色证据台为主；两者共享TaskAttempt契约但不混淆学习目的。桌面为三栏卷宗，窄屏改为单列并保留困惑入口。页面形态与可复现浏览器冒烟见[`docs/STUDENT_LEARNING_JOURNEY.md`](docs/STUDENT_LEARNING_JOURNEY.md)。
+登录后点击顶部“自主学习”即可进入学生连续旅程：10个知识卷宗、课程目标与法源索引、个性化任务、作答把握、服务端判分、误概念反馈、证据账本、困惑便笺和下一任务在同一页面闭环。客观薄弱会递归回退到最根部未满足先修，每层达到3个合格事件且覆盖2题后再解锁下一层；学生自报困惑只提高当前优先级，不冒充答错证据。课前以“带着问题进入课堂”的暖色问题单为主，课后以“用证据完成一次复盘”的冷色证据台为主；两者共享TaskAttempt契约但不混淆学习目的。桌面为三栏卷宗，窄屏改为单列并保留困惑入口。页面形态与可复现浏览器冒烟见[`docs/STUDENT_LEARNING_JOURNEY.md`](docs/STUDENT_LEARNING_JOURNEY.md)和[`docs/GRAPH_AWARE_EVIDENCE_PATH.md`](docs/GRAPH_AWARE_EVIDENCE_PATH.md)。
 
 顶部“认知诊断”是比赛展示核心页：在线Evidence-KT保守画像与学生事件时间线、ORCDF V0/V1/V2真实shadow实验、选择/短答/案件/角色互换七步路径和四任务Model Adapter路由集中展示。ORCDF明确来自MOOCCubeX民法/宪法、mastery未校准且不进入当前刑法学生画像；微调未连接时显示`not_connected`。展示口径、来源SHA和浏览器脚本见[`docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md`](docs/COGNITIVE_DIAGNOSIS_SHOWCASE.md)。
 
@@ -137,7 +137,7 @@ uv run --isolated --with-requirements requirements.lock.txt -- python -X utf8 `
   backend\scripts\run_product_evidence_audit.py
 ```
 
-当前结果：10个课程查询纯BM25 expected-hit@5为90%，绑定KnowledgeCard标准Evidence后为100%；22条Evidence条号/逐字片段22/22；missing/困惑信号均使10/10目标知识点排到第1，平均前移4.5位；已答排除、答案隔离、模型目录脱敏通过。新增主观任务门禁也已通过：13题公开私有字段0、高置信度仍不直接入画像、坏Evidence弃权、教师批准后才生成1条合格事件。完整JSON/摘要见[`docs/PRODUCT_EVIDENCE_AUDIT.md`](docs/PRODUCT_EVIDENCE_AUDIT.md)。这些是软件机制证据，不是法律蕴含、掌握校准、学习增益或路径因果效果。
+当前结果：10个课程查询纯BM25 expected-hit@5为90%，绑定KnowledgeCard标准Evidence后为100%；22条Evidence条号/逐字片段22/22；10/10客观薄弱按递归先修策略处理，10/10困惑信号直接优先报告知识点；根节点达到3事件/2题后会解锁下一层。已答排除、答案隔离、模型目录脱敏通过。新增主观任务门禁也已通过：13题公开私有字段0、高置信度仍不直接入画像、坏Evidence弃权、教师批准后才生成1条合格事件。完整JSON/摘要见[`docs/PRODUCT_EVIDENCE_AUDIT.md`](docs/PRODUCT_EVIDENCE_AUDIT.md)。这些是软件机制证据，不是法律蕴含、掌握校准、学习增益或路径因果效果。
 
 证据分级与后续Agent/真实模型消融条件见[`docs/ABLATION_PROTOCOL.md`](docs/ABLATION_PROTOCOL.md)；8—12人只做可行性试点，方案见[`docs/CLASSROOM_PILOT_PROTOCOL.md`](docs/CLASSROOM_PILOT_PROTOCOL.md)。50人试用必须等待院校授权、有效法复核、隐私/伦理流程和预注册实验设计。
 

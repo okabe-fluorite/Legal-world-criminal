@@ -81,7 +81,7 @@ class AdaptiveServiceTests(unittest.TestCase):
         self.assertTrue(all(row["answer_included"] is False for row in rows))
         self.assertTrue(all("answer" not in row for row in rows))
 
-    def test_event_is_idempotent_and_weakness_is_prioritized(self) -> None:
+    def test_event_is_idempotent_and_unmet_prerequisite_is_prioritized(self) -> None:
         first = self.service.ingest(self.event())
         second = self.service.ingest(self.event())
         self.assertEqual(first["event_status"], "inserted")
@@ -89,9 +89,42 @@ class AdaptiveServiceTests(unittest.TestCase):
         profile = second["profile"]
         self.assertEqual(profile["event_count"], 1)
         self.assertEqual(profile["knowledge"]["CRIM_KP_2DD5C021746121C3"]["latest"], "missing")
-        self.assertEqual(
-            second["recommendations"][0]["knowledge_id"],
+        recommendation = second["recommendations"][0]
+        self.assertEqual(recommendation["knowledge_id"], "CRIM_KP_467B1D9FCFABDA50")
+        self.assertEqual(recommendation["reason_code"], "prerequisite_for_observed_gap")
+        self.assertEqual(recommendation["path_action"], "diagnose_or_reinforce_prerequisite")
+        self.assertIn(
             "CRIM_KP_2DD5C021746121C3",
+            recommendation["supports_target_knowledge_ids"],
+        )
+        self.assertEqual(
+            recommendation["prerequisite_path_names"][0],
+            ["罪刑法定原则", "犯罪概念与但书", "故意、过失与意外事件"],
+        )
+
+    def test_prerequisite_frontier_advances_after_three_events_across_two_tasks(self) -> None:
+        self.service.ingest(self.event())
+        root_id = "CRIM_KP_467B1D9FCFABDA50"
+        root_tasks = [task for task in self.service.approved if task["knowledge_ids"] == [root_id]]
+        self.assertGreaterEqual(len(root_tasks), 2)
+        for index, task in enumerate((root_tasks[0], root_tasks[1], root_tasks[0]), start=1):
+            self.service.submit_attempt(
+                self.attempt(
+                    attempt_id=f"root-ready-{index}",
+                    student_pseudonym="student-1",
+                    task_id=task["task_id"],
+                    content_version=task["content_sha256"],
+                    selected_options=task["answer_private"],
+                )
+            )
+        root_state = self.service.profile("student-1")["knowledge"][root_id]
+        self.assertEqual(root_state["latest"], "mastered")
+        self.assertEqual(root_state["evidence_status"], "provisional")
+        recommendation = self.service.recommendations("student-1", limit=1)[0]
+        self.assertEqual(recommendation["knowledge_id"], "CRIM_KP_BC82753EB8088C13")
+        self.assertEqual(
+            recommendation["prerequisite_path_names"][0],
+            ["犯罪概念与但书", "故意、过失与意外事件"],
         )
 
     def test_ai_drafted_event_is_excluded_from_profile(self) -> None:
@@ -163,6 +196,22 @@ class AdaptiveServiceTests(unittest.TestCase):
         self.assertEqual(result["profile"]["eligible_event_count"], 0)
         self.assertEqual(result["profile"]["excluded_event_count"], 1)
         self.assertEqual(result["profile"]["knowledge"], {})
+
+    def test_selecting_correct_and_wrong_options_is_missing_not_partial(self) -> None:
+        task = self.service.approved[0]
+        selected = list(task["answer_private"])
+        selected.append(next(value for value in task["options"] if value not in selected))
+        result = self.service.submit_attempt(
+            self.attempt(
+                attempt_id="attempt-overselect",
+                student_pseudonym="student-overselect",
+                selected_options=selected,
+            )
+        )
+        self.assertFalse(result["feedback"]["correct"])
+        self.assertEqual(result["feedback"]["knowledge_status"], "missing")
+        knowledge_id = task["knowledge_ids"][0]
+        self.assertEqual(result["profile"]["knowledge"][knowledge_id]["latest"], "missing")
 
     def test_provisional_knowledge_requires_three_events_and_two_distinct_tasks(self) -> None:
         knowledge_id = self.service.approved[0]["knowledge_ids"][0]
@@ -305,7 +354,8 @@ class AdaptiveApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         body = response.json()
         self.assertEqual(len(body["recommendations"]), 3)
-        self.assertEqual(body["recommendations"][0]["reason_code"], "case_evidence_indicates_weakness")
+        self.assertEqual(body["recommendations"][0]["reason_code"], "prerequisite_for_observed_gap")
+        self.assertEqual(body["recommendations"][0]["path_action"], "diagnose_or_reinforce_prerequisite")
         self.assertTrue(all(row["answer_included"] is False for row in body["recommendations"]))
         self.assertTrue(all(row["standard_evidence_ids"] for row in body["recommendations"]))
         def keys(value):

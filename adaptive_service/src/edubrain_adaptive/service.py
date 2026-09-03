@@ -11,6 +11,9 @@ from .planner import INSTRUCTIONAL_ORDER
 from .store import AdaptiveStore
 
 
+POLICY_VERSION = "graph-aware-evidence-cold-start-v2"
+
+
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return [
         json.loads(line)
@@ -90,6 +93,52 @@ class AdaptiveService:
         )
         attempted.discard("")
         confusions = profile.get("confusions") or {}
+        knowledge_states = profile.get("knowledge") or {}
+
+        def prerequisite_ready(knowledge_id: str) -> bool:
+            state = knowledge_states.get(knowledge_id) or {}
+            return (
+                str(state.get("latest") or "") == "mastered"
+                and str(state.get("evidence_status") or "") == "provisional"
+            )
+
+        objective_gap_ids = {
+            str(knowledge_id)
+            for knowledge_id, state in knowledge_states.items()
+            if str((state or {}).get("latest") or "") in {"missing", "partial"}
+        }
+        prerequisite_for_targets: defaultdict[str, list[str]] = defaultdict(list)
+        prerequisite_paths: defaultdict[str, list[list[str]]] = defaultdict(list)
+
+        def unmet_frontier_paths(
+            target_id: str,
+            visiting: set[str] | None = None,
+        ) -> list[list[str]]:
+            if target_id not in self.knowledge_by_id:
+                return []
+            active = set(visiting or ())
+            if target_id in active:
+                return []
+            active.add(target_id)
+            paths: list[list[str]] = []
+            node = self.knowledge_by_id[target_id]
+            for prerequisite_id in node.get("prerequisite_ids") or []:
+                prerequisite_id = str(prerequisite_id)
+                if prerequisite_id not in self.knowledge_by_id or prerequisite_ready(prerequisite_id):
+                    continue
+                nested = unmet_frontier_paths(prerequisite_id, active)
+                if nested:
+                    paths.extend([path + [target_id] for path in nested])
+                else:
+                    paths.append([prerequisite_id, target_id])
+            return paths
+
+        for target_id in objective_gap_ids:
+            for path in unmet_frontier_paths(target_id):
+                frontier_id = path[0]
+                prerequisite_for_targets[frontier_id].append(target_id)
+                if path not in prerequisite_paths[frontier_id]:
+                    prerequisite_paths[frontier_id].append(path)
         selected = []
         candidates = set(self.item_records) - attempted
         selected_by_knowledge: defaultdict[str, int] = defaultdict(int)
@@ -115,6 +164,25 @@ class AdaptiveService:
                     base, reason = 100.0, "no_evidence_collect_diagnostic"
                 if knowledge_id in confusions and base < 135.0:
                     base, reason = 135.0, "learner_reported_confusion"
+                prerequisite_ids = [
+                    str(value)
+                    for value in node.get("prerequisite_ids") or []
+                    if str(value) in self.knowledge_by_id
+                ]
+                unmet_prerequisite_ids = [
+                    value for value in prerequisite_ids if not prerequisite_ready(value)
+                ]
+                supports_targets = list(dict.fromkeys(prerequisite_for_targets.get(knowledge_id) or []))
+                if supports_targets:
+                    base += 80.0
+                    reason = "prerequisite_for_observed_gap"
+                elif (
+                    unmet_prerequisite_ids
+                    and knowledge_id in objective_gap_ids
+                    and knowledge_id not in confusions
+                ):
+                    base -= 55.0
+                    reason = "target_waits_for_prerequisite_evidence"
                 order = INSTRUCTIONAL_ORDER.get(name, 99)
                 score = base - order * 2.5 - selected_by_knowledge[knowledge_id] * 35
                 scored.append((score, -order, item_id, knowledge_id, reason))
@@ -123,6 +191,17 @@ class AdaptiveService:
             selected_by_knowledge[knowledge_id] += 1
             record = self.item_records[item_id]
             item = record if self.uses_governed_contracts else record["item"]
+            node = self.knowledge_by_id[knowledge_id]
+            prerequisite_ids = [
+                str(value)
+                for value in node.get("prerequisite_ids") or []
+                if str(value) in self.knowledge_by_id
+            ]
+            unmet_prerequisite_ids = [
+                value for value in prerequisite_ids if not prerequisite_ready(value)
+            ]
+            supports_targets = list(dict.fromkeys(prerequisite_for_targets.get(knowledge_id) or []))
+            support_paths = prerequisite_paths.get(knowledge_id) or []
             selected.append(
                 {
                     "rank": len(selected) + 1,
@@ -140,6 +219,30 @@ class AdaptiveService:
                     "answer_included": False,
                     "content_version": str(item.get("content_sha256") or ""),
                     "standard_evidence_ids": list(item.get("standard_evidence_ids") or []),
+                    "prerequisite_ids": prerequisite_ids,
+                    "unmet_prerequisite_ids": unmet_prerequisite_ids,
+                    "unmet_prerequisite_names": [
+                        str(self.knowledge_by_id[value].get("canonical_name") or value)
+                        for value in unmet_prerequisite_ids
+                    ],
+                    "supports_target_knowledge_ids": supports_targets,
+                    "supports_target_knowledge_names": [
+                        str(self.knowledge_by_id[value].get("canonical_name") or value)
+                        for value in supports_targets
+                    ],
+                    "prerequisite_path_ids": support_paths,
+                    "prerequisite_path_names": [
+                        [
+                            str(self.knowledge_by_id[value].get("canonical_name") or value)
+                            for value in path
+                        ]
+                        for path in support_paths
+                    ],
+                    "path_action": (
+                        "diagnose_or_reinforce_prerequisite"
+                        if supports_targets
+                        else "collect_or_reinforce_target"
+                    ),
                 }
             )
         return selected
@@ -168,8 +271,10 @@ class AdaptiveService:
             raise ValueError("selected_options must contain only options from the task")
         expected = sorted({str(value).upper() for value in task["answer_private"]})
         correct = selected == expected
-        overlap = bool(set(selected) & set(expected))
-        knowledge_status = "mastered" if correct else ("partial" if overlap else "missing")
+        selected_set = set(selected)
+        expected_set = set(expected)
+        partial = bool(selected_set) and selected_set < expected_set
+        knowledge_status = "mastered" if correct else ("partial" if partial else "missing")
         score = float(task["scoring_rule"]["max_score"]) if correct else 0.0
         hint_count = int(payload.get("hint_count") or 0)
         answer_revealed = bool(payload.get("answer_revealed_before_submit"))
@@ -277,7 +382,7 @@ class AdaptiveService:
             },
             "profile": profile,
             "recommendations": recommendations,
-            "policy_version": "hybrid-case-evidence-cold-start-v1",
+            "policy_version": POLICY_VERSION,
         }
 
     def annotate_confusion(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -347,7 +452,7 @@ class AdaptiveService:
             "learning_event": event,
             "profile": profile,
             "recommendations": self.recommendations(student_id, limit=10),
-            "policy_version": "hybrid-case-evidence-cold-start-v1",
+            "policy_version": POLICY_VERSION,
         }
 
     def ingest(self, event: dict[str, Any]) -> dict[str, Any]:
@@ -362,5 +467,5 @@ class AdaptiveService:
             "event_status": status,
             "profile": profile,
             "recommendations": recommendations,
-            "policy_version": "hybrid-case-evidence-cold-start-v1",
+            "policy_version": POLICY_VERSION,
         }

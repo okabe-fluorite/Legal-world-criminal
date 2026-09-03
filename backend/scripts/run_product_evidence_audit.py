@@ -190,11 +190,30 @@ def adaptive_audit(data_dir: Path) -> dict[str, Any]:
                     "evidence_eligibility": {"long_term_profile": True},
                 }
             )
+            missing_recommendations = missing["recommendations"]
+            next_row = missing_recommendations[0]
+            expects_prerequisite = bool(card.get("prerequisite_ids"))
+            graph_path_policy_pass = (
+                str(next_row.get("path_action") or "")
+                == "diagnose_or_reinforce_prerequisite"
+                and knowledge_id
+                in {str(value) for value in next_row.get("supports_target_knowledge_ids") or []}
+                and bool(next_row.get("prerequisite_path_ids"))
+            ) if expects_prerequisite else (
+                str(next_row.get("knowledge_id") or "") == knowledge_id
+                and str(next_row.get("path_action") or "") == "collect_or_reinforce_target"
+            )
             missing_rank_pairs.append(
                 {
                     "knowledge_id": knowledge_id,
+                    "knowledge_name": str(card.get("canonical_name") or ""),
                     "cold_rank": cold_rank,
-                    "after_missing_rank": first_rank(missing["recommendations"], knowledge_id),
+                    "after_missing_rank": first_rank(missing_recommendations, knowledge_id),
+                    "next_knowledge_id": str(next_row.get("knowledge_id") or ""),
+                    "next_knowledge_name": str(next_row.get("knowledge_name") or ""),
+                    "path_action": str(next_row.get("path_action") or ""),
+                    "prerequisite_path_names": next_row.get("prerequisite_path_names") or [],
+                    "graph_path_policy_pass": graph_path_policy_pass,
                 }
             )
 
@@ -264,6 +283,9 @@ def adaptive_audit(data_dir: Path) -> dict[str, Any]:
         "missing_signal_mean_rank_improvement": round(mean(missing_improvements), 4),
         "missing_signal_rank1_count": sum(
             row["after_missing_rank"] == 1 for row in missing_rank_pairs
+        ),
+        "graph_path_policy_pass_count": sum(
+            bool(row["graph_path_policy_pass"]) for row in missing_rank_pairs
         ),
         "confusion_signal_mean_rank_improvement": round(
             mean(confusion_improvements), 4
@@ -638,7 +660,7 @@ def build_report() -> dict[str, Any]:
             "proves": [
                 "governed statute retrieval returns expected course-law candidates",
                 "citation existence and exact quote checks are deterministic",
-                "missing/confusion signals change recommendation rank as implemented",
+                "objective weakness follows the recursive prerequisite frontier, while self-reported confusion directly prioritizes the reported knowledge",
                 "completed tasks are excluded and public projections omit private fields",
                 "model route catalog redacts keys and URL paths",
             ],
@@ -663,8 +685,8 @@ def build_report() -> dict[str, Any]:
         "coverage_boundary": report["retrieval_and_citation"][
             "coverage_status_boundary_passed"
         ],
-        "missing_signals_rank_first": (
-            report["adaptive_mechanism"]["missing_signal_rank1_count"]
+        "missing_signals_follow_graph_policy": (
+            report["adaptive_mechanism"]["graph_path_policy_pass_count"]
             == report["adaptive_mechanism"]["knowledge_count"]
         ),
         "confusion_signals_rank_first": (
@@ -742,7 +764,7 @@ def markdown_summary(report: dict[str, Any]) -> str:
         f"| CaseBundle运行映射/公开投影 | {'通过' if report['case_bundles']['mapping_matches_seed_policy'] and not report['case_bundles']['private_projection_leaks'] else '失败'} | 3案×7种公开投影，不含教师参考字段 |",
         f"| AI分层解惑fallback/画像隔离 | {'通过' if report['checks']['learning_support_governance'] else '失败'} | 非法模型输出必须fallback，LearningEvent/画像新增0 |",
         f"| 13个主观/变式任务与教师门禁 | {'通过' if report['checks']['subjective_task_governance'] else '失败'} | AI含高置信度结果也不直接入画像；坏Evidence弃权，教师批准后才生成1条合格事件 |",
-        f"| missing信号平均排序提升 | {adaptive['missing_signal_mean_rank_improvement']:.2f}位 | 软件策略响应，不是学习效果 |",
+        f"| missing信号遵循递归先修前沿 | {adaptive['graph_path_policy_pass_count']}/{adaptive['knowledge_count']} | 有先修先回退根部，无先修直接补目标；不是学习效果 |",
         f"| confusion信号平均排序提升 | {adaptive['confusion_signal_mean_rank_improvement']:.2f}位 | 自报信号响应，不是负掌握证据 |",
         f"| 已答任务排除 | {'通过' if adaptive['completed_task_exclusion_passed'] else '失败'} | 只验证任务闭环 |",
         f"| 私有字段泄漏 | {len(adaptive['recommendation_private_field_leaks'])} | 推荐/公开投影 |",
