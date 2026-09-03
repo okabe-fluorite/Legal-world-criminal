@@ -582,6 +582,57 @@ export interface EvidenceReference {
   source_use: string;
 }
 
+export interface KnowledgeSearchEvidence {
+  evidence_id: string;
+  source_type: string;
+  title: string;
+  source_title: string;
+  article_ref: string;
+  quote: string;
+  authority_level: string;
+  effective_status: string;
+  version: string;
+  source_url: string;
+  official_source_url: string;
+  risk_flags: string[];
+  allowed_usage: string[];
+  document_number: string;
+  parent_context?: EvidenceReference["parent_context"];
+  issuing_authority: string;
+  promulgated_date: string;
+  effective_date: string;
+  expiry_date: string;
+  verification_method: string;
+  verification_status: string;
+  source_use: string;
+}
+
+export interface KnowledgeSearchResponse {
+  schema_version: string;
+  query: string;
+  knowledge_ids: string[];
+  evidences: KnowledgeSearchEvidence[];
+  coverage: Record<string, { evidence_ids: string[]; status: string }>;
+  warnings: string[];
+  usage_policy: {
+    hierarchy: string[];
+    rule: string;
+  };
+  knowledge_context: {
+    matched: boolean;
+    nodes: Array<{
+      name: string;
+      chapter: string;
+      prerequisites: string[];
+      law_article_refs: string[];
+      standard_evidence_count: number;
+    }>;
+    query_expansion_terms: string[];
+    fusion_method: string;
+    boundary: string;
+  };
+}
+
 export interface TypicalQuestionCase {
   case_id: string;
   title: string;

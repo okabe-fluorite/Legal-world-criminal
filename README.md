@@ -120,6 +120,8 @@ EvidencePack现按来源身份分层容纳法律、行政法规、司法解释/�
 
 顶部“可信RAG”对应赛题内容质量要求：罪刑法定/从旧兼从轻、特殊防卫、抢劫罪构成3题均展示AI回答、标准答案、权威法条/指导案例、版本/时效、实际引用和关键要点；错误条号或伪造引文可现场检查。普通界面不展示SHA、内部Evidence ID或机器状态码；当前3题引用检查通过，但法学专家复核仍待完成，不能写成专家确认准确率。报告见[`docs/TYPICAL_QUESTION_EVALUATION.md`](docs/TYPICAL_QUESTION_EVALUATION.md)，复跑命令为`python backend/scripts/run_typical_question_evaluation.py --live-model --model-config <path>`，免模型复审可用`--reuse-report`。
 
+同一页面新增“自由检索”：学生可直接输入问题，查看法律/行政法规、司法解释/司法文件、案例、教材和公开题各自承担的来源角色。每段正文末尾显示编号引用，悬停看摘要，点击看完整原文、发布机关、效力、允许用途及案例父段；`unresolved`会显示“效力尚未完全核实”。KnowledgeCard节点、条号与先修关系用于查询扩展，Evidence结果再支撑诊断解释与下一任务；明确不存在的法名/条号可靠弃权。实现和双视口浏览器证据见[`docs/MULTISOURCE_RAG_EXPLORER.md`](docs/MULTISOURCE_RAG_EXPLORER.md)。
+
 困惑入账后可进入“AI分层解惑”：系统先提出诊断追问，学生说明自己的理解后，才返回规范原文、白话解释、事实适用、争议边界和下一动作。模型引用必须来自当前KnowledgeCard标准Evidence并通过条号/逐字片段门禁；失败自动使用确定性fallback，低置信度标记教师复核。解惑不计分、不生成LearningEvent、不更新长期掌握，详见[`docs/GOVERNED_LEARNING_SUPPORT.md`](docs/GOVERNED_LEARNING_SUPPORT.md)。
 
 同一自主学习卷宗现提供13个主观任务：10个知识点短答和3个CaseBundle角色互换。模型任务`subjective_scoring`只形成修改建议，低置信度、坏结构、学生引用失败或越界Evidence均弃权；高置信度也必须进入任课教师匿名复核队列。只有教师批准并给出0—1分与`mastered/partial/missing`判定后，才生成`teacher_reviewed_subjective_assessment`进入画像；退回/拒绝不入画像。学生可在“我的复核台账”查看教师结论，退回稿一键带入原文修订；同一稿件只允许一次教师决定和一次画像事件。契约、API、真实浏览器闭环与证据边界见[`docs/SUBJECTIVE_TASK_REVIEW.md`](docs/SUBJECTIVE_TASK_REVIEW.md)。

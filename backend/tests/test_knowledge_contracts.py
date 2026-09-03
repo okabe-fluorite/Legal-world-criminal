@@ -137,6 +137,16 @@ class KnowledgeContractTests(unittest.TestCase):
         self.assertIn("第二十条", retriever.queries[0])
         self.assertIn("正当防卫与防卫过当", retriever.queries[0])
 
+        long_result = service.search(
+            query="请从法律、司法解释、指导案例和教材四个层次解释正当防卫的成立条件",
+            top_k=3,
+        )
+        self.assertTrue(long_result["knowledge_context"]["matched"])
+        self.assertIn(
+            "正当防卫与防卫过当",
+            [row["name"] for row in long_result["knowledge_context"]["nodes"]],
+        )
+
     def test_hybrid_candidates_are_projected_back_to_governed_articles(self) -> None:
         class FakeHybridRetriever:
             def search(self, query, **kwargs):

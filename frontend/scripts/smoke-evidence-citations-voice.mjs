@@ -74,7 +74,7 @@ try {
   await drawer.waitFor();
   const drawerText = await drawer.innerText();
   if (!drawerText.includes("FULL GOVERNED EXCERPT") || !drawerText.includes("来源与适用信息") || drawerText.includes("SHA-256") || drawerText.includes("Evidence ID") || !drawerText.includes("检索相关不等于法律蕴含")) throw new Error("Evidence drawer user-facing fields are incorrect");
-  const originalLink = drawer.getByRole("link", { name: /打开原始来源/ });
+  const originalLink = drawer.getByRole("link", { name: /打开官方来源/ });
   const originalHref = await originalLink.getAttribute("href");
   if (!originalHref?.startsWith("https://")) throw new Error("Case source link missing");
   await page.waitForTimeout(400);

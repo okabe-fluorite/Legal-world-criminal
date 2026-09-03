@@ -8,6 +8,7 @@ import type {
   ConfusionAnnotationResponse,
   EvidenceTimelineResponse,
   KnowledgeCatalogResponse,
+  KnowledgeSearchResponse,
   LearningEvent,
   LearningSupportSessionResponse,
   MediaAsset,
@@ -323,6 +324,18 @@ export const api = {
 
   async knowledgeCatalog(): Promise<KnowledgeCatalogResponse> {
     return request<KnowledgeCatalogResponse>("/knowledge/catalog");
+  },
+
+  async searchKnowledge(payload: {
+    query: string;
+    top_k?: number;
+    collections?: Array<"legal_authority" | "textbook_explanation" | "question_public">;
+    knowledge_ids?: string[];
+  }): Promise<KnowledgeSearchResponse> {
+    return request<KnowledgeSearchResponse>("/knowledge/search", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
   },
 
   async submitTaskAttempt(payload: TaskAttemptPayload): Promise<TaskAttemptResponse> {

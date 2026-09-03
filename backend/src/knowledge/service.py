@@ -166,6 +166,12 @@ class KnowledgeService:
             for card in self.cards:
                 name = str(card.get("canonical_name") or "")
                 exact_name = bool(name and _normalize(name) in query_normalized)
+                name_aliases = [
+                    _normalize(value)
+                    for value in re.split(r"[与和及、/·]", name)
+                    if len(_normalize(value)) >= 4
+                ]
+                partial_name = any(alias in query_normalized for alias in name_aliases)
                 exact_articles = sum(
                     _normalize(article) in query_normalized
                     for article in card.get("law_article_refs") or []
@@ -178,8 +184,16 @@ class KnowledgeService:
                         str(card.get("summary") or ""),
                     ]
                 )
-                overlap = _lexical_overlap(query, description)
-                score = (1.0 if exact_name else 0.0) + exact_articles * 0.6 + overlap
+                overlap = max(
+                    _lexical_overlap(query, description),
+                    _lexical_overlap(name, query),
+                )
+                score = (
+                    (1.0 if exact_name else 0.0)
+                    + (0.8 if partial_name else 0.0)
+                    + exact_articles * 0.6
+                    + overlap
+                )
                 if score >= 0.22:
                     candidates.append((score, str(card["knowledge_id"])))
             selected = [identifier for _, identifier in sorted(candidates, reverse=True)[:2]]
