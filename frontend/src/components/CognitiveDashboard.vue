@@ -587,7 +587,7 @@ onUnmounted(() => {
         </template>
 
         <template v-else-if="tab === 'graphs'">
-          <section class="graph-hero"><div><p class="kicker mono">GOVERNED DAG · ARGUMENT SCAFFOLD</p><h3>课程先修图与法律论证模板</h3><p>知识图直接来自10张审核KnowledgeCard；论证图是交互脚手架，不是学生既有证据。</p></div><div class="graph-counts"><span><b>{{ knowledgeGraph.nodes.length }}</b>知识节点</span><span><b>{{ knowledgeGraph.edges.length }}</b>先修关系</span><span><b>0</b>伪造结论</span></div></section>
+          <section class="graph-hero"><div><p class="kicker mono">GOVERNED DAG · ARGUMENT SCAFFOLD</p><h3>课程先修图与法律论证模板</h3><p>知识图直接来自10张KnowledgeCard；当前节点、先修关系和条号会扩展RAG查询，检索到的多来源Evidence再用于解释与路径推荐。</p></div><div class="graph-counts"><span><b>{{ knowledgeGraph.nodes.length }}</b>知识节点</span><span><b>{{ knowledgeGraph.edges.length }}</b>先修关系</span><span><b>RAG</b>双向联动</span><span><b>0</b>伪造结论</span></div></section>
           <div class="graph-grid">
             <section class="knowledge-graph-panel">
               <header><div><p class="kicker mono">PREREQUISITE DAG · SOURCE OF TRUTH</p><h3>刑法课程轻量知识图</h3></div><span>KnowledgeCard.version bound</span></header>
@@ -600,7 +600,7 @@ onUnmounted(() => {
                   <text y="15" text-anchor="middle" class="node-law">{{ node.card.law_article_refs.slice(0, 2).join(' · ') || node.card.chapter }}</text>
                 </g>
               </svg>
-              <footer><span>绿色边框：当前诊断/推荐目标</span><span>箭头：prerequisite → target</span><span>无LLM补边</span></footer>
+              <footer><span>绿色边框：当前诊断/推荐目标</span><span>箭头：先修 → 目标</span><span>当前节点 → RAG查询扩展 → 多来源Evidence</span></footer>
             </section>
 
             <section class="argument-graph-panel">

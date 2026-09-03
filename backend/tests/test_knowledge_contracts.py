@@ -116,6 +116,27 @@ class KnowledgeContractTests(unittest.TestCase):
         self.assertEqual(result["evidences"], [])
         self.assertEqual(next(iter(result["coverage"].values()))["status"], "insufficient_evidence")
 
+    def test_knowledge_graph_expands_rag_query_and_returns_prerequisite_context(self) -> None:
+        class CapturingRetriever:
+            queries = []
+
+            def search(self, query, **kwargs):
+                self.queries.append(query)
+                return {
+                    "stages": {"dense": "succeeded", "reranker": "succeeded"},
+                    "abstained": False,
+                    "results": [],
+                }
+
+        retriever = CapturingRetriever()
+        service = KnowledgeService(hybrid_retriever=retriever)
+        result = service.search(query="正当防卫的成立条件", top_k=3)
+        self.assertTrue(result["knowledge_context"]["matched"])
+        self.assertEqual(result["knowledge_context"]["nodes"][0]["name"], "正当防卫与防卫过当")
+        self.assertIn("犯罪概念与但书", result["knowledge_context"]["nodes"][0]["prerequisites"])
+        self.assertIn("第二十条", retriever.queries[0])
+        self.assertIn("正当防卫与防卫过当", retriever.queries[0])
+
     def test_hybrid_candidates_are_projected_back_to_governed_articles(self) -> None:
         class FakeHybridRetriever:
             def search(self, query, **kwargs):

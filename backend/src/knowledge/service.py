@@ -151,6 +151,67 @@ class KnowledgeService:
         task = self.task_by_id.get(str(task_id or "").strip())
         return self.public_task(task) if task else None
 
+    def _knowledge_graph_context(
+        self,
+        query: str,
+        requested_ids: list[str] | None,
+    ) -> tuple[list[str], dict[str, Any]]:
+        selected: list[str] = []
+        for knowledge_id in requested_ids or []:
+            if knowledge_id in self.card_by_id and knowledge_id not in selected:
+                selected.append(knowledge_id)
+        if not selected:
+            query_normalized = _normalize(query)
+            candidates = []
+            for card in self.cards:
+                name = str(card.get("canonical_name") or "")
+                exact_name = bool(name and _normalize(name) in query_normalized)
+                exact_articles = sum(
+                    _normalize(article) in query_normalized
+                    for article in card.get("law_article_refs") or []
+                )
+                description = " ".join(
+                    [
+                        name,
+                        str(card.get("chapter") or ""),
+                        str(card.get("learning_objective") or ""),
+                        str(card.get("summary") or ""),
+                    ]
+                )
+                overlap = _lexical_overlap(query, description)
+                score = (1.0 if exact_name else 0.0) + exact_articles * 0.6 + overlap
+                if score >= 0.22:
+                    candidates.append((score, str(card["knowledge_id"])))
+            selected = [identifier for _, identifier in sorted(candidates, reverse=True)[:2]]
+        selected_cards = [self.card_by_id[identifier] for identifier in selected]
+        nodes = []
+        expansion_terms: list[str] = []
+        for card in selected_cards:
+            prerequisites = [
+                self.card_by_id[identifier]["canonical_name"]
+                for identifier in card.get("prerequisite_ids") or []
+                if identifier in self.card_by_id
+            ]
+            expansion_terms.extend(
+                [str(card["canonical_name"]), *[str(value) for value in card.get("law_article_refs") or []], *prerequisites]
+            )
+            nodes.append(
+                {
+                    "name": card["canonical_name"],
+                    "chapter": card.get("chapter") or "",
+                    "prerequisites": prerequisites,
+                    "law_article_refs": list(card.get("law_article_refs") or []),
+                    "standard_evidence_count": len(card.get("standard_evidence_ids") or []),
+                }
+            )
+        return selected, {
+            "matched": bool(nodes),
+            "nodes": nodes,
+            "query_expansion_terms": list(dict.fromkeys(expansion_terms)),
+            "fusion_method": "知识节点与先修关系扩展检索；Evidence结果反向支撑诊断解释和学习路径",
+            "boundary": "图谱约束学习目标和先修顺序，RAG提供可引用材料；两者均不单独证明掌握或法律结论。",
+        }
+
     def evidence_for_article(
         self,
         title: str,
@@ -278,8 +339,13 @@ class KnowledgeService:
         allowed_collections = {"legal_authority", "textbook_explanation", "question_public"}
         if not selected_collections or any(value not in allowed_collections for value in selected_collections):
             raise ValueError("collections contains an unsupported retrieval layer")
+        graph_ids, knowledge_context = self._knowledge_graph_context(
+            query_text, knowledge_ids
+        )
+        expansion = " ".join(knowledge_context["query_expansion_terms"])
+        retrieval_query = f"{query_text} {expansion}".strip() if expansion else query_text
         hybrid_candidates, retrieval_method, explicit_abstention = self._hybrid_results(
-            query_text, top_k, selected_collections
+            retrieval_query, top_k, selected_collections
         )
         hits = [] if explicit_abstention or "legal_authority" not in selected_collections else law_corpus.search_law(
             query_text, top_k=top_k, title="中华人民共和国刑法"
@@ -300,7 +366,7 @@ class KnowledgeService:
             evidence_rows.append(row)
 
         valid_knowledge_ids = []
-        for knowledge_id in knowledge_ids or []:
+        for knowledge_id in graph_ids:
             card = self.card_by_id.get(str(knowledge_id))
             if not card:
                 continue
@@ -370,6 +436,7 @@ class KnowledgeService:
                 "learning_resource": ["learning_resource"],
                 "rule": "教材、案例和题目不得覆盖法律、行政法规或司法解释；unresolved来源必须显示效力尚未完全核实。",
             },
+            "knowledge_context": knowledge_context,
         }
 
     def audit_citations(self, citations: list[dict[str, Any]]) -> dict[str, Any]:

@@ -120,6 +120,7 @@ try {
 
   await page.getByRole("button", { name: "知识 / 论证图" }).click();
   await page.getByText("课程先修图与法律论证模板", { exact: true }).waitFor();
+  await page.getByText("当前节点 → RAG查询扩展 → 多来源Evidence", { exact: true }).waitFor();
   const knowledgeNodes = await page.locator(".knowledge-node").count();
   const knowledgeEdges = await page.locator(".knowledge-edge").count();
   const argumentNodes = await page.locator(".argument-chain article").count();

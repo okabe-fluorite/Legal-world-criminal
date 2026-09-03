@@ -36,15 +36,22 @@ Schema：`schemas/evidence-pack-v1.schema.json`
 
 静态证据目录：`adaptive_service/data/evidence_catalog.jsonl`
 
-EvidencePack是一次检索请求的证据快照，记录查询、知识点、证据片段、法源位阶、条号、效力、来源快照、源bundle哈希、覆盖候选和风险提示。当前证据只来自受治理的《中华人民共和国刑法》官方快照。
+EvidencePack是一次检索请求的分层证据快照，记录查询、知识上下文、来源身份、允许用途、证据片段、法源位阶、条号、效力、版本、发布机关、官方来源、父段上下文、覆盖候选和风险提示。它现支持法律、行政法规、司法解释/司法规范性文件、指导性/典型案例、教材解释和公开学习资源；813条刑法/刑诉法只是刑法课程核心规范基线。
 
 EvidencePack有意保留以下语义边界：
 
-- BM25命中只表示检索相关性，不表示法条支持学生论断；
+- BM25F/Dense/RRF/Reranker命中只表示检索相关性，不表示材料支持学生论断；
 - `coverage.status`只能是`candidate_requires_semantic_audit`或`insufficient_evidence`；
 - 引用审计能确定性验证法律名称、条号和逐字片段；
 - `lexical_overlap`不能冒充法律蕴含，存在claim时必须标记`semantic_entailment_not_evaluated`；
-- 每学期真实课堂前仍须复核法条效力和来源快照。
+- 法源层级固定为法律优先于行政法规和司法适用材料；案例、教材和题目不得覆盖规范依据；
+- 案例检索子块命中后必须回填案情、裁判规则或理由父段，且不得包装成法条；
+- `unresolved`材料可进入检索和演示，但必须显示“效力尚未完全核实”；
+- 公开题只作`learning_resource`，私有答案层不检索、不Embedding；每学期真实课堂前仍须增量复核现行法状态。
+
+### KnowledgeGraph × RAG
+
+课程知识图使用10个KnowledgeCard节点与10条先修边回答“学什么、先学什么、下一步做什么”。`POST /api/knowledge/search`会自动或按请求匹配知识节点，把知识点名称、法条锚点和先修节点加入Hybrid RAG查询，并在`knowledge_context`中返回匹配节点、先修关系和扩展项。检索出的多来源Evidence再用于解释诊断依据和路径推荐；知识图本身不证明学生掌握，RAG命中本身也不证明法律结论。
 
 ## API
 
@@ -100,7 +107,7 @@ EvidencePack有意保留以下语义边界：
 
 ## 当前未覆盖范围
 
-- 主观题Rubric与教师复核；
-- 司法解释、指导性案例和教材观点的分层Evidence；
+- 真实课堂题目的难度/区分度参数和大规模纵向作答；
 - 法律蕴含模型或教师审核后的claim-level支持结论；
-- 真实本科刑法课堂的题目参数、知识追踪校准和路径干预效果。
+- 真实本科刑法课堂的知识追踪校准和路径干预效果；
+- 现有10节点课程图之外的全刑法章节级教师审定知识图。

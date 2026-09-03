@@ -64,6 +64,7 @@
     "source_snapshot": {"type": "object"},
     "generated_at": {"type": "string"},
     "warnings": {"type": "array", "items": {"type": "string"}},
-    "usage_policy": {"type": "object"}
+    "usage_policy": {"type": "object"},
+    "knowledge_context": {"type": "object"}
   }
 }
