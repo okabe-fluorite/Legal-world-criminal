@@ -53,4 +53,6 @@
 - 合并后效力状态：verified_current 1,045、verified_historical 598、superseded 5、repealed 13、unresolved 363；官方详情URL 1,131，Schema错误0，unresolved不阻塞但强制显示效力提示。
 - 法律Luna发现28项官方分类与canonical law标签不完全一致；运行时保留canonical检索分区，同时按官方分类调整authority_level/source_use（宪法、人大法律解释、人大决定），不静默冒充普通法律条文。
 - 用户补充司法解释均直接下载自国家法律法规库，不需要继续细究剩余349份详情页；决定将raw官方原件对应视为来源核实，效力状态仍可为unresolved并在引用中友好提示。
+- 刑法认知图谱已存在于“认知诊断 → 知识 / 论证图”：10个KnowledgeCard节点、10条先修边、6步法律论证脚手架。新增Graph×RAG融合后，正当防卫问题会自动匹配“正当防卫与防卫过当”，追加第二十条和先修“犯罪概念与但书”进行混合检索，并把多来源Evidence上下文返回给诊断解释与路径层。
+- 专项验证通过：KnowledgeService/Hybrid Retriever 15项、前端TypeScript检查和Vite生产构建均成功。知识图负责“学什么、先学什么、下一步做什么”，RAG负责“依据是什么、原文在哪里、能否引用”；融合比二选一更适合当前无真实刑法课堂纵向数据的个性化学习场景。
 - 计划文档：`docs/HYBRID_RAG_BOOKS_QUESTIONS_PLAN.md`。

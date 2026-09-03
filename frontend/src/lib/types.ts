@@ -1057,6 +1057,7 @@ export interface TechnicalEvidenceSnapshot {
   summary: {
     candidate_files: number;
     formal_articles: number;
+    canonical_official_documents: number;
     reasoning_gate_checks: number;
     benchmark_items: number;
     agent_conditions: number;
@@ -1081,6 +1082,14 @@ export interface TechnicalEvidenceSnapshot {
     reference_exact_articles: number;
     reference_differences: number;
     reference_formal_admission: boolean;
+    canonical_official_documents: number;
+    local_source_matched: number;
+    verified_current: number;
+    verified_historical: number;
+    superseded: number;
+    repealed: number;
+    unresolved: number;
+    unresolved_non_blocking: boolean;
     boundary: string[];
   };
   legal_reasoning: {

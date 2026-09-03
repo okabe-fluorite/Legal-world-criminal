@@ -89,7 +89,7 @@ Compose包含PostgreSQL、后端、自适应服务和Nginx前端。前端容器�
 
 离线法条库共813条：刑法505条（2020官方正文精确合并修正案十二，形成自2024-03-01施行的现行版本）与刑诉法308条（2018第三次修正）。来源批次、原件SHA、输出SHA、版本和隔离源记录在`backend/legal_corpus/processed/law_corpus_manifest.json`。旧PDF语料漏掉刑法第二百条；某份带第三方署名且存在内容污染/差异的“2024最新版”参考件已隔离，不能覆盖生产语料，隔离理由是具体文件质量而非年份。重建与每学期复核要求见[`docs/DATA_GOVERNANCE.md`](docs/DATA_GOVERNANCE.md)。
 
-外部`laws`目录已建立只读文件级治理库存：4,173个混合文件全部计算SHA并按原始文档/派生文本/归档/运维/缓存分层；813条正式法源不会被候选量替代。围绕10知识点和3案例筛出20个司法解释、27个案例待审候选，均未提升为正式Evidence。产物与16:9技术图见[`data_governance/DATASET_CARD.md`](data_governance/DATASET_CARD.md)和[`data_governance/DATA_GOVERNANCE_FLOW.svg`](data_governance/DATA_GOVERNANCE_FLOW.svg)。
+外部`laws`目录已建立canonical库存和逐份核实记录：4,173个混合文件去重为2,024份法律、行政法规、司法文件与案例，2,024/2,024均对应国家法律法规库等官方来源原件。当前状态为有效1,045份、历史发布598份、被替代5份、废止13份、效力尚未完全核实363份；后者不阻塞检索或演示，但引用时必须显示效力提示。813条仅指刑法505条与刑诉法308条组成的刑法课程核心规范基线，不是EvidencePack的唯一可引用范围。逐份记录与报告见[`data_governance/OFFICIAL_SOURCE_VERIFICATION_V1_REPORT.md`](data_governance/OFFICIAL_SOURCE_VERIFICATION_V1_REPORT.md)。
 
 ## 受治理课程内容与EvidencePack
 
@@ -102,9 +102,9 @@ Compose包含PostgreSQL、后端、自适应服务和Nginx前端。前端容器�
 - `POST /api/knowledge/search`
 - `POST /api/knowledge/audit-citations`
 
-EvidencePack中的检索相关性和coverage只是待语义审核候选，不等于法条支持某个法律论断。三个Schema、答案隔离和构建规则见[`docs/KNOWLEDGE_CONTRACTS.md`](docs/KNOWLEDGE_CONTRACTS.md)。
+EvidencePack现按来源身份分层容纳法律、行政法规、司法解释/司法规范性文件、指导性/典型案例、教材解释和公开学习资源。法律回答遵循法源层级：案例、教材和题目不得覆盖高层级规范；公开题只用于相似题与诊断任务，私有答案层不检索、不Embedding。检索相关性和coverage仍只是待语义审核候选，不等于某项材料已经证明具体法律论断。Schema、答案隔离和构建规则见[`docs/KNOWLEDGE_CONTRACTS.md`](docs/KNOWLEDGE_CONTRACTS.md)。
 
-全库Hybrid RAG已完成真实构建和运行时接入：2,024个法律/行政法规/司法文件/案例候选形成54,463个检索块；案例采用整案→1,591个语义父段→1,599个检索子块；JEC-QA教材形成1,404个解释块；1,184道公开题用于相似题检索，私有答案层明确不做Embedding。三库共57,051条1024维float16向量和对应SQLite词法索引，运行时为`BM25F + Qwen3-Embedding-8B → RRF → 精确条号/弃权保护 → Qwen3-Reranker-8B`。Embedding失败降级BM25F，Reranker失败降级保护后的RRF；案例命中子块后回填语义父段。120条自动候选qrels上的最终候选Recall@5为0.86、无答案误返回率为0，但教师复核仍为0，不能称正式检索准确率。报告见[`docs/HYBRID_RAG_INDEX_V1_REPORT.md`](docs/HYBRID_RAG_INDEX_V1_REPORT.md)、[`docs/HYBRID_RAG_ABLATION_V1.md`](docs/HYBRID_RAG_ABLATION_V1.md)和[`docs/HYBRID_RAG_SILICONFLOW_PROBE.md`](docs/HYBRID_RAG_SILICONFLOW_PROBE.md)。
+全库Hybrid RAG已完成真实构建和运行时接入：2,024份官方材料形成54,463个法律/法规/司法文件/案例检索块；案例采用整案→1,591个语义父段→1,599个检索子块；JEC-QA教材形成1,404个解释块；1,184道公开题用于相似题检索，私有答案层明确不做Embedding。三类资源共57,051条1024维float16向量和对应SQLite词法索引，运行时为`BM25F + Qwen3-Embedding-8B → RRF → 精确条号/弃权保护 → Qwen3-Reranker-8B`。Embedding失败降级BM25F，Reranker失败降级保护后的RRF；案例命中子块后回填语义父段。课程知识图会用知识点、法条锚点和先修节点扩展检索，多来源Evidence再反向支撑诊断解释与下一任务。120条自动候选qrels上的最终候选Recall@5为0.86、无答案误返回率为0，但教师复核仍为0，不能称正式检索准确率。报告见[`docs/HYBRID_RAG_INDEX_V1_REPORT.md`](docs/HYBRID_RAG_INDEX_V1_REPORT.md)、[`docs/HYBRID_RAG_ABLATION_V1.md`](docs/HYBRID_RAG_ABLATION_V1.md)和[`docs/HYBRID_RAG_SILICONFLOW_PROBE.md`](docs/HYBRID_RAG_SILICONFLOW_PROBE.md)。
 
 ## 预习与复习服务端闭环
 

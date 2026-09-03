@@ -17,6 +17,9 @@ ARTIFACTS = {
     "tutor_assets": Path("frontend/src/assets/tutor/manifest.json"),
     "hybrid_rag_index": Path("docs/HYBRID_RAG_INDEX_V1_REPORT.json"),
     "hybrid_rag_ablation": Path("docs/HYBRID_RAG_ABLATION_V1.json"),
+    "official_verification": Path(
+        "data_governance/OFFICIAL_SOURCE_VERIFICATION_V1_SUMMARY.json"
+    ),
 }
 
 
@@ -86,6 +89,7 @@ def build_technical_evidence_snapshot(
     tutor = loaded["tutor_assets"]
     hybrid_index = loaded["hybrid_rag_index"]
     hybrid_ablation = loaded["hybrid_rag_ablation"]
+    official_verification = loaded["official_verification"]
 
     governance_gates = dict(governance.get("gates") or {})
     reasoning_checks = []
@@ -115,6 +119,7 @@ def build_technical_evidence_snapshot(
     tutor_states = list(tutor.get("states") or [])
     hybrid_totals = dict(hybrid_index.get("totals") or {})
     hybrid_r4 = dict((hybrid_ablation.get("conditions") or {}).get("R4_Reranked") or {})
+    official_statuses = dict(official_verification.get("by_effective_status") or {})
 
     pending = [
         {
@@ -145,6 +150,9 @@ def build_technical_evidence_snapshot(
         "summary": {
             "candidate_files": int(counts.get("inventory_files") or 0),
             "formal_articles": int(counts.get("formal_articles") or 0),
+            "canonical_official_documents": int(
+                official_verification.get("documents") or 0
+            ),
             "reasoning_gate_checks": len(reasoning_checks),
             "benchmark_items": int(eval_counts.get("items") or 0),
             "agent_conditions": 2,
@@ -177,6 +185,22 @@ def build_technical_evidence_snapshot(
                 (law_version.get("decision") or {}).get("formal_evidence_admitted")
             ),
             "boundary": list(governance.get("boundaries") or []),
+            "canonical_official_documents": int(
+                official_verification.get("documents") or 0
+            ),
+            "local_source_matched": int(
+                official_verification.get("local_source_matched") or 0
+            ),
+            "verified_current": int(official_statuses.get("verified_current") or 0),
+            "verified_historical": int(
+                official_statuses.get("verified_historical") or 0
+            ),
+            "superseded": int(official_statuses.get("superseded") or 0),
+            "repealed": int(official_statuses.get("repealed") or 0),
+            "unresolved": int(official_statuses.get("unresolved") or 0),
+            "unresolved_non_blocking": bool(
+                official_verification.get("unresolved_non_blocking")
+            ),
         },
         "legal_reasoning": {
             "fixture_suite_id": reasoning.get("fixture_suite_id"),

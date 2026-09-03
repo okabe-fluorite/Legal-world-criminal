@@ -17,8 +17,8 @@
     },
     "R1_Dense": {
       "recall_at_5": 0.85,
-      "mrr_at_10": 0.7825,
-      "ndcg_at_10": 0.804,
+      "mrr_at_10": 0.7823,
+      "ndcg_at_10": 0.8018,
       "exact_article_at_1": 0.875,
       "no_answer_false_positive_rate": 1.0
     },

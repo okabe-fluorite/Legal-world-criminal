@@ -32,18 +32,18 @@
 | KnowledgeCard | §5.1、§6.1 | 无课程对象 | 10卡、版本/哈希/法源/先修/易错点 | `implemented` | 覆盖范围小 | 本轮可视化DAG |
 | CaseBundle | §6.1 | 案例数据与场景配置 | 3个稳定bundle、六阶段投影、Evidence/Rubric | `implemented_with_boundary` | 待本学期教师复核 | 保持边界 |
 | TaskItem/SubjectiveTask | §6.1 | 咨询问题构建器 | 30选择+13主观契约 | `implemented_with_boundary` | 无真实题目参数 | 不伪造参数 |
-| EvidencePack | §5.2、§6.1 | 可选法条检索/citation | 受治理BM25、效力/版本/片段/风险/审计 | `implemented_with_boundary` | coverage不是语义蕴含 | 保持候选状态 |
+| EvidencePack | §5.2、§6.1 | 可选法条检索/citation | 法律、行政法规、司法文件、案例、教材和公开学习资源分层；效力/版本/用途/父段/风险投影 | `implemented_with_boundary` | coverage不是语义蕴含；363份效力尚未完全核实会显式提示 | 已扩多来源Schema与前端详情 |
 | LearningEvent | §6.1 | 无课堂事件 | 不可变事件、版本、幂等和资格门禁 | `implemented_with_boundary` | 部分案件耗时/模型版本不完整 | 媒体事件明确不创建 |
 | LearnerProfile | §5.4、§6.1 | 无 | Evidence-KT在线画像、事件门槛、错误/困惑 | `implemented_with_boundary` | 非校准概率、无充分课堂数据 | ORCDF继续shadow |
 | Recommendation | §5.4、§6.1 | 无 | 规则候选、先修回退、七步路径、原因码 | `implemented_with_boundary` | 非因果最优、间隔调度有限 | 保持诚实说明 |
-| 可信RAG与引用审查 | §5.2 | 工具接口可参考 | 三典型题、错误引用拒绝、法源版本/SHA | `implemented_with_boundary` | 专家结论仍pending | 无需改动 |
+| 可信RAG与引用审查 | §5.2 | 工具接口可参考 | 57,051条BM25F+Dense→RRF→保护→Reranker；多来源EvidencePack、三典型题、错误引用拒绝 | `implemented_with_boundary` | 教师qrels与专家结论仍待完成 | Graph×RAG与多来源投影已接入 |
 | 正文行末Evidence引用 | §5.2、§5.6 P0 | citation/tool接口 | 统一行末编号、悬停截断摘要、点击完整来源抽屉、原始来源/版本时效/引用原文/使用提示 | `implemented_with_boundary` | 内部ID和SHA只留后端；抽屉不替代法律蕴含判断，专家复核仍pending | 已接入RAG/解惑/实时语音 |
-| 混合/向量/图检索 | §5.2 | 可选向量索引 | BM25 + 轻量先修图；向量可插拔 | `implemented_with_boundary` | 未启用向量不影响P0 | 不引入未治理远程向量 |
+| 混合/向量/图检索 | §5.2 | 可选向量索引 | 57,051条Qwen3-Embedding-8B向量+BM25F+RRF+Qwen3-Reranker；知识点/条号/先修扩展查询 | `implemented_with_boundary` | 教材候选Recall@5仍为0.45；教师qrels复核0 | 保留Embedding/Reranker失败降级 |
 | 智能体显式状态机 | §5.3、§7.2 | 核心参考来源 | 刑事六阶段FSM、Agent/Tool分离 | `implemented` | 未换LangGraph | 现有显式FSM足够，不为技术名重写 |
 | Model Adapter | §5.5 | 模型配置/运行层 | 任务路由、fallback、small-model not_connected | `implemented_with_boundary` | 无正式LoRA/SFT | 保持接口和真实状态 |
 | 模型微调对比 | §5.5、§10.1 | 无本项目微调结果 | 对比接口和协议存在 | `interface_reserved` | 训练、模型卡、独立评测未完成 | 不伪造微调 |
 | ORCDF/旧EduBrain适配 | §5.4、§9 P1 | 无 | V0/V1/V2真实实验、47题对照、shadow面板 | `implemented_with_boundary` | 民法/宪法迁移，不是刑法课堂 | 保持隔离 |
-| 课程知识图 | §5.6 P1 | 无 | 10节点、10条真实先修关系，不用LLM补边 | `implemented` | 首批课程范围 | 本轮新增 |
+| 课程知识图 | §5.6 P1 | 无 | 10节点、10条真实先修关系，不用LLM补边；与Hybrid RAG双向联动 | `implemented_with_boundary` | 首批课程范围，不是57,051条全文知识图 | 节点/条号/先修扩展查询，Evidence反向支撑路径 |
 | 法律论证图 | §5.6 P1、§7.2 | 无 | 争点→事实→证据→主张→质询→门禁模板 | `implemented_with_boundary` | 当前是模板，不是学生已提交图 | 本轮新增并显著标界 |
 | 显式证据板 | §5.6 P0 | 工具/文书输出可参考 | RAG证据、CaseBundle、引用面板可见 | `implemented_with_boundary` | 尚无自由拖拽证据—主张编辑器 | 不为3分钟视频扩复杂编辑器 |
 

@@ -1,15 +1,15 @@
 {
   "schema_version": "multisource-evidence-http-smoke-v1",
-  "generated_at": "2026-09-02T18:42:41.639187+00:00",
+  "generated_at": "2026-09-02T19:08:02.701140+00:00",
   "checks": [
     {
       "check_id": "exact_law",
       "http_status": 200,
-      "evidence_count": 8,
+      "evidence_count": 9,
       "expected_source_type": "法律条文",
-      "expected_type_count": 6,
+      "expected_type_count": 5,
       "schema_errors": 0,
-      "parent_context_count": 2,
+      "parent_context_count": 4,
       "unresolved_notice_count": 0,
       "private_answer_leak": false,
       "passed": true
@@ -41,7 +41,7 @@
     {
       "check_id": "textbook",
       "http_status": 200,
-      "evidence_count": 5,
+      "evidence_count": 6,
       "expected_source_type": "textbook_explanation",
       "expected_type_count": 5,
       "schema_errors": 0,
@@ -53,12 +53,12 @@
     {
       "check_id": "similar_question",
       "http_status": 200,
-      "evidence_count": 5,
+      "evidence_count": 6,
       "expected_source_type": "learning_resource",
       "expected_type_count": 5,
       "schema_errors": 0,
       "parent_context_count": 0,
-      "unresolved_notice_count": 5,
+      "unresolved_notice_count": 0,
       "private_answer_leak": false,
       "passed": true
     },

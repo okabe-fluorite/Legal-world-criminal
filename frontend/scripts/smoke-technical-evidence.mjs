@@ -92,6 +92,8 @@ try {
     overviewPipeline !== 6
     || overviewCards !== 4
     || !overviewText.includes("4,173")
+    || !overviewText.includes("2,024")
+    || !overviewText.includes("57,051")
     || !overviewText.includes("813")
     || !overviewText.includes("100题")
     || !overviewText.includes("待完成")
@@ -105,16 +107,18 @@ try {
   await page.screenshot({ path: path.join(artifactDir, "01-overview.png") });
 
   await page.getByRole("button", { name: "数据治理" }).click();
-  await page.getByText("候选资料与正式法源分层", { exact: true }).waitFor();
+  await page.getByText("文件、官方材料与检索记录分层", { exact: true }).waitFor();
   const ledgerRows = await page.locator(".data-ledger article").count();
   const dataText = await page.locator(".tech-content").innerText();
   if (
     ledgerRows !== 5
+    || !dataText.includes("2,024/2,024")
+    || !dataText.includes("1,045 / 363")
     || !dataText.includes("2024-03-01")
     || !dataText.includes("7/7")
     || !dataText.includes("493/505")
     || !dataText.includes("57,051")
-    || !dataText.includes("拒绝")
+    || !dataText.includes("不参与")
   ) {
     throw new Error(`Data governance incomplete: rows=${ledgerRows}`);
   }
