@@ -129,6 +129,29 @@ class HybridCollection:
         )
         return matches
 
+    def exact_title_indices(self, query: str) -> list[int]:
+        quoted = _QUOTED_TITLE_RE.search(str(query or ""))
+        if not quoted:
+            return []
+        matches: set[int] = set()
+        for alias in _title_aliases(quoted.group(1)):
+            matches.update(self.indices_by_title.get(alias) or [])
+        priority = {
+            "formal_evidence": 0,
+            "approved": 0,
+            "pilot_teacher_approved": 1,
+            "candidate_requires_legal_review": 2,
+            "isolated_reference": 3,
+            "isolated_outside_scope": 4,
+        }
+        return sorted(
+            matches,
+            key=lambda index: (
+                priority.get(str(self.records[index].get("governance_status") or ""), 5),
+                index,
+            ),
+        )
+
     def project(self, document_index: int, scores: dict[str, Any]) -> dict[str, Any]:
         record = self.records[document_index]
         parent = self.parents.get(str(record.get("parent_id") or ""))
@@ -176,6 +199,12 @@ class HybridCollection:
         ]
         if effective_status == "unresolved":
             risk_flags.append("effect_not_fully_verified")
+        elif effective_status == "verified_historical":
+            risk_flags.append("historical_source_not_current_rule")
+        elif effective_status == "superseded":
+            risk_flags.append("superseded_source_not_current_rule")
+        elif effective_status == "repealed":
+            risk_flags.append("repealed_source_not_current_rule")
         result = {
             "retrieval_id": record.get("retrieval_id"),
             "document_id": record.get("document_id") or record.get("retrieval_id"),
@@ -362,14 +391,21 @@ class HybridRagRetriever:
                 [document_index for document_index, _ in dense_hits],
             ]
         )
-        exact_indices = index.exact_article_indices(query_text)
+        exact_article_indices = index.exact_article_indices(query_text)
+        exact_title_indices = index.exact_title_indices(query_text)
+        exact_indices = exact_article_indices or exact_title_indices[:3]
         explicit_missing_article = bool(
             collection == "legal_authority"
             and _ARTICLE_RE.search(_normalize(query_text))
             and _QUOTED_TITLE_RE.search(query_text)
-            and not exact_indices
+            and not exact_article_indices
         )
-        if explicit_missing_article:
+        explicit_missing_title = bool(
+            collection == "legal_authority"
+            and _QUOTED_TITLE_RE.search(query_text)
+            and not exact_title_indices
+        )
+        if explicit_missing_article or explicit_missing_title:
             return {
                 "schema_version": "hybrid-rag-search-result-v1",
                 "query": query_text,
@@ -377,7 +413,11 @@ class HybridRagRetriever:
                 "stages": {**stages, "reranker": "skipped_by_exact_reference_check"},
                 "fallback_used": False,
                 "abstained": True,
-                "abstention_reason": "explicit_title_article_not_found",
+                "abstention_reason": (
+                    "explicit_title_article_not_found"
+                    if explicit_missing_article
+                    else "explicit_title_not_found"
+                ),
                 "results": [],
                 "errors": errors,
                 "notice": "未找到与指定法名和条号同时匹配的资料，请核对名称、条号或版本。",

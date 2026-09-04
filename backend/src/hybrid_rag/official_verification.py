@@ -337,7 +337,9 @@ def build_verification_records(
 ) -> list[dict[str, Any]]:
     date_value = checked_at or date.today().isoformat()
     previous = {str(row.get("document_id")): row for row in previous_rows}
-    agents = {str(row.get("document_id")): row for row in agent_rows}
+    agents: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in agent_rows:
+        agents[str(row.get("document_id"))].append(dict(row))
     raw_index = index_raw_sources(source_root)
     records = []
     for document in canonical_documents:
@@ -352,8 +354,8 @@ def build_verification_records(
             base["checked_at"] = date_value
         else:
             base = build_deterministic_record(document, match_raw(document, raw_index), date_value)
-        if identifier in agents:
-            base = merge_agent_record(base, agents[identifier])
+        for candidate in agents.get(identifier, []):
+            base = merge_agent_record(base, candidate)
         records.append(base)
     if len(records) != len(canonical_documents) or len({row["document_id"] for row in records}) != len(records):
         raise ValueError("official verification coverage or ID uniqueness failed")

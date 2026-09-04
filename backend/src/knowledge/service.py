@@ -89,6 +89,27 @@ class KnowledgeService:
             return "中华人民共和国刑法"
         return None
 
+    @classmethod
+    def _use_core_criminal_law_hits(
+        cls,
+        query: str,
+        hybrid_candidates: list[dict[str, Any]],
+    ) -> bool:
+        quoted_titles = re.findall(r"《([^》]{2,100})》", str(query or ""))
+        if quoted_titles:
+            return any(cls._canonical_formal_title(title) == "中华人民共和国刑法" for title in quoted_titles)
+        query_normalized = _normalize(query)
+        for candidate in hybrid_candidates:
+            title = str(candidate.get("source_title") or candidate.get("title") or "")
+            normalized_title = _normalize(title)
+            if (
+                len(normalized_title) >= 4
+                and normalized_title in query_normalized
+                and cls._canonical_formal_title(title) is None
+            ):
+                return False
+        return True
+
     def _hybrid_results(
         self,
         query: str,
@@ -361,7 +382,8 @@ class KnowledgeService:
         hybrid_candidates, retrieval_method, explicit_abstention = self._hybrid_results(
             retrieval_query, top_k, selected_collections
         )
-        hits = [] if explicit_abstention or "legal_authority" not in selected_collections else law_corpus.search_law(
+        use_core_hits = self._use_core_criminal_law_hits(query_text, hybrid_candidates)
+        hits = [] if explicit_abstention or "legal_authority" not in selected_collections or not use_core_hits else law_corpus.search_law(
             query_text, top_k=top_k, title="中华人民共和国刑法"
         )
         evidence_rows: list[dict[str, Any]] = []
@@ -413,10 +435,16 @@ class KnowledgeService:
         if not judgments:
             judgments = [query_text]
         for judgment in judgments:
-            claim_hits = [] if explicit_abstention or "legal_authority" not in selected_collections else law_corpus.search_law(
+            claim_hits = [] if explicit_abstention or "legal_authority" not in selected_collections or not use_core_hits else law_corpus.search_law(
                 judgment, top_k=min(3, top_k), title="中华人民共和国刑法"
             )
             ids = [self._evidence_from_hit(hit)["evidence_id"] for hit in claim_hits]
+            if not ids and not explicit_abstention and not use_core_hits:
+                ids = [
+                    str(row.get("evidence_id") or "")
+                    for row in evidence_rows[: min(3, top_k)]
+                    if row.get("evidence_id")
+                ]
             coverage[judgment] = {
                 "evidence_ids": ids,
                 "status": "candidate_requires_semantic_audit" if ids else "insufficient_evidence",

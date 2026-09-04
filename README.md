@@ -89,7 +89,7 @@ Compose包含PostgreSQL、后端、自适应服务和Nginx前端。前端容器�
 
 离线法条库共813条：刑法505条（2020官方正文精确合并修正案十二，形成自2024-03-01施行的现行版本）与刑诉法308条（2018第三次修正）。来源批次、原件SHA、输出SHA、版本和隔离源记录在`backend/legal_corpus/processed/law_corpus_manifest.json`。旧PDF语料漏掉刑法第二百条；某份带第三方署名且存在内容污染/差异的“2024最新版”参考件已隔离，不能覆盖生产语料，隔离理由是具体文件质量而非年份。重建与每学期复核要求见[`docs/DATA_GOVERNANCE.md`](docs/DATA_GOVERNANCE.md)。
 
-外部`laws`目录已建立canonical库存和逐份核实记录：4,173个混合文件去重为2,024份法律、行政法规、司法文件与案例，2,024/2,024均对应国家法律法规库等官方来源原件。当前状态为有效1,045份、历史发布598份、被替代5份、废止13份、效力尚未完全核实363份；后者不阻塞检索或演示，但引用时必须显示效力提示。813条仅指刑法505条与刑诉法308条组成的刑法课程核心规范基线，不是EvidencePack的唯一可引用范围。逐份记录与报告见[`data_governance/OFFICIAL_SOURCE_VERIFICATION_V1_REPORT.md`](data_governance/OFFICIAL_SOURCE_VERIFICATION_V1_REPORT.md)。
+外部`laws`目录已建立canonical库存和逐份来源记录：4,173个混合文件去重为2,024份法律、行政法规、司法文件与案例，2,024/2,024均对应国家法律法规库等官方来源原件，因此默认可进入EvidencePack，不再以逐份联网或模型核验作为研发门槛。已有元数据状态为有效1,045份、历史发布598份、被替代5份、废止13份、效力字段待完善363份；后者不阻塞检索或演示，只在引用时显示非阻断提示。813条仅指刑法505条与刑诉法308条组成的刑法课程核心规范基线，不是EvidencePack的唯一可引用范围。逐份记录与报告见[`data_governance/OFFICIAL_SOURCE_VERIFICATION_V1_REPORT.md`](data_governance/OFFICIAL_SOURCE_VERIFICATION_V1_REPORT.md)。
 
 ## 受治理课程内容与EvidencePack
 

@@ -116,6 +116,36 @@ class KnowledgeContractTests(unittest.TestCase):
         self.assertEqual(result["evidences"], [])
         self.assertEqual(next(iter(result["coverage"].values()))["status"], "insufficient_evidence")
 
+    def test_explicit_non_criminal_law_does_not_inject_core_criminal_articles(self) -> None:
+        class OtherLawRetriever:
+            def search(self, query, **kwargs):
+                return {
+                    "stages": {"dense": "succeeded", "reranker": "succeeded"},
+                    "abstained": False,
+                    "results": [
+                        {
+                            "retrieval_id": "OTHER_1",
+                            "document_id": "OTHER_DOC",
+                            "source_type": "law",
+                            "source_title": "中华人民共和国噪声污染防治法",
+                            "title": "中华人民共和国噪声污染防治法",
+                            "article_ref": "第一条",
+                            "quote": "测试条文。",
+                            "authority_level": "法律",
+                            "allowed_usage": ["normative_rule"],
+                            "effective_status": "repealed",
+                            "source_use": "仅用于沿革。",
+                            "scores": {"rrf": 1.0},
+                        }
+                    ],
+                }
+
+        service = KnowledgeService(hybrid_retriever=OtherLawRetriever())
+        result = service.search(query="《中华人民共和国噪声污染防治法》现在是否有效", top_k=3)
+        self.assertTrue(result["evidences"])
+        self.assertTrue(all("中华人民共和国刑法" not in row["source_title"] for row in result["evidences"]))
+        self.assertEqual(result["evidences"][0]["effective_status"], "repealed")
+
     def test_knowledge_graph_expands_rag_query_and_returns_prerequisite_context(self) -> None:
         class CapturingRetriever:
             queries = []

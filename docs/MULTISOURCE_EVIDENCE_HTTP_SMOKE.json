@@ -1,6 +1,6 @@
 {
   "schema_version": "multisource-evidence-http-smoke-v1",
-  "generated_at": "2026-09-02T19:08:02.701140+00:00",
+  "generated_at": "2026-09-04T06:06:05.353619+00:00",
   "checks": [
     {
       "check_id": "exact_law",
@@ -17,7 +17,7 @@
     {
       "check_id": "judicial_interpretation",
       "http_status": 200,
-      "evidence_count": 10,
+      "evidence_count": 5,
       "expected_source_type": "judicial_normative_document",
       "expected_type_count": 5,
       "schema_errors": 0,
@@ -29,7 +29,7 @@
     {
       "check_id": "case_parent",
       "http_status": 200,
-      "evidence_count": 10,
+      "evidence_count": 9,
       "expected_source_type": "guiding_case",
       "expected_type_count": 4,
       "schema_errors": 0,

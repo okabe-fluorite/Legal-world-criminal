@@ -22,7 +22,7 @@
 | 前端 | Vue 3 + Vite + TypeScript（除 vue 外零运行时依赖） |
 | LLM | DeepSeek（camel-ai 框架驱动，兼容 OpenAI 协议端点） |
 | NLI | 本地中文 cross-encoder（IDEA-CCNL/Erlangshen-Roberta-330M-NLI，CPU 可跑） |
-| 数据 | 3件机器门禁通过但仍待法学教师每学期复核的发布案例；旧124案隔离为修复池；刑法505条/刑诉法308条受治理本地快照 |
+| 数据 | 2,024份官方来源法律/法规/司法文件/案例逐份记录；57,051条混合检索记录；刑法505条/刑诉法308条是课程核心规范基线；3件课程化CaseBundle |
 | 玩家模式 | `SIMLAW_PLAYER_LAWYER_MODE=defendant` |
 
 **启动**：
@@ -182,7 +182,8 @@ teaching/
 ### 法条检索
 
 - 本地法条库 `backend/legal_corpus/processed/*.jsonl`由国家法律法规数据库DOCX构建：2020刑法正文精确合并修正案十二（505条）+ 2018刑诉法（308条）；manifest保存源/输出SHA与隔离源。检索使用**BM25(k1=1.5, b=0.75) + BM25F 字段加权**（content 1.0 / article_ref 4.0 / 条号精确命中 ×3），纯stdlib离线可用
-- 当前学生正式Evidence仍使用已验证BM25F与精确条号保护；全库Hybrid RAG已完成canonical/父子分块和答案隔离，目标运行时为`BM25F + Qwen3-Embedding-8B → RRF → Reranker`。Reranker失败降级RRF，Embedding失败降级BM25F；没有真实索引和消融结果前不得把semantic/rerank标为ready。
+- 全库Hybrid RAG已完成真实索引和运行时：`BM25F + Qwen3-Embedding-8B → RRF → 精确法名/条号与无答案保护 → Qwen3-Reranker-8B`。57,051条分层记录可用；Reranker失败降级保护后的RRF，Embedding失败降级BM25F；案例子块命中后回填父段。
+- 2,024份法律、行政法规、司法文件和案例来自国家法律法规数据库等官方来源，官方原件默认准入；逐份记录用于来源身份、层级、版本和必要风险提示，不再以逐份联网或模型核验作为研发主线。效力字段不全只作非阻断提示，明确版本冲突、废止线索或引用错配才进入异常复核。
 - 第一版Dense索引使用本地float16 NPY+metadata，不为技术名先引入Qdrant；后续只有规模/并发证据要求时再替换向量存储。
 - Dify 法条 API（`DifyCitationSource`）为可插拔设计，接口修通后启用
 - 元典 MCP 工具已注册常驻，依赖外网，失败降级不阻断
@@ -191,7 +192,7 @@ teaching/
 
 - `schemas/knowledge-card-v1.schema.json`、`task-item-v1.schema.json`和`evidence-pack-v1.schema.json`冻结课程内容契约；生成数据位于`adaptive_service/data/`
 - `GET /api/knowledge/catalog`和`GET /api/knowledge/tasks/{task_id}`提供知识卡与公开任务；任务响应不含答案、解析和误概念私有字段
-- `POST /api/knowledge/search`返回受治理EvidencePack，`POST /api/knowledge/audit-citations`验证条号与逐字片段
+- `POST /api/knowledge/search`返回法律、行政法规、司法文件、案例、教材与学习资源分层EvidencePack，`POST /api/knowledge/audit-citations`验证条号与逐字片段；可信RAG“自由检索”提供五类用途分组和行末引用
 - BM25相关性与词法重叠不是法律蕴含；coverage必须保持`candidate_requires_semantic_audit`或`insufficient_evidence`
 
 ### CaseBundle案例契约
@@ -209,6 +210,8 @@ teaching/
 - backend用JWT用户ID覆盖浏览器身份；adaptive私有判分，返回反馈后生成不可变LearningEvent并回写数据库画像/推荐
 - 同客户端ID同payload幂等，同ID改payload返回409；过期TaskItem哈希返回422；已答任务从下一推荐排除
 - 困惑是`confusion_annotation`自报事件，不作为负掌握证据；`provisional`至少需要3个合格事件、覆盖2道任务，且仍不是校准掌握概率
+- Recommendation策略为`graph-aware-evidence-cold-start-v2`：客观薄弱沿KnowledgeCard图递归回退到最根部未满足先修；每层达到`mastered+provisional`后再解锁下一层；学生自报困惑仍直接优先当前知识。学习卷宗使用全局推荐顺序，不能因当前知识卡过滤掉跨知识点先修。
+- `exact_option_set`只有完全匹配才`mastered`；只漏选且不含错误项才`partial`；混入任一错误项记`missing`，防止全选获得部分掌握。
 - backend数据库不持久化判分反馈中的正确选项和解析；公开任务与推荐继续保持答案隔离
 
 ### 学生连续旅程
@@ -226,6 +229,7 @@ teaching/
 - 七步路径动态组合KnowledgeCard、Recommendation、SubjectiveTask与CasePicker；它是可解释候选路径，不宣称因果最优
 - 模型页只展示脱敏路由；小模型未接入时必须显示`not_connected`，不得宣称已完成LoRA/SFT
 - `smoke-cognitive-dashboard.mjs`在1500×980验证10知识、2事件、3版本、48格矩阵、7路径节点、4模型路由及0私有/网络错误
+- `smoke-graph-aware-path.mjs`真实验证“故意/过失”薄弱后生成“罪刑法定→犯罪概念→故意/过失”递归路径，下一题、任务队列和七步路径一致；根节点3事件/2题后解锁下一层由自适应专项覆盖。
 
 ### 多模态、知识图与数字人边界
 

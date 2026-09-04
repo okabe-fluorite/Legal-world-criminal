@@ -39,12 +39,25 @@
   "manual_confirmation_candidates": [],
   "unresolved_non_blocking": true,
   "hard_blockers": [],
-  "checked_at": "2026-09-03",
+  "checked_at": "2026-09-04",
   "agent_record_files_used": [
     "laws_luna_resolved.jsonl",
     "regulations_luna_resolved.jsonl",
     "judicial_luna.jsonl",
-    "judicial_luna_resolved_round2.jsonl"
+    "judicial_luna_resolved_round2.jsonl",
+    "laws_npc_rechecked.jsonl"
   ],
+  "npc_law_status_recheck": {
+    "input_records": 335,
+    "official_api_success": 134,
+    "official_api_unavailable": 201,
+    "status_conflicts_with_previous": 0,
+    "status_mapping": {
+      "1": "repealed",
+      "2": "superseded",
+      "3": "verified_current",
+      "4": "unresolved_not_yet_effective"
+    }
+  },
   "schema_errors": 0
 }

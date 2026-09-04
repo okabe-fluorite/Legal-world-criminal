@@ -140,14 +140,14 @@ def validate_cognitive(payload: dict[str, Any]) -> list[str]:
         "argument_template_nodes": 6,
         "model_routes": 4,
         "media_capabilities": 5,
-        "media_proof_rows": 3,
+        "media_proof_rows": 2,
     }
     for key, value in expected.items():
         if payload.get(key) != value:
             failures.append(f"{key} expected {value}, got {payload.get(key)!r}")
     if "未连接" not in str(payload.get("model_status", "")):
         failures.append("model_status does not preserve the fine-tune not-connected boundary")
-    if "not_connected" not in str(payload.get("media_status", "")):
+    if "尚未连接" not in str(payload.get("media_status", "")):
         failures.append("media_status does not preserve the provider not-connected boundary")
     if not zero_browser_errors(payload):
         failures.append("browser/private error arrays are not empty")
@@ -158,7 +158,7 @@ def validate_rag(payload: dict[str, Any]) -> list[str]:
     failures: list[str] = []
     if len(payload.get("questions") or []) != 3:
         failures.append("trusted RAG did not render exactly three typical questions")
-    if payload.get("automated_gate") != "3/3":
+    if payload.get("citation_checks") != "3/3":
         failures.append("automated question gate is not 3/3")
     if payload.get("expert_review") != "pending":
         failures.append("expert review boundary is not pending")
@@ -332,7 +332,7 @@ def markdown(audit: dict[str, Any]) -> str:
             "",
             "- 本审计证明三条真实浏览器UI路线可在同一套本地SQLite + adaptive + Vite服务上顺序执行。",
             "- 它不证明真实目标用户认可、学习增益、路径因果最优、专家法律正确性或正式成绩效度。",
-            "- ORCDF仍是MOOCCubeX民法/宪法shadow实验；微调和云媒体Provider仍保持`not_connected`。",
+            "- ORCDF仍是MOOCCubeX民法/宪法shadow实验；微调模型和数字人服务仍保持未连接。",
             "",
         ]
     )
@@ -418,7 +418,7 @@ def main() -> int:
             "synthetic example.com accounts and deterministic student inputs",
             "software rehearsal only; not target-user approval or learning-effect evidence",
             "ORCDF remains an uncalibrated civil/constitutional shadow experiment",
-            "fine-tuned and cloud media providers remain truthfully not_connected",
+            "fine-tuned model and digital-human services remain truthfully unconnected",
         ],
     }
     json_path = args.json.resolve()

@@ -86,6 +86,9 @@ function riskLabel(value: string): string {
     edition_unknown: "教材版本信息待补充",
     textbook_does_not_override_current_law: "教材解释不能替代现行法",
     effect_not_fully_verified: "效力尚未完全核实",
+    historical_source_not_current_rule: "历史发布材料，不直接作为现行法依据",
+    superseded_source_not_current_rule: "已有后续版本，请优先核对新版本",
+    repealed_source_not_current_rule: "已废止，不得作为现行法依据",
     source_cannot_prove_normative_conclusion: "该来源不能单独证明规范结论",
   } as Record<string, string>)[value] ?? value.replaceAll("_", " ");
 }

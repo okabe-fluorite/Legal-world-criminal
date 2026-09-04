@@ -79,6 +79,7 @@ class HybridRagRetrieverTests(unittest.TestCase):
                 "retrieval_text": "中华人民共和国民法典 第二十条 民事行为能力",
                 "parent_id": "",
                 "governance_status": "isolated_reference",
+                "effective_status": "repealed",
             },
             {
                 "retrieval_id": "C1",
@@ -134,6 +135,17 @@ class HybridRagRetrieverTests(unittest.TestCase):
         self.assertEqual(response["results"][0]["retrieval_id"], "A1")
         self.assertTrue(response["results"][0]["scores"]["exact_article_protected"])
 
+    def test_exact_quoted_title_is_protected_without_article_number(self) -> None:
+        retriever = HybridRagRetriever(index_root=self.index_root, corpus_root=self.corpus_root, client=FakeClient())
+        response = retriever.search("《中华人民共和国民法典》现在是否有效", top_k=2)
+        self.assertEqual(response["results"][0]["retrieval_id"], "A2")
+
+    def test_explicit_nonexistent_quoted_title_abstains_without_article(self) -> None:
+        retriever = HybridRagRetriever(index_root=self.index_root, corpus_root=self.corpus_root, client=FakeClient())
+        response = retriever.search("《不存在的测试法》现在是否有效", top_k=2)
+        self.assertTrue(response["abstained"])
+        self.assertEqual(response["abstention_reason"], "explicit_title_not_found")
+
     def test_dense_failure_falls_back_to_bm25f(self) -> None:
         retriever = HybridRagRetriever(
             index_root=self.index_root,
@@ -167,6 +179,12 @@ class HybridRagRetrieverTests(unittest.TestCase):
         self.assertNotIn("fallback_to_", serialized)
         case = next(row for row in public["results"] if row["source_type"] == "case")
         self.assertEqual(case["parent_context"]["content"], "完整的裁判规则父段内容。")
+
+    def test_repealed_source_is_marked_as_historical_only(self) -> None:
+        retriever = HybridRagRetriever(index_root=self.index_root, corpus_root=self.corpus_root, client=FakeClient())
+        row = retriever.collection("legal_authority").project(1, {})
+        self.assertEqual(row["effective_status"], "repealed")
+        self.assertIn("repealed_source_not_current_rule", row["risk_flags"])
 
     def test_explicit_nonexistent_law_and_article_abstains(self) -> None:
         retriever = HybridRagRetriever(index_root=self.index_root, corpus_root=self.corpus_root, client=FakeClient())

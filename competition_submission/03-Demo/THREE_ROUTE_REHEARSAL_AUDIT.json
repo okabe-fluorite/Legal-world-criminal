@@ -1,13 +1,13 @@
 {
   "schema": "xh-202620-three-route-browser-rehearsal-v1",
-  "generated_at": "2026-08-30T07:29:23.665891+00:00",
-  "source_git_commit": "2dc3fdd2dc40192d14ec81df7bfb8d8132543553",
+  "generated_at": "2026-09-03T19:37:34.219801+00:00",
+  "source_git_commit": "3a71de4cdd1db668330cad3ab066495b0b89a6fb",
   "route_count": 3,
   "routes_executed": 3,
   "routes_passed": 3,
   "all_routes_passed": true,
   "browser_error_total": 0,
-  "duration_seconds": 107.25,
+  "duration_seconds": 217.64,
   "service_urls": {
     "backend": "http://127.0.0.1:8000/api/status",
     "adaptive": "http://127.0.0.1:8010/health",
@@ -15,15 +15,15 @@
   },
   "services_stopped_after_run": true,
   "lingering_ports": [],
-  "artifact_root": "output/playwright/competition-rehearsal/20260830T072736Z",
-  "stack_log": "output/playwright/competition-rehearsal/20260830T072736Z/stack.log",
-  "model_config_supplied": true,
+  "artifact_root": "output/playwright/competition-rehearsal/20260903T193356Z",
+  "stack_log": "output/playwright/competition-rehearsal/20260903T193356Z/stack.log",
+  "model_config_supplied": false,
   "routes": [
     {
       "route_id": "cognitive_path_and_adapters",
       "title": "认知诊断—ORCDF—七步路径—知识图—Model/Media Adapter",
       "status": "passed",
-      "duration_seconds": 8.703,
+      "duration_seconds": 55.515,
       "script": "frontend/scripts/smoke-cognitive-dashboard.mjs",
       "video_segment": "第2—3段；第7段技术状态",
       "ppt_pages": "5—7、10",
@@ -36,27 +36,36 @@
         "orcdf_versions": 3,
         "heatmap_cells": 48,
         "path_nodes": 7,
+        "path_tutor": {
+          "label": "NEXT STEP\n\n下一步为何是这项任务\n\n依据当前证据、先修和已完成任务解释推荐；路径不是因果最优证明。\n\nAI助教·形成性反馈\n非教师结论 · 不形成正式成绩\n▶朗读本段",
+          "image": {
+            "naturalWidth": 768,
+            "naturalHeight": 960
+          }
+        },
         "knowledge_graph_nodes": 10,
         "knowledge_graph_edges": 10,
         "argument_template_nodes": 6,
         "model_routes": 4,
         "model_status": "微调端点已预留 · 当前未连接",
         "media_capabilities": 5,
-        "media_proof_rows": 3,
-        "media_status": "HONEST RUNTIME RESULT\n\n数字人异步契约已真实调用；当前Provider未授权，任务保持not_connected。\njob\navatar-1788074868185-b86ba2\ntype\navatar_render\nprovider\nnone\nstatus\nnot_connected",
+        "media_available_capabilities": 3,
+        "media_proof_rows": 2,
+        "iflytek_round_trip": "处理结果\n\n讯飞ASR已返回真实转写；结果需要复核，不进入画像或正式评分。\n服务\n讯飞在线语音\n状态\n待复核\n转写\n罪刑法定原则要求法无明文规定不为罪，法无明文规定不处罚。本段为ai合成语音。",
+        "media_status": "处理结果\n\n数字人接口已准备，但当前服务尚未连接。\n服务\n暂无外部服务\n状态\n尚未连接\n转写\n—",
         "private_leaks": [],
         "console_errors": [],
         "page_errors": [],
         "http_errors": [],
         "request_failures": [],
-        "artifact_dir": "output/playwright/competition-rehearsal/20260830T072736Z/01-cognitive-path"
+        "artifact_dir": "output/playwright/competition-rehearsal/20260903T193356Z/01-cognitive-path"
       }
     },
     {
       "route_id": "trusted_rag_three_questions",
       "title": "三个典型问题—权威Evidence—错误引用拒绝",
       "status": "passed",
-      "duration_seconds": 5.688,
+      "duration_seconds": 29.781,
       "script": "frontend/scripts/smoke-trusted-rag.mjs",
       "video_segment": "第4段",
       "ppt_pages": "4、11",
@@ -80,22 +89,23 @@
             "citation_count": 2
           }
         ],
-        "automated_gate": "3/3",
+        "citation_checks": "3/3",
         "expert_review": "pending",
         "rejected_bad_citations": 2,
+        "evidence_tutor": "EVIDENCE ALERT\n\n这条引用不能直接采信\n\n我只提示条号、范围与逐字片段风险，不替教师作法律结论。\n\nAI助教·形成性反馈\n非教师结论 · 不形成正式成绩\n▶朗读本段",
         "private_leaks": [],
         "console_errors": [],
         "page_errors": [],
         "http_errors": [],
         "request_failures": [],
-        "artifact_dir": "output/playwright/competition-rehearsal/20260830T072736Z/02-trusted-rag"
+        "artifact_dir": "output/playwright/competition-rehearsal/20260903T193356Z/02-trusted-rag"
       }
     },
     {
       "route_id": "teacher_subjective_hitl",
       "title": "学生主观稿—教师退回—原文修订—批准—画像事件",
       "status": "passed",
-      "duration_seconds": 88.046,
+      "duration_seconds": 114.563,
       "script": "frontend/scripts/smoke-teacher-dashboard.mjs",
       "video_segment": "第5段",
       "ppt_pages": "8",
@@ -104,7 +114,7 @@
       "result": {
         "teacher_role_entry_visible": true,
         "viewport": "1500x980",
-        "class_name": "刑法彩排班-72736Z",
+        "class_name": "刑法彩排班-93356Z",
         "metrics": [
           "1",
           "1",
@@ -144,13 +154,13 @@
         "page_errors": [],
         "http_errors": [],
         "request_failures": [],
-        "screenshot": "output/playwright/competition-rehearsal/20260830T072736Z/03-teacher-hitl/01-overview.png",
-        "analytics_screenshot": "output/playwright/competition-rehearsal/20260830T072736Z/03-teacher-hitl/02-analytics.png",
-        "student_subjective_screenshot": "output/playwright/competition-rehearsal/20260830T072736Z/03-teacher-hitl/06-student-draft.png",
-        "subjective_queue_screenshot": "output/playwright/competition-rehearsal/20260830T072736Z/03-teacher-hitl/03-queue.png",
-        "subjective_dialog_screenshot": "output/playwright/competition-rehearsal/20260830T072736Z/03-teacher-hitl/05-dialog.png",
-        "subjective_after_screenshot": "output/playwright/competition-rehearsal/20260830T072736Z/03-teacher-hitl/04-after.png",
-        "student_teacher_feedback_screenshot": "output/playwright/competition-rehearsal/20260830T072736Z/03-teacher-hitl/07-student-feedback.png"
+        "screenshot": "output/playwright/competition-rehearsal/20260903T193356Z/03-teacher-hitl/01-overview.png",
+        "analytics_screenshot": "output/playwright/competition-rehearsal/20260903T193356Z/03-teacher-hitl/02-analytics.png",
+        "student_subjective_screenshot": "output/playwright/competition-rehearsal/20260903T193356Z/03-teacher-hitl/06-student-draft.png",
+        "subjective_queue_screenshot": "output/playwright/competition-rehearsal/20260903T193356Z/03-teacher-hitl/03-queue.png",
+        "subjective_dialog_screenshot": "output/playwright/competition-rehearsal/20260903T193356Z/03-teacher-hitl/05-dialog.png",
+        "subjective_after_screenshot": "output/playwright/competition-rehearsal/20260903T193356Z/03-teacher-hitl/04-after.png",
+        "student_teacher_feedback_screenshot": "output/playwright/competition-rehearsal/20260903T193356Z/03-teacher-hitl/07-student-feedback.png"
       }
     }
   ],
@@ -158,6 +168,6 @@
     "synthetic example.com accounts and deterministic student inputs",
     "software rehearsal only; not target-user approval or learning-effect evidence",
     "ORCDF remains an uncalibrated civil/constitutional shadow experiment",
-    "fine-tuned and cloud media providers remain truthfully not_connected"
+    "fine-tuned model and digital-human services remain truthfully unconnected"
   ]
 }

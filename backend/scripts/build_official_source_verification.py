@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -25,14 +26,26 @@ from src.hybrid_rag.official_verification import (  # noqa: E402
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--canonical", type=Path, default=REPO / ".codex-artifacts" / "hybrid-rag-corpus-v1" / "canonical_documents.jsonl")
-    parser.add_argument("--source-root", type=Path, default=Path(r"E:\guabangjieshuai\EduBrain"))
+    parser.add_argument(
+        "--source-root",
+        type=Path,
+        default=Path(os.environ["EDUBRAIN_DATA_ROOT"]) if os.environ.get("EDUBRAIN_DATA_ROOT") else None,
+        help="EduBrain data root; defaults to EDUBRAIN_DATA_ROOT when set",
+    )
     parser.add_argument("--agent-record", type=Path, action="append", default=[])
     parser.add_argument("--previous", type=Path)
     parser.add_argument("--output", type=Path, default=REPO / "data_governance" / "OFFICIAL_SOURCE_VERIFICATION_V1.jsonl")
     parser.add_argument("--summary", type=Path, default=REPO / "data_governance" / "OFFICIAL_SOURCE_VERIFICATION_V1_SUMMARY.json")
     parser.add_argument("--unresolved-output", type=Path, default=REPO / "data_governance" / "OFFICIAL_SOURCE_UNRESOLVED_V1.jsonl")
     parser.add_argument("--report", type=Path, default=REPO / "data_governance" / "OFFICIAL_SOURCE_VERIFICATION_V1_REPORT.md")
+    parser.add_argument(
+        "--npc-recheck-summary",
+        type=Path,
+        default=REPO / "data_governance" / "NPC_LAW_STATUS_RECHECK_V1.json",
+    )
     args = parser.parse_args()
+    if args.source_root is None:
+        parser.error("--source-root or EDUBRAIN_DATA_ROOT is required")
     canonical = read_jsonl(args.canonical.resolve())
     previous = read_jsonl(args.previous.resolve()) if args.previous and args.previous.is_file() else []
     agents = []
@@ -53,6 +66,22 @@ def main() -> int:
     write_jsonl(args.output.resolve(), rows)
     summary = summarize_records(rows)
     summary["agent_record_files_used"] = [path.name for path in args.agent_record if path.is_file()]
+    npc_recheck = (
+        json.loads(args.npc_recheck_summary.read_text(encoding="utf-8"))
+        if args.npc_recheck_summary.is_file()
+        else {}
+    )
+    if npc_recheck:
+        summary["npc_law_status_recheck"] = {
+            key: npc_recheck.get(key)
+            for key in (
+                "input_records",
+                "official_api_success",
+                "official_api_unavailable",
+                "status_conflicts_with_previous",
+                "status_mapping",
+            )
+        }
     summary["schema_errors"] = 0
     args.summary.parent.mkdir(parents=True, exist_ok=True)
     args.summary.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -77,7 +106,7 @@ def main() -> int:
     args.report.write_text(
         "\n".join(
             [
-                "# 2,024份官方法律资料逐份核实报告",
+                "# 2,024份官方法律资料来源与效力元数据报告",
                 "",
                 "## 结果",
                 "",
@@ -98,12 +127,23 @@ def main() -> int:
                 "",
                 *[f"- {key}: {value:,} / 2,024" for key, value in coverage.items()],
                 "",
+                "## 国家库法律状态码复核",
+                "",
+                f"- 法律输入：{npc_recheck.get('input_records', 0):,}；",
+                f"- 本轮官方详情API成功：{npc_recheck.get('official_api_success', 0):,}；",
+                f"- 官方API限流/暂不可用并保留前轮状态：{npc_recheck.get('official_api_unavailable', 0):,}；",
+                f"- 与前轮官方核实状态冲突：{npc_recheck.get('status_conflicts_with_previous', 0):,}；",
+                "- 国家库前端枚举：1已废止、2已修改、3有效、4尚未生效；官方成功结果优先，瞬时失败不得降级既有状态。",
+                "",
                 "## 使用原则",
                 "",
+                "- 国家法律法规数据库等官方来源原件默认准入，不因缺少详情页或个别日期字段而隔离；",
                 "- 法律与行政法规用于规范依据，行政法规不得覆盖法律；",
                 "- 司法解释和司法规范性文件用于司法适用；",
                 "- 指导性/典型案例用于裁判参考与事实适用示例，不包装成法条；",
                 "- 教材用于学理与课堂解释，公开题用于相似题和诊断任务；",
+                "- verified_historical、superseded和repealed只用于沿革或比较，不得单独支持现行法结论；",
+                "- unresolved可检索并显示效力元数据待完善；它是非阻断提示，不代表来源不可信，也不触发逐份联网或模型深挖；如果缺少现行高层级依据，应当弃权或提示复核；",
                 "- 私有答案层不检索、不Embedding；",
                 "- 官方信息与模型判断冲突时采用官方信息。",
                 "",

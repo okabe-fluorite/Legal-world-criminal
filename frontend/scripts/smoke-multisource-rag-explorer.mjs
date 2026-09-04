@@ -33,6 +33,7 @@ page.on("requestfailed", (request) => {
 
 const checks = [];
 let noAnswerAbstention = false;
+let repealedSourceGuard = false;
 
 async function runPreset(index, expected) {
   const responsePromise = page.waitForResponse(
@@ -146,6 +147,23 @@ try {
   noAnswerAbstention = (await page.locator(".source-role-answer .citation-mark").count()) === 0;
   if (!noAnswerAbstention) throw new Error("Missing-law query returned a visible citation");
 
+  const repealedResponse = page.waitForResponse(
+    (response) => response.url().endsWith("/api/knowledge/search") && response.request().method() === "POST",
+    { timeout: 180000 },
+  );
+  await page.locator("#rag-free-query").fill("《中华人民共和国噪声污染防治法》现在还能否作为现行法依据？");
+  await page.getByRole("button", { name: "检索多来源Evidence →" }).click();
+  if ((await repealedResponse).status() !== 200) throw new Error("Repealed-law query failed");
+  const repealedCitation = page.getByRole("button", { name: /噪声污染防治法.*点击查看完整证据/ }).first();
+  await repealedCitation.waitFor();
+  await repealedCitation.click();
+  const repealedDrawer = page.locator(".evidence-drawer");
+  const repealedText = await repealedDrawer.innerText();
+  repealedSourceGuard = repealedText.includes("已废止")
+    && repealedText.includes("已废止，不得作为现行法依据");
+  if (!repealedSourceGuard) throw new Error(`Repealed-law guard missing: ${repealedText}`);
+  await repealedDrawer.getByRole("button", { name: "关闭完整证据" }).click();
+
   const boardText = await page.locator(".rag-board").innerText();
   const privateLeaks = [
     "answer_private",
@@ -166,6 +184,7 @@ try {
     checks,
     graph_context_verified: true,
     no_answer_abstention: noAnswerAbstention,
+    repealed_source_guard: repealedSourceGuard,
     private_leaks: privateLeaks,
     horizontal_overflow: horizontalOverflow,
     errors,
@@ -179,6 +198,7 @@ try {
   if (
     checks.length !== 5
     || !noAnswerAbstention
+    || !repealedSourceGuard
     || privateLeaks.length
     || horizontalOverflow.overflow
     || Object.values(errors).some((rows) => rows.length)

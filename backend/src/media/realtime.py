@@ -173,7 +173,7 @@ class RealtimeLegalReplyService:
             "2. 只能依据给定Evidence；citation_ids只能取给定evidence_id。\n"
             "3. 必须区分法条原文、一般解释与具体事实适用；事实不足时明确追问。\n"
             "4. 只有allowed_usage=normative_rule可直接支持规范陈述；judicial_application用于司法适用，case_reference仅作裁判参考，teaching_explanation和learning_resource不得证明法律结论。\n"
-            "5. 法源层级按法律、行政法规、司法解释/司法文件、案例、教材、题目理解；低层级材料不得覆盖高层级规范。effective_status=unresolved时必须明确说明效力尚未完全核实。\n"
+            "5. 法源层级按法律、行政法规、司法解释/司法文件、案例、教材、题目理解；低层级材料不得覆盖高层级规范。effective_status=unresolved时必须明确说明效力尚未完全核实；verified_historical、superseded或repealed只能用于历史沿革/比较，不得作为现行法结论依据。\n"
             "6. 不形成正式结论、成绩或掌握概率，不冒充教师。\n"
             "7. 回答必须控制在50至90个汉字、最多4句，先给规则再说明边界；不输出Markdown或JSON之外文字。\n\n"
             f"【检索覆盖状态】{coverage_status}\n"
@@ -191,14 +191,28 @@ class RealtimeLegalReplyService:
         reason: str,
     ) -> dict[str, Any]:
         if evidences:
+            obsolete_statuses = {"verified_historical", "superseded", "repealed"}
             first = next(
-                (row for row in evidences if "normative_rule" in row.get("allowed_usage", [])),
+                (
+                    row
+                    for row in evidences
+                    if "normative_rule" in row.get("allowed_usage", [])
+                    and row.get("effective_status") not in obsolete_statuses
+                ),
                 evidences[0],
             )
             quote = str(first.get("quote") or "")[:180]
             locator = f"{first['source_title']}{first['article_ref']}"
             unresolved = first.get("effective_status") == "unresolved"
-            if "normative_rule" in first.get("allowed_usage", []):
+            obsolete = first.get("effective_status") in obsolete_statuses
+            if obsolete:
+                status = {
+                    "verified_historical": "历史发布材料",
+                    "superseded": "已有后续版本",
+                    "repealed": "已废止",
+                }.get(str(first.get("effective_status") or ""), "非现行材料")
+                answer = f"当前命中《{locator}》属于{status}：{quote[:55]}。它只适合说明沿革或比较，不能单独作为现行法结论依据；请核对最新官方文本。"
+            elif "normative_rule" in first.get("allowed_usage", []):
                 answer = f"先看《{locator}》：{quote[:70]}。具体适用还要核对构成要件和关键事实；{'该来源效力尚未完全核实，' if unresolved else ''}有争议时请教师复核。"
             else:
                 answer = f"当前命中的是{first.get('authority_level') or '参考资料'}《{locator}》：{quote[:60]}。它只能作解释或参考，不能替代规范依据；请继续核对现行法。"

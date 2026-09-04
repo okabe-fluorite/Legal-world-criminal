@@ -72,6 +72,75 @@ class OfficialSourceVerificationTests(unittest.TestCase):
         self.assertEqual(row["effective_status"], "verified_historical")
         self.assertNotIn("normative_rule", row["allowed_usage"])
 
+    def test_multiple_verification_rounds_merge_without_failure_downgrade(self) -> None:
+        document = {
+            "document_id": "RAGD_" + "C" * 24,
+            "source_type": "law",
+            "title": "中华人民共和国测试法",
+            "document_content_sha256": "c" * 64,
+            "source_snapshot_id": "official-test",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            raw = root / "laws" / "raw_data" / "法律"
+            raw.mkdir(parents=True)
+            (raw / "中华人民共和国测试法.txt").write_text("中华人民共和国测试法", encoding="utf-8")
+            row = build_verification_records(
+                [document],
+                source_root=root,
+                agent_rows=[
+                    {
+                        "document_id": document["document_id"],
+                        "effective_status": "verified_current",
+                        "verification_status": "verified",
+                        "official_source_url": "https://flk.npc.gov.cn/detail.html?id=test",
+                        "verification_method": "agent_luna_official_match",
+                    },
+                    {
+                        "document_id": document["document_id"],
+                        "effective_status": "unresolved",
+                        "verification_status": "unresolved",
+                        "official_source_url": "https://flk.npc.gov.cn/detail.html?id=test",
+                        "verification_method": "official_npc_status_api",
+                        "notes": "本轮官方API瞬时失败",
+                    },
+                ],
+                checked_at="2026-09-04",
+            )[0]
+        self.assertEqual(row["effective_status"], "verified_current")
+        self.assertEqual(row["verification_status"], "verified")
+        self.assertTrue(any("瞬时失败" in note for note in row["usage_notes"]))
+
+    def test_later_successful_official_round_overrides_model_status(self) -> None:
+        base = {
+            "document_id": "RAGD_" + "D" * 24,
+            "source_type": "law",
+            "title": "中华人民共和国测试法",
+            "document_content_sha256": "d" * 64,
+            "source_snapshot_id": "official-test",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            raw = root / "laws" / "raw_data" / "法律"
+            raw.mkdir(parents=True)
+            (raw / "中华人民共和国测试法.txt").write_text("中华人民共和国测试法", encoding="utf-8")
+            row = build_verification_records(
+                [base],
+                source_root=root,
+                agent_rows=[
+                    {"document_id": base["document_id"], "effective_status": "verified_current"},
+                    {
+                        "document_id": base["document_id"],
+                        "effective_status": "repealed",
+                        "verification_status": "verified",
+                        "official_source_url": "https://flk.npc.gov.cn/detail.html?id=test",
+                        "verification_method": "official_npc_status_api",
+                    },
+                ],
+                checked_at="2026-09-04",
+            )[0]
+        self.assertEqual(row["effective_status"], "repealed")
+
 
 if __name__ == "__main__":
     unittest.main()

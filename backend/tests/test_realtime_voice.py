@@ -121,6 +121,32 @@ class RealtimeLegalReplyTests(unittest.TestCase):
         self.assertEqual(result["citation_ids"], ["EVID_TEST_20"])
         self.assertTrue(result["teacher_review_required"])
 
+    def test_repealed_only_fallback_never_states_a_current_rule(self) -> None:
+        class RepealedKnowledge:
+            def search(self, **_kwargs):
+                return {
+                    "evidences": [
+                        {
+                            "evidence_id": "EVID_REPEALED",
+                            "source_title": "某旧法",
+                            "article_ref": "第一条",
+                            "quote": "本条曾规定某项历史规则。",
+                            "effective_status": "repealed",
+                            "allowed_usage": ["normative_rule"],
+                        }
+                    ],
+                    "coverage": {"question": {"status": "candidate_requires_semantic_audit"}},
+                }
+
+        service = RealtimeLegalReplyService(
+            knowledge=RepealedKnowledge(),
+            generator=lambda _prompt: "not-json",
+        )
+        result = service.generate("现行法如何规定？")
+        self.assertEqual(result["source"], "deterministic_evidence_fallback")
+        self.assertIn("已废止", result["reply_text"])
+        self.assertIn("不能单独作为现行法结论依据", result["reply_text"])
+
 
 class RealtimeVoiceConnectionTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
